@@ -9,6 +9,10 @@ Vue.config.productionTip = false
 
 axios.defaults.baseURL = 'https://www.fduhole.tk/api/'
 axios.defaults.withCredentials = true
+axios.interceptors.request.use(config => {
+  config.headers.Authorization = localStorage.getItem('token')
+  return config
+})
 
 Vue.prototype.$axios = axios
 Vue.use(VueCookies)
