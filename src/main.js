@@ -4,6 +4,8 @@ import './registerServiceWorker'
 import router from './router'
 import axios from 'axios'
 import VueCookies from 'vue-cookies'
+import vuetify from './plugins/vuetify'
+import debounce from 'lodash.debounce'
 
 Vue.config.productionTip = false
 
@@ -16,9 +18,12 @@ axios.interceptors.request.use(config => {
 
 Vue.prototype.$axios = axios
 Vue.use(VueCookies)
+Vue.use(debounce)
 
 new Vue({
   router,
+  vuetify,
+  debounce,
   render: h => h(App)
 }).$mount('#app')
 

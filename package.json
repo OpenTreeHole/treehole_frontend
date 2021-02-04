@@ -10,10 +10,12 @@
   "dependencies": {
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
+    "lodash.debounce": "^4.0.8",
     "register-service-worker": "^1.7.1",
     "vue": "^2.6.11",
     "vue-cookies": "^1.7.4",
-    "vue-router": "^3.2.0"
+    "vue-router": "^3.2.0",
+    "vuetify": "^2.4.0"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
@@ -29,7 +31,11 @@
     "eslint-plugin-promise": "^4.2.1",
     "eslint-plugin-standard": "^4.0.0",
     "eslint-plugin-vue": "^6.2.2",
-    "vue-template-compiler": "^2.6.11"
+    "sass": "^1.32.0",
+    "sass-loader": "^10.0.0",
+    "vue-cli-plugin-vuetify": "~2.1.0",
+    "vue-template-compiler": "^2.6.11",
+    "vuetify-loader": "^1.7.0"
   },
   "eslintConfig": {
     "root": true,
@@ -49,9 +55,7 @@
     "last 2 versions",
     "not dead"
   ],
-  "gitHooks": {
-  
-  },
+  "gitHooks": {},
   "lint-staged": {
     "*.{js,jsx,vue}": [
       "vue-cli-service lint",
