@@ -1,43 +1,35 @@
 <template>
-
+<v-container fill-height>
   <v-row align="center" justify="center">
     <v-col cols="10" sm="8" md="6" lg="4" class="text-center" >
-      <v-card class="py-8 px-10" elevation="4">
+      <v-card class="py-8 " elevation="4">
         <h1 >登录</h1>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-alert type="error" :value="alert" >用户名或密码错误</v-alert>
-          <div>
+          <div class="pl-7 pr-10">
             <v-text-field 
               v-model="username"
               label="用户名"
+              prepend-icon="mdi-account"
               :clearable="!valid"
               :counter="16"
               :rules="nameRules"
             />
-          </div>
-
-          <div >
+        
             <v-text-field
               v-model="password"
               label="密码"
+              prepend-icon="mdi-lock"
               type="password"
               :clearable="!valid"
               :counter="32"
               :rules="passwordRules"
             />
           </div>
+          <div class="px-10">
+            <v-btn class="my-4" color="primary" block :disabled="!valid" @click="login">登录</v-btn>
+          </div>
 
-          <v-btn class="my-4" color="primary" block :disabled="!valid" @click="login">登录</v-btn>
-          
-          <!-- <v-btn @click="logout" >
-            登出
-          </v-btn>
-          <v-btn @click="discussions" >
-            discussions
-          </v-btn>
-          <v-btn @click="posts" >
-            posts
-          </v-btn> --> 
           <div>
             <p class="py-1 my-0"><a href="#/register">没有账号？点此注册</a></p>
             <p class="py-1 my-0"><a href="#" onclick="alert('活该')">忘记密码</a></p>
@@ -48,7 +40,7 @@
       
     </v-col>
   </v-row>
-
+</v-container>
 </template>
 
 <script>
@@ -94,13 +86,7 @@ export default {
       localStorage.clear()
       this.$router.push('/login')
     },
-    discussions () {
-      this.$axios
-        .get('discussions/', { params: { page: 1 } })
-        .then(response => {
-          console.log(response.data)
-        })
-    },
+
     posts () {
       this.$axios
         .get('posts/', { params: { id: 22, page: 1 } })
@@ -112,7 +98,10 @@ export default {
           alert('需要登录！')
         })
     }
-  }
+  },
+  // created(){
+  //   this.posts()
+  // }
 }
 </script>
 

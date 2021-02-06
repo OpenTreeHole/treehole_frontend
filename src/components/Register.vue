@@ -1,49 +1,48 @@
 <template>
+<v-container  fill-height>
  <v-row align="center" justify="center">
     <v-col cols="10" sm="8" md="6" lg="4" xl="3" class="text-center" >
-      <v-card class="py-8 px-10" elevation="4">
+      <v-card class="py-8" elevation="4">
         
         <h1 @click="alert = true">注册</h1>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-alert class="my-4" transition="slide-y-transition" :type="alertType" :value="isAlert" >{{alertMsg}}</v-alert>
-          <div >
+          <div class="pl-7 pr-10">
             <v-text-field 
               v-model="username"
               label="用户名"
+              prepend-icon="mdi-account"
               :error-messages="errorMsg['username']"
               :clearable="!valid"
               :counter="16"
               :rules="nameRules"
             />
-          </div>
 
-          <div >
             <v-text-field 
               v-model="email"
               label="edu邮箱"
+              prepend-icon="mdi-email-outline"
               :error-messages="errorMsg['email']"
               :clearable="!valid"
               :counter="32"
               :rules="emailRules"
             />
-          </div>
 
-          <div >
             <v-text-field
               v-model="password"
               label="密码"
               type="password"
+              prepend-icon="mdi-lock"
               :clearable="!valid"
               :counter="32"
               :rules="passwordRules"
             />
-          </div>
 
-          <div >
             <v-text-field
               v-model="password2"
               label="重复密码"
               type="password"
+              prepend-icon="mdi-lock"
               :error-messages="errorMsg['password']"
               :clearable="!valid"
               :counter="32"
@@ -51,15 +50,14 @@
             />
           </div>
 
-          <v-btn class="my-4" color="success" block :disabled="!valid" @click="sendEmail">注册</v-btn>
-
+          <div class="px-10">
+            <v-btn class="my-4" color="success" block :disabled="!valid" @click="sendEmail">注册</v-btn>
+          </div>
         </v-form>
-
-      </v-card>
-      
+      </v-card> 
     </v-col>
   </v-row>
-
+</v-container>
 </template>
 
 <script>
@@ -75,7 +73,7 @@ export default {
       isAlert: false,
       alertMsg : '',
       alertType: 'info',
-      errorMsg: {  // 与校验有关的数据 
+      errorMsg: {  
         'username': '',
         'email'   : '',
         'password': '',

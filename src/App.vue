@@ -39,10 +39,8 @@
        -->
     </v-app-bar>
 
-    <v-main>
-      <v-container id="container" fill-height>
-         <router-view></router-view>
-      </v-container>
+    <v-main> 
+      <router-view></router-view>
     </v-main>
 
     <v-footer>
