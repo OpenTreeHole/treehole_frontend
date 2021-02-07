@@ -28,7 +28,7 @@
 
         
 
-        <div v-if="styleData[index]['lines']>3">
+        <div v-if="styleData[index]['lines'] > 3">
 
           <div v-if="styleData[index]['fold']">
             <v-btn text block depressed x-small 
@@ -48,11 +48,11 @@
 
         </div>
         <div v-else>
-          <v-btn text block depressed x-small disabled></v-btn>
+          <div style="height: 0.5rem;"></div>
         </div>
           
         
-        <v-card-text class="pt-0 pb-2 text-center text-body-2">
+        <v-card-text class="pt-0 pb-0 text-center caption">
           <span style="float:left">#{{ discussion['id'] }}</span>
           <span style="float:inherit">{{ discussion['date_updated'] | timeDifference }}</span>
           <span style="float:right">
