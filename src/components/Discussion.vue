@@ -96,7 +96,7 @@
             {{ posts[replyIndex]['content']}}
           </div>
 
-          <!-- 回复表单 -->
+          <!-- 回贴表单 -->
           <v-form ref="form" v-model="valid" lazy-validation>
             <v-textarea
               v-model="content"
@@ -213,6 +213,9 @@ export default {
           // 关闭对话框并重置回复信息
           this.dialog = false
           this.replyIndex = null
+          // 重置 formAlert 信息
+          this.formAlert = false
+          this.formAlertMessage = ''
         })
         .catch((error) => {
           console.log(error.response)

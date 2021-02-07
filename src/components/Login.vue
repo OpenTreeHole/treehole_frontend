@@ -87,17 +87,6 @@ export default {
       this.$router.push('/login')
     },
 
-    posts () {
-      this.$axios
-        .get('posts/', { params: { id: 22, page: 1 } })
-        .then(response => {
-          console.log(response.data)
-        })
-        .catch(error => {
-          console.log(error.response.data)
-          alert('需要登录！')
-        })
-    }
   },
   // created(){
   //   this.posts()

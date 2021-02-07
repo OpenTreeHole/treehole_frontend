@@ -3,7 +3,9 @@
   
   <v-row justify="center">
     <v-col>
-      <v-alert type="error" transition="fade-transition" :value="alert" >网络错误</v-alert>
+      <v-alert type="error" transition="fade-transition" :value="alert" >
+        {{alertMessage}}
+      </v-alert>
     </v-col>
   </v-row>
 
@@ -66,6 +68,72 @@
     </v-col>      
   </v-row>
 
+  <!-- 弹出式表单及浮动按钮 -->
+
+    <v-dialog
+      v-model="dialog"
+      persistent
+      max-width="600px"
+    >
+      <!-- 浮动按钮 -->
+      <template v-slot:activator="{ on, attrs }">
+        <v-btn
+          fab
+          color="success"
+          class="fixed"
+          v-bind="attrs"
+          v-on="on"
+        >
+          <v-icon>mdi-message-plus</v-icon>
+        </v-btn>
+      </template>
+
+      <v-card>
+
+        <v-card-title>
+          <span class="headline">发表树洞</span>
+        </v-card-title>
+
+        <v-card-text>
+
+          <!-- 警告信息 -->
+          <v-alert type="error" transition="fade-transition" :value="formAlert" >{{formAlertMessage}}</v-alert>
+
+          <!-- 发帖表单 -->
+          <v-form ref="form" v-model="valid" lazy-validation>
+            <v-textarea
+              v-model="content"
+              :rules="requiredRules"
+              label="说些什么......"
+              required
+              auto-grow
+            ></v-textarea>
+          </v-form>
+         
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            color="blue darken-1"
+            text
+            @click="dialog = false"
+          >
+            关闭
+          </v-btn>
+          <v-btn
+            color="blue darken-1"
+            text
+            :disabled="!valid"
+            @click="addDiscussion"
+          >
+            发送
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+
+  <!-- 载入中信息 -->
   <v-row 
     v-intersect="{
       handler: onIntersect,
@@ -84,13 +152,25 @@ import debounce from 'lodash.debounce'
 export default {
   data(){
     return {
-      discussions: [],
-      styleData: [],
-      page: 1,
-      lineHeight: 0,
+      // 提示信息
       alert: false,
+      alertMessage: '网络错误',
+      formAlert: false,
+      formAlertMessage: '网络错误',
+      // 帖子列表
+      discussions: [],
+      page: 1,
+      // 展开折叠样式数据
+      styleData: [], 
+      lineHeight: 0,
+      // 发帖表单
+      content: '',
+      tags: [],
+      dialog: false,
+      requiredRules: [v => !!v || '内容不能为空',],
+      valid: true,
+      // 底部加载
       loadingMsg: '加载中......',
-      isRipple: false,
     }
   },
   methods: {
@@ -100,17 +180,32 @@ export default {
         path:`/discussion/${discussion_id}`,
       })
       }, 50)
-     
     },
-    div(){
-      console.log('div')
-    },
+
     addDiscussion(){
-      this.$axios.post('discussions/', {content: 'The Material Design color system helps you apply color to your UI in a meaningful way. In this system, you select a primary and a secondary color to represent ...', tags: ['tag1', 'tag2', 'tag3']})
+      // this.refs.form.validate()
+      this.$axios
+        .post('discussions/', { content: this.content, tags: this.tags })
         .then(response => {
           console.log(response.data)
+          // 重新加载页面
+          this.discussions = []
+          this.page = 1
+          this.getDiscussions()
+          // 关闭对话框并重置 tag 信息
+          this.dialog = false
+          this.tags = []
+          // 重置 formAlert 信息
+          this.formAlert = false
+          this.formAlertMessage = ''
+        })
+        .catch((error) => {
+          console.log(error.response)
+          this.formAlert = true
+          this.formAlertMessage = error.response.data['msg']
         })
     },
+    
     getDiscussions(){
       this.$axios
         .get('discussions/', { params: { page: this.page } })
@@ -128,6 +223,21 @@ export default {
         })
         .catch(() => {
           this.alert = true
+        })
+    },
+
+    getTags(){ // 获取 所有的 tags
+      this.$axios
+        .get('tags/')
+        .then(response => {
+            this.tags = response.data
+            console.log(response.data)
+            this.formAlert = false
+          })
+        .catch((response) => {
+          console.log(response.data)
+          this.formAlert = true
+          this.formAlertMessage = error.response.data['msg']
         })
     },
     onIntersect (entries, observer) {
@@ -162,6 +272,7 @@ export default {
 
   created(){
     this.debouncedCalculateLines = debounce(this.calcuteLines, 300)
+    this.getTags()
   },
 
 }
@@ -182,9 +293,12 @@ export default {
   .clickable{
     cursor: pointer;
   }
-  v-btn{
-    position: absolute;
-    z-index: 999;
+
+  /* 浮动按钮 固定在右下角 */
+  .fixed{
+    position:fixed;
+    right: 8px;
+    bottom: 64px;
   }
 
 </style>
