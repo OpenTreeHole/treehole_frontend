@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '../components/Login.vue'
 import Home from '../components/Home.vue'
 import Register from '../components/Register.vue'
+import Discussion from '../components/Discussion.vue'
 
 Vue.use(VueRouter)
 
@@ -10,7 +11,8 @@ const routes = [
   { path: '/home', component: Home },
   { path: '/login', component: Login },
   { path: '/', redirect: '/home' },
-  { path: '/register', component: Register }
+  { path: '/register', component: Register },
+  { path: '/discussion/:id', component: Discussion },
 ]
 
 const router = new VueRouter({

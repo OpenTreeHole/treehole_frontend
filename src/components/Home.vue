@@ -1,58 +1,80 @@
 <template>
 <v-container fill-height>
-  <v-alert type="error" transition="fade-transition" :value="alert" >网络错误</v-alert>
-    <v-row v-for="(discussion, index) in discussions" :key="index" justify="center">
-      <v-col cols="12" sm="10" md="8" lg="6" xl="4">
-        <v-card class="px-4">
-          <v-card-text class="pb-2 pt-2">
-            <br>
-          </v-card-text>
-          <v-card-text class="py-0">
+  
+  <v-row justify="center">
+    <v-col>
+      <v-alert type="error" transition="fade-transition" :value="alert" >网络错误</v-alert>
+    </v-col>
+  </v-row>
 
-            <p :class="{fold: styleData[index]['fold'], unfold: !styleData[index]['fold']}" :id="index" class="ma-0 text-body-1" >{{index}}{{discussion['first_post']['content']}}
-            </p>
+  <v-row v-for="(discussion, index) in discussions" :key="index" justify="center">
+    <v-col cols="12" sm="10" md="8" lg="6" xl="4">
 
-            <div v-if="styleData[index]['lines']>3">
+      <v-card>
+        
+      <!-- :href="'#/discussion/' + discussion['id']" -->
+        <v-card-text class="pb-1 pt-2 font-weight-medium" >
+          <v-chip v-for="(tag, tindex) in discussion['tag']" :key="tindex" :color="tag['color']" outlined class="mx-2" small ripple>
+            {{tag['name']}}
+          </v-chip> 
+        </v-card-text>
+ <!-- @click="toDiscussion(discussion['id'], index)" -->
 
-              <div v-if="styleData[index]['fold']">
-                <v-btn text block depressed x-small 
-                  color="grey lighten-1"
-                  @click="styleData[index]['fold'] = false">
-                  <v-icon>mdi-chevron-double-down</v-icon>
-                </v-btn>
-              </div>
+        <v-card-text @click="toDiscussion(discussion['id'], index)" class="py-0 text-body-1 clickable" v-ripple>
+          <p :class="{fold: styleData[index]['fold'], unfold: !styleData[index]['fold']}" :id="'p' + index" class="ma-0" >
+            {{discussion['first_post']['content']}}
+          </p>
+        </v-card-text>
 
-              <div v-else>
-                <v-btn text block depressed x-small 
-                  color="grey lighten-1"
-                  @click="styleData[index]['fold'] = true">
-                  <v-icon>mdi-chevron-double-up</v-icon>
-                </v-btn>
-              </div>
+        
 
-            </div>
-            <div v-else>
-              <v-btn text block depressed x-small disabled></v-btn>
-            </div>
-            
-          </v-card-text>
-          <v-card-text class="pt-0 pb-2 text-center text-body-2">
-            <span style="float:left">#{{ discussion['id'] }}</span>
-            <span style="float:inherit">{{ discussion['date_updated'] | timeDifference }}</span>
-            <span style="float:right">{{ discussion['count'] }}<v-icon>mdi-message-processing-outline</v-icon></span>
-          </v-card-text>
-        </v-card>
-      </v-col>      
-    </v-row>
-    <v-row 
-      v-intersect="{
-        handler: onIntersect,
-        options: { threshold: 0 }}"
-    >
-      <v-col class="text-center">
-        {{loadingMsg}}
-      </v-col>
-    </v-row>
+        <div v-if="styleData[index]['lines']>3">
+
+          <div v-if="styleData[index]['fold']">
+            <v-btn text block depressed x-small 
+              color="grey lighten-1"
+              @click="styleData[index]['fold'] = false">
+              <v-icon>mdi-chevron-double-down</v-icon>
+            </v-btn>
+          </div>
+
+          <div v-else>
+            <v-btn text block depressed x-small 
+              color="grey lighten-1"
+              @click="styleData[index]['fold'] = true">
+              <v-icon>mdi-chevron-double-up</v-icon>
+            </v-btn>
+          </div>
+
+        </div>
+        <div v-else>
+          <v-btn text block depressed x-small disabled></v-btn>
+        </div>
+          
+        
+        <v-card-text class="pt-0 pb-2 text-center text-body-2">
+          <span style="float:left">#{{ discussion['id'] }}</span>
+          <span style="float:inherit">{{ discussion['date_updated'] | timeDifference }}</span>
+          <span style="float:right">
+            {{ discussion['count'] }}
+            <v-icon small>mdi-message-processing-outline</v-icon>
+          </span>
+        </v-card-text>
+      </v-card>
+
+      
+    </v-col>      
+  </v-row>
+
+  <v-row 
+    v-intersect="{
+      handler: onIntersect,
+      options: { threshold: 0 }}"
+  >
+    <v-col class="text-center">
+      {{loadingMsg}}
+    </v-col>
+  </v-row>
 
 </v-container>
 </template>
@@ -68,9 +90,21 @@ export default {
       lineHeight: 0,
       alert: false,
       loadingMsg: '加载中......',
+      isRipple: false,
     }
   },
   methods: {
+    toDiscussion(discussion_id, card_id){
+      setTimeout(() => {
+         this.$router.push({
+        path:`/discussion/${discussion_id}`,
+      })
+      }, 50)
+     
+    },
+    div(){
+      console.log('div')
+    },
     addDiscussion(){
       this.$axios.post('discussions/', {content: 'The Material Design color system helps you apply color to your UI in a meaningful way. In this system, you select a primary and a secondary color to represent ...', tags: ['tag1', 'tag2', 'tag3']})
         .then(response => {
@@ -101,38 +135,19 @@ export default {
           this.getDiscussions()
         }
       },
-    // countLines(index){
-    //   let element = document.getElementById(index)
-    //   let totalHeight = element.scrollHeight
-    //   let lineHeight = window.getComputedStyle(element, null).getPropertyValue('line-height')
-    //   lineHeight = parseInt(lineHeight)
-    //   console.log(totalHeight)
-    //   console.log(lineHeight)
-    //   console.log(totalHeight / lineHeight)
-    //   return totalHeight / lineHeight
-    // },
-    // unfold(index){
-    //   this.styleData[index]['height'] = 100 * this.lineHeight + 'px'
-    //   this.styleData[index]['fold'] = 0
-    // },
-    // fold(index){
-    //   this.styleData[index]['height'] = 3 * this.lineHeight + 'px'
-    //   this.styleData[index]['fold'] = 1
-    // },
     calcuteLines(){
       for(let i=0; i<this.styleData.length; i++){
-        let element = document.getElementById(i)
+        let element = document.getElementById('p' + i)
         let totalHeight = element.scrollHeight
         this.styleData[i]['lines'] = totalHeight / this.lineHeight
       }
-      console.log('calculated')
     },
 
   },
   watch: {
     discussions: function() {
       setTimeout(() => {
-        let element = document.getElementById(1)
+        let element = document.getElementById('p1')
         this.lineHeight = parseInt(window.getComputedStyle(element, null).getPropertyValue('line-height'))
         this.calcuteLines()
       }, 100)
@@ -147,8 +162,6 @@ export default {
 
   created(){
     this.debouncedCalculateLines = debounce(this.calcuteLines, 300)
-    // console.log(this.tags)
-    // this.addDiscussion()
   },
 
 }
@@ -165,6 +178,13 @@ export default {
     overflow: hidden;
     max-height: 100rem;
     transition: max-height 1s ease-in-out;
+  }
+  .clickable{
+    cursor: pointer;
+  }
+  v-btn{
+    position: absolute;
+    z-index: 999;
   }
 
 </style>
