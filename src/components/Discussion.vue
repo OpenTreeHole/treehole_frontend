@@ -23,7 +23,7 @@
               <span >
                 {{ post['reply_to']['username'] }} 
               </span>
-              <v-icon @click="scrollTo(getIndex(post['reply_to']['id']))" small style="float:right">
+              <v-icon @click="scrollTo(index, getIndex(post.reply_to.id))" small style="float:right">
                 mdi-arrow-collapse-up
               </v-icon>
             </div>
@@ -89,9 +89,6 @@
               <span >
                 {{ posts[replyIndex]['username'] }} 
               </span>
-              <!-- <v-icon @click="scrollTo(getIndex(post['reply_to']['id']))" small style="float:right">
-                mdi-arrow-collapse-up
-              </v-icon> -->
             </div>
             {{ posts[replyIndex]['content']}}
           </div>
@@ -113,7 +110,7 @@
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false; replyIndex = null"
+            @click="dialog = false"
           >
             关闭
           </v-btn>
@@ -156,8 +153,9 @@ export default {
       // 帖子列表
       posts: [],
       page: 1,
-      // 回复信息（可选回复） 为回复的贴子在 posts 数组中的序列
-      replyIndex: null,
+      // 回复信息（可选回复） 
+      replyIndex: null,  //回复的贴子在 posts 数组中的序列
+      replyPk: null,     //回复的贴子的 id
       // 发帖表单
       dialog: false,
       content: '',
@@ -177,13 +175,24 @@ export default {
       }
       return 0
     },
-    scrollTo(id){
-      document.getElementById(id).scrollIntoView({ block: 'start', behavior: 'smooth' })
+    
+    scrollTo(current_id, to_id){
+      let currentOffsetTop = document.getElementById(current_id).offsetTop
+      let toOffsetTop = document.getElementById(to_id).offsetTop
+      let scrollDistance = toOffsetTop - currentOffsetTop
+      window.scrollBy({  
+        top: scrollDistance,     //  正值向下
+        left: 0,
+        behavior: "smooth",
+        })
     },
+
     reply(pk){  // 接受一个 post 的 pk 并设置其为回复目标
       this.replyIndex = this.getIndex(pk)
+      this.replyPk = pk
       this.dialog = true
     }, 
+
     getPosts(page=this.page){
       this.$axios
         .get('posts/', { params: { id: this.$route.params.id, page: page } })
@@ -201,11 +210,16 @@ export default {
           this.alertMessage = error.response.data['msg']
         })
     },
+
     addPost(){
-      // this.refs.form.validate()
-      this.$axios
-        .post('posts/', { content: this.content, discussion_id: this.$route.params.id })
-        .then(response => {
+      if(this.$refs.form.validate()){
+        this.$axios
+        .post('posts/', {
+          content: this.content, 
+          discussion_id: this.$route.params.id, 
+          post_id: this.replyPk 
+        })
+        .then( () => {
           // 重新加载页面
           this.posts = []
           this.page = 1
@@ -213,6 +227,7 @@ export default {
           // 关闭对话框并重置回复信息
           this.dialog = false
           this.replyIndex = null
+          this.replyPk = null
           // 重置 formAlert 信息
           this.formAlert = false
           this.formAlertMessage = ''
@@ -222,7 +237,9 @@ export default {
           this.formAlert = true
           this.formAlertMessage = error.response.data['msg']
         })
+      }
     },
+
     onIntersect (entries, observer) {
         if(entries[0].isIntersecting){
           this.getPosts()
@@ -239,7 +256,7 @@ export default {
     
   },
   mounted() {
-    
+
   },
 
   created(){

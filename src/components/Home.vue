@@ -1,6 +1,7 @@
 <template>
 <v-container fill-height>
   
+  <!-- 警告信息 -->
   <v-row justify="center">
     <v-col>
       <v-alert type="error" transition="fade-transition" :value="alert" >
@@ -8,28 +9,34 @@
       </v-alert>
     </v-col>
   </v-row>
+  <v-row>
+    <v-col>
+      
+    </v-col>
+  </v-row>
+ 
+  <!-- 帖子列表 -->   
 
   <v-row v-for="(discussion, index) in discussions" :key="index" justify="center">
     <v-col cols="12" sm="10" md="8" lg="6" xl="4">
-
       <v-card>
         
-      <!-- :href="'#/discussion/' + discussion['id']" -->
+      <!-- 标签栏 -->
         <v-card-text class="pb-1 pt-2 font-weight-medium" >
-          <v-chip v-for="(tag, tindex) in discussion['tag']" :key="tindex" :color="tag['color']" outlined class="mx-2" small ripple>
-            {{tag['name']}}
+          <v-chip v-for="(tag, tindex) in discussion.tag" :key="tindex" :color="tag.color" outlined class="mx-2" small ripple>
+            {{tag.name}}
           </v-chip> 
         </v-card-text>
- <!-- @click="toDiscussion(discussion['id'], index)" -->
 
-        <v-card-text @click="toDiscussion(discussion['id'], index)" class="py-0 text-body-1 clickable" v-ripple>
+      <!-- 内容主体 -->
+        <v-card-text @click="toDiscussion(discussion.id, index)" class="py-0 text-body-1 clickable" v-ripple>
           <p :class="{fold: styleData[index]['fold'], unfold: !styleData[index]['fold']}" :id="'p' + index" class="ma-0" >
             {{discussion['first_post']['content']}}
           </p>
         </v-card-text>
 
         
-
+      <!-- 展开折叠按钮 -->
         <div v-if="styleData[index]['lines'] > 3">
 
           <div v-if="styleData[index]['fold']">
@@ -53,7 +60,7 @@
           <div style="height: 0.5rem;"></div>
         </div>
           
-        
+      <!-- 脚标 -->
         <v-card-text class="pt-0 pb-0 text-center caption">
           <span style="float:left">#{{ discussion['id'] }}</span>
           <span style="float:inherit">{{ discussion['date_updated'] | timeDifference }}</span>
@@ -62,9 +69,8 @@
             <v-icon small>mdi-message-processing-outline</v-icon>
           </span>
         </v-card-text>
-      </v-card>
 
-      
+      </v-card>
     </v-col>      
   </v-row>
 
@@ -83,6 +89,7 @@
           class="fixed"
           v-bind="attrs"
           v-on="on"
+          @click="openDialog"
         >
           <v-icon>mdi-message-plus</v-icon>
         </v-btn>
@@ -101,22 +108,89 @@
 
           <!-- 发帖表单 -->
           <v-form ref="form" v-model="valid" lazy-validation>
-            <v-textarea
+
+            <!-- 标签输入框 -->
+            <v-combobox
+              v-model="selectedTags"
+              :items="tags"
+              item-text="name"
+              item-value="name"
+              label="标签"
+              hint="回车新增标签"
+              :rules="tagRules"
+              :error-messages="errorMsg['tags']"
+              :counter="5"
+              hide-selected
+              clearable
+              multiple
+            >
+
+              <!-- 自定义标签样式 -->
+              <template v-slot:selection="data">
+                <v-chip
+                  :key="JSON.stringify(data.item)"
+                  v-bind="data.attrs"
+                  :input-value="data.selected"
+                  :disabled="data.disabled"
+                  @click:close="data.parent.selectItem(data.item)"
+                  outlined
+                  :color="data.item.color"
+                  small
+                >
+                  {{ data.item.name }} 
+                  <span class="tag-icon">
+                    <v-icon x-small>mdi-fire</v-icon>
+                  </span>
+                  <span>
+                    {{ data.item.count}}
+                  </span>
+                </v-chip>
+              </template>
+
+              <!-- 自定义下拉框样式 -->
+              <template v-slot:item="data">
+                  <v-list-item-content>
+                    <span :class="data.item.color + '--text'">
+                      {{ data.item.name }}
+                      <v-icon :color="data.item.color" class="tag-icon" small>mdi-fire</v-icon>
+                      <span class="tag-count">
+                        {{ data.item.count}}
+                      </span>
+                    </span>
+                  </v-list-item-content>
+              </template>
+
+            </v-combobox>
+
+            <!-- 内容部分 -->
+            <quill-editor 
+              v-model="content" 
+              ref="editor" 
+              :options="editorOption" 
+              @blur="onEditorBlur($event)" 
+              @focus="onEditorFocus($event)"
+              @change="onEditorChange($event)">
+            </quill-editor>
+
+            <!-- <input type="file" accept="image/*" ref="upload" style="display: none" @change="upload"> -->
+            <!-- <v-textarea
               v-model="content"
-              :rules="requiredRules"
+              :rules="contentRules"
               label="说些什么......"
               required
               auto-grow
-            ></v-textarea>
+            ></v-textarea> -->
           </v-form>
          
         </v-card-text>
+
+      <!-- 关闭对话框 -->
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn
             color="blue darken-1"
             text
-            @click="dialog = false"
+            @click="closeDialog"
           >
             关闭
           </v-btn>
@@ -129,9 +203,11 @@
             发送
           </v-btn>
         </v-card-actions>
+
+        <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
+
       </v-card>
     </v-dialog>
-
 
   <!-- 载入中信息 -->
   <v-row 
@@ -148,7 +224,14 @@
 </template>
   
 <script>
+
 import debounce from 'lodash.debounce'
+import hljs from 'highlight.js'
+import 'highlight.js/styles/dracula.css'
+import {quillEditor, Quill} from 'vue-quill-editor'
+import {container, ImageExtend, QuillWatch} from 'quill-image-extend-module'
+
+Quill.register('modules/ImageExtend', ImageExtend)
 export default {
   data(){
     return {
@@ -165,16 +248,133 @@ export default {
       lineHeight: 0,
       // 发帖表单
       content: '',
+      editorOption: {
+        debug: 'warning',
+        placeholder: '说些什么 ...',
+        theme: 'snow',
+        modules: {
+          // history: {          //自动保存
+          //     delay: 1000,
+          //     maxStack: 100,
+          //     userOnly: false
+          // },
+          syntax: {          //代码高亮
+            highlight: text => hljs.highlightAuto(text).value
+          },
+          ImageExtend: {  // 如果不作设置，即{}  则依然开启复制粘贴功能且以base64插入 
+            name: 'img',  // 图片参数名
+            size: 10,  // 可选参数 图片大小，单位为M，1M = 1024kb
+            action: 'https://www.fduhole.tk/api/images/',  // 服务器地址, 如果action为空，则采用base64插入图片
+            // response 为一个函数用来获取服务器返回的具体图片地址
+            // 例如服务器返回{code: 200; data:{ url: 'baidu.com'}}
+            // 则 return res.data.url
+            response: (res) => {
+                return res.url
+            },
+            headers: (xhr) => {
+            xhr.setRequestHeader('Authorization',localStorage.getItem('token'))
+            },  // 可选参数 设置请求头部
+            sizeError: () => {},  // 图片超过大小的回调
+            start: () => {},  // 可选参数 自定义开始上传触发事件
+            end: () => {},  // 可选参数 自定义上传结束触发的事件，无论成功或者失败
+            error: (response) => {
+              console.log('fail')
+              console.log(response)
+            },  // 可选参数 上传失败触发的事件
+            success: (response) => {
+              console.log('success')
+              console.log(response)
+            },  // 可选参数  上传成功触发的事件
+            change: (xhr, formData) => {
+            // xhr.setRequestHeader('myHeader','myValue')
+            // formData.append('token', 'myToken')
+            } // 可选参数 每次选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
+        },   
+          toolbar: {
+            'container': [
+              ['bold', 'italic', 'strike',{'header': 1}],
+              ['blockquote', 'code-block', 'link', 'image'],
+            ],
+            'handlers': {
+              'image': function () {  // 劫持原来的图片点击按钮事件
+                QuillWatch.emit(this.quill.id)
+              }
+              // 'image': value => {
+              //   if(value){ this.$refs.upload.click()}
+              //   else{this.quill.format('image', false)}
+              // }
+            }
+          }
+        }
+      }, 
       tags: [],
+      selectedTags: [],
       dialog: false,
-      requiredRules: [v => !!v || '内容不能为空',],
+      tagRules: [
+        v => v.length > 0 || '标签不能为空',
+        v => v.length <= 5 || '标签不能多于5个',
+      ],
+      contentRules: [v => !!v.trim() || '内容不能为空'],
+      errorMsg: {},
       valid: true,
       // 底部加载
       loadingMsg: '加载中......',
     }
   },
   methods: {
-    toDiscussion(discussion_id, card_id){
+    onEditorBlur() {}, // 失去焦点触发事件
+    onEditorFocus() {   // 获得焦点触发事件
+      // let quill = this.$refs.editor.quill
+      // quill.insertEmbed(10, 'image', 'https://cdn.jsdelivr.net/gh/fduhole/web@img/background.jpeg')
+    },
+     
+    onEditorChange() {  // 内容改变触发事件
+      // let quill = this.$refs.editor.quill
+      // let delta = quill.getContents()
+      // console.log(delta)
+      // let insert = delta.ops.find(element => !!element.insert.image && element.insert.image.substring(0,4) === 'data')
+      // if(insert){
+      //   let base64 = insert.insert.image.split(',')[1]
+      // }
+    }, 
+
+    randomColor(){
+      const colorList = ['red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue', 'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'brown', 'blue-grey', 'grey']
+      let index = Math.floor((Math.random()*colorList.length))
+      return colorList[index]
+    },
+
+    openDialog(){
+      this.getTags()
+    },
+
+    closeDialog(){
+      this.dialog = false
+      // 重置表单验证
+      this.errorMsg = {}
+      this.valid = true
+      // 重置表单警告
+      this.formAlert = false
+      this.formAlertMessage = '网络错误'
+    },
+
+    // upload(){
+    //   let img = this.$refs.upload.files[0]
+    //   // 图片校验
+    //   if(img.size > 10 * 1024 * 1024){
+    //     this.formAlert = true
+    //     this.formAlertMessage = "图片大小不能超过 10M"
+    //   }
+    //   // 图片上传
+    //   let formData = new FormData()
+    //   formData.append('img', img)
+    //   axios.post('images/', formData).then(response => {
+    //     console.log(response.data)
+    //   })
+
+    // },
+
+    toDiscussion(discussion_id){
       setTimeout(() => {
          this.$router.push({
         path:`/discussion/${discussion_id}`,
@@ -183,27 +383,35 @@ export default {
     },
 
     addDiscussion(){
-      // this.refs.form.validate()
-      this.$axios
-        .post('discussions/', { content: this.content, tags: this.tags })
+      if(this.$refs.form.validate()){
+        // 先关闭对话框,优化用户体验
+        this.closeDialog()
+        // 发送请求
+        this.$axios
+        .post('discussions/', { content: this.content, tags: this.selectedTags })
         .then(response => {
           console.log(response.data)
           // 重新加载页面
           this.discussions = []
           this.page = 1
           this.getDiscussions()
-          // 关闭对话框并重置 tag 信息
-          this.dialog = false
+          // 重置表单内容
+          this.content = ''
           this.tags = []
-          // 重置 formAlert 信息
-          this.formAlert = false
-          this.formAlertMessage = ''
+          this.selectedTags = []
+          // 重置 alert 信息
+          this.alert = false
+          this.alertMessage = ''
+          
         })
         .catch((error) => {
           console.log(error.response)
-          this.formAlert = true
-          this.formAlertMessage = error.response.data['msg']
+          this.alert = true
+          this.alertMessage = '发送失败 ' + error.response.data['msg']
         })
+      }
+      
+      
     },
     
     getDiscussions(){
@@ -240,11 +448,13 @@ export default {
           this.formAlertMessage = error.response.data['msg']
         })
     },
+
     onIntersect (entries, observer) {
         if(entries[0].isIntersecting){
           this.getDiscussions()
         }
-      },
+    },
+
     calcuteLines(){
       for(let i=0; i<this.styleData.length; i++){
         let element = document.getElementById('p' + i)
@@ -252,8 +462,8 @@ export default {
         this.styleData[i]['lines'] = totalHeight / this.lineHeight
       }
     },
-
   },
+
   watch: {
     discussions: function() {
       setTimeout(() => {
@@ -261,10 +471,39 @@ export default {
         this.lineHeight = parseInt(window.getComputedStyle(element, null).getPropertyValue('line-height'))
         this.calcuteLines()
       }, 100)
-    }
+    },
+
+    selectedTags: function() {
+      for(let i=0; i<this.selectedTags.length; i++){
+        if(typeof(this.selectedTags[i]) !== 'object'){
+          let tagStr = this.selectedTags[i].trim()
+          // 校验新增的 tag
+          if(tagStr.length > 8){  
+            this.errorMsg['tags'] = '标签不能超过8个字符'
+            this.selectedTags.pop()
+            break
+          }else if(this.tags.find(tag => tag.name.toLowerCase() === tagStr.toLowerCase())){
+            this.errorMsg['tags'] = '标签不能重复'
+            this.selectedTags.pop()
+            break
+          }else if(tagStr.length === 0) {
+            this.errorMsg['tags'] = '标签不能为空'
+            this.selectedTags.pop()
+            break
+          }else{
+            this.errorMsg['tags'] = ''
+            this.selectedTags[i] = {
+            name: tagStr,
+            color: this.randomColor(),
+            count: 0,
+            }
+          }
+        }
+      }
+    },
+
   },
   mounted() {
-    
     window.onresize = () => {
       this.debouncedCalculateLines()
     } 
@@ -272,7 +511,7 @@ export default {
 
   created(){
     this.debouncedCalculateLines = debounce(this.calcuteLines, 300)
-    this.getTags()
+    // this.getTags()
   },
 
 }
@@ -301,4 +540,11 @@ export default {
     bottom: 64px;
   }
 
+  .tag-icon{
+    margin-left: 0.25rem;
+  }
+
+  .tag-count{
+    margin-left: -0.25rem;
+  }
 </style>

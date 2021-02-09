@@ -6,19 +6,26 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import vuetify from './plugins/vuetify'
 import debounce from 'lodash.debounce'
+import VueQuillEditor from 'vue-quill-editor'
+
+// require styles
+import 'quill/dist/quill.core.css'
+import 'quill/dist/quill.snow.css'
+import 'quill/dist/quill.bubble.css'
 
 Vue.config.productionTip = false
 
 axios.defaults.baseURL = 'https://www.fduhole.tk/api/'
-axios.defaults.withCredentials = true
+// axios.defaults.withCredentials = true
 axios.interceptors.request.use(config => {
   config.headers.Authorization = localStorage.getItem('token')
   return config
 })
-
 Vue.prototype.$axios = axios
+
 Vue.use(VueCookies)
 Vue.use(debounce)
+Vue.use(VueQuillEditor, /* { default global options } */)
 
 Vue.filter('truncate', function(text, length=100, suffix='......'){
   return text.length > length ? text.substring(0,length) + suffix : text
