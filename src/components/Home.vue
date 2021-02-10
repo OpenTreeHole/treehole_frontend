@@ -2,28 +2,19 @@
 <v-container fill-height>
 
   <!-- 警告信息 -->
-  <v-row justify="center">
-    <v-col>
-      <v-alert type="error" transition="fade-transition" :value="alert" >
-        {{alertMessage}}
-      </v-alert>
-    </v-col>
-  </v-row>
-  <v-row>
-    <v-col>
-
-    </v-col>
-  </v-row>
+  <v-snackbar top color="error" :value="alert">
+    {{alertMessage}}
+  </v-snackbar>
 
   <!-- 帖子列表 -->
 
-  <v-row v-for="(discussion, index) in discussions" :key="index" justify="center">
+  <v-row v-for="(discussion, index) in discussions" :key="index" justify="center" class="ma-0">
     <v-col cols="12" sm="10" md="8" lg="6" xl="4">
       <v-card>
 
       <!-- 标签栏 -->
-        <v-card-text class="pb-2 pt-2 font-weight-medium" >
-          <v-chip v-for="(tag, tindex) in discussion.tag" :key="tindex" :color="tag.color" outlined class="mx-2" small ripple>
+        <v-card-text class="pb-0 pt-2 font-weight-medium" >
+          <v-chip v-for="(tag, tindex) in discussion.tag" :key="tindex" :color="tag.color" outlined class="mx-1 my-1" small ripple>
             {{tag.name}}
           </v-chip>
         </v-card-text>
@@ -44,7 +35,7 @@
           <div v-if="styleData[index]['fold']">
             <v-btn text block depressed x-small
               color="grey lighten-1"
-              @click="styleData[index]['fold'] = false">
+              @click="unfold(index)">
               <v-icon>mdi-chevron-double-down</v-icon>
             </v-btn>
           </div>
@@ -52,7 +43,7 @@
           <div v-else>
             <v-btn text block depressed x-small
               color="grey lighten-1"
-              @click="styleData[index]['fold'] = true">
+              @click="fold(index)">
               <v-icon>mdi-chevron-double-up</v-icon>
             </v-btn>
           </div>
@@ -104,9 +95,6 @@
         </v-card-title>
 
         <v-card-text>
-
-          <!-- 警告信息 -->
-          <v-alert type="error" transition="fade-transition" :value="formAlert" >{{formAlertMessage}}</v-alert>
 
           <!-- 发帖表单 -->
           <v-form ref="form" v-model="valid" lazy-validation>
@@ -180,9 +168,7 @@
               v-model="content"
               ref="editor"
               :options="editorOption"
-              @blur="onEditorBlur($event)"
-              @focus="onEditorFocus($event)"
-              @change="onEditorChange($event)">
+            >
             </quill-editor>
 
           </v-form>
@@ -246,14 +232,13 @@ export default {
       // 提示信息
       alert: false,
       alertMessage: '网络错误',
-      formAlert: false,
-      formAlertMessage: '网络错误',
       // 帖子列表
       discussions: [],
       page: 1,
       // 展开折叠样式数据
       styleData: [],
       lineHeight: 0,
+      scrollTop: 0,
       // 发帖表单
       content: '',
       editorOption: {
@@ -352,13 +337,19 @@ export default {
     }
   },
   methods: {
-    onEditorBlur () {}, // 失去焦点触发事件
-    onEditorFocus () { // 获得焦点触发事件
-      // let quill = this.$refs.editor.quill
-      // quill.insertEmbed(10, 'image', 'https://cdn.jsdelivr.net/gh/fduhole/web@img/background.jpeg')
+    unfold(index){
+      this.scrollTop = document.documentElement.scrollTop
+      this.styleData[index]['fold'] = false
     },
 
-    onEditorChange () { // 内容改变触发事件
+    fold(index){
+      this.styleData[index]['fold'] = true
+      let scrollDistance = this.scrollTop - document.documentElement.scrollTop
+      window.scrollBy({
+        top: scrollDistance, //  正值向下
+        left: 0,
+        behavior: 'smooth'
+      })
     },
 
     randomColor () {
@@ -377,8 +368,8 @@ export default {
       this.errorMsg = {}
       this.valid = true
       // 重置表单警告
-      this.formAlert = false
-      this.formAlertMessage = '网络错误'
+      this.alert = false
+      this.alertMessage = '网络错误'
     },
 
     toDiscussion (discussion_id) {
@@ -442,12 +433,12 @@ export default {
         .then(response => {
           this.tags = response.data
           console.log(response.data)
-          this.formAlert = false
+          this.alert = false
         })
         .catch((response) => {
           console.log(response.data)
-          this.formAlert = true
-          this.formAlertMessage = error.response.data.msg
+          this.alert = true
+          this.alertMessage = error.response.data.msg
         })
     },
 
@@ -540,7 +531,6 @@ export default {
 </script>
 
 <style>
-
   .fold{
     overflow: hidden;
     max-height: 4.5rem;
@@ -573,6 +563,7 @@ export default {
   #rich-text p {
     margin-bottom: 0px;
   }
+
   img {
     display: block;
     margin: auto;

@@ -1,9 +1,59 @@
 <template>
 <v-container >
 
-  <v-row justify="center">
-    <v-col>
-      <v-alert type="error" transition="fade-transition" :value="alert" >{{alertMessage}}</v-alert>
+  <!-- 警告信息 -->
+  <v-snackbar top color="error" :value="alert">
+    {{alertMessage}}
+  </v-snackbar>
+
+  <v-card
+      v-if="this.$vuetify.breakpoint.mdAndUp && this.discussion"
+      class="mx-auto mb-6"
+      max-width="700px"
+      style="margin-top: -32px; z-index: 99;"
+    >
+
+    <v-card-text class="pb-2 pt-2 font-weight-medium" >
+      <v-chip v-for="(tag, tindex) in discussion.tag" :key="tindex" :color="tag.color" outlined class="ma-1" ripple>
+        {{tag.name}}
+      </v-chip>
+    </v-card-text>
+
+    <v-divider></v-divider>
+
+    <v-card-text class="pt-2 pb-2 text-center">
+      <span style="float:left">#{{ discussion.id }}</span>
+      <span style="float:inherit">{{ discussion.date_updated | timeDifference }}</span>
+      <span style="float:right">
+        {{ discussion.count }}
+        <v-icon small>mdi-message-processing-outline</v-icon>
+      </span>
+    </v-card-text>
+
+  </v-card>
+
+  <v-row justify="center" v-if="this.$vuetify.breakpoint.smAndDown && this.discussion">
+    <v-col cols="12" sm="10" md="8" lg="6" xl="4">
+      <v-card>
+        
+        <v-card-text class="pb-2 pt-2 font-weight-medium" >
+          <v-chip v-for="(tag, tindex) in discussion.tag" :key="tindex" :color="tag.color" outlined class="ma-1" ripple>
+            {{tag.name}}
+          </v-chip>
+        </v-card-text>
+
+        <v-divider></v-divider>
+
+        <v-card-text class="pt-2 pb-2 text-center">
+          <span style="float:left">#{{ discussion.id }}</span>
+          <span style="float:inherit">{{ discussion.date_updated | timeDifference }}</span>
+          <span style="float:right">
+            {{ discussion.count }}
+            <v-icon small>mdi-message-processing-outline</v-icon>
+          </span>
+        </v-card-text>
+
+      </v-card>
     </v-col>
   </v-row>
 
@@ -87,9 +137,6 @@
         </v-card-title>
 
         <v-card-text>
-
-          <!-- 警告信息 -->
-          <v-alert type="error" transition="fade-transition" :value="formAlert" >{{formAlertMessage}}</v-alert>
 
           <!-- 回复内容 -->
            <div v-if="replyIndex != null" class="reply text-body-2">
@@ -181,9 +228,8 @@ export default {
       // 提示信息
       alert: false,
       alertMessage: '网络错误',
-      formAlert: false,
-      formAlertMessage: '网络错误',
       // 帖子列表
+      discussion: null,
       posts: [],
       page: 1,
       // 回复信息（可选回复）
@@ -313,12 +359,41 @@ export default {
       this.dialog = true
     },
 
+    getDiscussion(pk){
+      this.$axios
+        .get('discussions/' + pk + '/')
+        .then(response => {
+          this.alert = false
+          this.discussion = response.data
+        })
+        .catch((error) => {
+          console.log(error.response)
+          this.alert = true
+          this.alertMessage = error.response.data.msg
+        })
+    },
+
     getPosts (page = this.page) {
       return this.$axios
         .get('posts/', { params: { id: this.$route.params.id, page: page } })
         .then(response => {
+          console.log(response.data)
           this.alert = false
           this.page++
+          this.posts.push.apply(this.posts, response.data)
+        })
+        .catch((error) => {
+          console.log(error.response)
+          this.alert = true
+          this.alertMessage = error.response.data.msg
+        })
+    },
+
+    getNewPosts(){
+      this.$axios
+        .get('posts/', { params: { id: this.$route.params.id, order: this.posts.length } })
+        .then(response => {
+          this.alert = false
           this.posts.push.apply(this.posts, response.data)
         })
         .catch((error) => {
@@ -337,22 +412,22 @@ export default {
             post_id: this.replyPk
           })
           .then(() => {
+            this.getNewPosts()
           // 重新加载页面
-            this.posts = []
-            this.page = 1
-            this.getPosts()
+            // this.page = 1
+            // this.posts = []
             // 关闭对话框并重置回复信息
             this.dialog = false
             this.replyIndex = null
             this.replyPk = null
-            // 重置 formAlert 信息
-            this.formAlert = false
-            this.formAlertMessage = ''
+            // 重置 alert 信息
+            this.alert = false
+            this.alertMessage = ''
           })
           .catch((error) => {
             console.log(error.response)
-            this.formAlert = true
-            this.formAlertMessage = error.response.data.msg
+            this.alert = true
+            this.alertMessage = error.response.data.msg
           })
       }
     },
@@ -391,7 +466,8 @@ export default {
   },
 
   created () {
-
+    this.getDiscussion(this.$route.params.id)
+    console.log(this.discussion)
   }
 
 }

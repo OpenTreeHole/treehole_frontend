@@ -45,6 +45,7 @@
 
 <script>
 export default {
+  name: 'Login',
   data () {
     return {
       alert: false,
@@ -66,12 +67,11 @@ export default {
     login () {
       const _this = this
       this.$refs.form.validate()
-      console.log(this.password)
       this.$axios
         .post('login/', { username: this.username, password: this.password })
         .then(response => {
-          console.log(response.data)
           localStorage.setItem('token', 'Token ' + response.data.token)
+          localStorage.setItem('username', this.username)
           this.$router.push('/home')
         })
         .catch(() => {
@@ -82,15 +82,8 @@ export default {
           this.alert = true
         })
     },
-    logout () {
-      localStorage.clear()
-      this.$router.push('/login')
-    }
-
+  
   }
-  // created(){
-  //   this.posts()
-  // }
 }
 </script>
 

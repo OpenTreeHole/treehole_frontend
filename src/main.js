@@ -34,8 +34,11 @@ Vue.filter('plain-text', function (html) {
 Vue.filter('timeDifference', function (datestr) {
   const date = new Date(datestr)
   const now = new Date()
-  const seconds = Math.floor((now - date) / 1000)
-
+  let seconds = Math.floor((now - date) / 1000)
+  
+  if(seconds < 0){
+    seconds = 0
+  }
   if (seconds < 60) {
     return seconds + '秒前'
   } else if (seconds < 3600) {
