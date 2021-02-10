@@ -7,7 +7,7 @@
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-alert type="error" :value="alert" >用户名或密码错误</v-alert>
           <div class="pl-7 pr-10">
-            <v-text-field 
+            <v-text-field
               v-model="username"
               label="用户名"
               prepend-icon="mdi-account"
@@ -15,7 +15,7 @@
               :counter="16"
               :rules="nameRules"
             />
-        
+
             <v-text-field
               v-model="password"
               label="密码"
@@ -37,7 +37,7 @@
         </v-form>
 
       </v-card>
-      
+
     </v-col>
   </v-row>
 </v-container>
@@ -53,13 +53,13 @@ export default {
       password: '',
       nameRules: [
         v => !!v || '用户名不能为空',
-        v => v.length <= 16 || '用户名不能超过16字符',
+        v => v.length <= 16 || '用户名不能超过16字符'
       ],
       passwordRules: [
         v => !!v || '密码不能为空',
         v => v.length <= 32 || '密码不能超过32字符',
-        v => v.length >= 8 || '密码不能少于8字符',
-      ],
+        v => v.length >= 8 || '密码不能少于8字符'
+      ]
     }
   },
   methods: {
@@ -78,16 +78,16 @@ export default {
           this.valid = false
           setTimeout(() => {
             _this.alert = false
-          }, 3000 )
+          }, 3000)
           this.alert = true
         })
     },
     logout () {
       localStorage.clear()
       this.$router.push('/login')
-    },
+    }
 
-  },
+  }
   // created(){
   //   this.posts()
   // }

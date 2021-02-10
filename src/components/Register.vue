@@ -3,12 +3,12 @@
  <v-row align="center" justify="center">
     <v-col cols="10" sm="8" md="6" lg="4" xl="3" class="text-center" >
       <v-card class="py-8" elevation="4">
-        
+
         <h1 @click="alert = true">注册</h1>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-alert class="my-4" transition="slide-y-transition" :type="alertType" :value="isAlert" >{{alertMsg}}</v-alert>
           <div class="pl-7 pr-10">
-            <v-text-field 
+            <v-text-field
               v-model="username"
               label="用户名"
               prepend-icon="mdi-account"
@@ -18,7 +18,7 @@
               :rules="nameRules"
             />
 
-            <v-text-field 
+            <v-text-field
               v-model="email"
               label="edu邮箱"
               prepend-icon="mdi-email-outline"
@@ -54,7 +54,7 @@
             <v-btn class="my-4" color="success" block :disabled="!valid" @click="sendEmail">注册</v-btn>
           </div>
         </v-form>
-      </v-card> 
+      </v-card>
     </v-col>
   </v-row>
 </v-container>
@@ -69,37 +69,37 @@ export default {
       password: '',
       password2: '',
       email: '',
-      valid: true, 
+      valid: true,
       isAlert: false,
-      alertMsg : '',
+      alertMsg: '',
       alertType: 'info',
-      errorMsg: {  
-        'username': '',
-        'email'   : '',
-        'password': '',
+      errorMsg: {
+        username: '',
+        email: '',
+        password: ''
       },
       nameRules: [
         v => !!v || '用户名不能为空',
-        v => v.length <= 16 || '用户名不能超过16字符',
+        v => v.length <= 16 || '用户名不能超过16字符'
       ],
       emailRules: [
-        v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || "@fudan.edu.cn",
+        v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || '@fudan.edu.cn'
       ],
       passwordRules: [
         v => !!v || '密码不能为空',
         v => v.length <= 32 || '密码不能超过32字符',
-        v => v.length >= 8 || '密码不能少于8字符',
-      ],
+        v => v.length >= 8 || '密码不能少于8字符'
+      ]
     }
   },
   methods: {
     checkUsername () {
-        this.$axios.get('register/', { params: { username: this.username } })
+      this.$axios.get('register/', { params: { username: this.username } })
         .then(response => {
           if (response.data.data !== 0) {
-            this.errorMsg['username'] = response.data.msg
+            this.errorMsg.username = response.data.msg
           } else {
-            this.errorMsg['username'] = ''
+            this.errorMsg.username = ''
           }
         })
     },
@@ -108,17 +108,17 @@ export default {
         .get('register/', { params: { email: this.email } })
         .then(response => {
           if (response.data.data !== 0) {
-            this.errorMsg['email'] = response.data.msg
-          } else {this.errorMsg['email'] = ''}
+            this.errorMsg.email = response.data.msg
+          } else { this.errorMsg.email = '' }
         })
     },
     checkPassword () {
-        if (this.password !== this.password2) { 
-          this.errorMsg['password'] = '两次输入不一致'
-        } else {this.errorMsg['password'] = ''}
+      if (this.password !== this.password2) {
+        this.errorMsg.password = '两次输入不一致'
+      } else { this.errorMsg.password = '' }
     },
     sendEmail () {
-      if (this.$refs.form.validate()){
+      if (this.$refs.form.validate()) {
         this.alertType = 'info'
         this.alertMsg = '验证邮件已发送，请点击邮件中的链接以继续'
         this.isAlert = true
@@ -135,18 +135,18 @@ export default {
               this.isAlert = true
               setTimeout(this.$router.push('/login'), 3000)
             }
-        })
+          })
       }
-    },
+    }
   },
   watch: {
-    username: function () {this.debouncedCheckUsername()},
-    email   : function () {this.debouncedCheckEmail()},
-    password2: function () {this.debouncedCheckPassword()}
+    username: function () { this.debouncedCheckUsername() },
+    email: function () { this.debouncedCheckEmail() },
+    password2: function () { this.debouncedCheckPassword() }
   },
-  created: function() {
+  created: function () {
     this.debouncedCheckUsername = debounce(this.checkUsername, 500)
-    this.debouncedCheckEmail    = debounce(this.checkEmail, 3000)
+    this.debouncedCheckEmail = debounce(this.checkEmail, 3000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }
 }

@@ -1,6 +1,6 @@
 <template>
 <v-container fill-height>
-  
+
   <!-- 警告信息 -->
   <v-row justify="center">
     <v-col>
@@ -11,36 +11,38 @@
   </v-row>
   <v-row>
     <v-col>
-      
+
     </v-col>
   </v-row>
- 
-  <!-- 帖子列表 -->   
+
+  <!-- 帖子列表 -->
 
   <v-row v-for="(discussion, index) in discussions" :key="index" justify="center">
     <v-col cols="12" sm="10" md="8" lg="6" xl="4">
       <v-card>
-        
+
       <!-- 标签栏 -->
-        <v-card-text class="pb-1 pt-2 font-weight-medium" >
+        <v-card-text class="pb-2 pt-2 font-weight-medium" >
           <v-chip v-for="(tag, tindex) in discussion.tag" :key="tindex" :color="tag.color" outlined class="mx-2" small ripple>
             {{tag.name}}
-          </v-chip> 
+          </v-chip>
         </v-card-text>
 
       <!-- 内容主体 -->
-        <v-card-text @click="toDiscussion(discussion.id, index)" class="py-0 text-body-1 clickable" v-ripple>
-          <p :class="{fold: styleData[index]['fold'], unfold: !styleData[index]['fold']}" :id="'p' + index" class="ma-0" >
-            {{discussion['first_post']['content']}}
-          </p>
+        <v-card-text @click="toDiscussion(discussion.id, index)" class="py-2 text-body-1 clickable" v-ripple>
+          <div v-if="styleData[index]['fold']" :id="'p' + index" class="fold" >
+            {{ discussion.first_post.content | plain-text }}
+          </div>
+          <div v-else :id="'p' + index" class="unfold">
+            <div id="rich-text" v-html="discussion.first_post.content"></div>
+          </div>
         </v-card-text>
 
-        
       <!-- 展开折叠按钮 -->
         <div v-if="styleData[index]['lines'] > 3">
 
           <div v-if="styleData[index]['fold']">
-            <v-btn text block depressed x-small 
+            <v-btn text block depressed x-small
               color="grey lighten-1"
               @click="styleData[index]['fold'] = false">
               <v-icon>mdi-chevron-double-down</v-icon>
@@ -48,7 +50,7 @@
           </div>
 
           <div v-else>
-            <v-btn text block depressed x-small 
+            <v-btn text block depressed x-small
               color="grey lighten-1"
               @click="styleData[index]['fold'] = true">
               <v-icon>mdi-chevron-double-up</v-icon>
@@ -59,7 +61,7 @@
         <div v-else>
           <div style="height: 0.5rem;"></div>
         </div>
-          
+
       <!-- 脚标 -->
         <v-card-text class="pt-0 pb-0 text-center caption">
           <span style="float:left">#{{ discussion['id'] }}</span>
@@ -71,7 +73,7 @@
         </v-card-text>
 
       </v-card>
-    </v-col>      
+    </v-col>
   </v-row>
 
   <!-- 弹出式表单及浮动按钮 -->
@@ -137,7 +139,7 @@
                   :color="data.item.color"
                   small
                 >
-                  {{ data.item.name }} 
+                  {{ data.item.name }}
                   <span class="tag-icon">
                     <v-icon x-small>mdi-fire</v-icon>
                   </span>
@@ -162,26 +164,29 @@
 
             </v-combobox>
 
+            <div class="text-center">   <!-- 上传进度显示 -->
+              <v-overlay :value="overlay">
+                <div class="text-h5 py-4 amber--text">{{overlayMsg}}</div>  
+                <v-progress-circular
+                  indeterminate
+                  color="primary"
+                  size="64"
+                ></v-progress-circular>
+              </v-overlay>
+            </div>
+
             <!-- 内容部分 -->
-            <quill-editor 
-              v-model="content" 
-              ref="editor" 
-              :options="editorOption" 
-              @blur="onEditorBlur($event)" 
+            <quill-editor
+              v-model="content"
+              ref="editor"
+              :options="editorOption"
+              @blur="onEditorBlur($event)"
               @focus="onEditorFocus($event)"
               @change="onEditorChange($event)">
             </quill-editor>
 
-            <!-- <input type="file" accept="image/*" ref="upload" style="display: none" @change="upload"> -->
-            <!-- <v-textarea
-              v-model="content"
-              :rules="contentRules"
-              label="说些什么......"
-              required
-              auto-grow
-            ></v-textarea> -->
           </v-form>
-         
+
         </v-card-text>
 
       <!-- 关闭对话框 -->
@@ -204,36 +209,39 @@
           </v-btn>
         </v-card-actions>
 
-        <!-- <script src="https://cdn.quilljs.com/1.3.6/quill.js"></script> -->
-
       </v-card>
     </v-dialog>
 
   <!-- 载入中信息 -->
-  <v-row 
+  <v-row
     v-intersect="{
       handler: onIntersect,
       options: { threshold: 0 }}"
   >
     <v-col class="text-center">
-      {{loadingMsg}}
+      <div v-if="isLoading"> 加载中...... </div>
+      <div v-else> 没有然后了......</div>
     </v-col>
   </v-row>
 
 </v-container>
 </template>
-  
+
 <script>
 
 import debounce from 'lodash.debounce'
 import hljs from 'highlight.js'
 import 'highlight.js/styles/dracula.css'
-import {quillEditor, Quill} from 'vue-quill-editor'
-import {container, ImageExtend, QuillWatch} from 'quill-image-extend-module'
 
+import { quillEditor, Quill } from 'vue-quill-editor'
+import { container, ImageExtend, QuillWatch } from 'quill-image-super-solution-module'
+// import ImageResize from 'quill-image-resize-module'
+
+// Quill.register('modules/ImageResize', ImageResize)
 Quill.register('modules/ImageExtend', ImageExtend)
+
 export default {
-  data(){
+  data () {
     return {
       // 提示信息
       alert: false,
@@ -244,12 +252,12 @@ export default {
       discussions: [],
       page: 1,
       // 展开折叠样式数据
-      styleData: [], 
+      styleData: [],
       lineHeight: 0,
       // 发帖表单
       content: '',
       editorOption: {
-        debug: 'warning',
+        debug: 'info',
         placeholder: '说些什么 ...',
         theme: 'snow',
         modules: {
@@ -258,97 +266,112 @@ export default {
           //     maxStack: 100,
           //     userOnly: false
           // },
-          syntax: {          //代码高亮
+          syntax: { // 代码高亮
             highlight: text => hljs.highlightAuto(text).value
           },
-          ImageExtend: {  // 如果不作设置，即{}  则依然开启复制粘贴功能且以base64插入 
-            name: 'img',  // 图片参数名
-            size: 10,  // 可选参数 图片大小，单位为M，1M = 1024kb
-            action: 'https://www.fduhole.tk/api/images/',  // 服务器地址, 如果action为空，则采用base64插入图片
+          // ImageResize: {},
+          ImageExtend: {
+            // 可选参数 是否显示上传进度和提示语
+            loading: true,
+            // 图片参数名
+            name: 'img',
+            // 可选参数 图片大小，单位为M，1M = 1024kb
+            size: 10,
+            // 服务器地址, 如果action为空，则采用base64插入图片
+            action: 'https://www.fduhole.tk/api/images/',
+            // 可选 可上传的图片格式
+            accept: 'image/jpg, image/png, image/gif, image/jpeg, image/bmp, image/x-icon, image/svg+xml, image/webp',
             // response 为一个函数用来获取服务器返回的具体图片地址
-            // 例如服务器返回{code: 200; data:{ url: 'baidu.com'}}
+            // 例如服务器返回 {code: 200; data:{ url: 'baidu.com'}}
             // 则 return res.data.url
             response: (res) => {
-                return res.url
+              return res.url
             },
+            // 可选参数 设置请求头部
             headers: (xhr) => {
-            xhr.setRequestHeader('Authorization',localStorage.getItem('token'))
-            },  // 可选参数 设置请求头部
-            sizeError: () => {},  // 图片超过大小的回调
-            start: () => {},  // 可选参数 自定义开始上传触发事件
-            end: () => {},  // 可选参数 自定义上传结束触发的事件，无论成功或者失败
-            error: (response) => {
+              xhr.setRequestHeader('Authorization', localStorage.getItem('token'))
+            },
+            // 图片超过大小的回调
+            sizeError: () => {
+              alert('图片大小超过 10 M')
+            },
+            // 可选参数 自定义开始上传触发事件
+            start: () => {
+              this.overlayMsg = '上传中...'
+              this.overlay = true
+            },
+            // 可选参数 自定义上传结束触发的事件，无论成功或者失败
+            end: () => {},
+            // 可选参数 上传失败触发的事件
+           error: () => {
+              this.overlayMsg = '上传失败'
+              setTimeout(() => {
+                this.overlay = false
+              }, 250)
               console.log('fail')
-              console.log(response)
-            },  // 可选参数 上传失败触发的事件
-            success: (response) => {
+            },
+            success: () => {
+              this.overlayMsg = '上传成功'
+              setTimeout(() => {
+                this.overlay = false
+              }, 250)
               console.log('success')
-              console.log(response)
-            },  // 可选参数  上传成功触发的事件
-            change: (xhr, formData) => {
-            // xhr.setRequestHeader('myHeader','myValue')
-            // formData.append('token', 'myToken')
-            } // 可选参数 每次选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
-        },   
+            }
+            // 可选参数 选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
+            // change: (xhr, formData) => {
+            //     formData.append("example", "test");
+            // },
+          },
           toolbar: {
-            'container': [
-              ['bold', 'italic', 'strike',{'header': 1}],
-              ['blockquote', 'code-block', 'link', 'image'],
+            container: [
+              ['bold', 'italic', 'strike', { header: 1 }],
+              ['blockquote', 'code-block', 'link', 'image']
             ],
-            'handlers': {
-              'image': function () {  // 劫持原来的图片点击按钮事件
+            handlers: {
+              image: function () { // 劫持原来的图片点击按钮事件
                 QuillWatch.emit(this.quill.id)
               }
-              // 'image': value => {
-              //   if(value){ this.$refs.upload.click()}
-              //   else{this.quill.format('image', false)}
-              // }
             }
           }
         }
-      }, 
+      },
+      overlay: false,
+      overlayMsg: '上传中...',
       tags: [],
       selectedTags: [],
       dialog: false,
       tagRules: [
         v => v.length > 0 || '标签不能为空',
-        v => v.length <= 5 || '标签不能多于5个',
+        v => v.length <= 5 || '标签不能多于5个'
       ],
       contentRules: [v => !!v.trim() || '内容不能为空'],
       errorMsg: {},
       valid: true,
       // 底部加载
-      loadingMsg: '加载中......',
+      isLoading: true
     }
   },
   methods: {
-    onEditorBlur() {}, // 失去焦点触发事件
-    onEditorFocus() {   // 获得焦点触发事件
+    onEditorBlur () {}, // 失去焦点触发事件
+    onEditorFocus () { // 获得焦点触发事件
       // let quill = this.$refs.editor.quill
       // quill.insertEmbed(10, 'image', 'https://cdn.jsdelivr.net/gh/fduhole/web@img/background.jpeg')
     },
-     
-    onEditorChange() {  // 内容改变触发事件
-      // let quill = this.$refs.editor.quill
-      // let delta = quill.getContents()
-      // console.log(delta)
-      // let insert = delta.ops.find(element => !!element.insert.image && element.insert.image.substring(0,4) === 'data')
-      // if(insert){
-      //   let base64 = insert.insert.image.split(',')[1]
-      // }
-    }, 
 
-    randomColor(){
+    onEditorChange () { // 内容改变触发事件
+    },
+
+    randomColor () {
       const colorList = ['red', 'pink', 'purple', 'deep-purple', 'indigo', 'blue', 'light-blue', 'cyan', 'teal', 'green', 'light-green', 'lime', 'yellow', 'amber', 'orange', 'deep-orange', 'brown', 'blue-grey', 'grey']
-      let index = Math.floor((Math.random()*colorList.length))
+      const index = Math.floor((Math.random() * colorList.length))
       return colorList[index]
     },
 
-    openDialog(){
+    openDialog () {
       this.getTags()
     },
 
-    closeDialog(){
+    closeDialog () {
       this.dialog = false
       // 重置表单验证
       this.errorMsg = {}
@@ -358,166 +381,165 @@ export default {
       this.formAlertMessage = '网络错误'
     },
 
-    // upload(){
-    //   let img = this.$refs.upload.files[0]
-    //   // 图片校验
-    //   if(img.size > 10 * 1024 * 1024){
-    //     this.formAlert = true
-    //     this.formAlertMessage = "图片大小不能超过 10M"
-    //   }
-    //   // 图片上传
-    //   let formData = new FormData()
-    //   formData.append('img', img)
-    //   axios.post('images/', formData).then(response => {
-    //     console.log(response.data)
-    //   })
-
-    // },
-
-    toDiscussion(discussion_id){
+    toDiscussion (discussion_id) {
       setTimeout(() => {
-         this.$router.push({
-        path:`/discussion/${discussion_id}`,
-      })
+        this.$router.push({
+          path: `/discussion/${discussion_id}`
+        })
       }, 50)
     },
 
-    addDiscussion(){
-      if(this.$refs.form.validate()){
+    addDiscussion () {
+      if (this.$refs.form.validate()) {
         // 先关闭对话框,优化用户体验
         this.closeDialog()
         // 发送请求
         this.$axios
-        .post('discussions/', { content: this.content, tags: this.selectedTags })
-        .then(response => {
-          console.log(response.data)
-          // 重新加载页面
-          this.discussions = []
-          this.page = 1
-          this.getDiscussions()
-          // 重置表单内容
-          this.content = ''
-          this.tags = []
-          this.selectedTags = []
-          // 重置 alert 信息
-          this.alert = false
-          this.alertMessage = ''
-          
-        })
-        .catch((error) => {
-          console.log(error.response)
-          this.alert = true
-          this.alertMessage = '发送失败 ' + error.response.data['msg']
-        })
+          .post('discussions/', { content: this.content, tags: this.selectedTags })
+          .then(response => {
+            console.log(response.data)
+            // 重新加载页面
+            this.discussions = []
+            this.page = 1
+            this.getDiscussions()
+            // 重置表单内容
+            this.content = ''
+            this.tags = []
+            this.selectedTags = []
+            // 重置 alert 信息
+            this.alert = false
+            this.alertMessage = ''
+          })
+          .catch((error) => {
+            console.log(error.response)
+            this.alert = true
+            this.alertMessage = '发送失败 ' + error.response.data.msg
+          })
       }
-      
-      
     },
-    
-    getDiscussions(){
-      this.$axios
+
+    getDiscussions () {
+      return this.$axios
         .get('discussions/', { params: { page: this.page } })
         .then(response => {
           this.alert = false
-          if(response.data.length === 0){this.loadingMsg = '没有然后了......'}
-          else{
-            this.page++
-            for (let i=0; i<response.data.length; i++){
-              this.styleData.push({'fold': true, 'lines': 3})
-            }
-            this.discussions.push.apply(this.discussions, response.data)
-            console.log(response.data)
+          this.page++
+          for (let i = 0; i < response.data.length; i++) {
+            this.styleData.push({ fold: true, lines: 3 })
           }
+          this.discussions.push.apply(this.discussions, response.data)
+          console.log(response.data)
         })
         .catch(() => {
           this.alert = true
+          this.alertMessage = error.response.data.msg
         })
     },
 
-    getTags(){ // 获取 所有的 tags
+    getTags () { // 获取 所有的 tags
       this.$axios
         .get('tags/')
         .then(response => {
-            this.tags = response.data
-            console.log(response.data)
-            this.formAlert = false
-          })
+          this.tags = response.data
+          console.log(response.data)
+          this.formAlert = false
+        })
         .catch((response) => {
           console.log(response.data)
           this.formAlert = true
-          this.formAlertMessage = error.response.data['msg']
+          this.formAlertMessage = error.response.data.msg
         })
     },
 
-    onIntersect (entries, observer) {
-        if(entries[0].isIntersecting){
-          this.getDiscussions()
-        }
-    },
-
-    calcuteLines(){
-      for(let i=0; i<this.styleData.length; i++){
-        let element = document.getElementById('p' + i)
-        let totalHeight = element.scrollHeight
-        this.styleData[i]['lines'] = totalHeight / this.lineHeight
+    calcuteLines () {
+      for (let i = 0; i < this.styleData.length; i++) {
+        const element = document.getElementById('p' + i)
+        const totalHeight = element.scrollHeight
+        this.styleData[i].lines = totalHeight / this.lineHeight
       }
     },
+
+    async load () {
+      if (this.discussions.length % 10 !== 0) {
+        this.isLoading = false
+        return
+      }
+      const beforeLength = this.discussions.length
+      await this.getDiscussions()
+      const afterLength = this.discussions.length
+      if (afterLength < 10) {
+        this.isLoading = false
+        return
+      }
+      if (beforeLength === afterLength) {
+        this.isLoading = false
+        return
+      }
+      this.isLoading = true
+    },
+
+    onIntersect (entries, observer) {
+      if (entries[0].isIntersecting) {
+        this.load()
+      }
+    }
+
   },
 
   watch: {
-    discussions: function() {
+    discussions: function () {
       setTimeout(() => {
-        let element = document.getElementById('p1')
+        const element = document.getElementById('p1')
         this.lineHeight = parseInt(window.getComputedStyle(element, null).getPropertyValue('line-height'))
         this.calcuteLines()
       }, 100)
     },
 
-    selectedTags: function() {
-      for(let i=0; i<this.selectedTags.length; i++){
-        if(typeof(this.selectedTags[i]) !== 'object'){
-          let tagStr = this.selectedTags[i].trim()
+    selectedTags: function () {
+      for (let i = 0; i < this.selectedTags.length; i++) {
+        if (typeof (this.selectedTags[i]) !== 'object') {
+          const tagStr = this.selectedTags[i].trim()
           // 校验新增的 tag
-          if(tagStr.length > 8){  
-            this.errorMsg['tags'] = '标签不能超过8个字符'
+          if (tagStr.length > 8) {
+            this.errorMsg.tags = '标签不能超过8个字符'
             this.selectedTags.pop()
             break
-          }else if(this.tags.find(tag => tag.name.toLowerCase() === tagStr.toLowerCase())){
-            this.errorMsg['tags'] = '标签不能重复'
+          } else if (this.tags.find(tag => tag.name.toLowerCase() === tagStr.toLowerCase())) {
+            this.errorMsg.tags = '标签不能重复'
             this.selectedTags.pop()
             break
-          }else if(tagStr.length === 0) {
-            this.errorMsg['tags'] = '标签不能为空'
+          } else if (tagStr.length === 0) {
+            this.errorMsg.tags = '标签不能为空'
             this.selectedTags.pop()
             break
-          }else{
-            this.errorMsg['tags'] = ''
+          } else {
+            this.errorMsg.tags = ''
             this.selectedTags[i] = {
-            name: tagStr,
-            color: this.randomColor(),
-            count: 0,
+              name: tagStr,
+              color: this.randomColor(),
+              count: 0
             }
           }
         }
       }
-    },
+    }
 
   },
-  mounted() {
+  mounted () {
     window.onresize = () => {
       this.debouncedCalculateLines()
-    } 
+    }
   },
 
-  created(){
+  created () {
     this.debouncedCalculateLines = debounce(this.calcuteLines, 300)
     // this.getTags()
-  },
+  }
 
 }
 </script>
 
-<style scoped>
+<style>
 
   .fold{
     overflow: hidden;
@@ -546,5 +568,14 @@ export default {
 
   .tag-count{
     margin-left: -0.25rem;
+  }
+
+  #rich-text p {
+    margin-bottom: 0px;
+  }
+  img {
+    display: block;
+    margin: auto;
+    max-width: 90%;
   }
 </style>

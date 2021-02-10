@@ -25,29 +25,29 @@ Vue.prototype.$axios = axios
 
 Vue.use(VueCookies)
 Vue.use(debounce)
-Vue.use(VueQuillEditor, /* { default global options } */)
+Vue.use(VueQuillEditor /* { default global options } */)
 
-Vue.filter('truncate', function(text, length=100, suffix='......'){
-  return text.length > length ? text.substring(0,length) + suffix : text
+Vue.filter('plain-text', function (html) {
+  return html.replace(/<img.*?>/g, '[图片]').replace(/<.*?>/g, ' ')
 })
 
-Vue.filter('timeDifference', function(datestr){
+Vue.filter('timeDifference', function (datestr) {
   const date = new Date(datestr)
   const now = new Date()
   const seconds = Math.floor((now - date) / 1000)
 
-  if(seconds < 60){
+  if (seconds < 60) {
     return seconds + '秒前'
-  }else if(seconds < 3600){
+  } else if (seconds < 3600) {
     return Math.floor(seconds / 60) + '分钟前'
-  }else if(seconds < 86400){
+  } else if (seconds < 86400) {
     return Math.floor(seconds / 3600) + '小时前'
-  }else if(seconds < 604800){
+  } else if (seconds < 604800) {
     return Math.floor(seconds / 86400) + '天前'
-  }else if(date.getFullYear() === now.getFullYear()){
-    return datestr.substring(5,10)
-  }else{
-    return datestr.substring(0,10)
+  } else if (date.getFullYear() === now.getFullYear()) {
+    return datestr.substring(5, 10)
+  } else {
+    return datestr.substring(0, 10)
   }
 })
 
