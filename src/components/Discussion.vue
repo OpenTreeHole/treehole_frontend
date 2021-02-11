@@ -335,7 +335,6 @@ export default {
 
   created () {
     this.getDiscussion(this.$route.params.id)
-    console.log(this.discussion)
   }
 
 }

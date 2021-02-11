@@ -31,17 +31,18 @@ export default {
   name: 'Navbar',
   data(){
     return {
+      username: ''
     }
   },
   computed: {
-    username(){
-      let username = localStorage.getItem('username')
-      if(username){
-        return username
-      }else{
-        return ''
-      }
-    }
+    // username(){
+    //   let username = localStorage.getItem('username')
+    //   if(username){
+    //     return username
+    //   }else{
+    //     return ''
+    //   }
+    // }
   },
   methods: {
     logout(){
@@ -51,6 +52,12 @@ export default {
   },
 
   watch: {
+    $route(){
+      this.username = localStorage.getItem('username')
+    }
+  },
+  created(){
+    this.username = localStorage.getItem('username')
   }
 }
 </script>
