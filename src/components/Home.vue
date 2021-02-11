@@ -2,9 +2,7 @@
 <v-container fill-height>
 
   <!-- 警告信息 -->
-  <v-snackbar top color="error" :value="alert">
-    {{alertMessage}}
-  </v-snackbar>
+  <message ref="message"></message>
 
   <!-- 帖子列表 -->
 
@@ -194,17 +192,16 @@ import debounce from 'lodash.debounce'
 
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
+import Message from '@/components/Message.vue'
 
 export default {
   components: {
     Loading,
-    Editor
+    Editor,
+    Message,
   },
   data () {
     return {
-      // 提示信息
-      alert: false,
-      alertMessage: '网络错误',
       // 帖子列表
       discussions: [],
       page: 1,
@@ -262,9 +259,6 @@ export default {
       // 重置表单验证
       this.errorMsg = {}
       this.valid = true
-      // 重置表单警告
-      this.alert = false
-      this.alertMessage = '网络错误'
     },
 
     toDiscussion (discussion_id) {
@@ -292,14 +286,10 @@ export default {
             this.content = ''
             this.tags = []
             this.selectedTags = []
-            // 重置 alert 信息
-            this.alert = false
-            this.alertMessage = ''
           })
           .catch((error) => {
             console.log(error.response)
-            this.alert = true
-            this.alertMessage = '发送失败 ' + error.response.data.msg
+            this.$refs.message.error(error.response.data.msg)
           })
       }
     },
@@ -308,17 +298,14 @@ export default {
       return this.$axios
         .get('discussions/', { params: { page: this.page } })
         .then(response => {
-          this.alert = false
           this.page++
           for (let i = 0; i < response.data.length; i++) {
             this.styleData.push({ fold: true, lines: 3 })
           }
           this.discussions.push.apply(this.discussions, response.data)
-          console.log(response.data)
         })
-        .catch(() => {
-          this.alert = true
-          this.alertMessage = error.response.data.msg
+        .catch((error) => {
+          this.$refs.message.error(error.response.data.msg)
         })
     },
 
@@ -327,13 +314,10 @@ export default {
         .get('tags/')
         .then(response => {
           this.tags = response.data
-          console.log(response.data)
-          this.alert = false
         })
         .catch((response) => {
           console.log(response.data)
-          this.alert = true
-          this.alertMessage = error.response.data.msg
+          this.$refs.message.error(error.response.data.msg)
         })
     },
 

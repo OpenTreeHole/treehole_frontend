@@ -1,11 +1,14 @@
 <template>
 <v-container fill-height>
+  
+  <!-- 警告信息 -->
+  <message ref="message"></message>
+
   <v-row align="center" justify="center">
     <v-col cols="10" sm="8" md="6" lg="4" class="text-center" >
       <v-card class="py-8 " elevation="4">
         <h1 >登录</h1>
         <v-form ref="form" v-model="valid" lazy-validation>
-          <v-alert type="error" :value="alert" >用户名或密码错误</v-alert>
           <div class="pl-7 pr-10">
             <v-text-field
               v-model="username"
@@ -44,7 +47,11 @@
 </template>
 
 <script>
+
+import Message from '@/components/Message.vue'
+
 export default {
+  components: {Message},
   name: 'Login',
   data () {
     return {
@@ -74,12 +81,9 @@ export default {
           localStorage.setItem('username', this.username)
           this.$router.push('/home')
         })
-        .catch(() => {
+        .catch((error) => {
           this.valid = false
-          setTimeout(() => {
-            _this.alert = false
-          }, 3000)
-          this.alert = true
+          this.$refs.message.error('用户名或密码错误')
         })
     },
   

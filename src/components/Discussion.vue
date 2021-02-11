@@ -2,9 +2,7 @@
 <v-container >
 
   <!-- 警告信息 -->
-  <v-snackbar top color="error" :value="alert">
-    {{alertMessage}}
-  </v-snackbar>
+  <message ref="message"></message>
 
   <v-card
       v-if="this.$vuetify.breakpoint.mdAndUp && this.discussion"
@@ -190,17 +188,16 @@
 <script>
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
+import Message from '@/components/Message.vue'
 
 export default {
   components: {
     Loading,
     Editor,
+    Message,
   },
   data () {
     return {
-      // 提示信息
-      alert: false,
-      alertMessage: '网络错误',
       // 帖子列表
       discussion: null,
       posts: [],
@@ -257,13 +254,10 @@ export default {
       this.$axios
         .get('discussions/' + pk + '/')
         .then(response => {
-          this.alert = false
           this.discussion = response.data
         })
         .catch((error) => {
-          console.log(error.response)
-          this.alert = true
-          this.alertMessage = error.response.data.msg
+          this.$refs.message.error(error.response.data.msg)
         })
     },
 
@@ -271,14 +265,11 @@ export default {
       return this.$axios
         .get('posts/', { params: { id: this.$route.params.id, page: page } })
         .then(response => {
-          this.alert = false
           this.page++
           this.posts.push.apply(this.posts, response.data)
         })
         .catch((error) => {
-          console.log(error.response)
-          this.alert = true
-          this.alertMessage = error.response.data.msg
+          this.$refs.message.error(error.response.data.msg)
         })
     },
 
@@ -286,13 +277,10 @@ export default {
       this.$axios
         .get('posts/', { params: { id: this.$route.params.id, order: this.posts.length } })
         .then(response => {
-          this.alert = false
           this.posts.push.apply(this.posts, response.data)
         })
         .catch((error) => {
-          console.log(error.response)
-          this.alert = true
-          this.alertMessage = error.response.data.msg
+          this.$refs.message.error(error.response.data.msg)
         })
     },
 
@@ -313,14 +301,10 @@ export default {
             // 重置回复信息
             this.replyIndex = null
             this.replyPk = null
-            // 重置 alert 信息
-            this.alert = false
-            this.alertMessage = ''
           })
           .catch((error) => {
             console.log(error.response)
-            this.alert = true
-            this.alertMessage = error.response.data.msg
+            this.$refs.message.error(error.response.data.msg)
           })
       }
     },

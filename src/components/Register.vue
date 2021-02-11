@@ -1,10 +1,11 @@
 <template>
 <v-container  fill-height>
+  <message ref="message"></message>
  <v-row align="center" justify="center">
-    <v-col cols="10" sm="8" md="6" lg="4" xl="3" class="text-center" >
+    <v-col cols="10" sm="8" md="6" lg="4" class="text-center" >
       <v-card class="py-8" elevation="4">
 
-        <h1 @click="alert = true">注册</h1>
+        <h1>欢迎注册 FDUHOLE</h1>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-alert class="my-4" transition="slide-y-transition" :type="alertType" :value="isAlert" >{{alertMsg}}</v-alert>
           <div class="pl-7 pr-10">
@@ -15,18 +16,34 @@
               :error-messages="errorMsg['username']"
               :clearable="!valid"
               :counter="16"
-              :rules="nameRules"
             />
 
             <v-text-field
               v-model="email"
               label="edu邮箱"
-              prepend-icon="mdi-email-outline"
+              prepend-icon="mdi-email"
               :error-messages="errorMsg['email']"
               :clearable="!valid"
               :counter="32"
-              :rules="emailRules"
             />
+            <v-row align="center" style="margin-bottom: -12px">
+              <v-col cols=8>
+                <v-text-field
+                v-model="code"
+                label="邮件验证码"
+                prepend-icon="mdi-email-check"
+                :error-messages="errorMsg['code']"
+                :clearable="!valid"
+                :counter="6"
+                :rules="codeRules"
+                />
+              </v-col>
+              <v-col cols=4>
+                <v-btn color="primary" block :disabled="!valid || !sendValid" @click="sendCode">
+                  {{sendButton}}
+                </v-btn>
+              </v-col>
+            </v-row>
 
             <v-text-field
               v-model="password"
@@ -51,7 +68,7 @@
           </div>
 
           <div class="px-10">
-            <v-btn class="my-4" color="success" block :disabled="!valid" @click="sendEmail">注册</v-btn>
+            <v-btn class="my-4" color="success" block :disabled="!valid" @click="register">注册</v-btn>
           </div>
         </v-form>
       </v-card>
@@ -62,13 +79,21 @@
 
 <script>
 import debounce from 'lodash.debounce'
+import Message from '@/components/Message.vue'
 export default {
+  components: { Message },
   data () {
     return {
+      // 表单信息
       username: '',
       password: '',
       password2: '',
       email: '',
+      // 发送验证码信息
+      code: '',
+      sendButton: '发送验证码',
+      sendValid: true,
+      // 验证信息
       valid: true,
       isAlert: false,
       alertMsg: '',
@@ -76,14 +101,17 @@ export default {
       errorMsg: {
         username: '',
         email: '',
-        password: ''
+        password: '',
       },
-      nameRules: [
-        v => !!v || '用户名不能为空',
-        v => v.length <= 16 || '用户名不能超过16字符'
-      ],
-      emailRules: [
-        v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || '@fudan.edu.cn'
+      // nameRules: [
+      //   v => !!v || '用户名不能为空',
+      //   v => v.length <= 16 || '用户名不能超过16字符'
+      // ],
+      // emailRules: [
+      //   v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || '@fudan.edu.cn'
+      // ],
+      codeRules: [
+        v => /^[0-9]{6}$/.test(v) || '验证码格式不对',
       ],
       passwordRules: [
         v => !!v || '密码不能为空',
@@ -93,8 +121,14 @@ export default {
     }
   },
   methods: {
+
     checkUsername () {
-      this.$axios.get('register/', { params: { username: this.username } })
+      if(!this.username){
+        this.errorMsg.username = '用户名不能为空'
+      }else if(this.username.length > 16){
+        this.errorMsg.username = '用户名不能超过16字符'
+      }else{
+        this.$axios.get('register/', { params: { username: this.username } })
         .then(response => {
           if (response.data.data !== 0) {
             this.errorMsg.username = response.data.msg
@@ -102,38 +136,71 @@ export default {
             this.errorMsg.username = ''
           }
         })
+      }
+      
     },
+
     checkEmail () {
-      this.$axios
+      if(!/^([0-9]{11})@fudan\.edu\.cn$/.test(this.email)){
+        this.errorMsg.email = '@fudan.edu.cn'
+      }else{
+        this.$axios
         .get('register/', { params: { email: this.email } })
         .then(response => {
           if (response.data.data !== 0) {
             this.errorMsg.email = response.data.msg
-          } else { this.errorMsg.email = '' }
+          } else { 
+            this.errorMsg.email = '' 
+          }
         })
+      }
+      
     },
+
     checkPassword () {
       if (this.password !== this.password2) {
         this.errorMsg.password = '两次输入不一致'
       } else { this.errorMsg.password = '' }
     },
-    sendEmail () {
+
+    sendCode(){
+      this.sendButtonChangeStatus()
+      this.$refs.message.info('验证邮件已发送，请点击邮件中的链接以继续')
+      this.$axios
+      .get('register/', { params: { username: this.username, email: this.email } })
+      .then(response => {
+        if (response.data.data !== 0) {
+          this.$refs.message.error(response.data.msg)
+        } else { 
+          this.$refs.message.success(response.data.msg)
+        }
+      })
+    },
+
+    sendButtonChangeStatus(){
+      this.sendValid = false
+      for(let i=60; i>=0; i--){
+        setTimeout(()=>{
+          this.sendButton = i
+          if(this.sendButton === 0){
+            this.sendButton = '发送验证码'
+            this.sendValid = true
+          }
+        }, 1000 * (60 - i))
+      }
+      
+    },
+
+    register () {
       if (this.$refs.form.validate()) {
-        this.alertType = 'info'
-        this.alertMsg = '验证邮件已发送，请点击邮件中的链接以继续'
-        this.isAlert = true
         this.$axios
-          .post('register/', { username: this.username, email: this.email, password: this.password })
+          .post('register/', { username: this.username, email: this.email, password: this.password, code: this.code })
           .then(response => {
             if (response.data.data !== 0) {
-              this.alertType = 'error'
-              this.alertMsg = response.data.msg
-              this.isAlert = true
+              this.$refs.message.error(response.data.msg) 
             } else {
-              this.alertType = 'success'
-              this.alertMsg = '验证邮件发送成功，跳转至登录页面......'
-              this.isAlert = true
-              setTimeout(this.$router.push('/login'), 3000)
+              this.$refs.message.success('注册成功，跳转至登录页面......')
+              setTimeout(() => {this.$router.push('/login')}, 3010)
             }
           })
       }
@@ -146,7 +213,7 @@ export default {
   },
   created: function () {
     this.debouncedCheckUsername = debounce(this.checkUsername, 500)
-    this.debouncedCheckEmail = debounce(this.checkEmail, 3000)
+    this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }
 }

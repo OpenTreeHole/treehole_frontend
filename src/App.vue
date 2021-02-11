@@ -39,7 +39,5 @@ export default {
 </script>
 
 <style scoped>
-/* #container {
-  background-color:dimgrey
-} */
+
 </style>
