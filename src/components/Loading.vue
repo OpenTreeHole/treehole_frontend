@@ -18,7 +18,7 @@
       <div v-if="isLoading">
         <v-progress-circular indeterminate color="teal"></v-progress-circular>
       </div>
-      <div v-if="!hasNext"> 没有然后了......</div>
+      <div v-if="(!hasNext)&&(!isLoading)"> 没有然后了......</div>
     </v-col>
   </v-row>
     
