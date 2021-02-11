@@ -8,6 +8,8 @@ import vuetify from './plugins/vuetify'
 import debounce from 'lodash.debounce'
 import VueQuillEditor from 'vue-quill-editor'
 
+import plugins from './components/plugins'
+
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -24,7 +26,7 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$axios = axios
 
 Vue.use(VueCookies)
-Vue.use(debounce)
+Vue.use(plugins)
 Vue.use(VueQuillEditor /* { default global options } */)
 
 Vue.filter('plain-text', function (html) {
@@ -35,7 +37,7 @@ Vue.filter('timeDifference', function (datestr) {
   const date = new Date(datestr)
   const now = new Date()
   let seconds = Math.floor((now - date) / 1000)
-  
+
   if(seconds < 0){
     seconds = 0
   }

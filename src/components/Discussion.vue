@@ -152,23 +152,9 @@
          
           <v-form ref="form" v-model="valid" lazy-validation>   <!-- 回贴表单 -->
             
-            <div class="text-center">   <!-- 上传进度显示 -->
-              <v-overlay :value="overlay">
-                <div class="text-h5 py-4 amber--text">{{overlayMsg}}</div>  
-                <v-progress-circular
-                  indeterminate
-                  color="primary"
-                  size="64"
-                ></v-progress-circular>
-              </v-overlay>
-            </div>
-            
-            <quill-editor
-              v-model="content"
-              ref="editor"
-              :options="editorOption"
-            >
-            </quill-editor>
+            <!-- 富文本输入框 -->
+            <editor :content="content" @updateContent="updateContent"></editor>
+
           </v-form>
 
         </v-card-text>
@@ -196,33 +182,20 @@
     </v-dialog>
 
   <!-- 载入中信息 -->
-  <v-row
-    v-intersect="{
-      handler: onIntersect,
-      options: { threshold: 0 }}"
-  >
-    <v-col class="text-center">
-      <div v-if="isLoading"> 加载中...... </div>
-      <div v-else> 没有然后了......</div>
-    </v-col>
-  </v-row>
+<loading ref="loading" :length="posts.length" :loadList="getPosts"></loading>
 
 </v-container>
 </template>
 
 <script>
-
-import hljs from 'highlight.js'
-import 'highlight.js/styles/dracula.css'
-
-import { quillEditor, Quill } from 'vue-quill-editor'
-import { container, ImageExtend, QuillWatch } from 'quill-image-super-solution-module'
-// import ImageResize from 'quill-image-resize-module'
-
-// Quill.register('modules/ImageResize', ImageResize)
-Quill.register('modules/ImageExtend', ImageExtend)
+import Loading from '@/components/Loading.vue'
+import Editor from '@/components/Editor.vue'
 
 export default {
+  components: {
+    Loading,
+    Editor,
+  },
   data () {
     return {
       // 提示信息
@@ -236,97 +209,18 @@ export default {
       replyIndex: null, // 回复的贴子在 posts 数组中的序列
       replyPk: null, // 回复的贴子的 id
       // 发帖表单
-      editorOption: {
-        debug: 'warning',
-        placeholder: '说些什么 ...',
-        theme: 'snow',
-        modules: {
-          syntax: { // 代码高亮
-            highlight: text => hljs.highlightAuto(text).value
-          },
-          // ImageResize: {},
-          ImageExtend: {
-            // 可选参数 是否显示上传进度和提示语
-            loading: false,
-            // 图片参数名
-            name: 'img',
-            // 可选参数 图片大小，单位为M，1M = 1024kb
-            size: 10,
-            // 服务器地址, 如果action为空，则采用base64插入图片
-            action: 'https://www.fduhole.tk/api/images/',
-            // 可选 可上传的图片格式
-            accept: 'image/jpg, image/png, image/gif, image/jpeg, image/bmp, image/x-icon, image/svg+xml, image/webp',
-            // response 为一个函数用来获取服务器返回的具体图片地址
-            // 例如服务器返回 {code: 200; data:{ url: 'baidu.com'}}
-            // 则 return res.data.url
-            response: (res) => {
-              return res.url
-            },
-            // 可选参数 设置请求头部
-            headers: (xhr) => {
-              xhr.setRequestHeader('Authorization', localStorage.getItem('token'))
-            },
-            // 图片超过大小的回调
-            sizeError: () => {
-              alert('图片大小超过 10 M')
-            },
-            // 可选参数 自定义开始上传触发事件
-            start: () => {
-              this.overlayMsg = '上传中...'
-              this.overlay = true
-            },
-            // 可选参数 自定义上传结束触发的事件，无论成功或者失败
-            end: () => {
-            },
-            // 可选参数 上传失败触发的事件
-            error: () => {
-              this.overlayMsg = '上传失败'
-              setTimeout(() => {
-                this.overlay = false
-              }, 250)
-              console.log('fail')
-            },
-            success: () => {
-              this.overlayMsg = '上传成功'
-              setTimeout(() => {
-                this.overlay = false
-              }, 250)
-              console.log('success')
-            }
-            // 可选参数 选择图片触发，也可用来设置头部，但比headers多了一个参数，可设置formData
-            // change: (xhr, formData) => {
-            //     formData.append("example", "test");
-            // },
-          },
-          toolbar: {
-            container: [
-              ['bold', 'italic', 'strike', { header: 1 }],
-              ['blockquote', 'code-block', 'link', 'image']
-            ],
-            handlers: {
-              image: function () { // 劫持原来的图片点击按钮事件
-                QuillWatch.emit(this.quill.id)
-              }
-              // 'image': value => {
-              //   if(value){ this.$refs.upload.click()}
-              //   else{this.quill.format('image', false)}
-              // }
-            }
-          }
-        }
-      },
       dialog: false,
-      overlay: false,
-      overlayMsg: '上传中...',
       content: '',
       requiredRules: [v => !!v || '内容不能为空'],
       valid: true,
-      // 底部加载
-      isLoading: true
     }
   },
 
   methods: {
+    updateContent(content){
+      this.content = content
+    },
+
     closeDialog(){
       this.dialog = false
       this.replyIndex = null
@@ -377,7 +271,6 @@ export default {
       return this.$axios
         .get('posts/', { params: { id: this.$route.params.id, page: page } })
         .then(response => {
-          console.log(response.data)
           this.alert = false
           this.page++
           this.posts.push.apply(this.posts, response.data)
@@ -405,6 +298,8 @@ export default {
 
     addPost () {
       if (this.$refs.form.validate()) {
+        //先关闭对话框,优化用户体验
+        this.dialog = false
         this.$axios
           .post('posts/', {
             content: this.content,
@@ -412,12 +307,10 @@ export default {
             post_id: this.replyPk
           })
           .then(() => {
+            // 动态更新页面
+            this.$refs.loading.isLoading = true
             this.getNewPosts()
-          // 重新加载页面
-            // this.page = 1
-            // this.posts = []
-            // 关闭对话框并重置回复信息
-            this.dialog = false
+            // 重置回复信息
             this.replyIndex = null
             this.replyPk = null
             // 重置 alert 信息
@@ -432,37 +325,12 @@ export default {
       }
     },
 
-    async load () {
-      if (this.posts.length % 10 !== 0) {
-        this.isLoading = false
-        return
-      }
-      const beforeLength = this.posts.length
-      await this.getPosts()
-      const afterLength = this.posts.length
-      if (afterLength < 10) {
-        this.isLoading = false
-        return
-      }
-      if (beforeLength === afterLength) {
-        this.isLoading = false
-        return
-      }
-      this.isLoading = true
-    },
-
-    onIntersect (entries, observer) {
-      if (entries[0].isIntersecting) {
-        this.load()
-      }
-    }
-
   },
   watch: {
 
   },
   mounted () {
-
+    // console.log(this.$refs.loading)
   },
 
   created () {
