@@ -2,7 +2,7 @@
 <v-container  fill-height>
   <message ref="message"></message>
  <v-row align="center" justify="center">
-    <v-col cols="10" sm="8" md="6" lg="4" class="text-center" >
+    <v-col cols="12" sm="8" md="6" lg="4" class="text-center" >
       <v-card class="py-8" elevation="4">
 
         <div class="text-h4 pb-2">欢迎注册</div>
@@ -28,8 +28,8 @@
               :counter="32"
               :rules="notEmptyRules"
             />
-            <v-row align="center" style="margin-bottom: -12px">
-              <v-col cols=8>
+            <v-row align="center" justify="center" style="margin-bottom: -12px">
+              <v-col cols="6" sm="8">
                 <v-text-field
                 v-model="code"
                 label="邮件验证码"
@@ -40,7 +40,7 @@
                 :rules="codeRules"
                 />
               </v-col>
-              <v-col cols=4>
+              <v-col cols="6" sm="4">
                 <v-btn color="primary" block :disabled="!valid || !sendValid" @click="sendCode">
                   {{sendButton}}
                 </v-btn>
