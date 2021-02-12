@@ -1,0 +1,8 @@
+{
+    "name": "FDU HOLE",
+    "short_name": "树洞",
+    "lang": "zh-CN",
+    "start_url": "/",
+    "display": "standalone",
+    "theme_color": "#4278ce"
+  }

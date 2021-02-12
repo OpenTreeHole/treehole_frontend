@@ -8,11 +8,11 @@ import Discussion from '@/views/Discussion.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/home', meta: {title: 'FDUHOLE' }, component: Home, name: 'home' },
+  { path: '/home', meta: {title: 'FDU HOLE' }, component: Home, name: 'home' },
   { path: '/login', meta: {title: '登录' }, component: Login, name: 'login' },
   { path: '/', redirect: '/home' },
   { path: '/register', meta: {title: '注册' }, component: Register, name: 'register' },
-  { path: '/discussion/:id', meta: {title: 'FDUHOLE' }, component: Discussion, name: 'discussion' }
+  { path: '/discussion/:id', meta: {title: 'FDU HOLE' }, component: Discussion, name: 'discussion' }
 ]
 
 const router = new VueRouter({
