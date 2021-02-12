@@ -151,8 +151,7 @@
           <v-form ref="form" v-model="valid" lazy-validation>   <!-- 回贴表单 -->
             
             <!-- 富文本输入框 -->
-            <editor :content="content" @updateContent="updateContent"></editor>
-
+            <editor ref="editor" :contentName="contentName" @invalid="editorInvalid"></editor>
           </v-form>
 
         </v-card-text>
@@ -207,15 +206,21 @@ export default {
       replyPk: null, // 回复的贴子的 id
       // 发帖表单
       dialog: false,
-      content: '',
+      // content: '',
       requiredRules: [v => !!v || '内容不能为空'],
       valid: true,
     }
   },
 
+  computed: {
+    contentName(){
+      return 'discussion-'+ this.$route.params.id +'-content'
+    }
+  },
+
   methods: {
-    updateContent(content){
-      this.content = content
+    editorInvalid(msg){
+      this.$refs.message.error(msg)
     },
 
     closeDialog(){
@@ -285,12 +290,12 @@ export default {
     },
 
     addPost () {
-      if (this.$refs.form.validate()) {
+      if (this.$refs.form.validate() && this.$refs.editor.validate()) {
         //先关闭对话框,优化用户体验
         this.dialog = false
         this.$axios
           .post('posts/', {
-            content: this.content,
+            content: this.$refs.editor.content,
             discussion_id: this.$route.params.id,
             post_id: this.replyPk
           })
@@ -301,6 +306,8 @@ export default {
             // 重置回复信息
             this.replyIndex = null
             this.replyPk = null
+            // 重置内容
+            this.$refs.editor.content = ''
           })
           .catch((error) => {
             console.log(error.response)

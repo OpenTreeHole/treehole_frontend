@@ -72,7 +72,6 @@ export default {
   },
   methods: {
     login () {
-      const _this = this
       this.$refs.form.validate()
       this.$axios
         .post('login/', { username: this.username, password: this.password })
@@ -81,7 +80,7 @@ export default {
           localStorage.setItem('username', this.username)
           this.$router.push('/home')
         })
-        .catch((error) => {
+        .catch(() => {
           this.valid = false
           this.$refs.message.error('用户名或密码错误')
         })

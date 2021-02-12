@@ -5,7 +5,7 @@
     <v-col cols="10" sm="8" md="6" lg="4" class="text-center" >
       <v-card class="py-8" elevation="4">
 
-        <h1>欢迎注册 FDUHOLE</h1>
+        <div class="text-h4 pb-2">欢迎注册</div>
         <v-form ref="form" v-model="valid" lazy-validation>
           <v-alert class="my-4" transition="slide-y-transition" :type="alertType" :value="isAlert" >{{alertMsg}}</v-alert>
           <div class="pl-7 pr-10">
@@ -16,6 +16,7 @@
               :error-messages="errorMsg['username']"
               :clearable="!valid"
               :counter="16"
+              :rules="notEmptyRules"
             />
 
             <v-text-field
@@ -25,6 +26,7 @@
               :error-messages="errorMsg['email']"
               :clearable="!valid"
               :counter="32"
+              :rules="notEmptyRules"
             />
             <v-row align="center" style="margin-bottom: -12px">
               <v-col cols=8>
@@ -103,18 +105,18 @@ export default {
         email: '',
         password: '',
       },
-      // nameRules: [
-      //   v => !!v || '用户名不能为空',
-      //   v => v.length <= 16 || '用户名不能超过16字符'
-      // ],
+      notEmptyRules: [
+        v => !!v || '内容不能为空',
+      ],
       // emailRules: [
       //   v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || '@fudan.edu.cn'
       // ],
       codeRules: [
+        v => !!v || '内容不能为空',
         v => /^[0-9]{6}$/.test(v) || '验证码格式不对',
       ],
       passwordRules: [
-        v => !!v || '密码不能为空',
+        v => !!v || '内容不能为空',
         v => v.length <= 32 || '密码不能超过32字符',
         v => v.length >= 8 || '密码不能少于8字符'
       ]
@@ -127,6 +129,8 @@ export default {
         this.errorMsg.username = '用户名不能为空'
       }else if(this.username.length > 16){
         this.errorMsg.username = '用户名不能超过16字符'
+      }else if(this.username.length < 3){
+        this.errorMsg.username = '用户名不能少于3字符'
       }else{
         this.$axios.get('register/', { params: { username: this.username } })
         .then(response => {
@@ -196,15 +200,36 @@ export default {
         this.$axios
           .post('register/', { username: this.username, email: this.email, password: this.password, code: this.code })
           .then(response => {
-            if (response.data.data !== 0) {
-              this.$refs.message.error(response.data.msg) 
-            } else {
+            if (response.data.data === 0) {  // 注册成功后直接跳转到主页面
               this.$refs.message.success('注册成功，跳转至登录页面......')
-              setTimeout(() => {this.$router.push('/login')}, 3010)
+              localStorage.setItem('newcomer', 'true')
+              this.login()
+            } else {
+              this.$refs.message.error(response.data.msg) 
             }
           })
+          .catch(() => {
+            this.$refs.message.error('网络错误')
+          })
       }
-    }
+    },
+
+    login () {
+      this.$axios
+        .post('login/', { username: this.username, password: this.password })
+        .then(response => {
+          localStorage.setItem('token', 'Token ' + response.data.token)
+          localStorage.setItem('username', this.username)
+          setTimeout(() => {
+            this.$router.push('/home')
+          }, 1000)
+          
+        })
+        .catch(() => {
+          this.valid = false
+          this.$refs.message.error('用户名或密码错误')
+        })
+    },
   },
   watch: {
     username: function () { this.debouncedCheckUsername() },

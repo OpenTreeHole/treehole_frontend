@@ -34,7 +34,7 @@ Quill.register('modules/ImageExtend', ImageExtend)
 export default {
   name: 'editor',
   props: [
-    // 'content',
+    'contentName'
   ],
 
   data(){
@@ -123,10 +123,29 @@ export default {
     }
   },
 
+  methods: {
+    validate(){
+      if(!this.content || !this.content.replace(/<.?((p)|(br))>|\s+/g, '')){
+        this.$emit('invalid', '内容不能为空')
+        return false
+      } else {
+        return true
+      }
+    },
+  },
+
   watch: {
     content(){
-      this.$emit('updateContent', this.content)
+      if(!this.content){
+        localStorage.removeItem(this.contentName)
+      } else {
+        localStorage.setItem(this.contentName, this.content)
+      }
     }
+  },
+
+  created(){
+    this.content = localStorage.getItem(this.contentName)
   }
 
 }

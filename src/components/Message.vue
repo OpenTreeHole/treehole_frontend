@@ -24,31 +24,31 @@ export default {
 
   methods: {
     success(message){
-      this.alert = true
       this.type = 'success'
       this.message = message
       this.icon = 'mdi-check-circle-outline'
+      this.alert = true
     },
 
     info(message){
-      this.alert = true
       this.type = 'info'
       this.message = message
       this.icon = 'mdi-alert-circle-outline'
+      this.alert = true
     },
 
     warning(message){
-      this.alert = true
       this.type = 'warning'
       this.message = message
       this.icon = 'mdi-alert-outline'
+      this.alert = true
     },
 
     error(message){
-      this.alert = true
       this.type = 'error'
       this.message = message
       this.icon = 'mdi-alert-octagram-outline'
+      this.alert = true
     },
     
   }

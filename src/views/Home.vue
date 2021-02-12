@@ -4,6 +4,9 @@
   <!-- 警告信息 -->
   <message ref="message"></message>
 
+  <!-- 新用户欢迎信息 -->
+  <newcomer></newcomer>
+
   <!-- 帖子列表 -->
 
   <v-row v-for="(discussion, index) in discussions" :key="index" justify="center" class="ma-0">
@@ -151,7 +154,7 @@
             </v-combobox>
 
             <!-- 富文本输入框 -->
-            <editor :content="content" @updateContent="updateContent"></editor>
+            <editor ref="editor" :contentName="contentName" @invalid="editorInvalid"></editor>
 
           </v-form>
 
@@ -193,12 +196,14 @@ import debounce from 'lodash.debounce'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
+import Newcomer from '@/components/Newcomer.vue'
 
 export default {
   components: {
     Loading,
     Editor,
     Message,
+    Newcomer,
   },
   data () {
     return {
@@ -224,9 +229,16 @@ export default {
 
     }
   },
+
+  computed: {
+    contentName(){
+      return 'home-content'
+    }
+  },
+
   methods: {
-    updateContent(content){
-      this.content = content
+    editorInvalid(msg){
+      this.$refs.message.error(msg)
     },
 
     unfold(index){
@@ -270,12 +282,12 @@ export default {
     },
 
     addDiscussion () {
-      if (this.$refs.form.validate()) {
+      if (this.$refs.form.validate() && this.$refs.editor.validate()) {
         // 先关闭对话框,优化用户体验
         this.closeDialog()
         // 发送请求
         this.$axios
-          .post('discussions/', { content: this.content, tags: this.selectedTags })
+          .post('discussions/', { content: this.$refs.editor.content, tags: this.selectedTags })
           .then(response => {
             console.log(response.data)
             // 重新加载页面
@@ -283,7 +295,7 @@ export default {
             this.page = 1
             this.getDiscussions()
             // 重置表单内容
-            this.content = ''
+            this.$refs.editor.content = ''
             this.tags = []
             this.selectedTags = []
           })

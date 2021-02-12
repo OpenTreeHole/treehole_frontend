@@ -1,18 +1,18 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '../components/Login.vue'
-import Home from '../components/Home.vue'
-import Register from '../components/Register.vue'
-import Discussion from '../components/Discussion.vue'
+import Login from '@/views/Login.vue'
+import Home from '@/views/Home.vue'
+import Register from '@/views/Register.vue'
+import Discussion from '@/views/Discussion.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/home', component: Home, name: 'home' },
-  { path: '/login', component: Login, name: 'login' },
+  { path: '/home', meta: {title: 'FDUHOLE' }, component: Home, name: 'home' },
+  { path: '/login', meta: {title: '登录' }, component: Login, name: 'login' },
   { path: '/', redirect: '/home' },
-  { path: '/register', component: Register, name: 'register' },
-  { path: '/discussion/:id', component: Discussion, name: 'discussion' }
+  { path: '/register', meta: {title: '注册' }, component: Register, name: 'register' },
+  { path: '/discussion/:id', meta: {title: 'FDUHOLE' }, component: Discussion, name: 'discussion' }
 ]
 
 const router = new VueRouter({
@@ -20,6 +20,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  if (to.meta.title) {document.title = to.meta.title}
   if (to.path === '/login' || to.path === '/register') return next()
   const token = localStorage.getItem('token')
   if (!token) return next('/login')
