@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.33e1a9bdb7588b4d2d918f76f049ff75.js"
+  "/precache-manifest.cb7e24e07285eaac18fc98bec46e3939.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "fduhole"});
