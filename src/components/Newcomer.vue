@@ -13,6 +13,11 @@
 
       <v-card-text>  <!-- 内容部分 -->
         <ul>
+
+          <li class="first-block">
+            这是内部测试版本, 如有 bug 欢迎与我联系
+          </li>
+
           <li class="first-block">
             匿名
             <ul>

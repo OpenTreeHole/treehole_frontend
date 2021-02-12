@@ -34,9 +34,12 @@
           </div>
 
           <div>
-            <p class="py-1 my-0"><a href="#/register">没有账号？点此注册</a></p>
-            <p class="py-1 my-0"><a href="#" onclick="alert('活该')">忘记密码</a></p>
+            <v-btn text color="primary" href="#/register">没有账号？点此注册</v-btn>
           </div>
+          <div>
+            <v-btn text color="primary" onclick="alert('活该')">忘记密码</v-btn>
+          </div>
+            
         </v-form>
 
       </v-card>
