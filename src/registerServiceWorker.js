@@ -31,13 +31,16 @@ if (process.env.NODE_ENV === 'production') {
     },
     offline () {
       // notifyOffline()
+      console.log('No internet connection found. App is running in offline mode.')
       document.dispatchEvent(
         new CustomEvent('offline', { detail: '网络已断开, 正在以离线模式浏览' })
       );
-      console.log('No internet connection found. App is running in offline mode.')
+      
     },
     error (error) {
       console.error('Error during service worker registration:', error)
     }
   })
 }
+
+
