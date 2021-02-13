@@ -34,9 +34,9 @@ if (workbox) {
   workbox.routing.registerRoute(
     /^https:\/\/cdn\.jsdelivr\.net\/gh\/fduhole\/web@img\/.*/, // 匹配的路由
     // workbox.strategies.staleWhileRevalidate({cacheName: 'img'}),
-    workbox.strategies.cachedFirst({
+    new workbox.strategies.CachedFirst({
       plugins: [
-        new workbox.CacheableResponse.Plugin({
+        new workbox.cacheableResponse.Plugin({
           statuses: [0, 200]
         })
       ]
