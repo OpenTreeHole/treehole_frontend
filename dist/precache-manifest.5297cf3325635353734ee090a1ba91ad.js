@@ -1,11 +1,11 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "1713c414b3d2c7c90464",
-    "url": "/css/app.7b8567ef.css"
+    "revision": "dd41ffaa284ffafb5b37",
+    "url": "/css/app.fb4c436a.css"
   },
   {
-    "revision": "831f0b120fb73617cd25",
-    "url": "/css/chunk-vendors.83a51c73.css"
+    "revision": "c83ff6bdf007a0e5e67f",
+    "url": "/css/chunk-vendors.d413fc5b.css"
   },
   {
     "revision": "e2475e418640e0c35b6b52163611e1e4",
@@ -28,15 +28,15 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/icons/android-chrome-maskable-512x512.png"
   },
   {
-    "revision": "4b30b86060f5ee08a947e8068226afb1",
+    "revision": "342db1f364affa84fc0a6aff33693510",
     "url": "/index.html"
   },
   {
-    "revision": "1713c414b3d2c7c90464",
-    "url": "/js/app.a6c70f52.js"
+    "revision": "dd41ffaa284ffafb5b37",
+    "url": "/js/app.265811c5.js"
   },
   {
-    "revision": "831f0b120fb73617cd25",
+    "revision": "c83ff6bdf007a0e5e67f",
     "url": "/js/chunk-vendors.ada948e3.js"
   },
   {

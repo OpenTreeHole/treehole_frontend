@@ -83,10 +83,8 @@
 
           <!-- 正文部分 -->
           <div
-            @click="reply(post['id'])"
-            class="ma-0 text-body-1 clickable"
+            class="ma-0 text-body-1"
             id="rich-text"
-            v-ripple
             v-html="post.content"
           >
           </div>
@@ -94,14 +92,17 @@
         </v-card-text>
 
         <!-- 脚标 -->
-        <v-card-text class="text-center text-body-2 pb-2">
-          <span style="float:left">
+        <v-card-text class="d-flex justify-space-between text-body-2 pb-2" > 
+          <div>
             #{{ index }}
-          </span>
-          <span style="float:right">
+          </div>
+          <v-btn x-small text @click="reply(post['id'])" class="grey--text" style="padding-bottom: -10px">
+            回复
+            <v-icon >mdi-reply-outline</v-icon>
+          </v-btn>
+          <div>
             {{ post['date_created'] | timeDifference }}
-          </span>
-          <p></p>
+          </div>
         </v-card-text>
 
       </v-card>
