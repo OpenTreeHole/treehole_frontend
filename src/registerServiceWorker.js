@@ -2,6 +2,13 @@
 
 import { register } from 'register-service-worker'
 
+const notifyOffline = async function () {
+  if(Notification.permission === 'default'){
+    await Notification.requestPermission()
+  }
+  new Notification('网络已断开', {body: '正在以离线模式浏览'})
+}
+
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
     ready () {
@@ -23,6 +30,7 @@ if (process.env.NODE_ENV === 'production') {
       console.log('New content is available; please refresh.')
     },
     offline () {
+      notifyOffline()
       console.log('No internet connection found. App is running in offline mode.')
     },
     error (error) {

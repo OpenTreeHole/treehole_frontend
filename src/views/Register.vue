@@ -41,7 +41,7 @@
                 />
               </v-col>
               <v-col cols="6" sm="4">
-                <v-btn color="primary" block :disabled="!valid || !sendValid" @click="sendCode">
+                <v-btn color="primary" block :disabled="!sendValid" @click="sendCode">
                   {{sendButton}}
                 </v-btn>
               </v-col>
@@ -169,7 +169,11 @@ export default {
 
     sendCode(){
       this.sendButtonChangeStatus()
-      this.$refs.message.info('验证邮件已发送，请点击邮件中的链接以继续')
+      if(!this.username || !this.email){
+        this.$refs.message.error('用户名与邮箱不能为空')
+        return
+      }
+      this.$refs.message.info('验证码已发送, 请检查邮件以继续')
       this.$axios
       .get('register/', { params: { username: this.username, email: this.email } })
       .then(response => {

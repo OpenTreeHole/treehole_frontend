@@ -310,11 +310,13 @@ export default {
       return this.$axios
         .get('discussions/', { params: { page: this.page } })
         .then(response => {
-          this.page++
           for (let i = 0; i < response.data.length; i++) {
             this.styleData.push({ fold: true, lines: 3 })
           }
           this.discussions.push.apply(this.discussions, response.data)
+          if(response.data.length > 0){
+            this.page++
+          }
         })
         .catch((error) => {
           this.$refs.message.error(error.response.data.msg)

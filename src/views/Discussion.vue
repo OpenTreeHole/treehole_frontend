@@ -270,8 +270,10 @@ export default {
       return this.$axios
         .get('posts/', { params: { id: this.$route.params.id, page: page } })
         .then(response => {
-          this.page++
           this.posts.push.apply(this.posts, response.data)
+          if(response.data.length > 0){
+            this.page++
+          }
         })
         .catch((error) => {
           this.$refs.message.error(error.response.data.msg)

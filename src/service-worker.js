@@ -1,5 +1,3 @@
-importScripts("/precache-manifest.5b88bd02298f8417a704cdf17de9972c.js", "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
-
 
 
 // self.addEventListener("message", (e)=>{
@@ -46,4 +44,3 @@ if (workbox) {
 else {
   console.log(`Workbox didn't load`);
 }
-
