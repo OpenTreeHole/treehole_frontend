@@ -13,7 +13,8 @@ module.exports = {
             // ...other Workbox options...
             exclude: [
               /\.map$/, 
-              /manifest\.json$/ 
+              /manifest\.json$/,
+              /online\.json/,
           ],
         },
     manifestOptions: {

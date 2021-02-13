@@ -1,4 +1,4 @@
-importScripts("/precache-manifest.ed24d8b93afcbd64edc60d958bc94a0f.js", "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
+importScripts("/precache-manifest.bf9594aa43242b201c8ed16bee42670d.js", "https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 
 
@@ -18,6 +18,38 @@ self.addEventListener('active', async event => {
   console.log('active', event)
   await workbox.core.clientsClaim()
 })
+
+let online = true
+setInterval(() => {
+  fetch('online.json').then((res) => {
+    if(!online){
+      this.clients.matchAll()
+      .then(function (clients){
+        console.log(clients)
+        if (clients && clients.length) {
+          clients.forEach((client) => {
+              client.postMessage({msg: '网络连接已恢复, 请刷新以获取最新内容', status: 'success'})
+          })
+        }
+      })
+    }
+    online = true
+  }).catch((err) => {
+    console.log(err)
+    if(online){
+      this.clients.matchAll()
+      .then(function (clients){
+        console.log(clients)
+        if (clients && clients.length) {
+          clients.forEach((client) => {
+              client.postMessage({msg: '网络已断开, 正在以离线模式浏览', status: 'warning'})
+          })
+        }
+      })
+    }
+    online = false
+  })
+}, 10000)
 
 if (workbox) {
 

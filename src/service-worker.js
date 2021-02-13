@@ -17,6 +17,38 @@ self.addEventListener('active', async event => {
   await workbox.core.clientsClaim()
 })
 
+let online = true
+setInterval(() => {
+  fetch('online.json').then((res) => {
+    if(!online){
+      this.clients.matchAll()
+      .then(function (clients){
+        console.log(clients)
+        if (clients && clients.length) {
+          clients.forEach((client) => {
+              client.postMessage({msg: '网络连接已恢复, 请刷新以获取最新内容', status: 'success'})
+          })
+        }
+      })
+    }
+    online = true
+  }).catch((err) => {
+    console.log(err)
+    if(online){
+      this.clients.matchAll()
+      .then(function (clients){
+        console.log(clients)
+        if (clients && clients.length) {
+          clients.forEach((client) => {
+              client.postMessage({msg: '网络已断开, 正在以离线模式浏览', status: 'warning'})
+          })
+        }
+      })
+    }
+    online = false
+  })
+}, 10000)
+
 if (workbox) {
 
   console.log(`Workbox is loaded`);

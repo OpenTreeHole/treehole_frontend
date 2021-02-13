@@ -1,6 +1,6 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "50d808cc352a4d345c03",
+    "revision": "d34aca495f8952eb05e3",
     "url": "/css/app.fb4c436a.css"
   },
   {
@@ -28,20 +28,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/icons/android-chrome-maskable-512x512.png"
   },
   {
-    "revision": "c2f78cd2b441032ec38b54edeee0209c",
+    "revision": "9524cf5d247b3d79c8c1349ba243f82c",
     "url": "/index.html"
   },
   {
-    "revision": "50d808cc352a4d345c03",
-    "url": "/js/app.bd6bd782.js"
+    "revision": "d34aca495f8952eb05e3",
+    "url": "/js/app.2dcdb3ca.js"
   },
   {
     "revision": "c83ff6bdf007a0e5e67f",
     "url": "/js/chunk-vendors.ada948e3.js"
-  },
-  {
-    "revision": "0a04f3ca2c8bec45ce9e324832d32166",
-    "url": "/online.json"
   },
   {
     "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",

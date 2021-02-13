@@ -41,7 +41,10 @@ export default {
   },
 
   created() {
-    document.addEventListener('offline', event => {
+    document.addEventListener('onlined', event => {
+      this.$refs.message.success(event.detail)
+    })
+    document.addEventListener('offlined', event => {
       this.$refs.message.warning(event.detail)
     })
   }
