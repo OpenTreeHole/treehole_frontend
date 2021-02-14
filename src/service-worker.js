@@ -19,7 +19,7 @@ self.addEventListener('active', async event => {
 
 let online = true
 setInterval(() => {
-  fetch('online.json').then((res) => {
+  fetch('online').then(() => {
     if(!online){
       this.clients.matchAll()
       .then(function (clients){
@@ -32,8 +32,7 @@ setInterval(() => {
       })
     }
     online = true
-  }).catch((err) => {
-    console.log(err)
+  }).catch(() => {
     if(online){
       this.clients.matchAll()
       .then(function (clients){
