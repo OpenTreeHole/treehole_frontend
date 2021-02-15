@@ -13,8 +13,9 @@ self.addEventListener('install', async event => {
 })
 
 self.addEventListener('active', async event => {
+  console.log('active')
   console.log('active', event)
-  await workbox.core.clientsClaim()
+  await self.clientsClaim()
 })
 
 let online = true
@@ -57,7 +58,7 @@ if (workbox) {
 
   workbox.routing.registerRoute(
     /^https:\/\/www\.fduhole\.tk\/api\/.*/, // 匹配的路由
-    workbox.strategies.networkFirst({cacheName: 'api'})
+    workbox.strategies.staleWhileRevalidate({cacheName: 'api'})
   )
 
   workbox.routing.registerRoute(
