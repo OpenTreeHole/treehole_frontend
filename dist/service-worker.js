@@ -60,7 +60,7 @@ if (workbox) {
 
   workbox.routing.registerRoute(
     /^https:\/\/www\.fduhole\.tk\/api\/.*/, // 匹配的路由
-    workbox.strategies.staleWhileRevalidate({cacheName: 'api'})
+    workbox.strategies.networkFirst({cacheName: 'api'})
   )
 
   workbox.routing.registerRoute(
