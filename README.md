@@ -1,24 +1,28 @@
-# vue
+# 复旦树洞前端 FDU Hole Front End
 
-## Project setup
-```
+[立即前往](https://fduhole.tk)
+
+## 开发
+
+```shell
+# 克隆本仓库
+git clone https://www.github.com/fduhole/vue.git
+
+cd vue
+
+# 安装依赖
 npm install
-```
 
-### Compiles and hot-reloads for development
-```
+# 运行开发服务器
 npm run serve
-```
 
-### Compiles and minifies for production
-```
+# 编译打包为发布版
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+
+## 反馈
+
+欢迎通过提交 Issue 或 Pull Request 的方式参与到本项目的开发与维护当中！
+
