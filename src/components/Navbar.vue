@@ -1,15 +1,13 @@
 <template>
-  <v-app-bar
-    app
-    color="primary"
-    dark
-    dense
-    flat
-    hide-on-scroll
-  >
-
+  <v-app-bar app color="primary" dark dense flat>
+    <v-btn
+      v-show="this.$router.currentRoute.name == 'discussion'"
+      icon
+      @click="back"
+      ><v-icon>mdi-arrow-left</v-icon></v-btn
+    >
     <div v-if="this.$route.name !== 'login' && this.$route.name !== 'register'">
-      欢迎回来, {{username}}
+      欢迎回来, {{ username }}
     </div>
     <!-- <v-app-bar-title>FDUHOLE </v-app-bar-title> -->
     <!-- <div class="d-flex align-center">
@@ -17,21 +15,19 @@
     </div> -->
 
     <v-spacer></v-spacer>
-    
+
     <v-btn icon @click="logout">
       <v-icon>mdi-export</v-icon>
     </v-btn>
-    
   </v-app-bar>
-
 </template>
 
 <script>
 export default {
   name: 'Navbar',
-  data(){
+  data() {
     return {
-      username: ''
+      username: '',
     }
   },
   computed: {
@@ -45,23 +41,25 @@ export default {
     // }
   },
   methods: {
-    logout(){
+    back() {
+      this.$router.back()
+    },
+    logout() {
       localStorage.clear()
       this.$router.push('/login')
     },
   },
 
   watch: {
-    $route(){
+    $route() {
       this.username = localStorage.getItem('username')
-    }
+    },
   },
-  created(){
+  created() {
     this.username = localStorage.getItem('username')
-  }
+  },
 }
 </script>
 
 <style scoped>
-    
 </style>
