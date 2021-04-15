@@ -4,7 +4,9 @@
     <Navbar></Navbar>
 
     <v-main>
+      <keep-alive include="Home">
       <router-view></router-view>
+      </keep-alive>
     </v-main>
 
     <v-footer>

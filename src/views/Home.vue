@@ -199,6 +199,7 @@ import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
 
 export default {
+  name:"Home",
   components: {
     Loading,
     Editor,
