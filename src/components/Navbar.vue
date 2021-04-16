@@ -1,6 +1,5 @@
 <template>
   <div class="navbar">
-    <!-- <v-system-bar></v-system-bar> -->
     <v-app-bar app color="primary" dark dense flat>
       <v-btn
         v-show="this.$router.currentRoute.name == 'discussion'"

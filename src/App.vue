@@ -1,17 +1,19 @@
 <template>
   <v-app>
+    <v-system-bar></v-system-bar>
     <message ref="message"></message>
     <Navbar></Navbar>
 
     <v-main>
       <keep-alive include="Home">
-      <router-view></router-view>
+        <router-view></router-view>
       </keep-alive>
     </v-main>
 
     <v-footer>
       <v-col class="text-center" cols="12">
-      	&copy; {{ new Date().getFullYear() }} — <span @click="newEvent">FDUHOLE PROJECT</span> 
+        &copy; {{ new Date().getFullYear() }} —
+        <span @click="newEvent">FDUHOLE PROJECT</span>
       </v-col>
     </v-footer>
   </v-app>
@@ -28,31 +30,29 @@ export default {
     Message,
   },
 
-  data(){
-    return {
-    }
+  data() {
+    return {}
   },
 
   methods: {
-    newEvent(){
+    newEvent() {
       console.log('event')
       document.dispatchEvent(
         new CustomEvent('offline', { detail: '网络已断开, 正在以离线模式浏览' })
-      );
-    }
+      )
+    },
   },
 
   created() {
-    document.addEventListener('onlined', event => {
+    document.addEventListener('onlined', (event) => {
       this.$refs.message.success(event.detail)
     })
-    document.addEventListener('offlined', event => {
+    document.addEventListener('offlined', (event) => {
       this.$refs.message.warning(event.detail)
     })
-  }
+  },
 }
 </script>
 
 <style scoped>
-
 </style>
