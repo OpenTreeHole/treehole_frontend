@@ -70,14 +70,14 @@
             <!-- 回复框顶栏 -->
             <div>
               <span>
-                {{ post.reply_to.username }}
+                {{ posts[getIndex(post.reply_to)].username }}
               </span>
-              <v-icon @click="scrollTo(index, getIndex(post.reply_to.id))" small style="float:right">
+              <v-icon @click="scrollTo(index, getIndex(posts[getIndex(post.reply_to)].id))" small style="float:right">
                 mdi-arrow-collapse-up
               </v-icon>
             </div>
             <div>
-              {{ post.reply_to.content | plain-text }}
+              {{ posts[getIndex(post.reply_to)].content | plain-text }}
             </div>
           </div>
 
