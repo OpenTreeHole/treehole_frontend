@@ -5,7 +5,7 @@ module.exports = {
     name: 'FDU Hole',
     themeColor: "#4278ce",
     msTileColor: "#2b5797",
-    appleMobileWebAppCache: "yes",
+    appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: "black-translucent",
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {

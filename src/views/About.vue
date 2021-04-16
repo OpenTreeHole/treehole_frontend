@@ -26,6 +26,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'About',
   data() {
@@ -48,14 +50,22 @@ export default {
       )
     },
     getLatestVersion() {
-      this.$axios
-        .get('https://cdn.jsdelivr.net/gh/fduhole/vue/package.json')
+      axios
+        .request({
+          url: 'https://cdn.jsdelivr.net/gh/fduhole/vue/package.json',
+          transformRequest: [
+            (data, headers) => {
+              delete headers.Authorization
+              return data
+            },
+          ],
+        })
         .then((response) => {
           this.latestVersion = response.data.version
           this.updateAvailable = compareVersion()
         })
         .catch((error) => {
-          this.latestVersion = '获取失败'
+          this.latestVersion = '获取失败: ' + error.message
         })
     },
     refreshAll() {
