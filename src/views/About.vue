@@ -16,7 +16,7 @@
           <v-btn color="primary" @click.stop="refreshAll">立即更新</v-btn>
         </p>
       </div>
-      <div class="not-installed">
+      <div class="not-installed" v-if="!installed">
         请<span>安装本应用</span>以获得更好的体验！
       </div>
     </div>
@@ -62,10 +62,10 @@ export default {
         })
         .then((response) => {
           this.latestVersion = response.data.version
-          this.updateAvailable = compareVersion()
+          this.updateAvailable = this.compareVersion()
         })
         .catch((error) => {
-          this.latestVersion = '获取失败: ' + error.message
+          this.latestVersion = '获取失败 ' + error.message
         })
     },
     refreshAll() {
