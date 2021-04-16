@@ -46,6 +46,26 @@ module.exports = {
           "sizes": "512x512",
           "type": "image/png"
         },
+        {
+          "src": "/img/icons/apple-touch-icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "/img/icons/apple-touch-icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        },
+        {
+          "src": "/img/icons/icon-192x192.png",
+          "sizes": "192x192",
+          "type": "image/png"
+        },
+        {
+          "src": "/img/icons/icon-512x512.png",
+          "sizes": "512x512",
+          "type": "image/png"
+        },
       ],
     },
   },
