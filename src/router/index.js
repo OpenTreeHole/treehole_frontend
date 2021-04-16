@@ -9,11 +9,11 @@ import About from '@/views/About.vue'
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/home', meta: { title: '首页|FDU Hole' }, component: Home, name: 'home' },
-  { path: '/login', meta: { title: '登录|FDU Hole' }, component: Login, name: 'login' },
+  { path: '/home', meta: { title: '首页 | FDU Hole' }, component: Home, name: 'home' },
+  { path: '/login', meta: { title: '登录 | FDU Hole' }, component: Login, name: 'login' },
   { path: '/', redirect: '/home' },
-  { path: '/about', meta: { title: '关于|FDU Hole' }, component: About, name: 'about' },
-  { path: '/register', meta: { title: '注册|FDU Hole' }, component: Register, name: 'register' },
+  { path: '/about', meta: { title: '关于 | FDU Hole' }, component: About, name: 'about' },
+  { path: '/register', meta: { title: '注册 | FDU Hole' }, component: Register, name: 'register' },
   { path: '/discussion/:id', meta: { title: 'FDU Hole' }, component: Discussion, name: 'discussion' }
 ]
 

@@ -10,6 +10,10 @@ import VueQuillEditor from 'vue-quill-editor'
 
 import plugins from './components/plugins'
 
+// 引入项目配置文件
+import FDUHoleFEConfig from './fduhole-fe.config.js'
+Vue.prototype.$feConfig = FDUHoleFEConfig
+
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -17,7 +21,7 @@ import 'quill/dist/quill.bubble.css'
 
 Vue.config.productionTip = false
 
-axios.defaults.baseURL = 'https://www.fduhole.tk/api/'
+axios.defaults.baseURL = FDUHoleFEConfig.backEndApi
 // axios.defaults.withCredentials = true
 axios.interceptors.request.use(config => {
   config.headers.Authorization = localStorage.getItem('token')
@@ -38,7 +42,7 @@ Vue.filter('timeDifference', function (datestr) {
   const now = new Date()
   let seconds = Math.floor((now - date) / 1000)
 
-  if(seconds < 0){
+  if (seconds < 0) {
     seconds = 0
   }
   if (seconds < 60) {
