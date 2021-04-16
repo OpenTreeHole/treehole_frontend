@@ -48,7 +48,7 @@
             <v-list-item-content>
               <v-list-item-title
                 v-text="item.title"
-                @click.stop="this.$route.push(item.path)"
+                @click.stop="this.$router.push(item.route)"
               ></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -65,11 +65,12 @@ export default {
     return {
       username: '',
       showSidebar: false,
+      currentPage: 0,
       navItems: [
         {
           title: '首页',
-          icon: '',
-          route: '/',
+          icon: 'mdi-home',
+          route: 'home',
         },
         // {
         //   title: '账户',
@@ -78,14 +79,13 @@ export default {
         // },
         {
           title: '关于',
-          icon: '',
-          route: '/about',
+          icon: 'mdi-information',
+          route: 'about',
         },
       ],
     }
   },
   computed: {
-    currentPage() {},
     // username(){
     //   let username = localStorage.getItem('username')
     //   if(username){
