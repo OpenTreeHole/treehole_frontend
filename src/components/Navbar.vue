@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    <v-system-bar></v-system-bar>
+    <!-- <v-system-bar></v-system-bar> -->
     <v-app-bar app color="primary" dark dense flat>
       <v-btn
         v-show="this.$router.currentRoute.name == 'discussion'"
@@ -41,15 +41,17 @@
       <v-divider></v-divider>
       <v-list nav dense>
         <v-list-item-group v-model="currentPage" color="primary">
-          <v-list-item v-for="(item, i) in navItems" :key="i">
+          <v-list-item
+            v-for="(item, i) in navItems"
+            :key="i"
+            @click.stop="$router.push(item.route)"
+            :disabled="i == currentPage"
+          >
             <v-list-item-icon>
               <v-icon v-text="item.icon"></v-icon>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title
-                v-text="item.title"
-                @click.stop="this.$router.push(item.route)"
-              ></v-list-item-title>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
