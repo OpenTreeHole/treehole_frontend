@@ -13,10 +13,12 @@
         </p>
         <p v-if="updateAvailable">
           检测到新版本：
-          <v-btn @click.stop="refreshAll">立即更新</v-btn>
+          <v-btn color="primary" @click.stop="refreshAll">立即更新</v-btn>
         </p>
       </div>
-      <div class="not-installed">请安装本应用以获得更好的体验！</div>
+      <div class="not-installed">
+        请<span>安装本应用</span>以获得更好的体验！
+      </div>
     </div>
     <div id=""></div>
     <div id="privacy-policy"></div>
@@ -56,7 +58,12 @@ export default {
           this.latestVersion = '获取失败'
         })
     },
-    refreshAll() {},
+    refreshAll() {
+      // this.$router.go(0, () => {
+      //   this.$router.push('home')
+      // })
+      window.location.replace('/')
+    },
   },
   mounted() {
     this.getLatestVersion()
