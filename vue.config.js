@@ -2,10 +2,11 @@ var webpack = require('webpack')
 
 module.exports = {
   pwa: {
-    name: 'FDU HOLE',
+    name: 'FDU Hole',
     themeColor: "#4278ce",
-    msTileColor: "#4278ce",
+    msTileColor: "#2b5797",
     appleMobileWebAppCache: "yes",
+    appleMobileWebAppStatusBarStyle: "black-translucent",
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       // swSrc is required in InjectManifest mode.
@@ -18,44 +19,12 @@ module.exports = {
       ],
     },
     manifestOptions: {
-      name: "FDU HOLE",
-      short_name: "树洞",
+      short_name: "FDUHole",
       lang: "zh-CN",
       start_url: "/",
       display: "standalone",
-      theme_color: "#4278ce",
       background_color: '#ffffff',
       icons: [
-        // {
-        //   "src": "/img/icons/android-chrome-192x192.png",
-        //   "sizes": "192x192",
-        //   "type": "image/png"
-        // },
-        // {
-        //   "src": "/img/icons/android-chrome-512x512.png",
-        //   "sizes": "512x512",
-        //   "type": "image/png"
-        // },
-        // {
-        //   "src": "/img/icons/android-chrome-maskable-192x192.png",
-        //   "sizes": "192x192",
-        //   "type": "image/png"
-        // },
-        // {
-        //   "src": "/img/icons/android-chrome-maskable-512x512.png",
-        //   "sizes": "512x512",
-        //   "type": "image/png"
-        // },
-        // {
-        //   "src": "/img/icons/apple-touch-icon-192x192.png",
-        //   "sizes": "192x192",
-        //   "type": "image/png"
-        // },
-        // {
-        //   "src": "/img/icons/apple-touch-icon-512x512.png",
-        //   "sizes": "512x512",
-        //   "type": "image/png"
-        // },
         {
           "src": "/img/icons/icon-192x192.png",
           "sizes": "192x192",
@@ -66,8 +35,16 @@ module.exports = {
           "sizes": "512x512",
           "type": "image/png"
         },
-      ],
+      ]
     },
+    iconPaths: {
+      faviconSVG: '/img/icons/favicon.svg',
+      favicon32: '/img/icons/favicon-32x32.png',
+      favicon16: '/img/icons/favicon-16x16.png',
+      appleTouchIcon: '/img/icons/apple-touch-icon-152x152.png',
+      maskIcon: '/img/icons/safari-pinned-tab.svg',
+      msTileImage: '/img/icons/msapplication-icon-144x144.png'
+    }
   },
   lintOnSave: false,
   chainWebpack: config => {
