@@ -24,18 +24,18 @@ module.exports = {
       start_url: "/",
       display: "standalone",
       background_color: '#ffffff',
-      icons: [
-        {
-          "src": "/img/icons/icon-192x192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        },
-        {
-          "src": "/img/icons/icon-512x512.png",
-          "sizes": "512x512",
-          "type": "image/png"
-        },
-      ]
+      // icons: [
+      //   {
+      //     "src": "/img/icons/icon-192x192.png",
+      //     "sizes": "192x192",
+      //     "type": "image/png"
+      //   },
+      //   {
+      //     "src": "/img/icons/icon-512x512.png",
+      //     "sizes": "512x512",
+      //     "type": "image/png"
+      //   },
+      // ]
     },
     iconPaths: {
       faviconSVG: '/img/icons/favicon.svg',

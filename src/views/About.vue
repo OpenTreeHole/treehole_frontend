@@ -3,7 +3,8 @@
     <div id="information">
       <h1>FDU Hole</h1>
       <blockquote>
-        Made with ❤ by <a href="https://github.com/fduhole">FDU-Hole-Dev</a>
+        Made with ❤ by
+        <a href="https://github.com/fduhole" target="_blank">FDU-Hole-Dev</a>
       </blockquote>
       <div class="installed" v-if="installed">
         <p>
@@ -15,6 +16,7 @@
           <v-btn @click.stop="refreshAll">立即更新</v-btn>
         </p>
       </div>
+      <div class="not-installed">请安装本应用以获得更好的体验！</div>
     </div>
     <div id=""></div>
     <div id="privacy-policy"></div>
@@ -27,7 +29,9 @@ export default {
   data() {
     return {
       latestVersion: '正在获取',
-      installed: true,
+      installed:
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone,
       updateAvailable: false,
     }
   },
