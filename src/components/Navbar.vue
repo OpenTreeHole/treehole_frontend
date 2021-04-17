@@ -1,6 +1,6 @@
 <template>
   <div class="navbar">
-    <v-app-bar app color="primary" dark dense flat>
+    <v-app-bar app color="primary" dark dense flat style="float: top">
       <v-app-bar-nav-icon
         v-if="!inBanMenuRoutes"
         icon
@@ -27,6 +27,7 @@
     </v-app-bar>
 
     <v-navigation-drawer app v-model="showSidebar">
+      <div class="iphone-fitter"></div>
       <v-list-item color="primary">
         <v-list-item-content>
           <v-list-item-title>{{ username }}</v-list-item-title>
@@ -102,6 +103,7 @@ export default {
   },
   methods: {
     refresh() {
+      this.$router.push('/')
       location.reload()
     },
     back() {
@@ -165,15 +167,17 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.iphone-fitter {
+  display: none;
+}
 @supports (
     (height: constant(safe-area-inset-top)) or
       (height: env(safe-area-inset-top))
   )
   and (-webkit-overflow-scrolling: touch) {
-  .v-app-barv {
-    height: 48px;
-    height: calc(48px+constant(safe-area-inset-top));
-    height: calc(48px+env(safe-area-inset-top));
+  .iphone-fitter {
+    display: block;
+    height: env(safe-area-inset-top);
   }
 }
 </style>

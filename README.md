@@ -4,15 +4,7 @@
 
 立即前往
 [master](https://fduhole.tk)  
-
 [dev](https://fduhole.vercel.app)
-
-## Working on...
-- [ ] 加入举报功能
-- [ ] 加入刷新按钮
-- [ ] 检查更新与手动更新功能
-- [ ] 首页刷新内容键显示提示
-- [ ] 适配iPhone刘海屏
 
 ## 开发
 请不要直接修改 master 分支，开发过程中，临时更改提交到 dev 分支

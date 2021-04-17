@@ -6,8 +6,8 @@
         Made with ❤ by
         <a href="https://github.com/fduhole" target="_blank">FDU-Hole-Dev</a>
       </blockquote>
-      <v-btn color="primary" @click.stop="reloadAll">刷新应用</v-btn>
-      <p>如果遇到问题，或需要升级，请点击此按钮</p>
+      <v-btn color="primary" @click="reloadAll">重载</v-btn>
+      <p>如果遇到问题，或需要升级，请点击重载按钮</p>
       <div class="installed" v-if="installed">
         <p>
           当前版本：{{ $feConfig.feVersion }}<br />
@@ -19,7 +19,11 @@
         请<span>安装本应用</span>以获得更好的体验！
       </div>
     </div>
-    <router-link to="/licence">协议</router-link>
+    <p>
+      使用 FDU Hole 意味着你同意<router-link to="/licence"
+        >这些协议</router-link
+      >
+    </p>
   </v-container>
 </template>
 
@@ -79,7 +83,13 @@ export default {
         })
     },
     reloadAll() {
-      alert('还没写这个功能。。因为我不会。。')
+      // caches.keys().then(function (cacheNames) {
+      //   cacheNames.forEach(function (cacheName) {
+      //     caches.delete(cacheName)
+      //   })
+      // })
+      this.$router.push('/')
+      location.reload(true)
     },
   },
   mounted() {

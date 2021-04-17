@@ -1,7 +1,7 @@
 <template>
   <v-container class="licence">
     <div>
-      <p>使用 FDU Hole 意味着你同意一下协议。</p>
+      <p>使用 FDU Hole 意味着你同意以下协议。</p>
       <p>
         如果您不同意以下协议，请立即删除该应用，关闭此网站，停止使用 FDU Hole
         提供的的服务。

@@ -1,5 +1,6 @@
 <template>
   <v-app>
+    <v-system-bar dark app color="primary"></v-system-bar>
     <message ref="message"></message>
     <Navbar></Navbar>
 
@@ -29,10 +30,6 @@ export default {
     Message,
   },
 
-  data() {
-    return {}
-  },
-
   methods: {
     newEvent() {
       console.log('event')
@@ -52,3 +49,20 @@ export default {
   },
 }
 </script>
+
+<style lang="scss" scoped>
+.v-system-bar {
+  display: none;
+}
+@supports (
+    (height: constant(safe-area-inset-top)) or
+      (height: env(safe-area-inset-top))
+  )
+  and (-webkit-overflow-scrolling: touch) {
+  .v-system-bar {
+    float: top;
+    display: block;
+    height: 33pt !important;
+  }
+}
+</style>
