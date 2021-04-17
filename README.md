@@ -2,7 +2,9 @@
 
 本项目依赖于[复旦树洞后端 FDU Hole Back End](https://github.com/fduhole/fduhole)
 
-立即前往
+[![deploy to server](https://github.com/fduhole/vue/actions/workflows/main.yml/badge.svg)](https://github.com/fduhole/vue/actions/workflows/main.yml)
+
+立即前往  
 [master](https://fduhole.tk)  
 [dev](https://fduhole.vercel.app)
 

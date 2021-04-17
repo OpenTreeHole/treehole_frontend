@@ -53,19 +53,6 @@ export default {
     getLatestVersion() {
       this.$axios
         .request({
-          url: 'https://purge.jsdelivr.net/gh/fduhole/vue/package.json',
-          transformRequest: [
-            (data, headers) => {
-              delete headers.Authorization
-              return data
-            },
-          ],
-        })
-        .catch((error) => {
-          this.latestVersion = '获取失败 ' + error.message
-        }) // 刷新 cdn 版本号缓存
-      this.$axios
-        .request({
           url: 'https://cdn.jsdelivr.net/gh/fduhole/vue/package.json',
           transformRequest: [
             (data, headers) => {
