@@ -25,7 +25,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.title) { document.title = to.meta.title }
-  if (to.path === '/login' || to.path === '/register') return next()
+  if (to.path === '/login' || to.path === '/register' || to.path === '/liscence') return next()
   const token = localStorage.getItem('token')
   if (!token) return next('/login')
   next()

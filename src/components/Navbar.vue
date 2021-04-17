@@ -1,14 +1,16 @@
 <template>
   <div class="navbar">
     <v-app-bar app color="primary" dark dense flat>
-      <v-btn v-show="inAllowBackRoutes" icon @click.stop="back"
-        ><v-icon>mdi-arrow-left</v-icon></v-btn
-      >
       <v-app-bar-nav-icon
-        v-if="this.$route.name !== 'login' && this.$route.name !== 'register'"
+        v-if="!inBanMenuRoutes"
         icon
         @click.stop="showSidebar = !showSidebar"
       ></v-app-bar-nav-icon>
+
+      <v-app-bar-nav-icon v-if="inAllowBackRoutes" icon @click.stop="back"
+        ><v-icon>mdi-arrow-left</v-icon></v-app-bar-nav-icon
+      >
+
       <div class="apptitle">FDU Hole</div>
       <!-- <div
         v-if="this.$route.name !== 'login' && this.$route.name !== 'register'"
@@ -66,7 +68,9 @@ export default {
       showSidebar: false,
       currentPage: 0,
       allowBackRoutes: ['discussion', 'liscence'],
+      banMenuRoutes: ['login', 'register', 'liscence', 'discussion'],
       inAllowBackRoutes: false,
+      inBanMenuRoutes: true,
       navItems: [
         {
           title: '首页',
@@ -113,7 +117,18 @@ export default {
     $route() {
       this.inAllowBackRoutes = (() => {
         const currentRoute = this.$router.currentRoute.name
-        for (var i of this.allowBackRoutes) {
+        var i
+        for (i of this.allowBackRoutes) {
+          if (currentRoute == i) {
+            return true
+          }
+        }
+        return false
+      })()
+      this.inBanMenuRoutes = (() => {
+        const currentRoute = this.$router.currentRoute.name
+        var i
+        for (i of this.banMenuRoutes) {
           if (currentRoute == i) {
             return true
           }
@@ -124,6 +139,26 @@ export default {
     },
   },
   created() {
+    this.inAllowBackRoutes = (() => {
+      const currentRoute = this.$router.currentRoute.name
+      var i
+      for (i of this.allowBackRoutes) {
+        if (currentRoute == i) {
+          return true
+        }
+      }
+      return false
+    })()
+    this.inBanMenuRoutes = (() => {
+      const currentRoute = this.$router.currentRoute.name
+      var i
+      for (i of this.banMenuRoutes) {
+        if (currentRoute == i) {
+          return true
+        }
+      }
+      return false
+    })()
     this.username = localStorage.getItem('username')
   },
 }
