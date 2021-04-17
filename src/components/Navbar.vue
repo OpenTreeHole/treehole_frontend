@@ -11,7 +11,7 @@
         ><v-icon>mdi-arrow-left</v-icon></v-app-bar-nav-icon
       >
 
-      <div class="apptitle">FDU Hole</div>
+      <v-app-bar-title>FDU Hole</v-app-bar-title>
       <!-- <div
         v-if="this.$route.name !== 'login' && this.$route.name !== 'register'"
       >
@@ -164,5 +164,16 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@supports (
+    (height: constant(safe-area-inset-top)) or
+      (height: env(safe-area-inset-top))
+  )
+  and (-webkit-overflow-scrolling: touch) {
+  .v-app-barv {
+    height: 48px;
+    height: constant(safe-area-inset-top);
+    height: env(safe-area-inset-top);
+  }
+}
 </style>
