@@ -24,6 +24,7 @@
     </div> -->
 
       <v-spacer></v-spacer>
+      <v-btn icon @click="refresh"><v-icon>mdi-autorenew</v-icon></v-btn>
     </v-app-bar>
 
     <v-navigation-drawer app v-model="showSidebar">
@@ -97,6 +98,9 @@ export default {
     // }
   },
   methods: {
+    refresh() {
+      this.$router.go(0)
+    },
     back() {
       this.$router.back()
     },

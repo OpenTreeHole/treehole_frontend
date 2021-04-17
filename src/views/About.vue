@@ -6,7 +6,7 @@
         Made with ❤ by
         <a href="https://github.com/fduhole" target="_blank">FDU-Hole-Dev</a>
       </blockquote>
-      <v-btn color="primary" @click.stop="refreshAll">刷新应用</v-btn>
+      <v-btn color="primary" @click.stop="reloadAll">刷新应用</v-btn>
       <p>如果遇到问题，或需要升级，请点击此按钮</p>
       <div class="installed" v-if="installed">
         <p>
@@ -26,8 +26,6 @@
 </template>
 
 <script>
-import axios from 'axios'
-
 export default {
   name: 'About',
   data() {
@@ -41,8 +39,8 @@ export default {
   },
   methods: {
     compareVersion() {
-      const currentVersion = $feConfig.feVersion.split('.')
-      const latestVersion = latestVersion.split('.')
+      const currentVersion = this.$feConfig.feVersion.split('.')
+      const latestVersion = this.latestVersion.split('.')
       return (
         latestVersion[0] > currentVersion[0] ||
         latestVersion[1] > currentVersion[1] ||
@@ -50,7 +48,7 @@ export default {
       )
     },
     getLatestVersion() {
-      axios
+      this.$axios
         .request({
           url: 'https://cdn.jsdelivr.net/gh/fduhole/vue/package.json',
           transformRequest: [
@@ -68,11 +66,9 @@ export default {
           this.latestVersion = '获取失败 ' + error.message
         })
     },
-    refreshAll() {
-      // this.$router.go(0, () => {
-      //   this.$router.push('home')
-      // })
-      window.location.replace('/')
+    reloadAll() {
+      // window.location.replace('/')
+      alert('还没写这个功能。。因为我不会。。')
     },
   },
   mounted() {
