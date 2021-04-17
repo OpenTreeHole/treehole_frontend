@@ -67,8 +67,8 @@ export default {
       username: '',
       showSidebar: false,
       currentPage: 0,
-      allowBackRoutes: ['discussion', 'liscence'],
-      banMenuRoutes: ['login', 'register', 'liscence', 'discussion'],
+      allowBackRoutes: ['discussion', 'licence'],
+      banMenuRoutes: ['login', 'register', 'licence', 'discussion'],
       inAllowBackRoutes: false,
       inBanMenuRoutes: true,
       navItems: [

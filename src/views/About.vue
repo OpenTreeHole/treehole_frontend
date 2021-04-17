@@ -19,7 +19,7 @@
         请<span>安装本应用</span>以获得更好的体验！
       </div>
     </div>
-    <router-link to="/liscence">协议</router-link>
+    <router-link to="/licence">协议</router-link>
   </v-container>
 </template>
 
