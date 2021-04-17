@@ -102,7 +102,7 @@ export default {
   },
   methods: {
     refresh() {
-      this.$router.go(0)
+      location.reload()
     },
     back() {
       this.$router.back()
