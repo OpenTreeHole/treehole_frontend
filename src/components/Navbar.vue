@@ -172,8 +172,8 @@ export default {
   and (-webkit-overflow-scrolling: touch) {
   .v-app-barv {
     height: 48px;
-    height: constant(safe-area-inset-top);
-    height: env(safe-area-inset-top);
+    height: calc(48px+constant(safe-area-inset-top));
+    height: calc(48px+env(safe-area-inset-top));
   }
 }
 </style>
