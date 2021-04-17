@@ -83,13 +83,12 @@ export default {
         })
     },
     reloadAll() {
-      // caches.keys().then(function (cacheNames) {
-      //   cacheNames.forEach(function (cacheName) {
-      //     caches.delete(cacheName)
-      //   })
-      // })
-      this.$router.push('/')
-      location.reload(true)
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = '/'
+      document.body.appendChild(form)
+      form.submit()
+      location.href = '/'
     },
   },
   mounted() {
