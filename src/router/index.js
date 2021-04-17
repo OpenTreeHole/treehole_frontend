@@ -5,10 +5,12 @@ import Home from '@/views/Home.vue'
 import Register from '@/views/Register.vue'
 import Discussion from '@/views/Discussion.vue'
 import About from '@/views/About.vue'
+import Liscence from '@/views/Liscence.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
+  { path: '/liscence', meta: { title: '协议 | FDU Hole' }, component: Liscence, name: 'liscence' },
   { path: '/home', meta: { title: '首页 | FDU Hole' }, component: Home, name: 'home' },
   { path: '/login', meta: { title: '登录 | FDU Hole' }, component: Login, name: 'login' },
   { path: '/', redirect: '/home' },

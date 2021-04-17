@@ -1,10 +1,7 @@
 <template>
   <div class="navbar">
     <v-app-bar app color="primary" dark dense flat>
-      <v-btn
-        v-show="this.$router.currentRoute.name == 'discussion'"
-        icon
-        @click.stop="back"
+      <v-btn v-show="inAllowBackRoutes" icon @click.stop="back"
         ><v-icon>mdi-arrow-left</v-icon></v-btn
       >
       <v-app-bar-nav-icon
@@ -68,6 +65,8 @@ export default {
       username: '',
       showSidebar: false,
       currentPage: 0,
+      allowBackRoutes: ['discussion', 'liscence'],
+      inAllowBackRoutes: false,
       navItems: [
         {
           title: '首页',
@@ -112,6 +111,15 @@ export default {
 
   watch: {
     $route() {
+      this.inAllowBackRoutes = (() => {
+        const currentRoute = this.$router.currentRoute.name
+        for (var i of this.allowBackRoutes) {
+          if (currentRoute == i) {
+            return true
+          }
+        }
+        return false
+      })()
       this.username = localStorage.getItem('username')
     },
   },

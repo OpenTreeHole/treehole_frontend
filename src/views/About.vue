@@ -19,9 +19,7 @@
         请<span>安装本应用</span>以获得更好的体验！
       </div>
     </div>
-    <div id="community-agreement"><h2>社区公约</h2></div>
-    <div id="terms-of-use"><h2>使用条款</h2></div>
-    <div id="privacy-policy"><h2>隐私政策</h2></div>
+    <router-link to="/liscence">协议</router-link>
   </v-container>
 </template>
 
@@ -67,7 +65,6 @@ export default {
         })
     },
     reloadAll() {
-      // window.location.replace('/')
       alert('还没写这个功能。。因为我不会。。')
     },
   },
