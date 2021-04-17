@@ -1,6 +1,5 @@
 <template>
   <v-app>
-    <v-system-bar></v-system-bar>
     <message ref="message"></message>
     <Navbar></Navbar>
 
