@@ -2,12 +2,15 @@
   <v-container>
     <v-card
       ><v-card-title>FDU Hole</v-card-title>
+
+      <!-- 以下为本开源前端项目的版权属名，按照开源协议及《中华人民共和国合同法》您不应该以任何方式修改它，否则 FDUHole-Dev 或考虑通过法律途径解决问题。 -->
       <v-card-text>
         Made with ❤ by
-        <a href="https://github.com/fduhole" target="_blank"
-          >FDUHole-Dev</a
-        > </v-card-text
-      ><v-card-text
+        <a href="https://github.com/fduhole" target="_blank">FDUHole-Dev</a>
+      </v-card-text>
+      <!-- 以上为本开源前端项目的版权属名，按照开源协议及《中华人民共和国合同法》您不应该以任何方式修改它，否则 FDUHole-Dev 或考虑通过法律途径解决问题。 -->
+
+      <v-card-text
         >使用 FDU Hole 意味着你同意<router-link to="/licence"
           >相关协议</router-link
         ></v-card-text
@@ -32,19 +35,19 @@
     <v-card>
       <v-card-title>联系我们</v-card-title>
       <v-card-text>
-        项目首页：<a href="https://www.github.com/fduhole/vue"
-          >github.com/fduhole/vue</a
-        >
+        项目首页：<a :href="$feConfig.feRepository">{{
+          $feConfig.feRepository
+        }}</a>
       </v-card-text>
       <v-card-text>
-        团队首页：<a href="https://www.github.com/fduhole"
-          >github.com/fduhole</a
-        >
+        团队首页：<a :href="$feConfig.teamHomepage">{{
+          $feConfig.teamHomepage
+        }}</a>
       </v-card-text>
       <v-card-text
-        >团队邮箱：<a href="mailto:fduhole@gmail.com"
-          >fduhole@gmail.com</a
-        ></v-card-text
+        >团队邮箱：<a :href="'mailto:' + $feConfig.teamMail">{{
+          $feConfig.teamMail
+        }}</a></v-card-text
       >
     </v-card>
 
@@ -101,7 +104,7 @@ export default {
     getLatestVersion() {
       this.$axios
         .request({
-          url: 'https://cdn.jsdelivr.net/gh/fduhole/vue/package.json',
+          url: this.$feConfig.latestReleasePkgJSON,
           transformRequest: [
             (data, headers) => {
               delete headers.Authorization

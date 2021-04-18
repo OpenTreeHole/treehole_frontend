@@ -26,7 +26,7 @@ jobs:
           CI: true
       # 请求更新版本号缓存
       - name: clear versionID cache
-        run: wget https://purge.jsdelivr.net/gh/fduhole/vue/package.json
+        run: wget https://purge.jsdelivr.net/gh/fduhole/vue@master/package.json
       # Deploy
       - name: Deploy
         uses: easingthemes/ssh-deploy@v2.0.7

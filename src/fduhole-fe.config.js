@@ -1,6 +1,11 @@
 var pksjson = require('../package.json');
 
 export default {
+    // 前端项目地址
+    feRepository: 'https://www.github.com/fduhole/vue',
+    teamHomepage: 'https://www.github.com/fduhole',
+    teamMail: 'fduhole@gmail.com',
+    latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/package.json',
     // 后端 api 地址，配套后端的源码请移步 https://github.com/fduhole/fduhole
     backEndApi: 'https://www.fduhole.tk/api/',
     // 前端版本号

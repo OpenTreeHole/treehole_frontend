@@ -40,7 +40,9 @@
             </div>
 
             <div>
-              <v-btn text color="primary" href="#/licence">协议</v-btn>
+              <v-btn text color="primary" href="#/licence"
+                >登录意味着你同意这些协议</v-btn
+              >
             </div>
             <div>
               <v-btn text color="primary" href="#/register"
