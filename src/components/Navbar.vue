@@ -56,13 +56,10 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
-      <v-list-item-content>
-        <v-list-item-title>
-          <v-btn color="primary" @click="reloadAll"
-            >重载</v-btn
-          ></v-list-item-title
-        >
-      </v-list-item-content>
+
+      <v-list-container class="drawer-bottom-container">
+        <v-btn color="primary" @click="reloadAll">重载</v-btn>
+      </v-list-container>
     </v-navigation-drawer>
   </div>
 </template>
@@ -175,5 +172,11 @@ export default {
     display: block;
     height: env(safe-area-inset-top);
   }
+}
+
+.drawer-bottom-container {
+  position: fixed;
+  bottom: 0;
+  margin: 20px;
 }
 </style>

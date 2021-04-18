@@ -1,59 +1,70 @@
 <template>
   <v-container>
     <v-card
-      ><h1>FDU Hole</h1>
-      <p>
+      ><v-card-title>FDU Hole</v-card-title>
+      <v-card-text>
         Made with ❤ by
         <a href="https://github.com/fduhole" target="_blank">FDU-Hole-Dev</a>
-      </p></v-card
+      </v-card-text></v-card
     >
 
     <v-card>
-      使用 FDU Hole 意味着你同意<router-link to="/licence"
-        >相关协议</router-link
+      <v-card-text
+        >使用 FDU Hole 意味着你同意<router-link to="/licence"
+          >相关协议</router-link
+        ></v-card-text
       >
     </v-card>
 
     <v-card v-if="installed">
-      <p>
+      <v-card-title>版本信息</v-card-title>
+      <v-card-text>
         当前版本：{{ $feConfig.feVersion }}<br />
         最新版本：{{ latestVersion }}
-      </p>
-      <p v-if="updateAvailable">检测到新版本，重载应用以升级！</p>
+      </v-card-text>
+      <v-card-text v-if="updateAvailable"
+        >检测到新版本，重载应用以升级！</v-card-text
+      >
     </v-card>
 
     <v-card v-if="!installed">
-      <h2>版本信息</h2>
-      <h3>前端版本</h3>
-      <p>
+      <v-card-title>版本信息</v-card-title>
+      <v-card-subtitle>前端版本</v-card-subtitle>
+      <v-card-text>
         您正在使用网页版 FDU Hole，请<span>安装本应用</span>以获得更好的体验！
-      </p>
-      <h3>后端版本</h3>
-      <p>获取失败</p>
+      </v-card-text>
+      <v-card-subtitle>后端版本</v-card-subtitle>
+      <v-card-text>获取失败</v-card-text>
     </v-card>
 
     <v-card>
-      <h2>联系我们</h2>
-      <p>
+      <v-card-title>联系我们</v-card-title>
+      <v-card-text>
         项目首页：<a href="https://www.github.com/fduhole/vue"
           >github.com/fduhole/vue</a
         >
-      </p>
-      <p>
+      </v-card-text>
+      <v-card-text>
         团队首页：<a href="https://www.github.com/fduhole"
           >github.com/fduhole</a
         >
-      </p>
-      <p>团队邮箱：<a href="mailto:fduhole@gmail.com">fduhole@gmail.com</a></p>
+      </v-card-text>
+      <v-card-text
+        >团队邮箱：<a href="mailto:fduhole@gmail.com"
+          >fduhole@gmail.com</a
+        ></v-card-text
+      >
     </v-card>
 
     <v-card>
-      <h2>友情链接</h2>
-      <ul>
-        <li v-for="(item, i) in $feConfig.friendLinks" :key="i">
-          <a :href="item.link">{{ item.author }}: {{ item.siteName }}</a>
-        </li>
-      </ul>
+      <v-card-title>友情链接</v-card-title>
+      <v-card-text
+        ><ul>
+          <li v-for="(item, i) in $feConfig.friendLinks" :key="i">
+            <a :href="item.link">{{ item.author }}: {{ item.siteName }}</a>
+          </li>
+        </ul></v-card-text
+      >
     </v-card>
   </v-container>
 </template>
