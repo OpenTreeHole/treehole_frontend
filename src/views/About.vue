@@ -1,29 +1,30 @@
 <template>
   <v-container>
-    <div id="information">
-      <h1>FDU Hole</h1>
-      <blockquote>
+    <v-card
+      ><h1>FDU Hole</h1>
+      <p>
         Made with ❤ by
         <a href="https://github.com/fduhole" target="_blank">FDU-Hole-Dev</a>
-      </blockquote>
-      <v-btn color="primary" @click="reloadAll">重载</v-btn>
-      <p>如果遇到问题，或需要升级，请点击重载按钮</p>
-      <div class="installed" v-if="installed">
-        <p>
-          当前版本：{{ $feConfig.feVersion }}<br />
-          最新版本：{{ latestVersion }}
-        </p>
-        <p v-if="updateAvailable">检测到新版本，刷新应用以升级！</p>
-      </div>
-      <div class="not-installed" v-if="!installed">
-        请<span>安装本应用</span>以获得更好的体验！
-      </div>
-    </div>
-    <p>
+      </p></v-card
+    >
+
+    <v-card v-if="installed">
+      <p>
+        当前版本：{{ $feConfig.feVersion }}<br />
+        最新版本：{{ latestVersion }}
+      </p>
+      <p v-if="updateAvailable">检测到新版本，重载应用以升级！</p>
+    </v-card>
+
+    <v-card v-if="!installed">
+      请<span>安装本应用</span>以获得更好的体验！
+    </v-card>
+
+    <v-card>
       使用 FDU Hole 意味着你同意<router-link to="/licence"
-        >这些协议</router-link
+        >相关协议</router-link
       >
-    </p>
+    </v-card>
   </v-container>
 </template>
 
@@ -33,10 +34,9 @@ export default {
   data() {
     return {
       latestVersion: '正在获取',
-      installed: true,
-      // installed:
-      //   window.matchMedia('(display-mode: standalone)').matches ||
-      //   window.navigator.standalone,
+      installed:
+        window.matchMedia('(display-mode: standalone)').matches ||
+        window.navigator.standalone,
       updateAvailable: false,
     }
   },
@@ -68,14 +68,6 @@ export default {
         .catch((error) => {
           this.latestVersion = '获取失败 ' + error.message
         })
-    },
-    reloadAll() {
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = '/'
-      document.body.appendChild(form)
-      form.submit()
-      location.href = '/'
     },
   },
   mounted() {

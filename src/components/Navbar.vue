@@ -42,7 +42,7 @@
       <v-list nav dense>
         <v-list-item-group v-model="currentPage" color="primary">
           <v-list-item
-            v-for="(item, i) in navItems"
+            v-for="(item, i) in $feConfig.navItems"
             :key="i"
             @click.stop="$router.push(item.route)"
             :disabled="i == currentPage"
@@ -56,6 +56,13 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
+      <v-list-item-content>
+        <v-list-item-title>
+          <v-btn color="primary" @click="reloadAll"
+            >重载</v-btn
+          ></v-list-item-title
+        >
+      </v-list-item-content>
     </v-navigation-drawer>
   </div>
 </template>
@@ -68,27 +75,8 @@ export default {
       username: '',
       showSidebar: false,
       currentPage: 0,
-      allowBackRoutes: ['discussion', 'licence'],
-      banMenuRoutes: ['login', 'register', 'licence', 'discussion'],
       inAllowBackRoutes: false,
       inBanMenuRoutes: true,
-      navItems: [
-        {
-          title: '首页',
-          icon: 'mdi-home',
-          route: 'home',
-        },
-        // {
-        //   title: '账户',
-        //   icon:'',
-        //   route: '/user'
-        // },
-        {
-          title: '关于',
-          icon: 'mdi-information',
-          route: 'about',
-        },
-      ],
     }
   },
   computed: {
@@ -106,6 +94,14 @@ export default {
       this.$router.push('/')
       location.reload()
     },
+    reloadAll() {
+      const form = document.createElement('form')
+      form.method = 'POST'
+      form.action = '/'
+      document.body.appendChild(form)
+      form.submit()
+      location.href = '/'
+    },
     back() {
       this.$router.back()
     },
@@ -120,7 +116,7 @@ export default {
       this.inAllowBackRoutes = (() => {
         const currentRoute = this.$router.currentRoute.name
         var i
-        for (i of this.allowBackRoutes) {
+        for (i of this.$feConfig.allowBackRoutes) {
           if (currentRoute == i) {
             return true
           }
@@ -130,7 +126,7 @@ export default {
       this.inBanMenuRoutes = (() => {
         const currentRoute = this.$router.currentRoute.name
         var i
-        for (i of this.banMenuRoutes) {
+        for (i of this.$feConfig.banMenuRoutes) {
           if (currentRoute == i) {
             return true
           }
@@ -144,7 +140,7 @@ export default {
     this.inAllowBackRoutes = (() => {
       const currentRoute = this.$router.currentRoute.name
       var i
-      for (i of this.allowBackRoutes) {
+      for (i of this.$feConfig.allowBackRoutes) {
         if (currentRoute == i) {
           return true
         }
@@ -154,7 +150,7 @@ export default {
     this.inBanMenuRoutes = (() => {
       const currentRoute = this.$router.currentRoute.name
       var i
-      for (i of this.banMenuRoutes) {
+      for (i of this.$feConfig.banMenuRoutes) {
         if (currentRoute == i) {
           return true
         }
