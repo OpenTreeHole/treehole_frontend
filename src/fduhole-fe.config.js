@@ -46,4 +46,11 @@ export default {
             route: 'about',
         },
     ],
+    friendLinks: [
+        {
+            siteName: '旦兮',
+            author: 'DanXi-Dev',
+            link: 'https://danxi-dev.github.io'
+        }
+    ]
 }
