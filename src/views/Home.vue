@@ -38,7 +38,7 @@
             v-ripple
           >
             <div v-if="styleData[index]['fold']" :id="'p' + index" class="fold">
-              {{ discussion.first_post.content | (plain - text) }}
+              {{ discussion.first_post.content | plainText }}
             </div>
             <div v-else :id="'p' + index" class="unfold">
               <div id="rich-text" v-html="discussion.first_post.content"></div>

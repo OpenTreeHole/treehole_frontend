@@ -33,7 +33,7 @@ Vue.use(VueCookies)
 Vue.use(plugins)
 Vue.use(VueQuillEditor /* { default global options } */)
 
-Vue.filter('plain-text', function (html) {
+Vue.filter('plainText', function (html) {
   return html.replace(/<img.*?>/g, '[图片]').replace(/<.*?>/g, ' ')
 })
 
