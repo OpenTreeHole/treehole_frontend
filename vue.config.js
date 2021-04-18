@@ -3,8 +3,8 @@ var webpack = require('webpack')
 module.exports = {
   pwa: {
     name: 'FDU Hole',
-    themeColor: "#4278ce",
-    msTileColor: "#2b5797",
+    themeColor: "#3175D0",
+    msTileColor: "#3175D0",
     appleMobileWebAppCapable: 'yes',
     appleMobileWebAppStatusBarStyle: "black-translucent",
     workboxPluginMode: 'InjectManifest',
