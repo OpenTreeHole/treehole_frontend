@@ -4,34 +4,26 @@
       ><v-card-title>FDU Hole</v-card-title>
       <v-card-text>
         Made with ❤ by
-        <a href="https://github.com/fduhole" target="_blank">FDU-Hole-Dev</a>
-      </v-card-text></v-card
-    >
-
-    <v-card>
-      <v-card-text
+        <a href="https://github.com/fduhole" target="_blank"
+          >FDUHole-Dev</a
+        > </v-card-text
+      ><v-card-text
         >使用 FDU Hole 意味着你同意<router-link to="/licence"
           >相关协议</router-link
         ></v-card-text
-      >
-    </v-card>
+      ></v-card
+    >
 
-    <v-card v-if="installed">
+    <v-card>
       <v-card-title>版本信息</v-card-title>
-      <v-card-text>
-        当前版本：{{ $feConfig.feVersion }}<br />
-        最新版本：{{ latestVersion }}
+      <v-card-text v-if="!installed">
+        您正在使用网页版 FDU Hole，请<span>安装本应用</span>以获得更好的体验！
       </v-card-text>
-      <v-card-text v-if="updateAvailable"
-        >检测到新版本，重载应用以升级！</v-card-text
-      >
-    </v-card>
-
-    <v-card v-if="!installed">
-      <v-card-title>版本信息</v-card-title>
       <v-card-subtitle>前端版本</v-card-subtitle>
       <v-card-text>
-        您正在使用网页版 FDU Hole，请<span>安装本应用</span>以获得更好的体验！
+        当前版本：{{ $feConfig.feVersion }}<br />
+        最新版本：{{ latestVersion }} <br />
+        {{ updateMsg[updateMsgIndex] }}
       </v-card-text>
       <v-card-subtitle>后端版本</v-card-subtitle>
       <v-card-text>获取失败</v-card-text>
@@ -78,18 +70,33 @@ export default {
       installed:
         window.matchMedia('(display-mode: standalone)').matches ||
         window.navigator.standalone,
-      updateAvailable: false,
+      updateMsg: [
+        '检测到新版本，重载应用以升级！',
+        '您正在使用开发版，如遇 BUG 请前往 GitHub 提交 issue 或 Pull Request！',
+        '您正在使用最新版的FDU Hole！',
+      ],
+      updateMsgIndex: 2,
     }
   },
   methods: {
-    compareVersion() {
+    updateUpdateMsgIndex() {
       const currentVersion = this.$feConfig.feVersion.split('.')
       const latestVersion = this.latestVersion.split('.')
-      return (
+      if (
         latestVersion[0] > currentVersion[0] ||
         latestVersion[1] > currentVersion[1] ||
         latestVersion[2] > currentVersion[2]
-      )
+      ) {
+        return 0 // 有新版
+      } else if (
+        latestVersion[0] < currentVersion[0] ||
+        latestVersion[1] < currentVersion[1] ||
+        latestVersion[2] < currentVersion[2]
+      ) {
+        return 1 // 正在使用开发板
+      } else {
+        return 2 // 正在使用最新发布版
+      }
     },
     getLatestVersion() {
       this.$axios
@@ -104,7 +111,7 @@ export default {
         })
         .then((response) => {
           this.latestVersion = response.data.version
-          this.updateAvailable = this.compareVersion()
+          this.updateMsgIndex = this.updateUpdateMsgIndex()
         })
         .catch((error) => {
           this.latestVersion = '获取失败 ' + error.message
