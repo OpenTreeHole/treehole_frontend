@@ -1,27 +1,16 @@
 <template>
   <div class="navbar">
+    <v-system-bar dark app color="primary"></v-system-bar>
     <v-app-bar app color="primary" dark dense flat style="float: top">
       <v-app-bar-nav-icon
         v-if="!inBanMenuRoutes"
         icon
         @click.stop="showSidebar = !showSidebar"
       ></v-app-bar-nav-icon>
-
       <v-app-bar-nav-icon v-if="inAllowBackRoutes" icon @click.stop="back"
         ><v-icon>mdi-arrow-left</v-icon></v-app-bar-nav-icon
       >
-
       <v-app-bar-title>FDU Hole</v-app-bar-title>
-      <!-- <div
-        v-if="this.$route.name !== 'login' && this.$route.name !== 'register'"
-      >
-        欢迎回来, {{ username }}
-      </div> -->
-      <!-- <v-app-bar-title>FDUHOLE </v-app-bar-title> -->
-      <!-- <div class="d-flex align-center">
-
-    </div> -->
-
       <v-spacer></v-spacer>
       <v-btn icon @click="refresh"><v-icon>mdi-autorenew</v-icon></v-btn>
     </v-app-bar>
@@ -57,9 +46,9 @@
         </v-list-item-group>
       </v-list>
 
-      <v-list-container class="drawer-bottom-container">
+      <div class="drawer-bottom-container">
         <v-btn fab fixed bottom color="primary" @click="reloadAll">重载</v-btn>
-      </v-list-container>
+      </div>
     </v-navigation-drawer>
   </div>
 </template>
@@ -160,6 +149,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.v-system-bar {
+  display: none;
+}
 .iphone-fitter {
   display: none;
 }
@@ -168,6 +160,11 @@ export default {
       (height: env(safe-area-inset-top))
   )
   and (-webkit-overflow-scrolling: touch) {
+  .v-system-bar {
+    float: top;
+    display: block;
+    height: 33pt !important;
+  }
   .iphone-fitter {
     display: block;
     height: env(safe-area-inset-top);

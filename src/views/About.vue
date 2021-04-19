@@ -3,12 +3,12 @@
     <v-card
       ><v-card-title>FDU Hole</v-card-title>
 
-      <!-- 以下为本开源前端项目的版权属名，按照开源协议及《中华人民共和国合同法》您不应该以任何方式修改它，否则 FDUHole-Dev 或考虑通过法律途径解决问题。 -->
+      <!-- 以下为本开源项目的版权属名，按照开源协议及《中华人民共和国合同法》您不应该以任何方式修改或移动它，否则 FDUHole-Dev 或将考虑通过法律途径解决问题。 -->
       <v-card-text>
         Made with ❤ by
         <a href="https://github.com/fduhole" target="_blank">FDUHole-Dev</a>
       </v-card-text>
-      <!-- 以上为本开源前端项目的版权属名，按照开源协议及《中华人民共和国合同法》您不应该以任何方式修改它，否则 FDUHole-Dev 或考虑通过法律途径解决问题。 -->
+      <!-- 以上为本开源项目的版权属名，按照开源协议及《中华人民共和国合同法》您不应该以任何方式修改或移动它，否则 FDUHole-Dev 或将考虑通过法律途径解决问题。 -->
 
       <v-card-text
         >使用 FDU Hole 意味着你同意<router-link to="/licence"
@@ -34,18 +34,19 @@
 
     <v-card>
       <v-card-title>联系我们</v-card-title>
+      <v-card-subtitle>项目首页</v-card-subtitle>
       <v-card-text>
-        项目首页：<a :href="$feConfig.feRepository">{{
-          $feConfig.feRepository
-        }}</a>
+        <a :href="$feConfig.feRepository">{{ $feConfig.feRepository }}</a>
       </v-card-text>
+
+      <v-card-subtitle>团队首页</v-card-subtitle>
       <v-card-text>
-        团队首页：<a :href="$feConfig.teamHomepage">{{
-          $feConfig.teamHomepage
-        }}</a>
+        <a :href="$feConfig.teamHomepage">{{ $feConfig.teamHomepage }}</a>
       </v-card-text>
+
+      <v-card-subtitle>团队邮箱</v-card-subtitle>
       <v-card-text
-        >团队邮箱：<a :href="'mailto:' + $feConfig.teamMail">{{
+        ><a :href="'mailto:' + $feConfig.teamMail">{{
           $feConfig.teamMail
         }}</a></v-card-text
       >
@@ -74,8 +75,8 @@ export default {
         window.matchMedia('(display-mode: standalone)').matches ||
         window.navigator.standalone,
       updateMsg: [
+        '您正在使用开发版，如遇 BUG 请前往 GitHub 提交 Issue 或 Pull Request！',
         '检测到新版本，重载应用以升级！',
-        '您正在使用开发版，如遇 BUG 请前往 GitHub 提交 issue 或 Pull Request！',
         '您正在使用最新版的FDU Hole！',
       ],
       updateMsgIndex: 2,
@@ -86,17 +87,17 @@ export default {
       const currentVersion = this.$feConfig.feVersion.split('.')
       const latestVersion = this.latestVersion.split('.')
       if (
-        latestVersion[0] > currentVersion[0] ||
-        latestVersion[1] > currentVersion[1] ||
-        latestVersion[2] > currentVersion[2]
-      ) {
-        return 0 // 有新版
-      } else if (
         latestVersion[0] < currentVersion[0] ||
         latestVersion[1] < currentVersion[1] ||
         latestVersion[2] < currentVersion[2]
       ) {
-        return 1 // 正在使用开发板
+        return 0 // 正在使用开发板
+      } else if (
+        latestVersion[0] > currentVersion[0] ||
+        latestVersion[1] > currentVersion[1] ||
+        latestVersion[2] > currentVersion[2]
+      ) {
+        return 1 // 有新版
       } else {
         return 2 // 正在使用最新发布版
       }

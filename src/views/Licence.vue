@@ -13,7 +13,7 @@
           {{ licence.name }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <iframe :src="licence.link" frameborder="0"></iframe>
+          <div class="licence-view" v-html="getLicence(licence.path)"></div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -23,6 +23,26 @@
 <script>
 export default {
   name: 'Licence',
+  methods: {
+    getLicence(path) {
+      this.$axios
+        .request({
+          url: path,
+          transformRequest: [
+            (data, headers) => {
+              delete headers.Authorization
+              return this.$marked(data)
+            },
+          ],
+        })
+        .then((response) => {
+          return response.data
+        })
+        .catch((error) => {
+          return '获取失败：' + error.message
+        })
+    },
+  },
 }
 </script>
 
@@ -31,7 +51,7 @@ export default {
   margin: auto;
   width: 80%;
 }
-iframe {
+.licence-view {
   width: 100%;
   height: 40vh;
 }

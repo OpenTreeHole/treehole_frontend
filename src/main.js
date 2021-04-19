@@ -8,11 +8,18 @@ import vuetify from './plugins/vuetify'
 import debounce from 'lodash.debounce'
 import VueQuillEditor from 'vue-quill-editor'
 
+import marked from 'marked'
+Vue.prototype.$marked = marked
+
 import plugins from './components/plugins'
 
 // 引入项目配置文件
 import FDUHoleFEConfig from './fduhole-fe.config.js'
 Vue.prototype.$feConfig = FDUHoleFEConfig
+
+// 引入实用工具
+import FEUtils from './utils.js'
+Vue.prototype.$feUtils = FEUtils
 
 // require styles
 import 'quill/dist/quill.core.css'
