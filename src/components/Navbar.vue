@@ -149,11 +149,10 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.v-system-bar {
-  display: none;
-}
 .iphone-fitter {
-  display: none;
+  height: 0;
+  height: constant(safe-area-inset-top);
+  height: env(safe-area-inset-top);
 }
 @supports (
     (height: constant(safe-area-inset-top)) or
@@ -161,16 +160,9 @@ export default {
   )
   and (-webkit-overflow-scrolling: touch) {
   .v-system-bar {
-    float: top;
-    display: block;
     height: 33pt !important;
   }
-  .iphone-fitter {
-    display: block;
-    height: env(safe-area-inset-top);
-  }
 }
-
 .drawer-bottom-container {
   margin: 15px;
 }
