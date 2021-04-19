@@ -1,7 +1,8 @@
 {
-  "name": "fduhole",
+  "name": "fduhole-fe",
   "version": "0.1.4",
   "private": true,
+  "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",

@@ -1,16 +1,15 @@
 var pksjson = require('../package.json');
 
 export default {
-    // 前端项目地址
+    // 基本信息配置
     feRepository: 'https://www.github.com/fduhole/vue',
     teamHomepage: 'https://www.github.com/fduhole',
     teamMail: 'fduhole@gmail.com',
-    latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/package.json',
-    // 后端 api 地址，配套后端的源码请移步 https://github.com/fduhole/fduhole
-    backEndApi: 'https://www.fduhole.tk/api/',
-    // 前端版本号
+    latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/package.json', // 前端最新发布版版本号获取地址
     feVersion: pksjson.version,
-    // 涉及的协议
+    backEndApi: 'https://www.fduhole.tk/api/', // 后端 api 地址，配套后端的源码请移步 https://github.com/fduhole/fduhole
+
+    // 协议
     licences: [
         {
             name: '社区公约',
@@ -24,17 +23,17 @@ export default {
             name: '隐私政策',
             link: '/docs/privacy-policy.html',
         },
-        // {
-        //   name: '开源协议',
-        //   link: '/docs/open-source-licences.html',
-        // },
+        {
+            name: '开源协议',
+            link: '/docs/open-source-licences.html',
+        },
     ],
-    // 允许显示返回按钮的路由名称
-    allowBackRoutes: ['discussion', 'licence'],
-    // 禁止显示菜单按钮的路由名称
-    banMenuRoutes: ['login', 'register', 'licence', 'discussion'],
-    // 抽屉菜单导航列表
-    navItems: [
+
+    // 页面元素显示配置
+
+    allowBackRoutes: ['discussion', 'licence'],  // 允许显示“返回”按钮的路由名称
+    banMenuRoutes: ['login', 'register', 'licence', 'discussion'], // 禁止显示“菜单”按钮的路由名称
+    navItems: [ // 抽屉导航菜单
         {
             title: '首页',
             icon: 'mdi-home',
@@ -51,7 +50,7 @@ export default {
             route: 'about',
         },
     ],
-    friendLinks: [
+    friendLinks: [ // 友链
         {
             siteName: '旦兮',
             author: 'DanXi-Dev',
