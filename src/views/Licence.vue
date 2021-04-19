@@ -8,12 +8,12 @@
       </p>
     </div>
     <v-expansion-panels>
-      <v-expansion-panel v-for="(licence, i) in $feConfig.licences" :key="i">
+      <v-expansion-panel v-for="(licence, i) in licences" :key="i">
         <v-expansion-panel-header>
-          {{ licence.name }}
+          {{ licence.title }}
         </v-expansion-panel-header>
-        <v-expansion-panel-content>
-          <div class="licence-view" v-html="getLicence(licence.link)"></div>
+        <v-expansion-panel-content style="overflow: auto">
+          <div class="licence-view" v-html="licence.content"></div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -23,25 +23,38 @@
 <script>
 export default {
   name: 'Licence',
-  methods: {
-    getLicence(path) {
-      this.$axios
-        .request({
-          url: path,
-          transformRequest: [
-            (data, headers) => {
-              delete headers.Authorization
-              return this.$marked(data)
-            },
-          ],
-        })
-        .then((response) => {
-          return response.data
-        })
-        .catch((error) => {
-          return '获取失败：' + error.message
-        })
-    },
+  data() {
+    return {
+      licences: [],
+    }
+  },
+  created() {
+    for (var licence of this.$feConfig.licences) {
+      ;((licence) => {
+        this.$axios
+          .request({
+            url: licence.link,
+            transformRequest: [
+              (data, headers) => {
+                delete headers.Authorization
+                return data
+              },
+            ],
+          })
+          .then((response) => {
+            this.licences.push({
+              title: licence.name,
+              content: this.$marked(response.data),
+            })
+          })
+          .catch((error) => {
+            this.licences.push({
+              title: licence.name,
+              content: '获取失败：' + error.message,
+            })
+          })
+      })(licence)
+    }
   },
 }
 </script>
