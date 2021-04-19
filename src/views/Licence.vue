@@ -13,7 +13,7 @@
           {{ licence.name }}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
-          <div class="licence-view" v-html="getLicence(licence.path)"></div>
+          <div class="licence-view" v-html="getLicence(licence.link)"></div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>

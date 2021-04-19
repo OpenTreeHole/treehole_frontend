@@ -13,19 +13,19 @@ export default {
     licences: [
         {
             name: '社区公约',
-            doc: 'https://cdn.jsdelivr.net/gh/fduhole/vue@dev/community-agreement.md',
+            link: 'https://cdn.jsdelivr.net/gh/fduhole/vue@dev/community-agreement.md',
         },
         {
             name: '使用条款',
-            doc: 'https://cdn.jsdelivr.net/gh/fduhole/vue@dev/terms-of-use.md',
+            link: 'https://cdn.jsdelivr.net/gh/fduhole/vue@dev/terms-of-use.md',
         },
         {
             name: '隐私政策',
-            doc: 'https://cdn.jsdelivr.net/gh/fduhole/vue@dev/privacy-policy.md',
+            link: 'https://cdn.jsdelivr.net/gh/fduhole/vue@dev/privacy-policy.md',
         },
         {
             name: '开源协议',
-            doc: 'https://cdn.jsdelivr.net/gh/fduhole/vue@dev/open-source-licences.md',
+            link: 'https://cdn.jsdelivr.net/gh/fduhole/vue@dev/open-source-licences.md',
         },
     ],
 
