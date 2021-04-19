@@ -58,7 +58,7 @@
       </v-list>
 
       <v-list-container class="drawer-bottom-container">
-        <v-btn color="primary" @click="reloadAll">重载</v-btn>
+        <v-btn fab fixed bottom color="primary" @click="reloadAll">重载</v-btn>
       </v-list-container>
     </v-navigation-drawer>
   </div>
@@ -175,8 +175,6 @@ export default {
 }
 
 .drawer-bottom-container {
-  position: fixed;
-  bottom: 0;
-  margin: 20px;
+  margin: 15px;
 }
 </style>

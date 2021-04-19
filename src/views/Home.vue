@@ -6,6 +6,28 @@
     <!-- 新用户欢迎信息 -->
     <newcomer></newcomer>
 
+    <!-- 标签选择器 -->
+    <v-row justify="center" class="ma-0" v-show="selectedTags.length > 0">
+      <v-col cols="12" sm="10" md="8" lg="6" xl="4">
+        <v-card>
+          <v-card-text>
+            <v-chip
+              v-for="(tag, tindex) in selectedTags"
+              :key="tindex"
+              :color="tag.color"
+              outlined
+              class="mx-1 my-1"
+              small
+              ripple
+              @click.stop="removeTag(tag)"
+            >
+              {{ tag.name }}
+            </v-chip>
+          </v-card-text>
+        </v-card>
+      </v-col>
+    </v-row>
+
     <!-- 帖子列表 -->
 
     <v-row
@@ -26,6 +48,7 @@
               class="mx-1 my-1"
               small
               ripple
+              @click.stop="addTag(tag)"
             >
               {{ tag.name }}
             </v-chip>
@@ -247,6 +270,22 @@ export default {
   },
 
   methods: {
+    addTag(tag) {
+      for (var selectedTag of this.selectedTags) {
+        if (selectedTag.name == tag.name) {
+          return
+        }
+      }
+      this.selectedTags.push(tag)
+    },
+    removeTag(tag) {
+      for (var i in this.selectedTags) {
+        if (this.selectedTags[i].name == tag.name) {
+          this.selectedTags.splice(i, 1)
+          return
+        }
+      }
+    },
     editorInvalid(msg) {
       this.$refs.message.error(msg)
     },
