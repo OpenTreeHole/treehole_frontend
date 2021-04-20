@@ -17,6 +17,7 @@
       ></v-card
     >
 
+    <!-- 版本信息 -->
     <v-card>
       <v-card-title>版本信息</v-card-title>
       <v-card-text v-if="!installed">
@@ -32,6 +33,7 @@
       <v-card-text>获取失败</v-card-text>
     </v-card>
 
+    <!-- 联系我们 -->
     <v-card>
       <v-card-title>联系我们</v-card-title>
       <v-card-subtitle>项目首页</v-card-subtitle>
@@ -52,6 +54,7 @@
       >
     </v-card>
 
+    <!-- 友情链接 -->
     <v-card>
       <v-card-title>友情链接</v-card-title>
       <v-card-text

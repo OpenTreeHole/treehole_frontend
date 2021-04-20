@@ -33,6 +33,30 @@
 
       <v-divider></v-divider>
 
+      <!-- 导航列表 -->
+      <v-list nav dense>
+        <v-list-item-group v-model="currentPage" color="primary">
+          <v-list-item
+            v-for="(item, i) in $feConfig.navItems"
+            :key="i"
+            @click.stop="$router.replace(item.route)"
+            :disabled="i == currentPage"
+          >
+            <v-list-item-icon>
+              <v-icon v-text="item.icon"></v-icon>
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title"></v-list-item-title>
+            </v-list-item-content>
+          </v-list-item>
+        </v-list-item-group>
+      </v-list>
+
+      <!-- 侧栏底部工具按钮 -->
+      <div class="drawer-bottom-container">
+        <v-btn fab fixed bottom color="primary" @click="reloadAll">重载</v-btn>
+      </div>
+      <v-divider></v-divider>
       <v-list style="padding: 5px">
         <!-- 搜索 -->
         <v-list-item>
@@ -68,31 +92,6 @@
           </v-form>
         </v-list-item>
       </v-list>
-      <v-divider></v-divider>
-
-      <!-- 导航列表 -->
-      <v-list nav dense>
-        <v-list-item-group v-model="currentPage" color="primary">
-          <v-list-item
-            v-for="(item, i) in $feConfig.navItems"
-            :key="i"
-            @click.stop="$router.replace(item.route)"
-            :disabled="i == currentPage"
-          >
-            <v-list-item-icon>
-              <v-icon v-text="item.icon"></v-icon>
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.title"></v-list-item-title>
-            </v-list-item-content>
-          </v-list-item>
-        </v-list-item-group>
-      </v-list>
-
-      <!-- 侧栏底部工具按钮 -->
-      <div class="drawer-bottom-container">
-        <v-btn fab fixed bottom color="primary" @click="reloadAll">重载</v-btn>
-      </div>
     </v-navigation-drawer>
   </div>
 </template>
@@ -215,6 +214,8 @@ export default {
   }
 }
 .drawer-bottom-container {
-  margin: 15px;
+  position: fixed;
+  left: 8px;
+  bottom: 64px;
 }
 </style>

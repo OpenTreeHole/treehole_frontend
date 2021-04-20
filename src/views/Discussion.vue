@@ -222,24 +222,20 @@ export default {
       valid: true,
     }
   },
-
   computed: {
     contentName() {
       return 'discussion-' + this.$route.params.id + '-content'
     },
   },
-
   methods: {
     editorInvalid(msg) {
       this.$refs.message.error(msg)
     },
-
     closeDialog() {
       this.dialog = false
       this.replyIndex = null
       this.replyPk = null
     },
-
     getIndex(pk) {
       // 接受一个 post 的 pk 并返回它在本页中的顺序（index）
       for (let i = 0; i < this.posts.length; i++) {
@@ -249,7 +245,6 @@ export default {
       }
       return 0
     },
-
     scrollTo(current_id, to_id) {
       const currentOffsetTop = document.getElementById(current_id).offsetTop
       const toOffsetTop = document.getElementById(to_id).offsetTop
@@ -260,14 +255,12 @@ export default {
         behavior: 'smooth',
       })
     },
-
     reply(pk) {
       // 接受一个 post 的 pk 并设置其为回复目标
       this.replyIndex = this.getIndex(pk)
       this.replyPk = pk
       this.dialog = true
     },
-
     getDiscussion(pk) {
       this.$axios
         .get('discussions/' + pk + '/')
@@ -278,7 +271,6 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-
     getPosts(page = this.page) {
       return this.$axios
         .get('posts/', { params: { id: this.$route.params.id, page: page } })
@@ -292,7 +284,6 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-
     getNewPosts() {
       this.$axios
         .get('posts/', {
@@ -305,7 +296,6 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-
     addPost() {
       if (this.$refs.form.validate() && this.$refs.editor.validate()) {
         //先关闭对话框,优化用户体验
@@ -333,11 +323,6 @@ export default {
       }
     },
   },
-  watch: {},
-  mounted() {
-    // console.log(this.$refs.loading)
-  },
-
   created() {
     this.getDiscussion(this.$route.params.id)
   },

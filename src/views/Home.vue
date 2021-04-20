@@ -6,7 +6,7 @@
     <!-- 新用户欢迎信息 -->
     <newcomer></newcomer>
 
-    <!-- 标签选择器 -->
+    <!-- 标签筛选器 -->
     <v-row justify="center" class="ma-0" v-show="filtedTags.length > 0">
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card>
@@ -290,12 +290,10 @@ export default {
     editorInvalid(msg) {
       this.$refs.message.error(msg)
     },
-
     unfold(index) {
       this.scrollTop = document.documentElement.scrollTop
       this.styleData[index]['fold'] = false
     },
-
     fold(index) {
       this.styleData[index]['fold'] = true
       let scrollDistance = this.scrollTop - document.documentElement.scrollTop
@@ -305,7 +303,6 @@ export default {
         behavior: 'smooth',
       })
     },
-
     randomColor() {
       const colorList = [
         'red',
@@ -331,18 +328,15 @@ export default {
       const index = Math.floor(Math.random() * colorList.length)
       return colorList[index]
     },
-
     openDialog() {
       this.getTags()
     },
-
     closeDialog() {
       this.dialog = false
       // 重置表单验证
       this.errorMsg = {}
       this.valid = true
     },
-
     toDiscussion(discussion_id) {
       setTimeout(() => {
         this.$router.push({
@@ -350,7 +344,6 @@ export default {
         })
       }, 50)
     },
-
     addDiscussion() {
       if (this.$refs.form.validate() && this.$refs.editor.validate()) {
         // 先关闭对话框,优化用户体验
@@ -378,7 +371,6 @@ export default {
           })
       }
     },
-
     getDiscussions() {
       return this.$axios
         .get('discussions/', { params: { page: this.page } })
@@ -395,7 +387,6 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-
     getTags() {
       // 获取 所有的 tags
       this.$axios
@@ -408,7 +399,6 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-
     calcuteLines() {
       for (let i = 0; i < this.styleData.length; i++) {
         const element = document.getElementById('p' + i)
@@ -428,7 +418,6 @@ export default {
         this.calcuteLines()
       }, 100)
     },
-
     selectedTags: function () {
       for (let i = 0; i < this.selectedTags.length; i++) {
         if (typeof this.selectedTags[i] !== 'object') {
