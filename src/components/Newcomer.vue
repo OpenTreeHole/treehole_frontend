@@ -73,7 +73,7 @@ export default {
     },
     closeDialog() {
       this.dialog = false
-      this.$router.push('login')
+      this.$router.replace('login')
     },
   },
   watch: {

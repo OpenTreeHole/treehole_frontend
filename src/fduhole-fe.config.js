@@ -31,8 +31,8 @@ export default {
     ],
 
     // 页面元素显示配置
-    allowBackRoutes: ['discussion', 'licence'],                         // 允许显示“返回”按钮的路由名称
-    banMenuRoutes: ['login', 'register', 'licence', 'discussion'],      // 禁止显示“菜单”按钮的路由名称
+    allowBackRoutes: ['discussion', 'licence', 'search'],                         // 允许显示“返回”按钮的路由名称
+    banMenuRoutes: ['login', 'register', 'licence', 'discussion', 'search'],      // 禁止显示“菜单”按钮的路由名称
     navItems: [                                                         // 抽屉导航菜单
         {
             title: '首页',

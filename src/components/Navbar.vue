@@ -11,10 +11,30 @@
         ><v-icon>mdi-arrow-left</v-icon></v-app-bar-nav-icon
       >
       <v-app-bar-title>FDU Hole</v-app-bar-title>
-      <v-spacer></v-spacer>
+      <!-- 刷新按钮 -->
       <v-btn icon @click="refresh"><v-icon>mdi-autorenew</v-icon></v-btn>
+
+      <v-spacer></v-spacer>
+      <!-- 右部按钮区域 -->
+      <!-- 搜索框 -->
+
+      <v-text-field
+        autofocus="true"
+        @blur="
+          if (searchText.length == 0) {
+            showSearchBox = !showSearchBox
+          }
+        "
+        v-model="searchText"
+        placeholder="搜索"
+        v-show="showSearchBox"
+      ></v-text-field>
+      <v-btn icon @click="searchButtomHandler"
+        ><v-icon>mdi-magnify</v-icon></v-btn
+      >
     </v-app-bar>
 
+    <!-- 侧栏抽屉 -->
     <v-navigation-drawer app v-model="showSidebar">
       <div class="iphone-fitter"></div>
       <v-list-item color="primary">
@@ -33,7 +53,7 @@
           <v-list-item
             v-for="(item, i) in $feConfig.navItems"
             :key="i"
-            @click.stop="$router.push(item.route)"
+            @click.stop="$router.replace(item.route)"
             :disabled="i == currentPage"
           >
             <v-list-item-icon>
@@ -45,7 +65,7 @@
           </v-list-item>
         </v-list-item-group>
       </v-list>
-
+      <!-- 侧栏底部工具按钮 -->
       <div class="drawer-bottom-container">
         <v-btn fab fixed bottom color="primary" @click="reloadAll">重载</v-btn>
       </div>
@@ -58,26 +78,29 @@ export default {
   name: 'Navbar',
   data() {
     return {
+      searchText: '',
       username: '',
       showSidebar: false,
       currentPage: 0,
       inAllowBackRoutes: false,
       inBanMenuRoutes: true,
+      showSearchBox: false,
     }
   },
-  computed: {
-    // username(){
-    //   let username = localStorage.getItem('username')
-    //   if(username){
-    //     return username
-    //   }else{
-    //     return ''
-    //   }
-    // }
-  },
   methods: {
+    searchButtomHandler() {
+      if (!this.showSearchBox) {
+        this.showSearchBox = true
+      } else {
+        this.$router.push({
+          name: 'search',
+          query: { wd: this.searchText },
+        })
+        this.searchText = ''
+      }
+    },
     refresh() {
-      this.$router.push('/')
+      this.$router.replace('/')
       location.reload()
     },
     reloadAll() {
@@ -93,7 +116,7 @@ export default {
     },
     logout() {
       localStorage.clear()
-      this.$router.push('/login')
+      this.reloadAll()
     },
   },
 

@@ -92,7 +92,7 @@ export default {
         .then((response) => {
           localStorage.setItem('token', 'Token ' + response.data.token)
           localStorage.setItem('username', this.username)
-          this.$router.push('/home')
+          this.$router.replace('/home')
         })
         .catch(() => {
           this.valid = false

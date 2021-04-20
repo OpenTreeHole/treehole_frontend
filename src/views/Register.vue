@@ -261,7 +261,7 @@ export default {
           localStorage.setItem('token', 'Token ' + response.data.token)
           localStorage.setItem('username', this.username)
           setTimeout(() => {
-            this.$router.push('/home')
+            this.$router.replace('/home')
           }, 1000)
         })
         .catch(() => {

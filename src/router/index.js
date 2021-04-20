@@ -6,6 +6,7 @@ import Register from '@/views/Register.vue'
 import Discussion from '@/views/Discussion.vue'
 import About from '@/views/About.vue'
 import Licence from '@/views/Licence.vue'
+import Search from '@/views/Search.vue'
 
 Vue.use(VueRouter)
 
@@ -16,7 +17,8 @@ const routes = [
   { path: '/', redirect: '/home' },
   { path: '/about', meta: { title: '关于 | FDU Hole' }, component: About, name: 'about' },
   { path: '/register', meta: { title: '注册 | FDU Hole' }, component: Register, name: 'register' },
-  { path: '/discussion/:id', meta: { title: 'FDU Hole' }, component: Discussion, name: 'discussion' }
+  { path: '/discussion/:id', meta: { title: 'FDU Hole' }, component: Discussion, name: 'discussion' },
+  { path: '/s', meta: { title: '搜索 | FDU  Hole' }, component: Search, name: 'search' }
 ]
 
 const router = new VueRouter({
