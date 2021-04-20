@@ -21,7 +21,7 @@ import 'quill/dist/quill.bubble.css'
 
 Vue.config.productionTip = false
 
-axios.defaults.baseURL = FDUHoleFEConfig.backEndApi
+axios.defaults.baseURL = process.env.VUE_APP_API_URL
 // axios.defaults.withCredentials = true
 axios.interceptors.request.use(config => {
   config.headers.Authorization = localStorage.getItem('token')
