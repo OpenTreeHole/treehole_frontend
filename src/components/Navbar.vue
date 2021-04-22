@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
-    <v-system-bar dark app color="primary"></v-system-bar>
-    <v-app-bar app color="primary" dark dense flat style="float: top">
+    <v-system-bar app color="primary"></v-system-bar>
+    <v-app-bar app color="primary" dense flat style="float: top">
       <v-app-bar-nav-icon
         v-if="!inBanMenuRoutes"
         icon
@@ -52,12 +52,10 @@
         </v-list-item-group>
       </v-list>
 
-      <!-- 侧栏底部工具按钮 -->
-      <div class="drawer-bottom-container">
-        <v-btn fab fixed bottom color="primary" @click="reloadAll">重载</v-btn>
-      </div>
       <v-divider></v-divider>
       <v-list style="padding: 5px">
+        <v-switch v-model="isDarkTheme" label="深色模式"> </v-switch>
+
         <!-- 搜索 -->
         <v-list-item>
           <v-form>
@@ -92,6 +90,11 @@
           </v-form>
         </v-list-item>
       </v-list>
+
+      <!-- 侧栏底部工具按钮 -->
+      <div class="drawer-bottom-container">
+        <v-btn fab fixed bottom color="primary" @click="reloadAll">重载</v-btn>
+      </div>
     </v-navigation-drawer>
   </div>
 </template>
@@ -101,6 +104,7 @@ export default {
   name: 'Navbar',
   data() {
     return {
+      isDarkTheme: false,
       searchText: '',
       username: '',
       showSidebar: false,
@@ -148,6 +152,17 @@ export default {
   },
 
   watch: {
+    isDarkTheme() {
+      this.$vuetify.theme.dark = this.isDarkTheme
+      console.log(
+        `%c [切换主题] 当前主题 %c ${
+          this.$vuetify.theme.dark == false ? 'light' : 'dark'
+        } %c`,
+        'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+        'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+        'background:transparent'
+      )
+    },
     $route() {
       this.inAllowBackRoutes = (() => {
         const currentRoute = this.$router.currentRoute.name

@@ -178,8 +178,8 @@
         <!-- 下方按钮 -->
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="blue darken-1" text @click="closeDialog"> 关闭 </v-btn>
-          <v-btn color="blue darken-1" text :disabled="!valid" @click="addPost">
+          <v-btn color="primary" text @click="closeDialog"> 关闭 </v-btn>
+          <v-btn color="primary" text :disabled="!valid" @click="addPost">
             发送
           </v-btn>
         </v-card-actions>

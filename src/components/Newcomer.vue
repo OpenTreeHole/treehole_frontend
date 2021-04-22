@@ -50,8 +50,8 @@
       <!-- 关闭对话框 -->
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color="blue darken-1" text @click="closeDialog"> 关闭 </v-btn>
-        <v-btn color="blue darken-1" text @click="acceptDialog"> 接受 </v-btn>
+        <v-btn color="primary" text @click="closeDialog"> 关闭 </v-btn>
+        <v-btn color="primary" text @click="acceptDialog"> 接受 </v-btn>
       </v-card-actions>
     </v-card>
   </v-dialog>
