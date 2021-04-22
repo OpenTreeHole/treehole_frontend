@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <message ref="message"></message>
-    <Navbar></Navbar>
+    <Navbar ref="navbar"></Navbar>
 
     <v-main>
       <keep-alive include="Home">

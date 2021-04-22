@@ -54,7 +54,13 @@
 
       <v-divider></v-divider>
       <v-list style="padding: 5px">
-        <v-switch v-model="isDarkTheme" label="深色模式"> </v-switch>
+        <!-- <v-switch
+          v-model="isDarkTheme"
+          label="深色模式"
+          :disabled="followSystemDarkMode"
+        >
+        </v-switch> -->
+        <!-- <v-switch v-model="followSystemDarkMode" label="跟随系统"> </v-switch> -->
 
         <!-- 搜索 -->
         <v-list-item>
@@ -104,6 +110,7 @@ export default {
   name: 'Navbar',
   data() {
     return {
+      // followSystemDarkMode: true,
       isDarkTheme: false,
       searchText: '',
       username: '',
@@ -163,6 +170,20 @@ export default {
         'background:transparent'
       )
     },
+    // followSystemDarkMode() {
+    //   if (this.followSystemDarkMode) {
+    //     // 设置为跟随系统
+    //     this.isDarkTheme = window.matchMedia(
+    //       '(prefers-color-scheme: dark)'
+    //     ).matches
+    //     media.addEventListener('change', (event) => {
+    //       this.isDarkTheme = event.matches
+    //     })
+    //   } else {
+    //     // 设置为不跟随系统
+    //     media.removeEventListener('change')
+    //   }
+    // },
     $route() {
       this.inAllowBackRoutes = (() => {
         const currentRoute = this.$router.currentRoute.name
@@ -188,7 +209,15 @@ export default {
     },
   },
   created() {
-    this.inAllowBackRoutes = (() => {
+    // 自动适应系统暗黑模式
+    this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
+    matchMedia('(prefers-color-scheme: dark)').addEventListener(
+      'change',
+      (event) => {
+        this.isDarkTheme = event.matches
+      }
+    )
+    this.this.inAllowBackRoutes = (() => {
       const currentRoute = this.$router.currentRoute.name
       var i
       for (i of this.$feConfig.allowBackRoutes) {
