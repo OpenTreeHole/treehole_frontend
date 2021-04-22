@@ -1,7 +1,7 @@
 <template>
   <div class="navbar">
     <v-system-bar app color="primary"></v-system-bar>
-    <v-app-bar app color="primary" dense flat style="float: top">
+    <v-app-bar app dark color="primary" dense flat style="float: top">
       <v-app-bar-nav-icon
         v-if="!inBanMenuRoutes"
         icon
