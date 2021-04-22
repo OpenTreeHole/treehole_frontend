@@ -217,7 +217,7 @@ export default {
         this.isDarkTheme = event.matches
       }
     )
-    this.this.inAllowBackRoutes = (() => {
+    this.inAllowBackRoutes = (() => {
       const currentRoute = this.$router.currentRoute.name
       var i
       for (i of this.$feConfig.allowBackRoutes) {
