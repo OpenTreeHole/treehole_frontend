@@ -263,7 +263,7 @@ export default {
     },
     getDiscussion(pk) {
       this.$axios
-        .get('discussions/' + pk + '/')
+        .get('discussions/', { params: { discussion_id: pk } })
         .then((response) => {
           this.discussion = response.data
         })
