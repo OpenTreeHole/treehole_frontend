@@ -19,7 +19,7 @@
 import debounce from 'lodash.debounce'
 
 import Loading from '@/components/Loading.vue'
-import Postcard from '@/components/Postcard.vue'
+import Postcard from '@/components/DiscussionCard.vue'
 
 export default {
   name: 'postslist',
