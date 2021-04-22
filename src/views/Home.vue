@@ -36,83 +36,9 @@
       justify="center"
       class="ma-0"
     >
-      <v-col cols="12" sm="10" md="8" lg="6" xl="4">
-        <v-card>
-          <!-- 标签栏 -->
-          <v-card-text class="pb-0 pt-2 font-weight-medium">
-            <v-chip
-              v-for="(tag, tindex) in discussion.tag"
-              :key="tindex"
-              :color="tag.color"
-              outlined
-              class="mx-1 my-1"
-              small
-              ripple
-              @click.stop="addTag(tag)"
-            >
-              {{ tag.name }}
-            </v-chip>
-          </v-card-text>
-
-          <!-- 内容主体 -->
-          <v-card-text
-            @click="toDiscussion(discussion.id, index)"
-            class="text--primary py-2 text-body-1 clickable"
-            v-ripple
-          >
-            <div v-if="styleData[index]['fold']" :id="'p' + index" class="fold">
-              {{ discussion.first_post.content | plainText }}
-            </div>
-            <div v-else :id="'p' + index" class="unfold">
-              <div id="rich-text" v-html="discussion.first_post.content"></div>
-            </div>
-          </v-card-text>
-
-          <!-- 展开折叠按钮 -->
-          <div v-if="styleData[index]['lines'] > 3">
-            <div v-if="styleData[index]['fold']">
-              <v-btn
-                text
-                block
-                depressed
-                x-small
-                color="grey lighten-1"
-                @click="unfold(index)"
-              >
-                <v-icon>mdi-chevron-double-down</v-icon>
-              </v-btn>
-            </div>
-
-            <div v-else>
-              <v-btn
-                text
-                block
-                depressed
-                x-small
-                color="grey lighten-1"
-                @click="fold(index)"
-              >
-                <v-icon>mdi-chevron-double-up</v-icon>
-              </v-btn>
-            </div>
-          </div>
-          <div v-else>
-            <div style="height: 0.5rem"></div>
-          </div>
-
-          <!-- 脚标 -->
-          <v-card-text class="pt-0 pb-0 text-center caption">
-            <span style="float: left">#{{ discussion['id'] }}</span>
-            <span style="float: inherit">{{
-              discussion['date_updated'] | timeDifference
-            }}</span>
-            <span style="float: right">
-              {{ discussion['count'] }}
-              <v-icon small>mdi-message-processing-outline</v-icon>
-            </span>
-          </v-card-text>
-        </v-card>
-      </v-col>
+      <v-col cols="12" sm="10" md="8" lg="6" xl="4"
+        ><postcard :discussion="discussion" :index="index"></postcard
+      ></v-col>
     </v-row>
 
     <!-- 弹出式表单及浮动按钮 -->
@@ -225,6 +151,7 @@ import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
+import Postcard from '@/components/Postcard.vue'
 
 export default {
   name: 'Home',
@@ -233,6 +160,7 @@ export default {
     Editor,
     Message,
     Newcomer,
+    Postcard,
   },
   data() {
     return {
@@ -285,19 +213,20 @@ export default {
     editorInvalid(msg) {
       this.$refs.message.error(msg)
     },
-    unfold(index) {
-      this.scrollTop = document.documentElement.scrollTop
-      this.styleData[index]['fold'] = false
-    },
-    fold(index) {
-      this.styleData[index]['fold'] = true
-      let scrollDistance = this.scrollTop - document.documentElement.scrollTop
-      window.scrollBy({
-        top: scrollDistance, //  正值向下
-        left: 0,
-        behavior: 'smooth',
-      })
-    },
+    // unfold(index) {
+    //   this.scrollTop = document.documentElement.scrollTop
+    //   this.styleData[index]['fold'] = false
+    // },
+
+    // fold(index) {
+    //   this.styleData[index]['fold'] = true
+    //   let scrollDistance = this.scrollTop - document.documentElement.scrollTop
+    //   window.scrollBy({
+    //     top: scrollDistance, //  正值向下
+    //     left: 0,
+    //     behavior: 'smooth',
+    //   })
+    // },
     randomColor() {
       const colorList = [
         'red',
@@ -331,13 +260,13 @@ export default {
       this.errorMsg = {}
       this.valid = true
     },
-    toDiscussion(discussion_id) {
-      setTimeout(() => {
-        this.$router.push({
-          path: `/discussion/${discussion_id}`,
-        })
-      }, 50)
-    },
+    // toDiscussion(discussion_id) {
+    //   setTimeout(() => {
+    //     this.$router.push({
+    //       path: `/discussion/${discussion_id}`,
+    //     })
+    //   }, 50)
+    // },
     addDiscussion() {
       if (this.$refs.form.validate() && this.$refs.editor.validate()) {
         // 先关闭对话框,优化用户体验
