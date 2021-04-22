@@ -90,7 +90,7 @@
 
 <script>
 export default {
-  name: 'postcard',
+  name: 'DiscussionCard',
   props: {
     discussion: {},
     index: '',

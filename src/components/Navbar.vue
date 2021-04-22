@@ -66,7 +66,11 @@
         <v-list-item>
           <v-form>
             <v-row>
-              <v-text-field v-model="searchText" placeholder="搜索">
+              <v-text-field
+                v-model="searchText"
+                @keyup.enter="searchIt"
+                placeholder="搜索"
+              >
               </v-text-field>
               <v-list-item-icon>
                 <v-btn
@@ -85,7 +89,11 @@
         <v-list-item>
           <v-form>
             <v-row>
-              <v-text-field v-model="floorToGo" placeholder="直达楼层">
+              <v-text-field
+                v-model="floorToGo"
+                @keyup.enter="goFloor"
+                placeholder="直达楼层"
+              >
               </v-text-field>
               <v-list-item-icon>
                 <v-btn icon @click="goFloor" :disabled="floorToGo.length == 0">

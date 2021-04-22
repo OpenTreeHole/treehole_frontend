@@ -2,27 +2,20 @@
   <v-container class="search">
     <v-card>
       <v-card-title>搜索：{{ wd }}</v-card-title>
-      <v-list> </v-list>
     </v-card>
+    <PostList api="posts/" :requestParams="{ search: this.wd }"></PostList>
   </v-container>
 </template>
 
 <script>
+import PostList from '@/components/PostList.vue'
+
 export default {
   name: 'Search',
+  components: { PostList },
   data() {
     return {
       wd: this.$route.query.wd,
-      posts: [
-        {
-          id: String(),
-          content: String(),
-          username: String(),
-          reply_to: String(),
-          date_created: String(),
-          discussion: String(),
-        },
-      ],
     }
   },
 }

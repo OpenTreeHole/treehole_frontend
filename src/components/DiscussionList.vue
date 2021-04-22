@@ -7,7 +7,10 @@
       class="ma-0"
     >
       <v-col cols="12" sm="10" md="8" lg="6" xl="4"
-        ><Postcard :discussion="discussion" :index="index"></Postcard
+        ><DiscussionCard
+          :discussion="discussion"
+          :index="index"
+        ></DiscussionCard
       ></v-col>
     </v-row>
     <!-- 载入中信息 -->
@@ -19,11 +22,11 @@
 import debounce from 'lodash.debounce'
 
 import Loading from '@/components/Loading.vue'
-import Postcard from '@/components/DiscussionCard.vue'
+import DiscussionCard from '@/components/DiscussionCard.vue'
 
 export default {
-  name: 'postslist',
-  components: { Postcard, Loading },
+  name: 'DiscussionList',
+  components: { DiscussionCard, Loading },
   props: {
     api: '',
   },
@@ -37,7 +40,7 @@ export default {
     }
   },
   methods: {
-    calcuteLines() {
+    calculateLines() {
       for (let i = 0; i < this.styleData.length; i++) {
         const element = document.getElementById('p' + i)
         const totalHeight = element.scrollHeight
@@ -68,7 +71,7 @@ export default {
         this.lineHeight = parseInt(
           window.getComputedStyle(element, null).getPropertyValue('line-height')
         )
-        this.calcuteLines()
+        this.calculateLines()
       }, 100)
     },
   },
@@ -78,7 +81,7 @@ export default {
     }
   },
   created() {
-    this.debouncedCalculateLines = debounce(this.calcuteLines, 300)
+    this.debouncedCalculateLines = debounce(this.calculateLines, 300)
     // this.getTags()
   },
 }

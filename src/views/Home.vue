@@ -29,7 +29,7 @@
     </v-row> -->
 
     <!-- 帖子列表 -->
-    <PostsList api="discussions/"></PostsList>
+    <DiscussionList api="discussions/"></DiscussionList>
 
     <!-- 弹出式表单及浮动按钮 -->
 
@@ -135,21 +135,21 @@
 // import debounce from 'lodash.debounce'
 
 // import Loading from '@/components/Loading.vue'
-// import Postcard from '@/components/Postcard.vue'
+// import DiscussionCard from '@/components/DiscussionCard.vue'
 import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
-import PostsList from '@/components/PostsList.vue'
+import DiscussionList from '@/components/DiscussionList.vue'
 
 export default {
   name: 'Home',
   components: {
     // Loading,
-    // Postcard,
+    // DiscussionCard,
     Editor,
     Message,
     Newcomer,
-    PostsList,
+    DiscussionList,
   },
   data() {
     return {
