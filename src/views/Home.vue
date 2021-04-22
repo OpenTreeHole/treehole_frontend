@@ -7,7 +7,7 @@
     <newcomer></newcomer>
 
     <!-- 标签筛选器 -->
-    <v-row justify="center" class="ma-0" v-show="filtedTags.length > 0">
+    <!-- <v-row justify="center" class="ma-0" v-show="filtedTags.length > 0">
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card>
           <v-card-text>
@@ -26,20 +26,10 @@
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row>
+    </v-row> -->
 
     <!-- 帖子列表 -->
-
-    <v-row
-      v-for="(discussion, index) in discussions"
-      :key="index"
-      justify="center"
-      class="ma-0"
-    >
-      <v-col cols="12" sm="10" md="8" lg="6" xl="4"
-        ><postcard :discussion="discussion" :index="index"></postcard
-      ></v-col>
-    </v-row>
+    <PostsList api="discussions/"></PostsList>
 
     <!-- 弹出式表单及浮动按钮 -->
 
@@ -138,37 +128,36 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <!-- 载入中信息 -->
-    <loading :length="discussions.length" :loadList="getDiscussions"></loading>
   </v-container>
 </template>
 
 <script>
-import debounce from 'lodash.debounce'
+// import debounce from 'lodash.debounce'
 
-import Loading from '@/components/Loading.vue'
+// import Loading from '@/components/Loading.vue'
+// import Postcard from '@/components/Postcard.vue'
 import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
-import Postcard from '@/components/Postcard.vue'
+import PostsList from '@/components/PostsList.vue'
 
 export default {
   name: 'Home',
   components: {
-    Loading,
+    // Loading,
+    // Postcard,
     Editor,
     Message,
     Newcomer,
-    Postcard,
+    PostsList,
   },
   data() {
     return {
-      // 帖子列表
-      discussions: [],
-      page: 1,
-      // 展开折叠样式数据
-      styleData: [],
+      // // 帖子列表
+      // discussions: [],
+      // page: 1,
+      // // 展开折叠样式数据
+      // styleData: [],
       lineHeight: 0,
       scrollTop: 0,
       // 发帖表单
@@ -194,22 +183,22 @@ export default {
   },
 
   methods: {
-    addTag(tag) {
-      for (var filtedTag of this.filtedTags) {
-        if (filtedTag.name == tag.name) {
-          return
-        }
-      }
-      this.filtedTags.push(tag)
-    },
-    removeTag(tag) {
-      for (var i in this.filtedTags) {
-        if (this.filtedTags[i].name == tag.name) {
-          this.filtedTags.splice(i, 1)
-          return
-        }
-      }
-    },
+    // addTag(tag) {
+    //   for (var filtedTag of this.filtedTags) {
+    //     if (filtedTag.name == tag.name) {
+    //       return
+    //     }
+    //   }
+    //   this.filtedTags.push(tag)
+    // },
+    // removeTag(tag) {
+    //   for (var i in this.filtedTags) {
+    //     if (this.filtedTags[i].name == tag.name) {
+    //       this.filtedTags.splice(i, 1)
+    //       return
+    //     }
+    //   }
+    // },
     editorInvalid(msg) {
       this.$refs.message.error(msg)
     },
@@ -294,22 +283,22 @@ export default {
           })
       }
     },
-    getDiscussions() {
-      return this.$axios
-        .get('discussions/', { params: { page: this.page } })
-        .then((response) => {
-          for (let i = 0; i < response.data.length; i++) {
-            this.styleData.push({ fold: true, lines: 3 })
-          }
-          this.discussions.push.apply(this.discussions, response.data)
-          if (response.data.length > 0) {
-            this.page++
-          }
-        })
-        .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
-        })
-    },
+    // getDiscussions() {
+    //   return this.$axios
+    //     .get('discussions/', { params: { page: this.page } })
+    //     .then((response) => {
+    //       for (let i = 0; i < response.data.length; i++) {
+    //         this.styleData.push({ fold: true, lines: 3 })
+    //       }
+    //       this.discussions.push.apply(this.discussions, response.data)
+    //       if (response.data.length > 0) {
+    //         this.page++
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       this.$refs.message.error(error.response.data.msg)
+    //     })
+    // },
     getTags() {
       // 获取 所有的 tags
       this.$axios
@@ -322,25 +311,25 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-    calcuteLines() {
-      for (let i = 0; i < this.styleData.length; i++) {
-        const element = document.getElementById('p' + i)
-        const totalHeight = element.scrollHeight
-        this.styleData[i].lines = totalHeight / this.lineHeight
-      }
-    },
+    // calcuteLines() {
+    //   for (let i = 0; i < this.styleData.length; i++) {
+    //     const element = document.getElementById('p' + i)
+    //     const totalHeight = element.scrollHeight
+    //     this.styleData[i].lines = totalHeight / this.lineHeight
+    //   }
+    // },
   },
 
   watch: {
-    discussions: function () {
-      setTimeout(() => {
-        const element = document.getElementById('p1')
-        this.lineHeight = parseInt(
-          window.getComputedStyle(element, null).getPropertyValue('line-height')
-        )
-        this.calcuteLines()
-      }, 100)
-    },
+    // discussions: function () {
+    //   setTimeout(() => {
+    //     const element = document.getElementById('p1')
+    //     this.lineHeight = parseInt(
+    //       window.getComputedStyle(element, null).getPropertyValue('line-height')
+    //     )
+    //     this.calcuteLines()
+    //   }, 100)
+    // },
     selectedTags: function () {
       for (let i = 0; i < this.selectedTags.length; i++) {
         if (typeof this.selectedTags[i] !== 'object') {
@@ -374,16 +363,16 @@ export default {
       }
     },
   },
-  mounted() {
-    window.onresize = () => {
-      this.debouncedCalculateLines()
-    }
-  },
+  // mounted() {
+  //   window.onresize = () => {
+  //     this.debouncedCalculateLines()
+  //   }
+  // },
 
-  created() {
-    this.debouncedCalculateLines = debounce(this.calcuteLines, 300)
-    // this.getTags()
-  },
+  // created() {
+  //   this.debouncedCalculateLines = debounce(this.calcuteLines, 300)
+  //   // this.getTags()
+  // },
 }
 </script>
 

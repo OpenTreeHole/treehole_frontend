@@ -10,20 +10,18 @@
         class="mx-1 my-1"
         small
         ripple
-        @click.stop="addTag(tag)"
       >
+        <!-- @click.stop="addTag(tag)" -->
         {{ tag.name }}
       </v-chip>
     </v-card-text>
-    <v-card-text
-      class="folded-hint"
-      v-if="discussion.is_folded"
-      color="grey" 
-    >该内容已折叠：<span
-    @click="displayIt=!displayIt"
-    >{{
-      displayIt ? '收起' : '展开'
-    }}</span></v-card-text>
+    <v-card-text class="folded-hint" v-if="discussion.is_folded" color="grey"
+      >该内容已折叠：<span
+        style="cursor: pointer"
+        @click="displayIt = !displayIt"
+        >{{ displayIt ? '收起' : '展开' }}</span
+      ></v-card-text
+    >
     <div class="post-content" v-show="displayIt">
       <!-- 内容主体 -->
       <v-card-text
@@ -104,9 +102,10 @@ export default {
     }
   },
   methods: {
-    addTag(tag) {
-      this.$parent.addTag(tag)
-    },
+    // 有待重构
+    // addTag(tag) {
+    //   this.$parent.addTag(tag)
+    // },
     toDiscussion(discussion_id) {
       setTimeout(() => {
         this.$router.push({
