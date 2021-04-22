@@ -23,14 +23,14 @@
       <v-card-text v-if="!installed">
         您正在使用网页版 FDU Hole，请<span>安装本应用</span>以获得更好的体验！
       </v-card-text>
-      <v-card-subtitle>前端版本</v-card-subtitle>
+      <!-- <v-card-subtitle>前端版本</v-card-subtitle> -->
       <v-card-text>
         当前版本：{{ $feConfig.feVersion }}<br />
         最新版本：{{ latestVersion }} <br />
         {{ updateMsg[updateMsgIndex] }}
       </v-card-text>
-      <v-card-subtitle>后端版本</v-card-subtitle>
-      <v-card-text>获取失败</v-card-text>
+      <!-- <v-card-subtitle>后端版本</v-card-subtitle>
+      <v-card-text>获取失败</v-card-text> -->
     </v-card>
 
     <!-- 联系我们 -->
