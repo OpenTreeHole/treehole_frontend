@@ -18,7 +18,7 @@ export default {
       type: 'info',
       message: '',
       icon: '',
-      timeout: '5000',
+      timeout: '2000',
     }
   },
 
