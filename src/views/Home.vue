@@ -7,7 +7,7 @@
     <newcomer></newcomer>
 
     <!-- 标签筛选器 -->
-    <!-- <v-row justify="center" class="ma-0" v-show="filtedTags.length > 0">
+    <v-row justify="center" class="ma-0" v-show="filtedTags.length > 0">
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card>
           <v-card-text>
@@ -26,7 +26,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row> -->
+    </v-row>
 
     <!-- 帖子列表 -->
     <DiscussionList api="discussions/"></DiscussionList>

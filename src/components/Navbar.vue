@@ -67,13 +67,14 @@
           <v-form>
             <v-row>
               <v-text-field
+                type="search"
                 v-model="searchText"
-                @keyup.enter="searchIt"
                 placeholder="搜索"
               >
               </v-text-field>
               <v-list-item-icon>
                 <v-btn
+                  type="submit"
                   icon
                   @click="searchIt"
                   :disabled="searchText.length == 0"
@@ -89,14 +90,15 @@
         <v-list-item>
           <v-form>
             <v-row>
-              <v-text-field
-                v-model="floorToGo"
-                @keyup.enter="goFloor"
-                placeholder="直达楼层"
-              >
+              <v-text-field v-model="floorToGo" placeholder="直达楼层">
               </v-text-field>
               <v-list-item-icon>
-                <v-btn icon @click="goFloor" :disabled="floorToGo.length == 0">
+                <v-btn
+                  type="submit"
+                  icon
+                  @click="goFloor"
+                  :disabled="floorToGo.length == 0"
+                >
                   <v-icon>mdi-elevator</v-icon>
                 </v-btn>
               </v-list-item-icon>
