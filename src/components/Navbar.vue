@@ -268,8 +268,7 @@ export default {
   }
 }
 .drawer-bottom-container {
-  position: fixed;
+  position: absolute;
   left: 8px;
-  bottom: 64px;
 }
 </style>

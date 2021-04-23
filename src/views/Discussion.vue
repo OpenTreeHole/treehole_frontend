@@ -140,7 +140,7 @@
     <v-dialog v-model="dialog" persistent max-width="600px">
       <!-- 浮动按钮 -->
       <template v-slot:activator="{ on, attrs }">
-        <v-btn fab color="primary" class="fixed" v-bind="attrs" v-on="on">
+        <v-btn fab color="secondary" class="fixed" v-bind="attrs" v-on="on">
           <v-icon>mdi-send</v-icon>
         </v-btn>
       </template>

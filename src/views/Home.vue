@@ -38,7 +38,7 @@
       <template v-slot:activator="{ on, attrs }">
         <v-btn
           fab
-          color="success"
+          color="secondary"
           class="fixed"
           v-bind="attrs"
           v-on="on"
