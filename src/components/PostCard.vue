@@ -54,7 +54,8 @@
       <!-- 脚标 -->
       <v-card-text class="pt-0 pb-0 text-center caption">
         <span style="float: left">#{{ post.discussion + ':' + post.id }}</span>
-        <span style="float: inherit">{{
+        <span style="float: inherit">{{ post.username }}</span>
+        <span style="float: right">{{
           post.date_created | timeDifference
         }}</span>
       </v-card-text>

@@ -9,7 +9,7 @@
       max-width="700px"
       style="margin-top: -32px; z-index: 99"
     >
-      <v-card-text class="pb-2 pt-2 font-weight-medium">
+      <v-card-text class="text--primary pb-2 pt-2 font-weight-medium">
         <v-chip
           v-for="(tag, tindex) in discussion.tag"
           :key="tindex"
@@ -24,7 +24,7 @@
 
       <v-divider></v-divider>
 
-      <v-card-text class="pt-2 pb-2 text-center">
+      <v-card-text class="text--primary pt-2 pb-2 text-center">
         <span style="float: left">#{{ discussion.id }}</span>
         <span style="float: inherit">{{
           discussion.date_updated | timeDifference
@@ -42,7 +42,7 @@
     >
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card>
-          <v-card-text class="pb-2 pt-2 font-weight-medium">
+          <v-card-text class="text--primary pb-2 pt-2 font-weight-medium">
             <v-chip
               v-for="(tag, tindex) in discussion.tag"
               :key="tindex"
@@ -57,7 +57,7 @@
 
           <v-divider></v-divider>
 
-          <v-card-text class="pt-2 pb-2 text-center">
+          <v-card-text class="text--primary pt-2 pb-2 text-center">
             <span style="float: left">#{{ discussion.id }}</span>
             <span style="float: inherit">{{
               discussion.date_updated | timeDifference
@@ -80,7 +80,12 @@
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card :id="index">
           <v-card-text class="pb-1 pt-2 text-body-2">
-            <p>{{ post['username'] }}</p>
+            <p>
+              {{ post['username'] }}
+              <span style="float: right">
+                {{ post['date_created'] | timeDifference }}
+              </span>
+            </p>
           </v-card-text>
 
           <v-card-text class="py-0">
@@ -108,7 +113,7 @@
 
             <!-- 正文部分 -->
             <div
-              class="ma-0 text-body-1"
+              class="text--primary ma-0 text-body-1"
               id="rich-text"
               v-html="post.content"
             ></div>
@@ -123,13 +128,18 @@
               @click="reply(post['id'])"
               class="grey--text"
               style="padding-bottom: -10px"
-            >
+              ><v-icon>mdi-reply-outline</v-icon>
               回复
-              <v-icon>mdi-reply-outline</v-icon>
             </v-btn>
-            <div>
-              {{ post['date_created'] | timeDifference }}
-            </div>
+            <v-btn
+              x-small
+              text
+              @click="report(post.id)"
+              class="grey--text"
+              style="padding-bottom: -10px"
+              ><v-icon>mdi-alert-outline</v-icon>
+              举报
+            </v-btn>
           </v-card-text>
         </v-card>
       </v-col>
@@ -322,6 +332,21 @@ export default {
           })
       }
     },
+    report(post_id) {
+      var msg = prompt('输入举报理由')
+      this.$axios
+        .post('reports/', {
+          post_id: post_id,
+          reason: msg,
+        })
+        .then((response) => {
+          if (response.status == 200) {
+            this.$refs.message.success('举报成功')
+          } else {
+            this.$refs.message.error(error.response.data.msg)
+          }
+        })
+    },
   },
   created() {
     this.getDiscussion(this.$route.params.id)
@@ -335,7 +360,7 @@ export default {
   margin: 0rem 1rem 0rem 1rem;
   margin-bottom: 1rem;
   padding: 0.5rem 0.5rem 0rem 0.5rem;
-  background-color: #fff3e0;
+  background-color: #a5a4a4;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;

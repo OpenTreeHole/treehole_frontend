@@ -79,9 +79,9 @@
         <span style="float: inherit">{{
           discussion['date_updated'] | timeDifference
         }}</span>
-        <span style="float: right">
+        <span style="float: right"
+          ><v-icon small>mdi-message-processing-outline</v-icon>
           {{ discussion['count'] }}
-          <v-icon small>mdi-message-processing-outline</v-icon>
         </span>
       </v-card-text>
     </div>
