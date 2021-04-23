@@ -37,6 +37,7 @@ export default {
       page: 1,
       // 展开折叠样式数据
       styleData: [],
+      order: '',
     }
   },
   methods: {
@@ -49,7 +50,7 @@ export default {
     },
     getDiscussions() {
       return this.$axios
-        .get(this.api, { params: { page: this.page } })
+        .get(this.api, { params: { page: this.page, order: this.order } })
         .then((response) => {
           for (let i = 0; i < response.data.length; i++) {
             this.styleData.push({ fold: true, lines: 3 })

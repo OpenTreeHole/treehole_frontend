@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-snackbar top :color="type" v-model="alert">
+    <v-snackbar top :color="type" v-model="alert" :timeout="timeout">
       <v-icon left>
         {{ icon }}
       </v-icon>
@@ -18,6 +18,7 @@ export default {
       type: 'info',
       message: '',
       icon: '',
+      timeout: '5000',
     }
   },
 
