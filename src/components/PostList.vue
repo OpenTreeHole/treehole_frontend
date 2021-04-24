@@ -23,7 +23,7 @@ export default {
   components: { PostCard },
   props: {
     api: '',
-    requestParams: {},
+    requestParams: { search: '' },
   },
   data() {
     return {

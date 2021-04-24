@@ -29,7 +29,7 @@
     </v-row> -->
 
     <!-- 帖子列表 -->
-    <DiscussionList api="discussions/"></DiscussionList>
+    <DiscussionList ref="discussions" api="discussions/"></DiscussionList>
 
     <!-- 弹出式表单及浮动按钮 -->
 
@@ -268,10 +268,12 @@ export default {
           })
           .then((response) => {
             console.log(response.data)
+            this.$refs.message.success('发送成功')
             // 重新加载页面
-            this.discussions = []
-            this.page = 1
-            this.getDiscussions()
+
+            this.$refs.discussions.discussions = []
+            this.$refs.discussions.page = 1
+            this.$refs.discussions.getDiscussions()
             // 重置表单内容
             this.$refs.editor.content = ''
             this.tags = []
@@ -281,6 +283,7 @@ export default {
             console.log(error.response)
             this.$refs.message.error(error.response.data.msg)
           })
+        // 发送完请求后，刷新讨论页面以让用户能看到自己的消息，并弹出发帖成功通知
       }
     },
     // getDiscussions() {
