@@ -361,6 +361,7 @@ export default {
   margin-bottom: 1rem;
   padding: 0.5rem 0.5rem 0rem 0.5rem;
   background-color: #a5a4a4;
+  color: white;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;

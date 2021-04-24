@@ -75,8 +75,10 @@
 
       <!-- 脚标 -->
       <v-card-text class="pt-0 pb-0 text-center caption">
-        <span style="float: left">#{{ discussion['id'] }}</span>
-        <span style="float: inherit" @click="swithOrderByTimeCreated">{{
+        <span style="float: left" @click="orderByTimeCreated"
+          >#{{ discussion['id'] }}</span
+        >
+        <span style="float: inherit" @click="orderByTimeUpdated">{{
           discussion['date_updated'] | timeDifference
         }}</span>
         <span style="float: right"
@@ -102,16 +104,17 @@ export default {
     }
   },
   methods: {
-    swithOrderByTimeCreated() {
-      if (this.$parent.order == '') {
-        this.$parent.order = 'last_created'
-        this.$parent.$parent.$refs.message.success('已按照发帖时间排序')
-        console.log(this.$refs)
-      } else {
-        this.$parent.order = ''
-        this.$parent.$parent.$refs.message.success('已按照最新回复时间排序')
-        console.log(this.$refs)
-      }
+    orderByTimeCreated() {
+      this.$parent.order = 'last_created'
+      this.$parent.$parent.$refs.message.success('已按照发帖时间排序')
+
+      this.$parent.discussions = []
+      this.$parent.page = 1
+    },
+    orderByTimeUpdated() {
+      this.$parent.order = ''
+      this.$parent.$parent.$refs.message.success('已按照最新回复时间排序')
+
       this.$parent.discussions = []
       this.$parent.page = 1
     },
