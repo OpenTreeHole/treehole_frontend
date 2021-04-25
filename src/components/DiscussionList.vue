@@ -66,7 +66,7 @@ export default {
     },
   },
   watch: {
-    discussions: function () {
+    discussions() {
       setTimeout(() => {
         const element = document.getElementById('p1')
         this.lineHeight = parseInt(

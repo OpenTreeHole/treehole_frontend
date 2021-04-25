@@ -286,22 +286,6 @@ export default {
         // 发送完请求后，刷新讨论页面以让用户能看到自己的消息，并弹出发帖成功通知
       }
     },
-    // getDiscussions() {
-    //   return this.$axios
-    //     .get('discussions/', { params: { page: this.page } })
-    //     .then((response) => {
-    //       for (let i = 0; i < response.data.length; i++) {
-    //         this.styleData.push({ fold: true, lines: 3 })
-    //       }
-    //       this.discussions.push.apply(this.discussions, response.data)
-    //       if (response.data.length > 0) {
-    //         this.page++
-    //       }
-    //     })
-    //     .catch((error) => {
-    //       this.$refs.message.error(error.response.data.msg)
-    //     })
-    // },
     getTags() {
       // 获取 所有的 tags
       this.$axios
@@ -314,25 +298,9 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-    // calcuteLines() {
-    //   for (let i = 0; i < this.styleData.length; i++) {
-    //     const element = document.getElementById('p' + i)
-    //     const totalHeight = element.scrollHeight
-    //     this.styleData[i].lines = totalHeight / this.lineHeight
-    //   }
-    // },
   },
 
   watch: {
-    // discussions: function () {
-    //   setTimeout(() => {
-    //     const element = document.getElementById('p1')
-    //     this.lineHeight = parseInt(
-    //       window.getComputedStyle(element, null).getPropertyValue('line-height')
-    //     )
-    //     this.calcuteLines()
-    //   }, 100)
-    // },
     selectedTags: function () {
       for (let i = 0; i < this.selectedTags.length; i++) {
         if (typeof this.selectedTags[i] !== 'object') {
@@ -366,16 +334,6 @@ export default {
       }
     },
   },
-  // mounted() {
-  //   window.onresize = () => {
-  //     this.debouncedCalculateLines()
-  //   }
-  // },
-
-  // created() {
-  //   this.debouncedCalculateLines = debounce(this.calcuteLines, 300)
-  //   // this.getTags()
-  // },
 }
 </script>
 

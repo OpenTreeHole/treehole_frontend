@@ -194,60 +194,32 @@ export default {
     //     media.removeEventListener('change')
     //   }
     // },
-    $route() {
-      this.inAllowBackRoutes = (() => {
-        const currentRoute = this.$router.currentRoute.name
-        var i
-        for (i of this.$feConfig.allowBackRoutes) {
-          if (currentRoute == i) {
-            return true
+    $route: {
+      immediate: true,
+      handler: function () {
+        this.inAllowBackRoutes = (() => {
+          const currentRoute = this.$router.currentRoute.name
+          var i
+          for (i of this.$feConfig.allowBackRoutes) {
+            if (currentRoute == i) {
+              return true
+            }
           }
-        }
-        return false
-      })()
-      this.inBanMenuRoutes = (() => {
-        const currentRoute = this.$router.currentRoute.name
-        var i
-        for (i of this.$feConfig.banMenuRoutes) {
-          if (currentRoute == i) {
-            return true
+          return false
+        })()
+        this.inBanMenuRoutes = (() => {
+          const currentRoute = this.$router.currentRoute.name
+          var i
+          for (i of this.$feConfig.banMenuRoutes) {
+            if (currentRoute == i) {
+              return true
+            }
           }
-        }
-        return false
-      })()
-      this.username = localStorage.getItem('username')
+          return false
+        })()
+        this.username = localStorage.getItem('username')
+      },
     },
-  },
-  created() {
-    // 自动适应系统暗黑模式
-    this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
-    matchMedia('(prefers-color-scheme: dark)').addEventListener(
-      'change',
-      (event) => {
-        this.isDarkTheme = event.matches
-      }
-    )
-    this.inAllowBackRoutes = (() => {
-      const currentRoute = this.$router.currentRoute.name
-      var i
-      for (i of this.$feConfig.allowBackRoutes) {
-        if (currentRoute == i) {
-          return true
-        }
-      }
-      return false
-    })()
-    this.inBanMenuRoutes = (() => {
-      const currentRoute = this.$router.currentRoute.name
-      var i
-      for (i of this.$feConfig.banMenuRoutes) {
-        if (currentRoute == i) {
-          return true
-        }
-      }
-      return false
-    })()
-    this.username = localStorage.getItem('username')
   },
 }
 </script>
