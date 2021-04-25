@@ -180,23 +180,16 @@ export default {
         'background:transparent'
       )
     },
-    // followSystemDarkMode() {
-    //   if (this.followSystemDarkMode) {
-    //     // 设置为跟随系统
-    //     this.isDarkTheme = window.matchMedia(
-    //       '(prefers-color-scheme: dark)'
-    //     ).matches
-    //     media.addEventListener('change', (event) => {
-    //       this.isDarkTheme = event.matches
-    //     })
-    //   } else {
-    //     // 设置为不跟随系统
-    //     media.removeEventListener('change')
-    //   }
-    // },
     $route: {
       immediate: true,
       handler: function () {
+        this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
+        matchMedia('(prefers-color-scheme: dark)').addEventListener(
+          'change',
+          (event) => {
+            this.isDarkTheme = event.matches
+          }
+        )
         this.inAllowBackRoutes = (() => {
           const currentRoute = this.$router.currentRoute.name
           var i
