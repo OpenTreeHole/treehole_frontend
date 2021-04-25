@@ -5,7 +5,9 @@
 
     <v-main>
       <keep-alive include="Home">
-        <router-view></router-view>
+        <router-view
+          :key="$route.fullPath + ($route.params.id || '') + $route.query"
+        ></router-view>
       </keep-alive>
     </v-main>
 

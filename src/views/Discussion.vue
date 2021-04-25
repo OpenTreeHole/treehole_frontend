@@ -351,6 +351,14 @@ export default {
   created() {
     this.getDiscussion(this.$route.params.id)
   },
+  // watch: {
+  //   $route() {
+  //     this.this.posts = []
+  //     this.discussions = null
+  //     this.getDiscussion(this.$route.params.id)
+  //     this.$forceUpdate()
+  //   },
+  // },
 }
 </script>
 
