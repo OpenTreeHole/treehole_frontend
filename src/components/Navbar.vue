@@ -90,7 +90,7 @@
         <v-list-item>
           <v-form>
             <v-row>
-              <v-text-field v-model="floorToGo" placeholder="直达楼层">
+              <v-text-field v-model="floorToGo" placeholder="电梯直达">
               </v-text-field>
               <v-list-item-icon>
                 <v-btn

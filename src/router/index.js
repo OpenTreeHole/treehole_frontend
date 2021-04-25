@@ -7,6 +7,7 @@ import Discussion from '@/views/Discussion.vue'
 import About from '@/views/About.vue'
 import Licence from '@/views/Licence.vue'
 import Search from '@/views/Search.vue'
+import Me from '@/views/Me.vue'
 
 Vue.use(VueRouter)
 
@@ -18,7 +19,8 @@ const routes = [
   { path: '/about', meta: { title: '关于 | FDU Hole' }, component: About, name: 'about' },
   { path: '/register', meta: { title: '注册 | FDU Hole' }, component: Register, name: 'register' },
   { path: '/discussion/:id', meta: { title: 'FDU Hole' }, component: Discussion, name: 'discussion' },
-  { path: '/s', meta: { title: '搜索 | FDU  Hole' }, component: Search, name: 'search' }
+  { path: '/s', meta: { title: '搜索 | FDU  Hole' }, component: Search, name: 'search' },
+  { path: '/me', meta: { title: '我的 | FDU Hole' }, component: Me, name: 'me' }
 ]
 
 const router = new VueRouter({
