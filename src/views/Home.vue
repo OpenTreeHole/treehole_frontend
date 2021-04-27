@@ -337,7 +337,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .fold {
   overflow: hidden;
   max-height: 4.5rem;

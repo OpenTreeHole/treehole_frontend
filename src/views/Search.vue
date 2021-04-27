@@ -19,6 +19,3 @@ export default {
   components: { PostList },
 }
 </script>
-
-<style scoped>
-</style>

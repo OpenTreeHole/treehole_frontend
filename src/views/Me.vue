@@ -7,11 +7,12 @@
         <v-card-title>{{ profile.user.username }} </v-card-title>
       </v-row>
     </v-card>
-    <v-row class="mdui-col-xs-2">
-      <v-col></v-col>
-      <v-btn>退出登录</v-btn>
-      <v-btn>重置密码</v-btn>
-    </v-row>
+    <v-row justify="center" style="margin: 20px 0"
+      ><v-btn color="primary" width="40%" @click="changePassWd">
+        修改密码
+      </v-btn>
+      <v-btn color="error" width="40%" @click="logout">退出登录</v-btn></v-row
+    >
   </v-container>
 </template>
 
@@ -40,6 +41,9 @@ export default {
     logout() {
       localStorage.clear()
       this.reloadAll()
+    },
+    changePassWd() {
+      alert('还没写完')
     },
   },
   watch: {
