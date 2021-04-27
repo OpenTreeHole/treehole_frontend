@@ -23,12 +23,9 @@
 
       <v-list-item color="primary">
         <v-list-item-content>
-          <v-list-item-title>{{ username }}</v-list-item-title>
+          <v-list-item-title>FDU Hole</v-list-item-title>
           <v-list-item-subtitle>欢迎回来</v-list-item-subtitle>
         </v-list-item-content>
-        <v-btn icon @click="logout">
-          <v-icon>mdi-export</v-icon>
-        </v-btn>
       </v-list-item>
 
       <v-divider></v-divider>
@@ -162,10 +159,6 @@ export default {
     back() {
       this.$router.back()
     },
-    logout() {
-      localStorage.clear()
-      this.reloadAll()
-    },
   },
 
   watch: {
@@ -182,7 +175,7 @@ export default {
     },
     $route: {
       immediate: true,
-      handler: function () {
+      handler() {
         this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
         matchMedia('(prefers-color-scheme: dark)').addEventListener(
           'change',

@@ -40,6 +40,11 @@ export default {
             route: 'home',
         },
         {
+            title: '空调',
+            icon: 'mdi-air-conditioner',
+            route: '/air-conditioner'
+        },
+        {
             title: '我的',
             icon: 'mdi-account',
             route: '/me'

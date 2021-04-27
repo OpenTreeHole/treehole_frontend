@@ -8,19 +8,21 @@ import About from '@/views/About.vue'
 import Licence from '@/views/Licence.vue'
 import Search from '@/views/Search.vue'
 import Me from '@/views/Me.vue'
+import AirConditioner from '@/views/AirConditioner.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/licence', meta: { title: '协议 | FDU Hole' }, component: Licence, name: 'licence' },
-  { path: '/home', meta: { title: '首页 | FDU Hole' }, component: Home, name: 'home' },
-  { path: '/login', meta: { title: '登录 | FDU Hole' }, component: Login, name: 'login' },
+  { path: '/licence', meta: { title: '协议' }, component: Licence, name: 'licence' },
+  { path: '/home', meta: { title: '首页' }, component: Home, name: 'home' },
+  { path: '/login', meta: { title: '登录' }, component: Login, name: 'login' },
   { path: '/', redirect: '/home' },
-  { path: '/about', meta: { title: '关于 | FDU Hole' }, component: About, name: 'about' },
-  { path: '/register', meta: { title: '注册 | FDU Hole' }, component: Register, name: 'register' },
-  { path: '/discussion/:id', meta: { title: 'FDU Hole' }, component: Discussion, name: 'discussion' },
-  { path: '/s', meta: { title: '搜索 | FDU  Hole' }, component: Search, name: 'search' },
-  { path: '/me', meta: { title: '我的 | FDU Hole' }, component: Me, name: 'me' }
+  { path: '/about', meta: { title: '关于' }, component: About, name: 'about' },
+  { path: '/register', meta: { title: '注册' }, component: Register, name: 'register' },
+  { path: '/discussion/:id', meta: { title: '树洞' }, component: Discussion, name: 'discussion' },
+  { path: '/s', meta: { title: '搜索' }, component: Search, name: 'search' },
+  { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' },
+  { path: '/air-conditioner', meta: { title: '空调' }, component: AirConditioner, name: 'air-conditioner' },
 ]
 
 const router = new VueRouter({
