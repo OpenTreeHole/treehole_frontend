@@ -21,29 +21,29 @@ self.addEventListener('active', async event => {
 let online = true
 setInterval(() => {
   fetch('online').then(() => {
-    if(!online){
+    if (!online) {
       this.clients.matchAll()
-      .then(function (clients){
-        console.log(clients)
-        if (clients && clients.length) {
-          clients.forEach((client) => {
-              client.postMessage({msg: '网络连接已恢复, 请刷新以获取最新内容', status: 'success'})
-          })
-        }
-      })
+        .then(function (clients) {
+          console.log(clients)
+          if (clients && clients.length) {
+            clients.forEach((client) => {
+              client.postMessage({ msg: '网络连接已恢复, 请刷新以获取最新内容', status: 'success' })
+            })
+          }
+        })
     }
     online = true
   }).catch(() => {
-    if(online){
+    if (online) {
       this.clients.matchAll()
-      .then(function (clients){
-        console.log(clients)
-        if (clients && clients.length) {
-          clients.forEach((client) => {
-              client.postMessage({msg: '网络已断开, 正在以离线模式浏览', status: 'warning'})
-          })
-        }
-      })
+        .then(function (clients) {
+          console.log(clients)
+          if (clients && clients.length) {
+            clients.forEach((client) => {
+              client.postMessage({ msg: '网络已断开, 正在以离线模式浏览', status: 'warning' })
+            })
+          }
+        })
     }
     online = false
   })
@@ -58,7 +58,7 @@ if (workbox) {
 
   workbox.routing.registerRoute(
     /^https:\/\/www\.fduhole\.tk\/api\/.*/, // 匹配的路由
-    workbox.strategies.networkFirst({cacheName: 'api'})
+    workbox.strategies.networkFirst({ cacheName: 'api' })
   )
 
   workbox.routing.registerRoute(
@@ -72,7 +72,7 @@ if (workbox) {
       ]
     }),
   )
-} 
+}
 else {
   console.log(`Workbox didn't load`);
 }

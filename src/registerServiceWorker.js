@@ -3,53 +3,53 @@
 import { register } from 'register-service-worker'
 
 const notifyOffline = async function (data) {
-  if(Notification.permission === 'default'){
+  if (Notification.permission === 'default') {
     await Notification.requestPermission()
   }
-  new Notification('网络已断开', {body: '正在以离线模式浏览'})
+  new Notification('网络已断开', { body: '正在以离线模式浏览' })
 }
 
 if (process.env.NODE_ENV === 'production') {
   register(`${process.env.BASE_URL}service-worker.js`, {
-    ready () {
+    ready() {
       console.log(
         'App is being served from cache by a service worker.\n' +
         'For more details, visit https://goo.gl/AFskqB'
       )
     },
-    registered () {
+    registered() {
       console.log('Service worker has been registered.')
       navigator.serviceWorker.addEventListener('message', function (event) {
-        if(event.data.status === 'success'){
+        if (event.data.status === 'success') {
           document.dispatchEvent(
             new CustomEvent('onlined', { detail: event.data.msg })
           );
         }
-        if(event.data.status === 'warning'){
+        if (event.data.status === 'warning') {
           document.dispatchEvent(
             new CustomEvent('offlined', { detail: event.data.msg })
           );
         }
-    });
+      });
     },
-    cached () {
+    cached() {
       console.log('Content has been cached for offline use.')
     },
-    updatefound () {
+    updatefound() {
       console.log('New content is downloading.')
     },
-    updated () {
+    updated() {
       console.log('New content is available; please refresh.')
     },
-    offline () {
+    offline() {
       // notifyOffline()
       console.log('No internet connection found. App is running in offline mode.')
       // document.dispatchEvent(
       //   new CustomEvent('offline', { detail: '网络已断开, 正在以离线模式浏览' })
       // );
-      
+
     },
-    error (error) {
+    error(error) {
       console.error('Error during service worker registration:', error)
     }
   })

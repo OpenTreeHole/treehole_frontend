@@ -73,6 +73,13 @@
         <div style="height: 0.5rem"></div>
       </div>
 
+      <v-card-text v-if="discussion.first_post.id != discussion.last_post.id">
+        <v-row class="mx-3">
+          <span>RE：</span>
+          <span v-html="discussion.last_post.content"></span
+        ></v-row>
+      </v-card-text>
+
       <!-- 脚标 -->
       <v-card-text class="pt-0 pb-0 text-center caption">
         <span style="float: left" @click="orderByTimeCreated"
