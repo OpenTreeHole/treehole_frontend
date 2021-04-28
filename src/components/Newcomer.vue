@@ -77,12 +77,12 @@ export default {
     },
   },
   watch: {
-    $route() {
-      this.newcomer = localStorage.getItem('newcomer')
+    $route: {
+      immediate: true,
+      handler() {
+        this.newcomer = localStorage.getItem('newcomer')
+      },
     },
-  },
-  created() {
-    this.newcomer = localStorage.getItem('newcomer')
   },
 }
 </script>

@@ -16,11 +16,9 @@
       </v-chip>
     </v-card-text>
     <v-card-text class="folded-hint" v-if="discussion.is_folded" color="grey"
-      >该内容已折叠：<span
-        style="cursor: pointer"
-        @click="displayIt = !displayIt"
-        >{{ displayIt ? '收起' : '展开' }}</span
-      ></v-card-text
+      >该内容已折叠：<span class="clickable" @click="displayIt = !displayIt">{{
+        displayIt ? '收起' : '展开'
+      }}</span></v-card-text
     >
     <div class="post-content" v-show="displayIt">
       <!-- 内容主体 -->
@@ -76,18 +74,21 @@
       <v-card-text v-if="discussion.first_post.id != discussion.last_post.id">
         <v-row class="mx-3">
           <span>RE：</span>
-          <span v-html="discussion.last_post.content"></span
-        ></v-row>
+          <span>{{ discussion.last_post.content | plainText }}</span></v-row
+        >
       </v-card-text>
 
       <!-- 脚标 -->
       <v-card-text class="pt-0 pb-0 text-center caption">
-        <span style="float: left" @click="orderByTimeCreated"
+        <span class="clickable" style="float: left" @click="orderByTimeCreated"
           >#{{ discussion['id'] }}</span
         >
-        <span style="float: inherit" @click="orderByTimeUpdated">{{
-          discussion['date_updated'] | timeDifference
-        }}</span>
+        <span
+          class="clickable"
+          style="float: inherit"
+          @click="orderByTimeUpdated"
+          >{{ discussion['date_updated'] | timeDifference }}</span
+        >
         <span style="float: right"
           ><v-icon small>mdi-message-processing-outline</v-icon>
           {{ discussion['count'] }}
@@ -114,14 +115,14 @@ export default {
     orderByTimeCreated() {
       this.$parent.order = 'last_created'
       this.$parent.$parent.$refs.message.success('已按照发帖时间排序')
-
+      // 刷新列表
       this.$parent.discussions = []
       this.$parent.page = 1
     },
     orderByTimeUpdated() {
       this.$parent.order = ''
       this.$parent.$parent.$refs.message.success('已按照最新回复时间排序')
-
+      // 刷新列表
       this.$parent.discussions = []
       this.$parent.page = 1
     },
