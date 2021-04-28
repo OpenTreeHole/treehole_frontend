@@ -1,13 +1,20 @@
 <template>
   <v-container>
     <message ref="message"></message>
-    <v-card>
-      <v-card-text>欢迎回来~</v-card-text>
-      <v-row>
-        <v-card-title>{{ profile.user.username }} </v-card-title>
-      </v-row>
-    </v-card>
-    <v-row justify="center" style="margin: 20px 0"
+
+    <h1>{{ profile.user.username }}</h1>
+
+    <h2>我的收藏</h2>
+    <p v-if="profile.favored_discussion.length == 0">
+      你没有收藏任何帖子，去首页看一看吧~
+    </p>
+    <DiscussionCard
+      v-for="discussion in profile.favored_discussion"
+      :key="discussion.id"
+      :discussion="discussion"
+    ></DiscussionCard>
+
+    <v-row justify="space-around" style="margin: 20px 0; width =100%"
       ><v-btn color="primary" width="40%" @click="changePassWd">
         修改密码
       </v-btn>
@@ -18,10 +25,11 @@
 
 <script>
 import Message from '@/components/Message.vue'
+import DiscussionCard from '@/components/DiscussionCard.vue'
 
 export default {
   name: 'Me',
-  components: { Message },
+  components: { Message, DiscussionCard },
   data() {
     return {
       profile: {},
