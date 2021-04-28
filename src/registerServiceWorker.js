@@ -23,14 +23,14 @@ if (process.env.NODE_ENV === 'production') {
         if (event.data.status === 'success') {
           document.dispatchEvent(
             new CustomEvent('onlined', { detail: event.data.msg })
-          );
+          )
         }
         if (event.data.status === 'warning') {
           document.dispatchEvent(
             new CustomEvent('offlined', { detail: event.data.msg })
-          );
+          )
         }
-      });
+      })
     },
     cached() {
       console.log('Content has been cached for offline use.')
@@ -47,12 +47,9 @@ if (process.env.NODE_ENV === 'production') {
       // document.dispatchEvent(
       //   new CustomEvent('offline', { detail: '网络已断开, 正在以离线模式浏览' })
       // );
-
     },
     error(error) {
       console.error('Error during service worker registration:', error)
     }
   })
 }
-
-

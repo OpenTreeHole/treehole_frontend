@@ -3,10 +3,10 @@ var webpack = require('webpack')
 module.exports = {
   pwa: {
     name: 'FDU Hole',
-    themeColor: "#3175D0",
-    msTileColor: "#3175D0",
+    themeColor: '#3175D0',
+    msTileColor: '#3175D0',
     appleMobileWebAppCapable: 'yes',
-    appleMobileWebAppStatusBarStyle: "black-translucent",
+    appleMobileWebAppStatusBarStyle: 'black-translucent',
     workboxPluginMode: 'InjectManifest',
     workboxOptions: {
       // swSrc is required in InjectManifest mode.
@@ -15,15 +15,15 @@ module.exports = {
       exclude: [
         /\.map$/,
         /manifest\.json$/,
-        /online\.json/,
-      ],
+        /online\.json/
+      ]
     },
     manifestOptions: {
-      short_name: "FDUHole",
-      lang: "zh-CN",
-      start_url: "/",
-      display: "standalone",
-      background_color: '#ffffff',
+      short_name: 'FDUHole',
+      lang: 'zh-CN',
+      start_url: '/',
+      display: 'standalone',
+      background_color: '#ffffff'
       // icons: [
       //   {
       //     "src": "/img/icons/icon-192x192.png",
@@ -36,7 +36,7 @@ module.exports = {
       //     "type": "image/png"
       //   },
       // ]
-    },
+    }
     // iconPaths: {
     //   faviconSVG: '/img/icons/favicon.svg',
     //   favicon32: '/img/icons/favicon-32x32.png',

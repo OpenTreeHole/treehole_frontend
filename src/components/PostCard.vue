@@ -87,11 +87,11 @@ export default {
     },
     unfold(index) {
       this.scrollTop = document.documentElement.scrollTop
-      this.$parent.styleData[index]['fold'] = false
+      this.$parent.styleData[index].fold = false
     },
     fold(index) {
-      this.$parent.styleData[index]['fold'] = true
-      let scrollDistance = this.scrollTop - document.documentElement.scrollTop
+      this.$parent.styleData[index].fold = true
+      const scrollDistance = this.scrollTop - document.documentElement.scrollTop
       window.scrollBy({
         top: scrollDistance, //  正值向下
         left: 0,

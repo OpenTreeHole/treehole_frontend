@@ -9,22 +9,23 @@ import debounce from 'lodash.debounce'
 import VueQuillEditor from 'vue-quill-editor'
 
 import marked from 'marked'
-Vue.prototype.$marked = marked
 
 import plugins from './components/plugins'
 
 // 引入项目配置文件
 import FDUHoleFEConfig from './fduhole-fe.config.js'
-Vue.prototype.$feConfig = FDUHoleFEConfig
 
 // 引入实用工具
 import FEUtils from './utils.js'
-Vue.prototype.$feUtils = FEUtils
 
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
+import store from './store'
+Vue.prototype.$marked = marked
+Vue.prototype.$feConfig = FDUHoleFEConfig
+Vue.prototype.$feUtils = FEUtils
 
 Vue.config.productionTip = false
 
@@ -71,6 +72,7 @@ new Vue({
   router,
   vuetify,
   debounce,
+  store,
   render: h => h(App)
 }).$mount('#app')
 

@@ -1,5 +1,4 @@
 
-
 // self.addEventListener("message", (e)=>{
 //   if (e.data.action=='skipWaiting') {
 //     console.log('skip waiting')
@@ -50,11 +49,10 @@ setInterval(() => {
 }, 10000)
 
 if (workbox) {
+  console.log('Workbox is loaded')
 
-  console.log(`Workbox is loaded`);
-
-  self.__precacheManifest = [].concat(self.__precacheManifest || []);
-  workbox.precaching.precacheAndRoute(self.__precacheManifest);
+  self.__precacheManifest = [].concat(self.__precacheManifest || [])
+  workbox.precaching.precacheAndRoute(self.__precacheManifest)
 
   workbox.routing.registerRoute(
     /^https:\/\/www\.fduhole\.tk\/api\/.*/, // 匹配的路由
@@ -70,9 +68,8 @@ if (workbox) {
           statuses: [0, 200]
         })
       ]
-    }),
+    })
   )
-}
-else {
-  console.log(`Workbox didn't load`);
+} else {
+  console.log('Workbox didn\'t load')
 }

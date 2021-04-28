@@ -22,7 +22,7 @@ const routes = [
   { path: '/discussion/:id', meta: { title: '树洞' }, component: Discussion, name: 'discussion' },
   { path: '/s', meta: { title: '搜索' }, component: Search, name: 'search' },
   { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' },
-  { path: '/air-conditioner', meta: { title: '空调' }, component: AirConditioner, name: 'air-conditioner' },
+  { path: '/air-conditioner', meta: { title: '空调' }, component: AirConditioner, name: 'air-conditioner' }
 ]
 
 const router = new VueRouter({
