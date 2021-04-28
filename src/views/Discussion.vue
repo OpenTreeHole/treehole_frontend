@@ -272,7 +272,7 @@ export default {
     },
     getDiscussion(pk) {
       this.$axios
-        .get('discussions/', { params: { discussionID: pk } })
+        .get('discussions/', { params: { discussion_id: pk } })
         .then((response) => {
           this.discussion = response.data
         })
@@ -312,7 +312,7 @@ export default {
         this.$axios
           .post('posts/', {
             content: this.$refs.editor.content,
-            discussionID: this.$route.params.id,
+            discussion_id: this.$route.params.id,
             post_id: this.replyPk,
           })
           .then(() => {

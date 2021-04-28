@@ -78,10 +78,10 @@ export default {
     },
   },
   methods: {
-    toDiscussion(discussionID) {
+    toDiscussion(discussion_id) {
       setTimeout(() => {
         this.$router.push({
-          path: `/discussion/${discussionID}`,
+          path: `/discussion/${discussion_id}`,
         })
       }, 50)
     },
