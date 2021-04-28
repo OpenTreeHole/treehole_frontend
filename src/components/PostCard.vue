@@ -15,7 +15,7 @@
           {{ post.content | plainText }}
         </div>
         <div v-else :id="'p' + index" class="unfold">
-          <div id="rich-text" v-html="post.content"></div>
+          <div class="rich-text" v-html="post.content"></div>
         </div>
       </v-card-text>
 

@@ -51,5 +51,26 @@ export default {
 }
 </script>
 
-<style lang="less" scoped>
+<style lang="scss">
+.fold {
+  overflow: hidden;
+  max-height: 4.5rem;
+  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+}
+.unfold {
+  overflow: hidden;
+  max-height: 100rem;
+  transition: max-height 1s ease-in-out;
+}
+.clickable {
+  cursor: pointer;
+}
+.rich-text p {
+  margin-bottom: 0px;
+}
+img {
+  display: block;
+  margin: auto;
+  max-width: 90%;
+}
 </style>

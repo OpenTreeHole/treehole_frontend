@@ -338,20 +338,6 @@ export default {
 </script>
 
 <style scoped>
-.fold {
-  overflow: hidden;
-  max-height: 4.5rem;
-  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
-}
-.unfold {
-  overflow: hidden;
-  max-height: 100rem;
-  transition: max-height 1s ease-in-out;
-}
-.clickable {
-  cursor: pointer;
-}
-
 /* 浮动按钮 固定在右下角 */
 .fixed {
   position: fixed;
@@ -365,15 +351,5 @@ export default {
 
 .tag-count {
   margin-left: -0.25rem;
-}
-
-#rich-text p {
-  margin-bottom: 0px;
-}
-
-img {
-  display: block;
-  margin: auto;
-  max-width: 90%;
 }
 </style>

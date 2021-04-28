@@ -113,8 +113,7 @@
 
             <!-- 正文部分 -->
             <div
-              class="text--primary ma-0 text-body-1"
-              id="rich-text"
+              class="rich-text text--primary ma-0 text-body-1"
               v-html="post.content"
             ></div>
           </v-card-text>
@@ -214,9 +213,9 @@ export default {
   components: {
     Loading,
     Editor,
-    Message
+    Message,
   },
-  data () {
+  data() {
     return {
       // 帖子列表
       discussion: null,
@@ -229,24 +228,24 @@ export default {
       dialog: false,
       // content: '',
       requiredRules: [(v) => !!v || '内容不能为空'],
-      valid: true
+      valid: true,
     }
   },
   computed: {
-    contentName () {
+    contentName() {
       return 'discussion-' + this.$route.params.id + '-content'
-    }
+    },
   },
   methods: {
-    editorInvalid (msg) {
+    editorInvalid(msg) {
       this.$refs.message.error(msg)
     },
-    closeDialog () {
+    closeDialog() {
       this.dialog = false
       this.replyIndex = null
       this.replyPk = null
     },
-    getIndex (pk) {
+    getIndex(pk) {
       // 接受一个 post 的 pk 并返回它在本页中的顺序（index）
       for (let i = 0; i < this.posts.length; i++) {
         if (this.posts[i].id === pk) {
@@ -255,23 +254,23 @@ export default {
       }
       return 0
     },
-    scrollTo (current_id, to_id) {
+    scrollTo(current_id, to_id) {
       const currentOffsetTop = document.getElementById(current_id).offsetTop
       const toOffsetTop = document.getElementById(to_id).offsetTop
       const scrollDistance = toOffsetTop - currentOffsetTop
       window.scrollBy({
         top: scrollDistance, //  正值向下
         left: 0,
-        behavior: 'smooth'
+        behavior: 'smooth',
       })
     },
-    reply (pk) {
+    reply(pk) {
       // 接受一个 post 的 pk 并设置其为回复目标
       this.replyIndex = this.getIndex(pk)
       this.replyPk = pk
       this.dialog = true
     },
-    getDiscussion (pk) {
+    getDiscussion(pk) {
       this.$axios
         .get('discussions/', { params: { discussion_id: pk } })
         .then((response) => {
@@ -281,7 +280,7 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-    getPosts (page = this.page) {
+    getPosts(page = this.page) {
       return this.$axios
         .get('posts/', { params: { id: this.$route.params.id, page: page } })
         .then((response) => {
@@ -294,10 +293,10 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-    getNewPosts () {
+    getNewPosts() {
       this.$axios
         .get('posts/', {
-          params: { id: this.$route.params.id, order: this.posts.length }
+          params: { id: this.$route.params.id, order: this.posts.length },
         })
         .then((response) => {
           this.posts.push.apply(this.posts, response.data)
@@ -306,7 +305,7 @@ export default {
           this.$refs.message.error(error.response.data.msg)
         })
     },
-    addPost () {
+    addPost() {
       if (this.$refs.form.validate() && this.$refs.editor.validate()) {
         // 先关闭对话框,优化用户体验
         this.dialog = false
@@ -314,7 +313,7 @@ export default {
           .post('posts/', {
             content: this.$refs.editor.content,
             discussion_id: this.$route.params.id,
-            post_id: this.replyPk
+            post_id: this.replyPk,
           })
           .then(() => {
             // 动态更新页面
@@ -332,12 +331,12 @@ export default {
           })
       }
     },
-    report (post_id) {
+    report(post_id) {
       var msg = prompt('输入举报理由')
       this.$axios
         .post('reports/', {
           post_id: post_id,
-          reason: msg
+          reason: msg,
         })
         .then((response) => {
           if (response.status == 200) {
@@ -346,11 +345,11 @@ export default {
             this.$refs.message.error(error.response.data.msg)
           }
         })
-    }
+    },
   },
-  created () {
+  created() {
     this.getDiscussion(this.$route.params.id)
-  }
+  },
   // watch: {
   //   $route() {
   //     this.this.posts = []
