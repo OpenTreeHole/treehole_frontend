@@ -4,7 +4,7 @@
     <Navbar></Navbar>
 
     <v-main>
-      <keep-alive include="Home">
+      <keep-alive include="Home, AirConditioner">
         <router-view
           :key="$route.fullPath + ($route.params.id || '') + $route.query"
         ></router-view>
