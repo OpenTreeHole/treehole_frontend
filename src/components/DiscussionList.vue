@@ -41,6 +41,11 @@ export default {
     }
   },
   methods: {
+    addTag(tag) {
+      if (this.$route.name == 'home') {
+        this.$parent.addTag(tag)
+      }
+    },
     calculateLines() {
       for (let i = 0; i < this.styleData.length; i++) {
         const element = document.getElementById('p' + i)

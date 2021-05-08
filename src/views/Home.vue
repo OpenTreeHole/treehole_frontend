@@ -7,7 +7,7 @@
     <newcomer></newcomer>
 
     <!-- 标签筛选器 -->
-    <!-- <v-row justify="center" class="ma-0" v-show="filtedTags.length > 0">
+    <v-row justify="center" class="ma-0" v-show="filtedTags.length > 0">
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card>
           <v-card-text>
@@ -26,7 +26,7 @@
           </v-card-text>
         </v-card>
       </v-col>
-    </v-row> -->
+    </v-row>
 
     <!-- 帖子列表 -->
     <DiscussionList ref="discussions" api="discussions/"></DiscussionList>
@@ -167,7 +167,7 @@ export default {
       filtedTags: [],
       dialog: false,
       tagRules: [
-        (v) => v.length > 0 || '标签不能为空',
+        // (v) => v.length > 0 || '标签不能为空',
         (v) => v.length <= 5 || '标签不能多于5个',
       ],
       contentRules: [(v) => !!v.trim() || '内容不能为空'],
@@ -183,22 +183,14 @@ export default {
   },
 
   methods: {
-    // addTag(tag) {
-    //   for (var filtedTag of this.filtedTags) {
-    //     if (filtedTag.name == tag.name) {
-    //       return
-    //     }
-    //   }
-    //   this.filtedTags.push(tag)
-    // },
-    // removeTag(tag) {
-    //   for (var i in this.filtedTags) {
-    //     if (this.filtedTags[i].name == tag.name) {
-    //       this.filtedTags.splice(i, 1)
-    //       return
-    //     }
-    //   }
-    // },
+    addTag(tag) {
+      if (this.filtedTags.indexOf(tag) == -1) {
+        this.filtedTags.push(tag)
+      }
+    },
+    removeTag(tag) {
+      this.filtedTags.splice(this.filtedTags.indexOf(tag), 1)
+    },
     editorInvalid(msg) {
       this.$refs.message.error(msg)
     },

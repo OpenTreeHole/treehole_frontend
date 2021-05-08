@@ -10,8 +10,8 @@
         class="mx-1 my-1"
         small
         ripple
+        @click="addTag(tag)"
       >
-        <!-- @click.stop="addTag(tag)" -->
         {{ tag.name }}
       </v-chip>
     </v-card-text>
@@ -71,10 +71,17 @@
         <div style="height: 0.5rem"></div>
       </div>
 
-      <v-card-text v-if="discussion.first_post.id != discussion.last_post.id">
-        <v-row class="mx-3">
-          <span>RE：</span>
-          <span>{{ discussion.last_post.content | plainText }}</span></v-row
+      <v-card-text
+        v-if="
+          discussion.first_post.id != discussion.last_post.id &&
+          !discussion.is_folded
+        "
+      >
+        <v-row
+          class="mx-3"
+          style="height: 1.87em; overflow: hidden; width: 100"
+        >
+          <span>RE：{{ discussion.last_post.content | plainText }}</span></v-row
         >
       </v-card-text>
 
@@ -126,10 +133,9 @@ export default {
       this.$parent.discussions = []
       this.$parent.page = 1
     },
-    // 有待重构
-    // addTag(tag) {
-    //   this.$parent.addTag(tag)
-    // },
+    addTag(tag) {
+      this.$parent.addTag(tag)
+    },
     toDiscussion(discussion_id) {
       setTimeout(() => {
         this.$router.push({

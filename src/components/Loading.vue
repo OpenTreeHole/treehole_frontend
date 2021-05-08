@@ -43,7 +43,7 @@ export default {
     },
 
     async load() {
-      if ((this.hasNext = false)) {
+      if (!this.hasNext) {
         return
       }
       this.isLoading = true
