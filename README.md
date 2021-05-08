@@ -6,7 +6,7 @@
 
 立即前往  
 [master](https://fduhole.tk)  
-[dev](https://fduhole.vercel.app)
+[dev](https://fduhole.github.io)
 
 ## 开发
 请不要直接修改 master 分支，开发过程中，临时更改提交到 dev 分支
