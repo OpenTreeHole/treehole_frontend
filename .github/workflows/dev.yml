@@ -29,11 +29,11 @@ jobs:
           
       - name: Deploy
         env:
-          GHP_REPO: github.com/fduhole/vue
+          GHP_REPO: github.com/fduhole/fduhole.github.io
           GPA_TOKEN:  ${{ secrets.GPA_TOKEN }}
         run: |
           cd dist
           git init
           git add -A
           git commit -m 'gh-action deploy'
-          git push -f "https://${GPA_TOKEN}@${GHP_REPO}" HEAD:gh-pages
+          git push -f "https://${GPA_TOKEN}@${GHP_REPO}" HEAD:main
