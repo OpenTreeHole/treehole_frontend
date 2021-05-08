@@ -6,7 +6,7 @@
 
     <h2>我的收藏</h2>
     <p v-if="profile.favored_discussion.length == 0">
-      你没有收藏任何帖子，去首页看一看吧~
+      该功能正在开发中，敬请期待~
     </p>
     <DiscussionCard
       v-for="discussion in profile.favored_discussion"
@@ -48,7 +48,7 @@ export default {
     },
     logout() {
       localStorage.clear()
-      this.reloadAll()
+      location.reload()
     },
     changePassWd() {
       alert('还没写完')
