@@ -38,9 +38,15 @@ export default {
       // 展开折叠样式数据
       styleData: [],
       order: '',
+      tag_name: null,
     }
   },
   methods: {
+    refresh() {
+      // 刷新列表
+      this.discussions = []
+      this.page = 1
+    },
     addTag(tag) {
       if (this.$route.name == 'home') {
         this.$parent.addTag(tag)
@@ -55,7 +61,13 @@ export default {
     },
     getDiscussions() {
       return this.$axios
-        .get(this.api, { params: { page: this.page, order: this.order } })
+        .get(this.api, {
+          params: {
+            page: this.page,
+            order: this.order,
+            tag_name: this.tag_name,
+          },
+        })
         .then((response) => {
           for (let i = 0; i < response.data.length; i++) {
             this.styleData.push({ fold: true, lines: 3 })

@@ -123,15 +123,13 @@ export default {
       this.$parent.order = 'last_created'
       this.$parent.$parent.$refs.message.success('已按照发帖时间排序')
       // 刷新列表
-      this.$parent.discussions = []
-      this.$parent.page = 1
+      this.$parent.refresh()
     },
     orderByTimeUpdated() {
       this.$parent.order = ''
       this.$parent.$parent.$refs.message.success('已按照最新回复时间排序')
       // 刷新列表
-      this.$parent.discussions = []
-      this.$parent.page = 1
+      this.$parent.refresh()
     },
     addTag(tag) {
       this.$parent.addTag(tag)

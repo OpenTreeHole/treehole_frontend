@@ -7,21 +7,19 @@
     <newcomer></newcomer>
 
     <!-- 标签筛选器 -->
-    <v-row justify="center" class="ma-0" v-show="filtedTags.length > 0">
+    <v-row justify="center" class="ma-0" v-if="filtedTag">
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card>
           <v-card-text>
             <v-chip
-              v-for="(tag, tindex) in filtedTags"
-              :key="tindex"
-              :color="tag.color"
+              :color="filtedTag.color"
               outlined
               class="mx-1 my-1"
               small
               ripple
-              @click.stop="removeTag(tag)"
+              @click.stop="removeTag()"
             >
-              {{ tag.name }}
+              {{ filtedTag.name }}
             </v-chip>
           </v-card-text>
         </v-card>
@@ -164,7 +162,7 @@ export default {
       content: '',
       tags: [],
       selectedTags: [],
-      filtedTags: [],
+      filtedTag: null,
       dialog: false,
       tagRules: [
         // (v) => v.length > 0 || '标签不能为空',
@@ -173,6 +171,7 @@ export default {
       contentRules: [(v) => !!v.trim() || '内容不能为空'],
       errorMsg: {},
       valid: true,
+      params: {},
     }
   },
 
@@ -184,12 +183,14 @@ export default {
 
   methods: {
     addTag(tag) {
-      if (this.filtedTags.indexOf(tag) == -1) {
-        this.filtedTags.push(tag)
-      }
+      this.filtedTag = tag
+      this.$refs.discussions.tag_name = this.filtedTag.name
+      this.$refs.discussions.refresh()
     },
-    removeTag(tag) {
-      this.filtedTags.splice(this.filtedTags.indexOf(tag), 1)
+    removeTag() {
+      this.filtedTag = null
+      this.$refs.discussions.tag_name = null
+      this.$refs.discussions.refresh()
     },
     editorInvalid(msg) {
       this.$refs.message.error(msg)
