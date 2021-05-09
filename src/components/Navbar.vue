@@ -11,10 +11,7 @@
         ><v-icon>mdi-arrow-left</v-icon></v-app-bar-nav-icon
       >
       <v-app-bar-title>FDU Hole</v-app-bar-title>
-      <v-spacer></v-spacer>
-
-      <!-- 右部按钮区域 -->
-      <v-btn icon @click="refresh"><v-icon>mdi-autorenew</v-icon></v-btn>
+      <!-- <v-spacer></v-spacer> -->
     </v-app-bar>
 
     <!-- 侧栏抽屉 -->
@@ -106,7 +103,9 @@
 
       <!-- 侧栏底部工具按钮 -->
       <div class="drawer-bottom-container">
-        <v-btn fab fixed bottom color="primary" @click="reloadAll">重载</v-btn>
+        <v-btn fab fixed bottom color="primary" @click="$feUtils.reloadAll()"
+          >重载</v-btn
+        >
       </div>
     </v-navigation-drawer>
   </div>
@@ -143,18 +142,6 @@ export default {
         params: { id: this.floorToGo },
       })
       this.floorToGo = ''
-    },
-    refresh() {
-      this.$router.replace('/')
-      location.reload()
-    },
-    reloadAll() {
-      const form = document.createElement('form')
-      form.method = 'POST'
-      form.action = '/'
-      document.body.appendChild(form)
-      form.submit()
-      location.href = '/'
     },
     back() {
       this.$router.back()

@@ -26,11 +26,12 @@
                 :clearable="!valid"
                 :counter="32"
                 :rules="passwordRules"
+                @keydown.enter="login"
               />
+              <!-- @keyup.enter="login" -->
             </div>
             <div class="px-10">
               <v-btn
-                type="submit"
                 class="my-4"
                 color="primary"
                 block

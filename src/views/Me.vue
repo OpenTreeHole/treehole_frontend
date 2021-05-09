@@ -48,7 +48,9 @@ export default {
     },
     logout() {
       localStorage.clear()
-      location.reload()
+      console.log('111111111')
+      this.$feUtils.reloadAll()
+      console.log('2222222222222222')
     },
     changePassWd() {
       alert('还没写完')

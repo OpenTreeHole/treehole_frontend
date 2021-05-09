@@ -7,7 +7,7 @@
     <newcomer></newcomer>
 
     <!-- 标签筛选器 -->
-    <v-row justify="center" class="ma-0" v-if="filtedTag">
+    <v-row align="top" justify="center" class="ma-0" v-if="filtedTag">
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card>
           <v-card-text>
@@ -29,103 +29,111 @@
     <!-- 帖子列表 -->
     <DiscussionList ref="discussions" api="discussions/"></DiscussionList>
 
-    <!-- 弹出式表单及浮动按钮 -->
+    <!-- 新帖编辑器及浮动按钮 -->
+    <div class="float-btn">
+      <v-btn fab color="secondary" @click="$refs.discussions.refresh()"
+        ><v-icon>mdi-autorenew</v-icon></v-btn
+      ><br />
 
-    <v-dialog v-model="dialog" persistent max-width="600px">
-      <!-- 浮动按钮 -->
-      <template v-slot:activator="{ on, attrs }">
-        <v-btn
-          fab
-          color="secondary"
-          class="fixed"
-          v-bind="attrs"
-          v-on="on"
-          @click="openDialog"
-        >
-          <v-icon>mdi-message-plus</v-icon>
-        </v-btn>
-      </template>
+      <v-dialog v-model="dialog" persistent max-width="600px">
+        <template v-slot:activator="{ on, attrs }">
+          <v-btn
+            fab
+            color="secondary"
+            v-bind="attrs"
+            v-on="on"
+            @click="openDialog"
+          >
+            <v-icon>mdi-message-plus</v-icon>
+          </v-btn>
+        </template>
 
-      <v-card>
-        <v-card-title>
-          <span class="headline">发表树洞</span>
-        </v-card-title>
+        <v-card>
+          <v-card-title>
+            <span class="headline">发表树洞</span>
+          </v-card-title>
 
-        <v-card-text>
-          <!-- 发帖表单 -->
-          <v-form ref="form" v-model="valid" lazy-validation>
-            <!-- 标签输入框 -->
-            <v-combobox
-              v-model="selectedTags"
-              :items="tags"
-              item-text="name"
-              item-value="name"
-              label="标签"
-              hint="回车新增标签"
-              :rules="tagRules"
-              :error-messages="errorMsg['tags']"
-              :counter="5"
-              hide-selected
-              clearable
-              multiple
-            >
-              <!-- 自定义标签样式 -->
-              <template v-slot:selection="data">
-                <v-chip
-                  :key="JSON.stringify(data.item)"
-                  v-bind="data.attrs"
-                  :input-value="data.selected"
-                  :disabled="data.disabled"
-                  @click:close="data.parent.selectItem(data.item)"
-                  outlined
-                  :color="data.item.color"
-                  small
-                >
-                  {{ data.item.name }}
-                  <span class="tag-icon">
-                    <v-icon x-small>mdi-fire</v-icon>
-                  </span>
-                  <span>
-                    {{ data.item.count }}
-                  </span>
-                </v-chip>
-              </template>
-
-              <!-- 自定义下拉框样式 -->
-              <template v-slot:item="data">
-                <v-list-item-content>
-                  <span :class="data.item.color + '--text'">
+          <v-card-text>
+            <!-- 发帖表单 -->
+            <v-form ref="form" v-model="valid" lazy-validation>
+              <!-- 标签输入框 -->
+              <v-combobox
+                v-model="selectedTags"
+                :items="tags"
+                item-text="name"
+                item-value="name"
+                label="标签"
+                hint="回车新增标签"
+                :rules="tagRules"
+                :error-messages="errorMsg['tags']"
+                :counter="5"
+                hide-selected
+                clearable
+                multiple
+              >
+                <!-- 自定义标签样式 -->
+                <template v-slot:selection="data">
+                  <v-chip
+                    :key="JSON.stringify(data.item)"
+                    v-bind="data.attrs"
+                    :input-value="data.selected"
+                    :disabled="data.disabled"
+                    @click:close="data.parent.selectItem(data.item)"
+                    outlined
+                    :color="data.item.color"
+                    small
+                  >
                     {{ data.item.name }}
-                    <v-icon :color="data.item.color" class="tag-icon" small
-                      >mdi-fire</v-icon
-                    >
-                    <span class="tag-count">
+                    <span class="tag-icon">
+                      <v-icon x-small>mdi-fire</v-icon>
+                    </span>
+                    <span>
                       {{ data.item.count }}
                     </span>
-                  </span>
-                </v-list-item-content>
-              </template>
-            </v-combobox>
+                  </v-chip>
+                </template>
 
-            <!-- 富文本输入框 -->
-            <editor
-              ref="editor"
-              :contentName="contentName"
-              @invalid="editorInvalid"
-            ></editor>
-          </v-form>
-        </v-card-text>
+                <!-- 自定义下拉框样式 -->
+                <template v-slot:item="data">
+                  <v-list-item-content>
+                    <span :class="data.item.color + '--text'">
+                      {{ data.item.name }}
+                      <v-icon :color="data.item.color" class="tag-icon" small
+                        >mdi-fire</v-icon
+                      >
+                      <span class="tag-count">
+                        {{ data.item.count }}
+                      </span>
+                    </span>
+                  </v-list-item-content>
+                </template>
+              </v-combobox>
 
-        <!-- 关闭对话框 -->
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color="primary" text @click="closeDialog"> 关闭 </v-btn>
-          <v-btn color="primary" text :disabled="!valid" @click="addDiscussion">
-            发送
-          </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+              <!-- 富文本输入框 -->
+              <editor
+                ref="editor"
+                :contentName="contentName"
+                @invalid="editorInvalid"
+              ></editor>
+            </v-form>
+          </v-card-text>
+
+          <!-- 关闭对话框 -->
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color="primary" text @click="closeDialog"> 关闭 </v-btn>
+            <v-btn
+              color="primary"
+              text
+              :disabled="!valid"
+              @click="addDiscussion"
+            >
+              发送
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+    </div>
   </v-container>
 </template>
 
@@ -242,13 +250,6 @@ export default {
       this.errorMsg = {}
       this.valid = true
     },
-    // toDiscussion(discussion_id) {
-    //   setTimeout(() => {
-    //     this.$router.push({
-    //       path: `/discussion/${discussion_id}`,
-    //     })
-    //   }, 50)
-    // },
     addDiscussion() {
       if (this.$refs.form.validate() && this.$refs.editor.validate()) {
         // 先关闭对话框,优化用户体验
@@ -263,10 +264,7 @@ export default {
             console.log(response.data)
             this.$refs.message.success('发送成功')
             // 重新加载页面
-
-            this.$refs.discussions.discussions = []
-            this.$refs.discussions.page = 1
-            this.$refs.discussions.getDiscussions()
+            this.$refs.discussions.refresh()
             // 重置表单内容
             this.$refs.editor.content = ''
             this.tags = []
@@ -330,12 +328,15 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
 /* 浮动按钮 固定在右下角 */
-.fixed {
+.float-btn {
   position: fixed;
   right: 8px;
   bottom: 64px;
+  .v-btn {
+    margin: 5px;
+  }
 }
 
 .tag-icon {
