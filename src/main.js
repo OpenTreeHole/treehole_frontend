@@ -7,10 +7,10 @@ import VueCookies from 'vue-cookies'
 import vuetify from './plugins/vuetify'
 import debounce from 'lodash.debounce'
 import VueQuillEditor from 'vue-quill-editor'
-
 import marked from 'marked'
-
 import plugins from './components/plugins'
+import 'viewerjs/dist/viewer.css'
+import Viewer from 'v-viewer'
 
 // 引入项目配置文件
 import FDUHoleFEConfig from './fduhole-fe.config.js'
@@ -40,6 +40,8 @@ Vue.prototype.$axios = axios
 Vue.use(VueCookies)
 Vue.use(plugins)
 Vue.use(VueQuillEditor /* { default global options } */)
+Vue.use(Viewer)
+
 
 Vue.filter('plainText', function (html) {
   return html.replace(/<img.*?>/g, '[图片]').replace(/<.*?>/g, ' ')

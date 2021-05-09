@@ -76,6 +76,7 @@
       :key="index"
       justify="center"
       align="start"
+      v-viewer
     >
       <v-col cols="12" sm="10" md="8" lg="6" xl="4">
         <v-card :id="index">
