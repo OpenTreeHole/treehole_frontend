@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height>
-    <iframe src="https://www.yunyoujun.cn/air-conditioner/"></iframe>
+    <iframe src="https://ac.yunyoujun.cn/"></iframe>
   </v-container>
 </template>
 
