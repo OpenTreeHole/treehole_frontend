@@ -77,11 +77,16 @@
           !discussion.is_folded
         "
       >
-        <v-row
-          class="mx-3"
-          style="height: 1.87em; overflow: hidden; width: 100"
-        >
-          <span>RE：{{ discussion.last_post.content | plainText }}</span></v-row
+        <v-row class="mx-3">
+          <span
+            style="
+              width: 100%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+            "
+            >RE：{{ discussion.last_post.content | plainText }}</span
+          ></v-row
         >
       </v-card-text>
 

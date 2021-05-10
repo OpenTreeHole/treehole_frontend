@@ -46,6 +46,7 @@ export default {
       // 刷新列表
       this.discussions = []
       this.page = 1
+      this.getDiscussions()
     },
     addTag(tag) {
       if (this.$route.name == 'home') {
