@@ -180,7 +180,7 @@
             <editor
               ref="editor"
               :contentName="contentName"
-              @invalid="editorInvalid"
+              @error="editorError"
             ></editor>
           </v-form>
         </v-card-text>
@@ -238,7 +238,7 @@ export default {
     },
   },
   methods: {
-    editorInvalid(msg) {
+    editorError(msg) {
       this.$refs.message.error(msg)
     },
     closeDialog() {
@@ -312,7 +312,7 @@ export default {
         this.dialog = false
         this.$axios
           .post('posts/', {
-            content: this.$refs.editor.content,
+            content: this.$refs.editor.getContent(),
             discussion_id: this.$route.params.id,
             post_id: this.replyPk,
           })
@@ -324,7 +324,7 @@ export default {
             this.replyIndex = null
             this.replyPk = null
             // 重置内容
-            this.$refs.editor.content = ''
+            this.$refs.editor.setContent('')
           })
           .catch((error) => {
             console.log(error.response)

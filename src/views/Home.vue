@@ -113,7 +113,7 @@
               <editor
                 ref="editor"
                 :contentName="contentName"
-                @invalid="editorInvalid"
+                @error="editorError"
               ></editor>
             </v-form>
           </v-card-text>
@@ -200,7 +200,7 @@ export default {
       this.$refs.discussions.tag_name = null
       this.$refs.discussions.refresh()
     },
-    editorInvalid(msg) {
+    editorError(msg) {
       this.$refs.message.error(msg)
     },
     // unfold(index) {
@@ -257,7 +257,7 @@ export default {
         // 发送请求
         this.$axios
           .post('discussions/', {
-            content: this.$refs.editor.content,
+            content: this.$refs.editor.getContent(),
             tags: this.selectedTags,
           })
           .then((response) => {
@@ -266,7 +266,7 @@ export default {
             // 重新加载页面
             this.$refs.discussions.refresh()
             // 重置表单内容
-            this.$refs.editor.content = ''
+            this.$refs.editor.setContent('')
             this.tags = []
             this.selectedTags = []
           })
