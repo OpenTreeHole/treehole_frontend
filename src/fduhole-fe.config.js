@@ -57,7 +57,7 @@ export default {
   ],
   friendLinks: [ // 友链
     {
-      siteName: '旦兮 App',
+      siteName: '旦夕 App',
       author: 'DanXi-Dev',
       link: 'https://danxi-dev.github.io'
     }
