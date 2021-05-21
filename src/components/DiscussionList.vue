@@ -73,13 +73,16 @@ export default {
           for (let i = 0; i < response.data.length; i++) {
             this.styleData.push({ fold: true, lines: 3 })
           }
-          this.discussions.push.apply(this.discussions, response.data)
-          if (response.data.length > 0) {
+          parsedData = response.data.map((discussionItem) => {
+            return this.$marked(discussionItem)
+          })
+          this.discussions.push.apply(this.discussions, parsedData)
+          if (parsedData.length > 0) {
             this.page++
           }
         })
         .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
+          this.$parent.$refs.message.error(error.response.data.msg)
         })
     },
   },
