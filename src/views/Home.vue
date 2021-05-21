@@ -17,7 +17,7 @@
               class="mx-1 my-1"
               small
               ripple
-              @click.stop="removeTag()"
+              @click.stop="reloadHome()"
             >
               {{ filtedTag.name }}
             </v-chip>
@@ -31,7 +31,7 @@
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div class="float-btn">
-      <v-btn fab color="secondary" @click="$refs.discussions.refresh()"
+      <v-btn fab color="secondary" @click="reloadHome()"
         ><v-icon>mdi-autorenew</v-icon></v-btn
       ><br />
 
@@ -195,7 +195,7 @@ export default {
       this.$refs.discussions.tag_name = this.filtedTag.name
       this.$refs.discussions.refresh()
     },
-    removeTag() {
+    reloadHome() {
       this.filtedTag = null
       this.$refs.discussions.tag_name = null
       this.$refs.discussions.refresh()
