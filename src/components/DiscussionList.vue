@@ -61,6 +61,7 @@ export default {
       }
     },
     getDiscussions() {
+      const marked = this.$marked
       return this.$axios
         .get(this.api, {
           params: {
@@ -73,11 +74,17 @@ export default {
           for (let i = 0; i < response.data.length; i++) {
             this.styleData.push({ fold: true, lines: 3 })
           }
-          parsedData = response.data.map((discussionItem) => {
-            return this.$marked(discussionItem)
+          response.data.forEach(function (discussionItem) {
+            discussionItem.first_post.content = marked(
+              discussionItem.first_post.content
+            )
+            discussionItem.last_post.content = marked(
+              discussionItem.last_post.content
+            )
           })
-          this.discussions.push.apply(this.discussions, parsedData)
-          if (parsedData.length > 0) {
+          this.discussions.push.apply(this.discussions, response.data)
+
+          if (response.data.length > 0) {
             this.page++
           }
         })

@@ -210,6 +210,8 @@ import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
 
+import marked from 'marked'
+
 export default {
   components: {
     Loading,
@@ -275,6 +277,9 @@ export default {
       this.$axios
         .get('discussions/', { params: { discussion_id: pk } })
         .then((response) => {
+          response.data.first_post.content = marked(
+            response.data.first_post.content
+          )
           this.discussion = response.data
         })
         .catch((error) => {
@@ -285,6 +290,9 @@ export default {
       return this.$axios
         .get('posts/', { params: { id: this.$route.params.id, page: page } })
         .then((response) => {
+          response.data.forEach(function (postItem) {
+            postItem.content = marked(postItem.content)
+          })
           this.posts.push.apply(this.posts, response.data)
           if (response.data.length > 0) {
             this.page++
