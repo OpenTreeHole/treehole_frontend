@@ -48,14 +48,6 @@
 
       <v-divider></v-divider>
       <v-list style="padding: 5px">
-        <!-- <v-switch
-          v-model="isDarkTheme"
-          label="深色模式"
-          :disabled="followSystemDarkMode"
-        >
-        </v-switch> -->
-        <!-- <v-switch v-model="followSystemDarkMode" label="跟随系统"> </v-switch> -->
-
         <!-- 搜索 -->
         <v-list-item>
           <v-form>

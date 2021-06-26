@@ -8,7 +8,6 @@ import About from '@/views/About.vue'
 import Licence from '@/views/Licence.vue'
 import Search from '@/views/Search.vue'
 import Me from '@/views/Me.vue'
-import AirConditioner from '@/views/AirConditioner.vue'
 
 Vue.use(VueRouter)
 
@@ -21,8 +20,7 @@ const routes = [
   { path: '/register', meta: { title: '注册' }, component: Register, name: 'register' },
   { path: '/discussion/:id', meta: { title: '树洞' }, component: Discussion, name: 'discussion' },
   { path: '/s', meta: { title: '搜索' }, component: Search, name: 'search' },
-  { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' },
-  { path: '/air-conditioner', meta: { title: '空调' }, component: AirConditioner, name: 'air-conditioner' }
+  { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' }
 ]
 
 const router = new VueRouter({

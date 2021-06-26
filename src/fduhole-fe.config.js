@@ -37,12 +37,7 @@ export default {
     {
       title: '首页',
       icon: 'mdi-home',
-      route: 'home'
-    },
-    {
-      title: '空调',
-      icon: 'mdi-air-conditioner',
-      route: '/air-conditioner'
+      route: '/home'
     },
     {
       title: '我的',
@@ -52,7 +47,7 @@ export default {
     {
       title: '关于',
       icon: 'mdi-information',
-      route: 'about'
+      route: '/about'
     }
   ],
   friendLinks: [ // 友链
