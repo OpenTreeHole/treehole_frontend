@@ -173,7 +173,7 @@ export default {
     },
 
     checkEmail() {
-      if (!/^([0-9]{11})@fudan\.edu\.cn$/.test(this.email)) {
+      if (!/^[0-9]{11}@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
         this.errorMsg.email = '@fudan.edu.cn'
       } else {
         this.$axios
