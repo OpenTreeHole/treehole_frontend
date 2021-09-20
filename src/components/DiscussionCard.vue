@@ -1,5 +1,5 @@
 <template>
-  <v-card>
+  <v-card class='discussion-card' :num='discussion.id'>
     <!-- 标签栏 -->
     <v-card-text class="pb-0 pt-2 font-weight-medium">
       <v-chip
@@ -23,7 +23,7 @@
     <div class="post-content" v-show="displayIt">
       <!-- 内容主体 -->
       <v-card-text
-        @click="toDiscussion(discussion.id, index)"
+        @click="activate(discussion.id)"
         class="text--primary py-2 text-body-1 clickable"
         v-ripple
       >
@@ -115,7 +115,8 @@ export default {
   name: 'DiscussionCard',
   props: {
     discussion: {},
-    index: '',
+    index: Number,
+    activate: null,
   },
   data() {
     return {
@@ -139,7 +140,7 @@ export default {
     addTag(tag) {
       this.$parent.addTag(tag)
     },
-    toDiscussion(discussion_id) {
+    toDiscussion (discussion_id) {
       setTimeout(() => {
         this.$router.push({
           path: `/discussion/${discussion_id}`,
