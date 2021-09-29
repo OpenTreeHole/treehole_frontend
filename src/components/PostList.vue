@@ -1,14 +1,16 @@
 <template>
   <v-container>
     <v-row
-      v-for="(post, index) in posts"
-      :key="index"
-      justify="center"
-      class="ma-0"
+      v-for='(post, index) in posts'
+      :key='index'
+      justify='center'
+      class='ma-0'
     >
-      <v-col cols="12" sm="10" md="8" lg="6" xl="4"
-        ><PostCard :post="post" :index="index"></PostCard
-      ></v-col>
+      <v-col cols='12' sm='10' md='8' lg='6' xl='4'
+      >
+        <PostCard :post='post' :index='index'></PostCard
+        >
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -22,38 +24,41 @@ export default {
   name: 'PostList',
   components: { PostCard },
   props: {
-    api: '',
-    requestParams: { search: '' },
+    api: null,
+    requestParams: { search: '' }
   },
-  data() {
+  data () {
     return {
       // 回复列表
       posts: [],
       // 展开折叠样式数据
-      styleData: [],
+      styleData: []
     }
   },
   methods: {
-    calculateLines() {
+    calculateLines () {
       for (let i = 0; i < this.styleData.length; i++) {
         const element = document.getElementById('p' + i)
         const totalHeight = element.scrollHeight
         this.styleData[i].lines = totalHeight / this.lineHeight
       }
     },
-    getPosts() {
+    getPosts () {
       this.$axios
         .get(this.api, { params: this.requestParams })
         .then((response) => {
           for (let i = 0; i < response.data.length; i++) {
-            this.styleData.push({ fold: true, lines: 3 })
+            this.styleData.push({
+              fold: true,
+              lines: 3
+            })
           }
           this.posts.push.apply(this.posts, response.data)
         })
         .catch((error) => {
           this.$refs.message.error(error.response.data.msg)
         })
-    },
+    }
   },
   watch: {
     posts: function () {
@@ -64,16 +69,16 @@ export default {
         )
         this.calculateLines()
       }, 100)
-    },
+    }
   },
-  mounted() {
+  mounted () {
     window.onresize = () => {
       this.debouncedCalculateLines()
     }
   },
-  created() {
+  created () {
     this.getPosts()
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
-  },
+  }
 }
 </script>

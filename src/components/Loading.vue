@@ -1,25 +1,25 @@
 <template>
   <v-row
-    class="py-4"
-    v-intersect="{
+    class='py-4'
+    v-intersect='{
       handler: onIntersect,
       options: { threshold: 0 },
-    }"
+    }'
   >
-    <v-col class="text-center">
+    <v-col class='text-center'>
       <v-progress-linear
-        :active="isLoading"
+        :active='isLoading'
         indeterminate
         absolute
         top
-        color="teal"
+        color='teal'
       >
       </v-progress-linear>
 
-      <div v-if="isLoading">
-        <v-progress-circular indeterminate color="teal"></v-progress-circular>
+      <div v-if='isLoading'>
+        <v-progress-circular indeterminate color='teal'></v-progress-circular>
       </div>
-      <div v-if="!hasNext && !isLoading">没有然后了......</div>
+      <div v-if='!hasNext && !isLoading'>没有然后了......</div>
     </v-col>
   </v-row>
 </template>
@@ -28,21 +28,21 @@
 export default {
   name: 'loading',
   props: ['length', 'loadList'],
-  data() {
+  data () {
     return {
       // 加载状态
       hasNext: true,
-      isLoading: true,
+      isLoading: true
     }
   },
   methods: {
-    onIntersect(entries, observer) {
+    onIntersect (entries, observer) {
       if (entries[0].isIntersecting) {
         this.load()
       }
     },
 
-    async load() {
+    async load () {
       if (!this.hasNext) {
         return
       }
@@ -60,16 +60,16 @@ export default {
         return
       }
       this.hasNext = true
-    },
+    }
   },
 
   watch: {
-    length() {
+    length () {
       this.isLoading = false
       if (this.length % 10 !== 0) {
         this.hasNext = false
       }
-    },
-  },
+    }
+  }
 }
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <v-container class="licence">
+  <v-container class='licence'>
     <div>
       <p>使用 FDU Hole 意味着你同意以下协议。</p>
       <p>
@@ -8,12 +8,12 @@
       </p>
     </div>
     <v-expansion-panels>
-      <v-expansion-panel v-for="(licence, i) in licences" :key="i">
+      <v-expansion-panel v-for='(licence, i) in licences' :key='i'>
         <v-expansion-panel-header>
           {{ licence.title }}
         </v-expansion-panel-header>
-        <v-expansion-panel-content style="overflow: auto">
-          <div class="licence-view" v-html="licence.content"></div>
+        <v-expansion-panel-content style='overflow: auto'>
+          <div class='licence-view' v-html='licence.content'></div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -23,12 +23,12 @@
 <script>
 export default {
   name: 'Licence',
-  data() {
+  data () {
     return {
-      licences: [],
+      licences: []
     }
   },
-  created() {
+  created () {
     for (var licence of this.$feConfig.licences) {
       ;((licence) => {
         this.$axios
@@ -38,24 +38,24 @@ export default {
               (data, headers) => {
                 delete headers.Authorization
                 return data
-              },
-            ],
+              }
+            ]
           })
           .then((response) => {
             this.licences.push({
               title: licence.name,
-              content: this.$marked(response.data),
+              content: this.$marked(response.data)
             })
           })
           .catch((error) => {
             this.licences.push({
               title: licence.name,
-              content: '获取失败：' + error.message,
+              content: '获取失败：' + error.message
             })
           })
       })(licence)
     }
-  },
+  }
 }
 </script>
 
@@ -64,6 +64,7 @@ export default {
   margin: auto;
   width: 80%;
 }
+
 .licence-view {
   width: 100%;
   height: 40vh;
