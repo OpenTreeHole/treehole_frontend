@@ -125,17 +125,17 @@ export default {
       this.isLoadingVisible = e
     },
     ScrollDiscussionList (e) {
-      if (!this.isLoadingVisible || e.wheelDelta > 0) {
-        const ratio = 0.7
-        // this.pos.Y = (this.pos.Y > e.wheelDelta * ratio ? this.pos.Y - e.wheelDelta * ratio : 0)
-        this.marginTopY = (this.marginTopY > e.wheelDelta * ratio ? this.marginTopY - e.wheelDelta * ratio : 0)
+      // if (!this.isLoadingVisible || e.wheelDelta > 0) {
+      const ratio = 0.7
+      // this.pos.Y = (this.pos.Y > e.wheelDelta * ratio ? this.pos.Y - e.wheelDelta * ratio : 0)
+      this.marginTopY = (this.marginTopY > e.wheelDelta * ratio ? this.marginTopY - e.wheelDelta * ratio : 0)
 
-        const height = parseInt(window.getComputedStyle(document.getElementById('cardlist')).height)
+      const height = parseInt(window.getComputedStyle(document.getElementById('cardlist')).height)
 
-        console.log('1: ' + this.marginTopY + ';2: ' + this.viewport + ';3: ' + height)
-        if (this.marginTopY + this.viewport > height) {
-          this.marginTopY = height - this.viewport
-        }
+      console.log('1: ' + this.marginTopY + ';2: ' + this.viewport + ';3: ' + height)
+      if (this.marginTopY + this.viewport > height + 300) {
+        this.marginTopY = height - this.viewport + 300
+        //  }
       }
     },
     ScrollDiscussionListWhenActive (e) {
