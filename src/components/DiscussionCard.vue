@@ -28,7 +28,7 @@
         v-ripple
       >
         <div
-          v-if="this.$parent.styleData[index]['fold']"
+          v-if="this.dlist.styleData[index]['fold']"
           :id="'p' + index"
           class='fold'
         >
@@ -40,8 +40,8 @@
       </v-card-text>
 
       <!-- 展开折叠按钮 -->
-      <div v-if="this.$parent.styleData[index]['lines'] > 3">
-        <div v-if="this.$parent.styleData[index]['fold']">
+      <div v-if="this.dlist.styleData[index]['lines'] > 3">
+        <div v-if="this.dlist.styleData[index]['fold']">
           <v-btn
             text
             block
@@ -111,11 +111,14 @@
 </template>
 
 <script>
+import Vue from 'vue'
+
 export default {
   name: 'DiscussionCard',
   props: {
     discussion: {},
     index: Number,
+    dlist: Vue,
     activate: null
   },
   data () {
@@ -126,19 +129,19 @@ export default {
   },
   methods: {
     orderByTimeCreated () {
-      this.$parent.order = 'last_created'
-      this.$parent.$parent.$refs.message.success('已按照发帖时间排序')
+      this.dlist.order = 'last_created'
+      this.dlist.$parent.$refs.message.success('已按照发帖时间排序')
       // 刷新列表
-      this.$parent.refresh()
+      this.dlist.refresh()
     },
     orderByTimeUpdated () {
-      this.$parent.order = ''
-      this.$parent.$parent.$refs.message.success('已按照最新回复时间排序')
+      this.dlist.order = ''
+      this.dlist.$parent.$refs.message.success('已按照最新回复时间排序')
       // 刷新列表
-      this.$parent.refresh()
+      this.dlist.refresh()
     },
     addTag (tag) {
-      this.$parent.addTag(tag)
+      this.dlist.addTag(tag)
     },
     toDiscussion (discussionId) {
       setTimeout(() => {
@@ -148,17 +151,10 @@ export default {
       }, 50)
     },
     unfold (index) {
-      this.scrollTop = document.documentElement.scrollTop
-      this.$parent.styleData[index].fold = false
+      this.dlist.styleData[index].fold = false
     },
     fold (index) {
-      this.$parent.styleData[index].fold = true
-      const scrollDistance = this.scrollTop - document.documentElement.scrollTop
-      window.scrollBy({
-        top: scrollDistance, //  正值向下
-        left: 0,
-        behavior: 'smooth'
-      })
+      this.dlist.styleData[index].fold = true
     }
   }
 }

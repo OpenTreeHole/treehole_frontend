@@ -212,20 +212,6 @@ export default {
     editorError (msg) {
       this.$refs.message.error(msg)
     },
-    // unfold(index) {
-    //   this.scrollTop = document.documentElement.scrollTop
-    //   this.styleData[index]['fold'] = false
-    // },
-
-    // fold(index) {
-    //   this.styleData[index]['fold'] = true
-    //   let scrollDistance = this.scrollTop - document.documentElement.scrollTop
-    //   window.scrollBy({
-    //     top: scrollDistance, //  正值向下
-    //     left: 0,
-    //     behavior: 'smooth',
-    //   })
-    // },
     randomColor () {
       const colorList = [
         'red',

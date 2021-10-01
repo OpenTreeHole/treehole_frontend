@@ -3,7 +3,7 @@
     class='py-4'
     v-intersect='{
       handler: onIntersect,
-      options: { threshold: 0 },
+      options: { threshold: [0,0.2] },
     }'
   >
     <v-col class='text-center'>
@@ -39,6 +39,11 @@ export default {
     onIntersect (entries, observer) {
       if (entries[0].isIntersecting) {
         this.load()
+      }
+      if (entries[0].isIntersecting && entries[0].intersectionRatio >= 0.2) {
+        this.$emit('intersectionChange', true)
+      } else {
+        this.$emit('intersectionChange', false)
       }
     },
 

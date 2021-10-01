@@ -1,6 +1,6 @@
 <!--suppress HtmlUnknownAttribute -->
 <template>
-  <v-col class='mb-5' cols='6'>
+  <v-col class='mb-5' cols='6' id='discol'>
     <!-- 警告信息 -->
     <message ref='message'></message>
 
