@@ -1,5 +1,5 @@
 <template>
-  <v-container fill-height>
+  <v-container>
     <!-- 警告信息 -->
     <message ref="message"></message>
 
@@ -8,7 +8,7 @@
 
     <!-- 标签筛选器 -->
     <v-row align="top" justify="center" class="ma-0" v-if="filtedTag">
-      <v-col cols="12" sm="10" md="8" lg="6" xl="4">
+      <v-col cols="12" sm="10" md="9" lg="7" xl="5">
         <v-card>
           <v-card-text>
             <v-chip
@@ -27,13 +27,15 @@
     </v-row>
 
     <!-- 帖子列表 -->
-    <DiscussionList ref="discussions" api="discussions/"></DiscussionList>
+    <DiscussionList v-if="!_isMobile" ref="discussions" api="discussions/" />
+    <DiscussionListMobile v-else ref="discussions" api="discussions/" />
 
     <!-- 新帖编辑器及浮动按钮 -->
-    <div class="float-btn">
-      <v-btn fab color="secondary" @click="reloadHome()"
-        ><v-icon>mdi-autorenew</v-icon></v-btn
-      ><br />
+    <div class="float-btn" v-show="showFloatBtn">
+      <v-btn fab color="secondary" @click="reloadHome()">
+        <v-icon>mdi-autorenew</v-icon>
+      </v-btn>
+      <br />
 
       <v-dialog v-model="dialog" persistent max-width="600px">
         <template v-slot:activator="{ on, attrs }">
@@ -121,7 +123,7 @@
           <!-- 关闭对话框 -->
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color="primary" text @click="closeDialog"> 关闭 </v-btn>
+            <v-btn color="primary" text @click="closeDialog"> 关闭</v-btn>
             <v-btn
               color="primary"
               text
@@ -146,6 +148,7 @@ import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
 import DiscussionList from '@/components/DiscussionList.vue'
+import DiscussionListMobile from '@/components/DiscussionListMobile'
 
 export default {
   name: 'Home',
@@ -156,8 +159,9 @@ export default {
     Message,
     Newcomer,
     DiscussionList,
+    DiscussionListMobile
   },
-  data() {
+  data () {
     return {
       // // 帖子列表
       // discussions: [],
@@ -174,50 +178,42 @@ export default {
       dialog: false,
       tagRules: [
         // (v) => v.length > 0 || '标签不能为空',
-        (v) => v.length <= 5 || '标签不能多于5个',
+        (v) => v.length <= 5 || '标签不能多于5个'
       ],
       contentRules: [(v) => !!v.trim() || '内容不能为空'],
       errorMsg: {},
       valid: true,
       params: {},
+      showFloatBtn: true
     }
   },
 
   computed: {
-    contentName() {
+    contentName () {
       return 'home-content'
     },
+    _isMobile () {
+      // console.log(navigator.userAgent)
+      // return navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
+      return document.body.clientWidth <= 768
+    }
   },
 
   methods: {
-    addTag(tag) {
+    addTag (tag) {
       this.filtedTag = tag
       this.$refs.discussions.tag_name = this.filtedTag.name
       this.$refs.discussions.refresh()
     },
-    reloadHome() {
+    reloadHome () {
       this.filtedTag = null
       this.$refs.discussions.tag_name = null
       this.$refs.discussions.refresh()
     },
-    editorError(msg) {
+    editorError (msg) {
       this.$refs.message.error(msg)
     },
-    // unfold(index) {
-    //   this.scrollTop = document.documentElement.scrollTop
-    //   this.styleData[index]['fold'] = false
-    // },
-
-    // fold(index) {
-    //   this.styleData[index]['fold'] = true
-    //   let scrollDistance = this.scrollTop - document.documentElement.scrollTop
-    //   window.scrollBy({
-    //     top: scrollDistance, //  正值向下
-    //     left: 0,
-    //     behavior: 'smooth',
-    //   })
-    // },
-    randomColor() {
+    randomColor () {
       const colorList = [
         'red',
         'pink',
@@ -236,21 +232,21 @@ export default {
         'deep-orange',
         'brown',
         'blue-grey',
-        'grey',
+        'grey'
       ]
       const index = Math.floor(Math.random() * colorList.length)
       return colorList[index]
     },
-    openDialog() {
+    openDialog () {
       this.getTags()
     },
-    closeDialog() {
+    closeDialog () {
       this.dialog = false
       // 重置表单验证
       this.errorMsg = {}
       this.valid = true
     },
-    addDiscussion() {
+    addDiscussion () {
       if (this.$refs.form.validate() && this.$refs.editor.validate()) {
         // 先关闭对话框,优化用户体验
         this.closeDialog()
@@ -258,7 +254,7 @@ export default {
         this.$axios
           .post('discussions/', {
             content: this.$refs.editor.getContent(),
-            tags: this.selectedTags,
+            tags: this.selectedTags
           })
           .then((response) => {
             console.log(response.data)
@@ -277,7 +273,7 @@ export default {
         // 发送完请求后，刷新讨论页面以让用户能看到自己的消息，并弹出发帖成功通知
       }
     },
-    getTags() {
+    getTags () {
       // 获取 所有的 tags
       this.$axios
         .get('tags/')
@@ -286,9 +282,9 @@ export default {
         })
         .catch((response) => {
           console.log(response.data)
-          this.$refs.message.error(error.response.data.msg)
+          this.$refs.message.error(response.data.msg)
         })
-    },
+    }
   },
 
   watch: {
@@ -318,22 +314,23 @@ export default {
             this.selectedTags[i] = {
               name: tagStr,
               color: this.randomColor(),
-              count: 0,
+              count: 0
             }
           }
         }
       }
-    },
-  },
+    }
+  }
 }
 </script>
 
-<style lang="scss" scoped>
+<style lang='scss' scoped>
 /* 浮动按钮 固定在右下角 */
 .float-btn {
   position: fixed;
   right: 8px;
   bottom: 64px;
+
   .v-btn {
     margin: 5px;
   }

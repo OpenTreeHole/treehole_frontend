@@ -1,5 +1,4 @@
-
-function plugins(Vue) {
+function plugins (Vue) {
 
 }
 

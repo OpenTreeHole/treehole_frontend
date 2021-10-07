@@ -5,7 +5,7 @@
 [![deploy to server](https://github.com/fduhole/vue/actions/workflows/main.yml/badge.svg)](https://github.com/fduhole/vue/actions/workflows/main.yml)
 
 立即前往  
-[master](https://fduhole.tk)  
+[master](https://fduhole.com)  
 [dev](https://fduhole.github.io)
 
 ## 开发

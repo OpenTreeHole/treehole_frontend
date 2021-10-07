@@ -23,6 +23,7 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
+
 Vue.prototype.$marked = marked
 Vue.prototype.$feConfig = FDUHoleFEConfig
 Vue.prototype.$feUtils = FEUtils
@@ -41,7 +42,6 @@ Vue.use(VueCookies)
 Vue.use(plugins)
 Vue.use(VueQuillEditor /* { default global options } */)
 Vue.use(Viewer)
-
 
 Vue.filter('plainText', function (html) {
   return html.replace(/<img.*?>/g, '[图片]').replace(/<.*?>/g, ' ')
