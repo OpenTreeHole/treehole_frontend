@@ -1,10 +1,10 @@
 <template>
   <v-app>
-    <message ref="message"></message>
+    <message ref='message'></message>
     <Navbar></Navbar>
 
     <v-main>
-      <keep-alive include="Home, AirConditioner">
+      <keep-alive include='Home, AirConditioner'>
         <router-view
           :key="$route.fullPath + ($route.params.id || '') + $route.query"
         ></router-view>
@@ -23,51 +23,57 @@
 <script>
 import Navbar from '@/components/Navbar.vue'
 import Message from '@/components/Message.vue'
+
 export default {
   name: 'App',
 
   components: {
     Navbar,
-    Message,
+    Message
   },
 
   methods: {
-    newEvent() {
+    newEvent () {
       console.log('event')
       document.dispatchEvent(
         new CustomEvent('offline', { detail: '网络已断开, 正在以离线模式浏览' })
       )
-    },
+    }
   },
 
-  created() {
+  created () {
+    console.log(1)
     document.addEventListener('onlined', (event) => {
       this.$refs.message.success(event.detail)
     })
     document.addEventListener('offlined', (event) => {
       this.$refs.message.warning(event.detail)
     })
-  },
+  }
 }
 </script>
 
-<style lang="scss">
+<style lang='scss'>
 .fold {
   overflow: hidden;
   max-height: 4.5rem;
   transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
 }
+
 .unfold {
   overflow: hidden;
   max-height: 100rem;
   transition: max-height 1s ease-in-out;
 }
+
 .clickable {
   cursor: pointer;
 }
+
 .rich-text p {
-  margin-bottom: 0px;
+  margin-bottom: 0;
 }
+
 img {
   display: block;
   margin: auto;

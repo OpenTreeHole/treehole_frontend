@@ -11,8 +11,9 @@
               transition="slide-y-transition"
               :type="alertType"
               :value="isAlert"
-              >{{ alertMsg }}</v-alert
             >
+              {{ alertMsg }}
+            </v-alert>
             <div class="pl-7 pr-10">
               <v-text-field
                 v-model="username"
@@ -86,8 +87,8 @@
                 justify="center"
                 style="margin-bottom: -12px"
               >
-                <v-checkbox v-model="agreeLicences" label="同意"></v-checkbox
-                ><router-link to="/licence">相关协议</router-link>
+                <v-checkbox v-model="agreeLicences" label="同意"></v-checkbox>
+                <router-link to="/licence">相关协议</router-link>
               </v-row>
             </div>
 
@@ -98,8 +99,8 @@
                 block
                 :disabled="!(agreeLicences && valid)"
                 @click="register"
-                >注册</v-btn
-              >
+                >注册
+              </v-btn>
             </div>
           </v-form>
         </v-card>
@@ -111,9 +112,10 @@
 <script>
 import debounce from 'lodash.debounce'
 import Message from '@/components/Message.vue'
+
 export default {
   components: { Message },
-  data() {
+  data () {
     return {
       // 同意协议
       agreeLicences: false,
@@ -134,7 +136,7 @@ export default {
       errorMsg: {
         username: '',
         email: '',
-        password: '',
+        password: ''
       },
       notEmptyRules: [(v) => !!v || '内容不能为空'],
       // emailRules: [
@@ -142,17 +144,17 @@ export default {
       // ],
       codeRules: [
         (v) => !!v || '内容不能为空',
-        (v) => /^[0-9]{6}$/.test(v) || '验证码格式不对',
+        (v) => /^[0-9]{6}$/.test(v) || '验证码格式不对'
       ],
       passwordRules: [
         (v) => !!v || '内容不能为空',
         (v) => v.length <= 32 || '密码不能超过32字符',
-        (v) => v.length >= 8 || '密码不能少于8字符',
-      ],
+        (v) => v.length >= 8 || '密码不能少于8字符'
+      ]
     }
   },
   methods: {
-    checkUsername() {
+    checkUsername () {
       if (!this.username) {
         this.errorMsg.username = '用户名不能为空'
       } else if (this.username.length > 16) {
@@ -172,7 +174,7 @@ export default {
       }
     },
 
-    checkEmail() {
+    checkEmail () {
       if (!/^[0-9]{11}@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
         this.errorMsg.email = '@fudan.edu.cn'
       } else {
@@ -188,7 +190,7 @@ export default {
       }
     },
 
-    checkPassword() {
+    checkPassword () {
       if (this.password !== this.password2) {
         this.errorMsg.password = '两次输入不一致'
       } else {
@@ -196,7 +198,7 @@ export default {
       }
     },
 
-    sendCode() {
+    sendCode () {
       this.sendButtonChangeStatus()
       if (!this.username || !this.email) {
         this.$refs.message.error('用户名与邮箱不能为空')
@@ -205,7 +207,10 @@ export default {
       this.$refs.message.info('验证码已发送, 请检查邮件以继续')
       this.$axios
         .get('register/', {
-          params: { username: this.username, email: this.email },
+          params: {
+            username: this.username,
+            email: this.email
+          }
         })
         .then((response) => {
           if (response.data.data !== 0) {
@@ -216,7 +221,7 @@ export default {
         })
     },
 
-    sendButtonChangeStatus() {
+    sendButtonChangeStatus () {
       this.sendValid = false
       for (let i = 60; i >= 0; i--) {
         setTimeout(() => {
@@ -229,14 +234,14 @@ export default {
       }
     },
 
-    register() {
+    register () {
       if (this.$refs.form.validate()) {
         this.$axios
           .post('register/', {
             username: this.username,
             email: this.email,
             password: this.password,
-            code: this.code,
+            code: this.code
           })
           .then((response) => {
             if (response.data.data === 0) {
@@ -254,9 +259,12 @@ export default {
       }
     },
 
-    login() {
+    login () {
       this.$axios
-        .post('login/', { username: this.username, password: this.password })
+        .post('login/', {
+          username: this.username,
+          password: this.password
+        })
         .then((response) => {
           localStorage.setItem('token', 'Token ' + response.data.token)
           localStorage.setItem('username', this.username)
@@ -268,7 +276,7 @@ export default {
           this.valid = false
           this.$refs.message.error('用户名或密码错误')
         })
-    },
+    }
   },
   watch: {
     username: function () {
@@ -279,12 +287,12 @@ export default {
     },
     password2: function () {
       this.debouncedCheckPassword()
-    },
+    }
   },
   created: function () {
     this.debouncedCheckUsername = debounce(this.checkUsername, 500)
     this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
-  },
+  }
 }
 </script>
