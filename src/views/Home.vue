@@ -27,7 +27,8 @@
     </v-row>
 
     <!-- 帖子列表 -->
-    <DiscussionList ref='discussions' api='discussions/'></DiscussionList>
+    <DiscussionList v-if='!_isMobile' ref='discussions' api='discussions/'/>
+    <DiscussionListMobile v-else ref='discussions' api='discussions/'/>
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div class='float-btn' v-show='showFloatBtn'>
@@ -147,6 +148,7 @@ import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
 import DiscussionList from '@/components/DiscussionList.vue'
+import DiscussionListMobile from '@/components/DiscussionListMobile'
 
 export default {
   name: 'Home',
@@ -156,7 +158,8 @@ export default {
     Editor,
     Message,
     Newcomer,
-    DiscussionList
+    DiscussionList,
+    DiscussionListMobile
   },
   data () {
     return {
@@ -188,6 +191,10 @@ export default {
   computed: {
     contentName () {
       return 'home-content'
+    },
+    _isMobile () {
+      console.log(navigator.userAgent)
+      return navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
     }
   },
 
@@ -205,20 +212,6 @@ export default {
     editorError (msg) {
       this.$refs.message.error(msg)
     },
-    // unfold(index) {
-    //   this.scrollTop = document.documentElement.scrollTop
-    //   this.styleData[index]['fold'] = false
-    // },
-
-    // fold(index) {
-    //   this.styleData[index]['fold'] = true
-    //   let scrollDistance = this.scrollTop - document.documentElement.scrollTop
-    //   window.scrollBy({
-    //     top: scrollDistance, //  正值向下
-    //     left: 0,
-    //     behavior: 'smooth',
-    //   })
-    // },
     randomColor () {
       const colorList = [
         'red',
@@ -288,7 +281,7 @@ export default {
         })
         .catch((response) => {
           console.log(response.data)
-          this.$refs.message.error(error.response.data.msg)
+          this.$refs.message.error(response.data.msg)
         })
     }
   },

@@ -1,5 +1,5 @@
 export default {
-  reloadAll() {
+  reloadAll () {
     const form = document.createElement('form')
     form.method = 'POST'
     form.action = '/'
@@ -7,7 +7,7 @@ export default {
     form.submit()
     location.href = '/'
   },
-  whichPlatform() { // 检测当前浏览器平台
+  whichPlatform () { // 检测当前浏览器平台
 
   }
 }
