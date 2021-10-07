@@ -220,8 +220,13 @@ export default {
     Editor,
     Message
   },
+  computed: {
+    discussionId () {
+      return this.$route.params.id
+    }
+  },
   created () {
-    this.getDiscussion(this.$route.params.id)
+    this.getDiscussion(this.discussionId)
   }
 }
 </script>

@@ -11,6 +11,7 @@
         <DiscussionCard
           :discussion='discussion'
           :index='index'
+          :dlist='instance'
           :activate='toDiscussion'
         ></DiscussionCard
         >
@@ -28,6 +29,11 @@ import DiscussionCard from '@/components/DiscussionCard.vue'
 
 export default {
   name: 'DiscussionList',
+  data () {
+    return {
+      instance: this
+    }
+  },
   components: {
     DiscussionCard,
     Loading

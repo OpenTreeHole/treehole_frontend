@@ -70,7 +70,7 @@ export default {
   },
   methods: {
     GetPageScroll () {
-      var x, y
+      let x, y
       if (window.pageYOffset) {
         // all except IE
         y = window.pageYOffset
