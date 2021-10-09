@@ -141,12 +141,30 @@ export default {
             this.$store.dispatch('messageError', response.data.msg)
           }
         })
+    },
+    CloseDialogWhenClickEmptyArea (e) {
+      var el = e.target
+      while (el !== document.body) {
+        if (el.id === 'header' || el.id === 'footer') {
+          return
+        }
+        if (el.tagName.toUpperCase() === 'DIV' && (
+          el.classList.contains('v-card')
+        )) {
+          return
+        }
+        el = el.parentNode
+      }
+      this.closeDialog()
     }
   },
   computed: {
     contentName () {
       return 'discussion-' + this.$route.params.id + '-content'
     }
+  },
+  mounted () {
+    document.body.addEventListener('click', this.CloseDialogWhenClickEmptyArea)
   }
 }
 </script>

@@ -142,7 +142,12 @@ export default {
         if (el.id === 'header' || el.id === 'footer') {
           return
         }
-        if (el.tagName.toUpperCase() === 'DIV' && (el.id === 'transrow' || el.id === 'discol')) {
+        if (el.tagName.toUpperCase() === 'DIV' && (
+          el.id === 'transrow' ||
+          el.id === 'discol' ||
+          el.classList.contains('v-dialog__content') ||
+          el.classList.contains('v-overlay')
+        )) {
           return
         }
         el = el.parentNode
