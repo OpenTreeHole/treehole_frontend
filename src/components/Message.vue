@@ -22,6 +22,10 @@ export default {
     }
   },
 
+  mounted () {
+    this.$store.commit('setMessageComponent', this)
+  },
+
   methods: {
     success (message) {
       this.type = 'success'

@@ -44,10 +44,10 @@ export default {
   created () {
     console.log(1)
     document.addEventListener('onlined', (event) => {
-      this.$refs.message.success(event.detail)
+      this.$store.dispatch('messageSuccess', event.detail)
     })
     document.addEventListener('offlined', (event) => {
-      this.$refs.message.warning(event.detail)
+      this.$store.dispatch('messageWarning', event.detail)
     })
   }
 }

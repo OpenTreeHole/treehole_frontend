@@ -1,9 +1,6 @@
 <!--suppress HtmlUnknownAttribute -->
 <template>
   <v-col class='mb-5' cols='6' id='discol'>
-    <!-- 警告信息 -->
-    <message ref='message'></message>
-
     <transition-group name='slide-fade'>
       <v-row
         v-for='(post, index) in posts'
@@ -140,7 +137,6 @@
 <script>
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import Message from '@/components/Message.vue'
 import DiscussionMixin from '@/mixins/DiscussionMixin'
 
 export default {
@@ -150,8 +146,7 @@ export default {
   },
   components: {
     Loading,
-    Editor,
-    Message
+    Editor
   },
   created () {
     this.getDiscussion(this.discussionId)
@@ -175,6 +170,7 @@ export default {
 }
 
 /* 可点击 */
+/*noinspection CssUnusedSymbol*/
 .clickable {
   cursor: pointer;
 }

@@ -201,10 +201,10 @@ export default {
     sendCode () {
       this.sendButtonChangeStatus()
       if (!this.username || !this.email) {
-        this.$refs.message.error('用户名与邮箱不能为空')
+        this.$store.dispatch('messageError', '用户名与邮箱不能为空')
         return
       }
-      this.$refs.message.info('验证码已发送, 请检查邮件以继续')
+      this.$store.dispatch('messageInfo', '验证码已发送, 请检查邮件以继续')
       this.$axios
         .get('register/', {
           params: {
@@ -214,9 +214,9 @@ export default {
         })
         .then((response) => {
           if (response.data.data !== 0) {
-            this.$refs.message.error(response.data.msg)
+            this.$store.dispatch('messageError', response.data.msg)
           } else {
-            this.$refs.message.success(response.data.msg)
+            this.$store.dispatch('messageSuccess', response.data.msg)
           }
         })
     },
@@ -246,15 +246,15 @@ export default {
           .then((response) => {
             if (response.data.data === 0) {
               // 注册成功后直接跳转到主页面
-              this.$refs.message.success('注册成功，跳转至登录页面......')
+              this.$store.dispatch('messageSuccess', '注册成功，跳转至登录页面......')
               localStorage.setItem('newcomer', 'true')
               this.login()
             } else {
-              this.$refs.message.error(response.data.msg)
+              this.$store.dispatch('messageError', response.data.msg)
             }
           })
           .catch(() => {
-            this.$refs.message.error('网络错误')
+            this.$store.dispatch('messageError', '网络错误')
           })
       }
     },
@@ -274,7 +274,7 @@ export default {
         })
         .catch(() => {
           this.valid = false
-          this.$refs.message.error('用户名或密码错误')
+          this.$store.dispatch('messageError', '用户名或密码错误')
         })
     }
   },

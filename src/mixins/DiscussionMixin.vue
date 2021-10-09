@@ -20,7 +20,7 @@ export default {
   },
   methods: {
     editorError (msg) {
-      this.$refs.message.error(msg)
+      this.$store.dispatch('messageError', msg)
     },
     closeDialog () {
       this.dialog = false
@@ -62,7 +62,7 @@ export default {
           this.discussion = response.data
         })
         .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
+          this.$store.dispatch('messageError', error.response.data.msg)
         })
     },
     getPosts (page = this.page) {
@@ -83,7 +83,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
+          this.$store.dispatch('messageError', error.response.data.msg)
         })
     },
     getNewPosts () {
@@ -98,7 +98,7 @@ export default {
           this.posts.push.apply(this.posts, response.data)
         })
         .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
+          this.$store.dispatch('messageError', error.response.data.msg)
         })
     },
     addPost () {
@@ -123,7 +123,7 @@ export default {
           })
           .catch((error) => {
             console.log(error.response)
-            this.$refs.message.error(error.response.data.msg)
+            this.$store.dispatch('messageError', error.response.data.msg)
           })
       }
     },
@@ -136,9 +136,9 @@ export default {
         })
         .then((response) => {
           if (response.status === 200) {
-            this.$refs.message.success('举报成功')
+            this.$store.dispatch('messageSuccess', '举报成功')
           } else {
-            this.$refs.message.error(response.data.msg)
+            this.$store.dispatch('messageError', response.data.msg)
           }
         })
     }

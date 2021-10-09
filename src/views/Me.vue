@@ -27,7 +27,7 @@
 
 <script>
 import Message from '@/components/Message.vue'
-import DiscussionCard from '@/components/DiscussionCard.vue'
+import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
 
 export default {
   name: 'Me',
@@ -48,7 +48,7 @@ export default {
           this.profile = r.data
         })
         .catch((e) => {
-          this.$refs.message.error(e.r.data.msg)
+          this.$store.dispatch('messageError', e.r.data.msg)
         })
     },
     logout () {

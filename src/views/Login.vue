@@ -105,7 +105,7 @@ export default {
         })
         .catch(() => {
           this.valid = false
-          this.$refs.message.error('用户名或密码错误')
+          this.$store.dispatch('messageError', '用户名或密码错误')
         })
     }
   }

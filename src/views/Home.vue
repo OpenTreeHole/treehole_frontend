@@ -147,8 +147,8 @@
 import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
-import DiscussionList from '@/components/DiscussionList.vue'
-import DiscussionListMobile from '@/components/DiscussionListMobile'
+import DiscussionList from '@/components/Discussion/DiscussionComponent.vue'
+import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile'
 
 export default {
   name: 'Home',
@@ -211,7 +211,7 @@ export default {
       this.$refs.discussions.refresh()
     },
     editorError (msg) {
-      this.$refs.message.error(msg)
+      this.$store.dispatch('messageError', msg)
     },
     randomColor () {
       const colorList = [
@@ -258,7 +258,7 @@ export default {
           })
           .then((response) => {
             console.log(response.data)
-            this.$refs.message.success('发送成功')
+            this.$store.dispatch('messageSuccess', '发送成功')
             // 重新加载页面
             this.$refs.discussions.refresh()
             // 重置表单内容
@@ -268,7 +268,7 @@ export default {
           })
           .catch((error) => {
             console.log(error.response)
-            this.$refs.message.error(error.response.data.msg)
+            this.$store.dispatch('messageError', error.response.data.msg)
           })
         // 发送完请求后，刷新讨论页面以让用户能看到自己的消息，并弹出发帖成功通知
       }
@@ -282,11 +282,10 @@ export default {
         })
         .catch((response) => {
           console.log(response.data)
-          this.$refs.message.error(response.data.msg)
+          this.$store.dispatch('messageError', response.data.msg)
         })
     }
   },
-
   watch: {
     selectedTags: function () {
       for (let i = 0; i < this.selectedTags.length; i++) {
