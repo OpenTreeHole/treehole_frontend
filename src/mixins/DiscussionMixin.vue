@@ -15,7 +15,12 @@ export default {
       dialog: false,
       // content: '',
       requiredRules: [(v) => !!v || '内容不能为空'],
-      valid: true
+      valid: true,
+      escListener: (e) => {
+        if (e && e.key === 'Escape') { // 按Esc
+          this.closeDialog()
+        }
+      }
     }
   },
   methods: {
@@ -168,6 +173,11 @@ export default {
   },
   mounted () {
     document.body.addEventListener('click', this.CloseDialogWhenClickEmptyArea)
+    window.addEventListener('keydown', this.escListener)
+  },
+  destroyed () {
+    document.body.removeEventListener('click', this.CloseDialogWhenClickEmptyArea)
+    window.removeEventListener('keydown', this.escListener)
   }
 }
 </script>
