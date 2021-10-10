@@ -90,7 +90,7 @@ export default {
       this.$axios
         .get('posts/', {
           params: {
-            id: this.$route.params.id,
+            id: this.discussionId,
             order: this.posts.length
           }
         })
@@ -108,7 +108,7 @@ export default {
         this.$axios
           .post('posts/', {
             content: this.$refs.editor.getContent(),
-            discussion_id: this.$route.params.id,
+            discussion_id: this.discussionId,
             post_id: this.replyPk
           })
           .then(() => {
@@ -160,7 +160,7 @@ export default {
   },
   computed: {
     contentName () {
-      return 'discussion-' + this.$route.params.id + '-content'
+      return 'discussion-' + this.discussionId + '-content'
     }
   },
   mounted () {

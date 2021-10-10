@@ -83,6 +83,11 @@
 
     <v-dialog v-model='dialog' persistent max-width='600px'>
       <!-- 浮动按钮 -->
+      <template v-slot:activator='{ on, attrs }'>
+        <v-btn fab color='secondary' class='fixed' v-bind='attrs' v-on='on'>
+          <v-icon>mdi-send</v-icon>
+        </v-btn>
+      </template>
 
       <v-card>
         <v-card-title>
@@ -154,7 +159,7 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
 /* 回复模块 */
 .reply {
   margin: 0 1rem 0 1rem;
@@ -180,6 +185,9 @@ export default {
   position: fixed;
   right: 8px;
   bottom: 64px;
+  .v-btn {
+    margin: 5px;
+  }
 }
 
 .slide-fade-enter-active {

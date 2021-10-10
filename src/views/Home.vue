@@ -27,7 +27,7 @@
     </v-row>
 
     <!-- 帖子列表 -->
-    <DiscussionList v-if="!_isMobile" ref="discussions" api="discussions/" />
+    <DiscussionComponent v-if="!_isMobile" ref="discussions" api="discussions/" />
     <DiscussionListMobile v-else ref="discussions" api="discussions/" />
 
     <!-- 新帖编辑器及浮动按钮 -->
@@ -147,7 +147,7 @@
 import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
-import DiscussionList from '@/components/Discussion/DiscussionComponent.vue'
+import DiscussionComponent from '@/components/Discussion/DiscussionComponent.vue'
 import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile'
 
 export default {
@@ -158,7 +158,7 @@ export default {
     Editor,
     Message,
     Newcomer,
-    DiscussionList,
+    DiscussionComponent,
     DiscussionListMobile
   },
   data () {
