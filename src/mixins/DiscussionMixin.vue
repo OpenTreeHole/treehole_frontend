@@ -128,7 +128,10 @@ export default {
       }
     },
     report (postId) {
-      var msg = prompt('输入举报理由')
+      const msg = prompt('输入举报理由')
+      if (msg === '') {
+        this.$store.dispatch('messageError', '举报理由不能为空！')
+      }
       this.$axios
         .post('reports/', {
           post_id: postId,
@@ -143,7 +146,7 @@ export default {
         })
     },
     CloseDialogWhenClickEmptyArea (e) {
-      var el = e.target
+      let el = e.target
       while (el !== document.body) {
         if (el.id === 'header' || el.id === 'footer') {
           return

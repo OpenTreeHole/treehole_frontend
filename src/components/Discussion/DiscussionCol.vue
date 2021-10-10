@@ -22,12 +22,12 @@
 
             <v-card-text class='py-0'>
               <!-- 回复部分 -->
-              <div v-if="post['reply_to']" class='reply text-body-2'>
+              <v-card v-if="post['reply_to']" class='reply'>
                 <!-- 回复框顶栏 -->
-                <div>
-                <span>
-                  {{ posts[getIndex(post.reply_to)].username }}
-                </span>
+                <v-card-text class='pb-1 pt-2 text-body-2'>
+                  <span>
+                    {{ posts[getIndex(post.reply_to)].username }}
+                  </span>
                   <v-icon
                     @click='
                     scrollTo(index, getIndex(posts[getIndex(post.reply_to)].id))
@@ -37,11 +37,11 @@
                   >
                     mdi-arrow-collapse-up
                   </v-icon>
-                </div>
-                <div>
+                </v-card-text>
+                <v-card-text class='reply-text'>
                   {{ posts[getIndex(post.reply_to)].content | plainText }}
-                </div>
-              </div>
+                </v-card-text>
+              </v-card>
 
               <!-- 正文部分 -->
               <div
@@ -96,16 +96,16 @@
 
         <v-card-text>
           <!-- 回复内容 -->
-          <div v-if='replyIndex != null' class='reply text-body-2'>
-            <div>
+          <v-card v-if='replyIndex != null' class='reply'>
+            <v-card-text>
               <span>
                 {{ posts[replyIndex]['username'] }}
               </span>
-            </div>
-            <div>
+            </v-card-text>
+            <v-card-text class='reply-text'>
               {{ posts[replyIndex].content | plainText }}
-            </div>
-          </div>
+            </v-card-text>
+          </v-card>
 
           <v-form ref='form' v-model='valid' lazy-validation>
             <!-- 回贴表单 -->
@@ -162,16 +162,20 @@ export default {
 <style lang='scss' scoped>
 /* 回复模块 */
 .reply {
-  margin: 0 1rem 0 1rem;
-  margin-bottom: 1rem;
+  margin: 0 1rem 1rem;
   padding: 0.5rem 0.5rem 0 0.5rem;
-  background-color: #a5a4a4;
-  color: white;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
+  //background-color: #a5a4a4;
+  //color: white;
+  //overflow: hidden;
+  //text-overflow: ellipsis;
+  //display: -webkit-box;
+  //-webkit-line-clamp: 4;
+  //-webkit-box-orient: vertical;
+}
+
+.v-card__text.reply-text {
+  margin-top: -1.2rem;
+  color: #30312c;
 }
 
 /* 可点击 */
@@ -185,6 +189,7 @@ export default {
   position: fixed;
   right: 8px;
   bottom: 64px;
+
   .v-btn {
     margin: 5px;
   }
