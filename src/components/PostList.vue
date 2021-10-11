@@ -56,7 +56,7 @@ export default {
           this.posts.push.apply(this.posts, response.data)
         })
         .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
+          this.$store.dispatch('messageError', error.response.data.msg)
         })
     }
   },

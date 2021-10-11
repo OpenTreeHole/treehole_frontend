@@ -1,9 +1,6 @@
 <!--suppress HtmlUnknownAttribute -->
 <template>
   <v-col class='mb-5' cols='6' id='discol'>
-    <!-- 警告信息 -->
-    <message ref='message'></message>
-
     <transition-group name='slide-fade'>
       <v-row
         v-for='(post, index) in posts'
@@ -25,12 +22,12 @@
 
             <v-card-text class='py-0'>
               <!-- 回复部分 -->
-              <div v-if="post['reply_to']" class='reply text-body-2'>
+              <v-card v-if="post['reply_to']" class='reply'>
                 <!-- 回复框顶栏 -->
-                <div>
-                <span>
-                  {{ posts[getIndex(post.reply_to)].username }}
-                </span>
+                <v-card-text class='pb-1 pt-2 text-body-2'>
+                  <span>
+                    {{ posts[getIndex(post.reply_to)].username }}
+                  </span>
                   <v-icon
                     @click='
                     scrollTo(index, getIndex(posts[getIndex(post.reply_to)].id))
@@ -40,11 +37,11 @@
                   >
                     mdi-arrow-collapse-up
                   </v-icon>
-                </div>
-                <div>
+                </v-card-text>
+                <v-card-text class='reply-text'>
                   {{ posts[getIndex(post.reply_to)].content | plainText }}
-                </div>
-              </div>
+                </v-card-text>
+              </v-card>
 
               <!-- 正文部分 -->
               <div
@@ -86,6 +83,11 @@
 
     <v-dialog v-model='dialog' persistent max-width='600px'>
       <!-- 浮动按钮 -->
+      <template v-slot:activator='{ on, attrs }'>
+        <v-btn fab color='secondary' class='fixed' v-bind='attrs' v-on='on'>
+          <v-icon>mdi-send</v-icon>
+        </v-btn>
+      </template>
 
       <v-card>
         <v-card-title>
@@ -94,16 +96,16 @@
 
         <v-card-text>
           <!-- 回复内容 -->
-          <div v-if='replyIndex != null' class='reply text-body-2'>
-            <div>
+          <v-card v-if='replyIndex != null' class='reply'>
+            <v-card-text>
               <span>
                 {{ posts[replyIndex]['username'] }}
               </span>
-            </div>
-            <div>
+            </v-card-text>
+            <v-card-text class='reply-text'>
               {{ posts[replyIndex].content | plainText }}
-            </div>
-          </div>
+            </v-card-text>
+          </v-card>
 
           <v-form ref='form' v-model='valid' lazy-validation>
             <!-- 回贴表单 -->
@@ -140,7 +142,6 @@
 <script>
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import Message from '@/components/Message.vue'
 import DiscussionMixin from '@/mixins/DiscussionMixin'
 
 export default {
@@ -150,8 +151,7 @@ export default {
   },
   components: {
     Loading,
-    Editor,
-    Message
+    Editor
   },
   created () {
     this.getDiscussion(this.discussionId)
@@ -159,22 +159,27 @@ export default {
 }
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
 /* 回复模块 */
 .reply {
-  margin: 0 1rem 0 1rem;
-  margin-bottom: 1rem;
+  margin: 0 1rem 1rem;
   padding: 0.5rem 0.5rem 0 0.5rem;
-  background-color: #a5a4a4;
-  color: white;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 4;
-  -webkit-box-orient: vertical;
+  //background-color: #a5a4a4;
+  //color: white;
+  //overflow: hidden;
+  //text-overflow: ellipsis;
+  //display: -webkit-box;
+  //-webkit-line-clamp: 4;
+  //-webkit-box-orient: vertical;
+}
+
+.v-card__text.reply-text {
+  margin-top: -1.2rem;
+  color: #30312c;
 }
 
 /* 可点击 */
+/*noinspection CssUnusedSymbol*/
 .clickable {
   cursor: pointer;
 }
@@ -184,6 +189,10 @@ export default {
   position: fixed;
   right: 8px;
   bottom: 64px;
+
+  .v-btn {
+    margin: 5px;
+  }
 }
 
 .slide-fade-enter-active {

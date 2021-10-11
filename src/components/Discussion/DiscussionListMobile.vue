@@ -25,7 +25,7 @@
 <script>
 import DiscussionListMixin from '@/mixins/DiscussionListMixin'
 import Loading from '@/components/Loading.vue'
-import DiscussionCard from '@/components/DiscussionCard.vue'
+import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
 
 export default {
   name: 'DiscussionList',

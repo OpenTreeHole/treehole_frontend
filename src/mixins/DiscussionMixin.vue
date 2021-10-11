@@ -15,12 +15,17 @@ export default {
       dialog: false,
       // content: '',
       requiredRules: [(v) => !!v || '内容不能为空'],
-      valid: true
+      valid: true,
+      escListener: (e) => {
+        if (e && e.key === 'Escape') { // 按Esc
+          this.closeDialog()
+        }
+      }
     }
   },
   methods: {
     editorError (msg) {
-      this.$refs.message.error(msg)
+      this.$store.dispatch('messageError', msg)
     },
     closeDialog () {
       this.dialog = false
@@ -62,7 +67,7 @@ export default {
           this.discussion = response.data
         })
         .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
+          this.$store.dispatch('messageError', error.response.data.msg)
         })
     },
     getPosts (page = this.page) {
@@ -83,14 +88,14 @@ export default {
           }
         })
         .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
+          this.$store.dispatch('messageError', error.response.data.msg)
         })
     },
     getNewPosts () {
       this.$axios
         .get('posts/', {
           params: {
-            id: this.$route.params.id,
+            id: this.discussionId,
             order: this.posts.length
           }
         })
@@ -98,7 +103,7 @@ export default {
           this.posts.push.apply(this.posts, response.data)
         })
         .catch((error) => {
-          this.$refs.message.error(error.response.data.msg)
+          this.$store.dispatch('messageError', error.response.data.msg)
         })
     },
     addPost () {
@@ -108,7 +113,7 @@ export default {
         this.$axios
           .post('posts/', {
             content: this.$refs.editor.getContent(),
-            discussion_id: this.$route.params.id,
+            discussion_id: this.discussionId,
             post_id: this.replyPk
           })
           .then(() => {
@@ -123,12 +128,15 @@ export default {
           })
           .catch((error) => {
             console.log(error.response)
-            this.$refs.message.error(error.response.data.msg)
+            this.$store.dispatch('messageError', error.response.data.msg)
           })
       }
     },
     report (postId) {
-      var msg = prompt('输入举报理由')
+      const msg = prompt('输入举报理由')
+      if (msg === '') {
+        this.$store.dispatch('messageError', '举报理由不能为空！')
+      }
       this.$axios
         .post('reports/', {
           post_id: postId,
@@ -136,17 +144,40 @@ export default {
         })
         .then((response) => {
           if (response.status === 200) {
-            this.$refs.message.success('举报成功')
+            this.$store.dispatch('messageSuccess', '举报成功')
           } else {
-            this.$refs.message.error(response.data.msg)
+            this.$store.dispatch('messageError', response.data.msg)
           }
         })
+    },
+    CloseDialogWhenClickEmptyArea (e) {
+      let el = e.target
+      while (el !== document.body) {
+        if (el.id === 'header' || el.id === 'footer') {
+          return
+        }
+        if (el.tagName.toUpperCase() === 'DIV' && (
+          el.classList.contains('v-card')
+        )) {
+          return
+        }
+        el = el.parentNode
+      }
+      this.closeDialog()
     }
   },
   computed: {
     contentName () {
-      return 'discussion-' + this.$route.params.id + '-content'
+      return 'discussion-' + this.discussionId + '-content'
     }
+  },
+  mounted () {
+    document.body.addEventListener('click', this.CloseDialogWhenClickEmptyArea)
+    window.addEventListener('keydown', this.escListener)
+  },
+  destroyed () {
+    document.body.removeEventListener('click', this.CloseDialogWhenClickEmptyArea)
+    window.removeEventListener('keydown', this.escListener)
   }
 }
 </script>

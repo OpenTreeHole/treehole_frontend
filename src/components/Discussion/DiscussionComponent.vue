@@ -8,26 +8,11 @@
              @animationend='Fix'
              @mousewheel='ScrollDiscussionListWhenActive'
       >
-        <v-sheet class='overflow-y-auto' ref='cardlist' id='cardlist'>
-          <v-container>
-            <v-row
-              v-for='(discussion, index) in discussions'
-              :key='index'
-            >
-              <v-col>
-                <DiscussionCard
-                  :discussion='discussion'
-                  :index='index'
-                  :dlist='instance'
-                  :activate='Activate'
-                />
-              </v-col>
-            </v-row>
-          </v-container>
-        </v-sheet>
-        <!-- 载入中信息 -->
-        <loading :length='discussions.length' :loadList='getDiscussions' ref='loading'
-                 @intersectionChange='ChangeLoadingVisibility' />
+        <DiscussionList
+          :discussion-component='instance'
+          :activate='Activate'
+          :api='api'
+        />
       </v-col>
       <v-col v-if='displayCardId!==-1 && showDiscussion' class='mb-5' cols='5' />
       <Discussion
@@ -40,19 +25,19 @@
 </template>
 
 <script>
-import Loading from '@/components/Loading.vue'
-import DiscussionCard from '@/components/DiscussionCard.vue'
-import Discussion from '@/components/DiscussionCol'
-import DiscussionListMixin from '@/mixins/DiscussionListMixin'
+import DiscussionList from '@/components/Discussion/DiscussionList'
+import Discussion from '@/components/Discussion/DiscussionCol'
+
 import { gsap } from 'gsap'
 
 export default {
-  name: 'DiscussionList',
-  extends: DiscussionListMixin,
+  name: 'DiscussionComponent',
+  props: {
+    api: null
+  },
   components: {
     Discussion,
-    DiscussionCard,
-    Loading
+    DiscussionList
   },
   data () {
     return {
@@ -121,9 +106,6 @@ export default {
       } else {
       }
     },
-    ChangeLoadingVisibility (e) {
-      this.isLoadingVisible = e
-    },
     ScrollDiscussionList (e) {
       // if (!this.isLoadingVisible || e.wheelDelta > 0) {
       const ratio = 0.7
@@ -160,7 +142,12 @@ export default {
         if (el.id === 'header' || el.id === 'footer') {
           return
         }
-        if (el.tagName.toUpperCase() === 'DIV' && (el.id === 'transrow' || el.id === 'discol')) {
+        if (el.tagName.toUpperCase() === 'DIV' && (
+          el.id === 'transrow' ||
+          el.id === 'discol' ||
+          el.classList.contains('v-dialog__content') ||
+          el.classList.contains('v-overlay')
+        )) {
           return
         }
         el = el.parentNode
@@ -197,7 +184,6 @@ export default {
 <style>
 .transrow {
   position: fixed;
-  /*transition: margin-top 0.175s ease;*/
 }
 
 .transrow.right {

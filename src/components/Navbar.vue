@@ -36,7 +36,7 @@
             v-for='(item, i) in $feConfig.navItems'
             :key='i'
             @click.stop='$router.replace(item.route)'
-            :disabled='i == currentPage'
+            :disabled='i === currentPage'
           >
             <v-list-item-icon>
               <v-icon v-text='item.icon'></v-icon>
@@ -65,7 +65,7 @@
                   type='submit'
                   icon
                   @click='searchIt'
-                  :disabled='searchText.length == 0'
+                  :disabled='searchText.length === 0'
                 >
                   <v-icon>mdi-magnify</v-icon>
                 </v-btn>
@@ -85,7 +85,7 @@
                   type='submit'
                   icon
                   @click='goFloor'
-                  :disabled='floorToGo.length == 0'
+                  :disabled='floorToGo.length === 0'
                 >
                   <v-icon>mdi-elevator</v-icon>
                 </v-btn>
@@ -194,6 +194,7 @@ export default {
 
 <!--suppress CssInvalidFunction -->
 <style lang='scss' scoped>
+//noinspection CssOverwrittenProperties
 .iphone-fitter {
   height: 0;
   height: constant(safe-area-inset-top);

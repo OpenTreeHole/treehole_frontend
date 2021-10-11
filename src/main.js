@@ -11,6 +11,8 @@ import marked from 'marked'
 import plugins from './components/plugins'
 import 'viewerjs/dist/viewer.css'
 import Viewer from 'v-viewer'
+import 'overlayscrollbars/css/OverlayScrollbars.css'
+import { OverlayScrollbarsPlugin } from 'overlayscrollbars-vue'
 
 // 引入项目配置文件
 import FDUHoleFEConfig from './fduhole-fe.config.js'
@@ -42,6 +44,7 @@ Vue.use(VueCookies)
 Vue.use(plugins)
 Vue.use(VueQuillEditor /* { default global options } */)
 Vue.use(Viewer)
+Vue.use(OverlayScrollbarsPlugin)
 
 Vue.filter('plainText', function (html) {
   return html.replace(/<img.*?>/g, '[图片]').replace(/<.*?>/g, ' ')

@@ -234,9 +234,8 @@ export default {
 <style scoped>
 /* 回复模块 */
 .reply {
-  margin: 0rem 1rem 0rem 1rem;
-  margin-bottom: 1rem;
-  padding: 0.5rem 0.5rem 0rem 0.5rem;
+  margin: 0 1rem 1rem;
+  padding: 0.5rem 0.5rem 0 0.5rem;
   background-color: #a5a4a4;
   color: white;
   overflow: hidden;

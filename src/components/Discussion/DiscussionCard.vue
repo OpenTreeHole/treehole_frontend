@@ -73,7 +73,7 @@
 
       <v-card-text
         v-if='
-          discussion.first_post.id != discussion.last_post.id &&
+          discussion.first_post.id !== discussion.last_post.id &&
           !discussion.is_folded
         '
       >
@@ -119,7 +119,7 @@ export default {
     discussion: {},
     index: Number,
     dlist: Vue,
-    activate: null
+    activate: Function
   },
   data () {
     return {
@@ -130,13 +130,13 @@ export default {
   methods: {
     orderByTimeCreated () {
       this.dlist.order = 'last_created'
-      this.dlist.$parent.$refs.message.success('已按照发帖时间排序')
+      this.$store.dispatch('messageSuccess', '已按照发帖时间排序')
       // 刷新列表
       this.dlist.refresh()
     },
     orderByTimeUpdated () {
       this.dlist.order = ''
-      this.dlist.$parent.$refs.message.success('已按照最新回复时间排序')
+      this.$store.dispatch('messageSuccess', '已按照最新回复时间排序')
       // 刷新列表
       this.dlist.refresh()
     },

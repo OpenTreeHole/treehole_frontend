@@ -1,9 +1,11 @@
 <script>
 import debounce from 'lodash.debounce'
+import Vue from 'vue'
 
 export default {
   props: {
-    api: null
+    api: null,
+    discussionComponent: Vue
   },
   data () {
     return {
@@ -25,7 +27,7 @@ export default {
     },
     addTag (tag) {
       if (this.$route.name === 'home') {
-        this.$parent.addTag(tag)
+        this.discussionComponent.$parent.addTag(tag)
       }
     },
     calculateLines () {
@@ -67,7 +69,7 @@ export default {
           }
         })
         .catch((error) => {
-          this.$parent.$refs.message.error(error.response.data.msg)
+          this.$store.dispatch('messageError', error.response.data.msg)
         })
     }
   },
