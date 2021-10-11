@@ -126,18 +126,13 @@ export default {
         this.ScrollDiscussionList(e)
       }
     },
-    getOffsetTop (el) {
-      return el.offsetParent
-        ? el.offsetTop + this.getOffsetTop(el.offsetParent)
-        : el.offsetTop
-    },
     DeActivate (id) {
       if (this.displayCardId !== -1) {
         this.Activate(id)
       }
     },
     DeActivateWhenClickEmptyArea (e) {
-      var el = e.target
+      let el = e.target
       while (el !== document.body) {
         if (el.id === 'header' || el.id === 'footer') {
           return
