@@ -1,5 +1,5 @@
 <template>
-  <v-container style='overflow: visible'>
+  <v-container style='overflow: visible' v-click-outside='DeActivateWhenClickEmptyArea'>
     <v-row justify='center' class='ma-0'>
       <v-col class='mb-5 transrow'
              :class='isActive+" "+isEnd+" "+isStatic'
@@ -49,7 +49,6 @@ export default class DiscussionComponent extends Vue {
   public marginTopY = 0
   public viewport = 0
   public isLoadingVisible = false
-  public instance = this
 
   $refs: {
     discussionList: DiscussionList
@@ -99,7 +98,6 @@ export default class DiscussionComponent extends Vue {
     if (this.isActive === 'left') {
       document.body.scrollTop = document.documentElement.scrollTop = 0
       this.showDiscussion = true
-    } else {
     }
   }
 
@@ -115,7 +113,7 @@ export default class DiscussionComponent extends Vue {
     }
   }
 
-  public ScrollDiscussionListWhenActive (e: any): void {
+  public ScrollDiscussionListWhenActive (e: WheelEvent): void {
     if (this.isActive === 'left' || this.isEnd !== 'end') {
       e.preventDefault()
       this.ScrollDiscussionList(e)
@@ -128,22 +126,7 @@ export default class DiscussionComponent extends Vue {
     }
   }
 
-  public DeActivateWhenClickEmptyArea (e: Event): void {
-    let el = e.target as HTMLElement
-    while (el && el !== document.body) {
-      if (el.id === 'header' || el.id === 'footer') {
-        return
-      }
-      if (el.tagName.toUpperCase() === 'DIV' && (
-        el.id === 'transrow' ||
-        el.id === 'discol' ||
-        el.classList.contains('v-dialog__content') ||
-        el.classList.contains('v-overlay')
-      )) {
-        return
-      }
-      el = el.parentNode as HTMLElement
-    }
+  public DeActivateWhenClickEmptyArea (): void {
     this.DeActivate(this.displayCardId)
   }
 
@@ -157,7 +140,6 @@ export default class DiscussionComponent extends Vue {
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight
     })
-    document.body.addEventListener('click', this.DeActivateWhenClickEmptyArea)
   }
 
   @Watch('showDiscussion')

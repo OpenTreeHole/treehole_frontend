@@ -292,35 +292,15 @@ export default class Home extends Vue {
       })
   }
 
-  public CloseDialogWhenClickEmptyArea (e: Event): void {
-    if (!e.target) return
-    let el: HTMLElement = e.target as HTMLElement
-    while (el !== document.body) {
-      if (el.id === 'header' || el.id === 'footer') {
-        return
-      }
-      if (el.tagName.toUpperCase() === 'DIV' && (
-        el.classList.contains('v-card')
-      )) {
-        return
-      }
-      if (!el.parentNode) return
-      el = el.parentNode as HTMLElement
-    }
-    this.closeDialog()
-  }
-
   public onShowFloatBtnChanged (val: boolean): void {
     this.showFloatBtn = !val
   }
 
   mounted () {
-    document.body.addEventListener('click', this.CloseDialogWhenClickEmptyArea)
     window.addEventListener('keydown', this.escListener)
   }
 
   destroyed () {
-    document.body.removeEventListener('click', this.CloseDialogWhenClickEmptyArea)
     window.removeEventListener('keydown', this.escListener)
   }
 
