@@ -1,18 +1,17 @@
-import Vue from 'vue'
-import Vuetify from 'vuetify/lib/framework'
-import colors from 'vuetify/lib/util/colors'
-
-Vue.use(Vuetify)
-
+import Vue from 'vue';
+import Vuetify from 'vuetify/lib/framework';
+import colors from 'vuetify/lib/util/colors';
+Vue.use(Vuetify);
 export default new Vuetify({
-  theme: {
-    themes: {
-      light: {
-        primary: colors.blue
-      },
-      dark: {
-        primary: colors.blueGrey
-      }
+    theme: {
+        themes: {
+            light: {
+                primary: colors.blue
+            },
+            dark: {
+                primary: colors.blueGrey
+            }
+        }
     }
-  }
-})
+});
+//# sourceMappingURL=vuetify.js.map

@@ -106,88 +106,85 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'Navbar',
-  data () {
-    return {
-      // followSystemDarkMode: true,
-      isDarkTheme: false,
-      searchText: '',
-      username: '',
-      showSidebar: false,
-      currentPage: 0,
-      inAllowBackRoutes: false,
-      inBanMenuRoutes: true,
-      showSearchBox: false,
-      floorToGo: ''
-    }
-  },
-  methods: {
-    searchIt () {
-      this.$router.push({
-        name: 'search',
-        query: { wd: this.searchText }
-      })
-      this.searchText = ''
-    },
-    goFloor () {
-      this.$router.push({
-        name: 'discussion',
-        params: { id: this.floorToGo }
-      })
-      this.floorToGo = ''
-    },
-    back () {
-      this.$router.back()
-    }
-  },
+<script lang='ts'>
+import { Component, Vue, Watch } from 'vue-property-decorator'
 
-  watch: {
-    isDarkTheme () {
-      this.$vuetify.theme.dark = this.isDarkTheme
-      console.log(
-        `%c [切换主题] 当前主题 %c ${
-          this.$vuetify.theme.dark === false ? 'light' : 'dark'
-        } %c`,
-        'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-        'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-        'background:transparent'
-      )
-    },
-    $route: {
-      immediate: true,
-      handler () {
-        this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
-        matchMedia('(prefers-color-scheme: dark)').addEventListener(
-          'change',
-          (event) => {
-            this.isDarkTheme = event.matches
-          }
-        )
-        this.inAllowBackRoutes = (() => {
-          const currentRoute = this.$router.currentRoute.name
-          var i
-          for (i of this.$feConfig.allowBackRoutes) {
-            if (currentRoute === i) {
-              return true
-            }
-          }
-          return false
-        })()
-        this.inBanMenuRoutes = (() => {
-          const currentRoute = this.$router.currentRoute.name
-          var i
-          for (i of this.$feConfig.banMenuRoutes) {
-            if (currentRoute === i) {
-              return true
-            }
-          }
-          return false
-        })()
-        this.username = localStorage.getItem('username')
+@Component
+export default class Navbar extends Vue {
+  public isDarkTheme = false
+  public searchText = ''
+  public username = ''
+  public showSidebar = false
+  public currentPage = 0
+  public inAllowBackRoutes = false
+  public inBanMenuRoutes = true
+  public showSearchBox = false
+  public floorToGo = ''
+
+  public searchIt (): void {
+    this.$router.push({
+      name: 'search',
+      query: { wd: this.searchText }
+    })
+    this.searchText = ''
+  }
+
+  public goFloor (): void {
+    this.$router.push({
+      name: 'discussion',
+      params: { id: this.floorToGo }
+    })
+    this.floorToGo = ''
+  }
+
+  public back (): void {
+    this.$router.back()
+  }
+
+  @Watch('isDarkTheme')
+  isDarkThemeChange () {
+    this.$vuetify.theme.dark = this.isDarkTheme
+    console.log(
+      `%c [切换主题] 当前主题 %c ${
+        this.$vuetify.theme.dark === false ? 'light' : 'dark'
+      } %c`,
+      'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
+      'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
+      'background:transparent'
+    )
+  }
+
+  @Watch('$route', { immediate: true })
+  routeChange () {
+    this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
+    matchMedia('(prefers-color-scheme: dark)').addEventListener(
+      'change',
+      (event) => {
+        this.isDarkTheme = event.matches
       }
-    }
+    )
+    this.inAllowBackRoutes = (() => {
+      const currentRoute = this.$router.currentRoute.name
+      var i
+      for (i of this.$feConfig.allowBackRoutes) {
+        if (currentRoute === i) {
+          return true
+        }
+      }
+      return false
+    })()
+    this.inBanMenuRoutes = (() => {
+      const currentRoute = this.$router.currentRoute.name
+      var i
+      for (i of this.$feConfig.banMenuRoutes) {
+        if (currentRoute === i) {
+          return true
+        }
+      }
+      return false
+    })()
+    const storageUsername = localStorage.getItem('username')
+    this.username = storageUsername || ''
   }
 }
 </script>

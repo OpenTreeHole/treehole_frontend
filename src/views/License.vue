@@ -1,5 +1,5 @@
 <template>
-  <v-container class='licence'>
+  <v-container class='license'>
     <div>
       <p>使用 FDU Hole 意味着你同意以下协议。</p>
       <p>
@@ -8,52 +8,51 @@
       </p>
     </div>
     <v-expansion-panels>
-      <v-expansion-panel v-for='(licence, i) in licences' :key='i'>
+      <v-expansion-panel v-for='(license, i) in licenses' :key='i'>
         <v-expansion-panel-header>
-          {{ licence.title }}
+          {{ license.title }}
         </v-expansion-panel-header>
         <v-expansion-panel-content style='overflow: auto'>
-          <div class='licence-view' v-html='licence.content'></div>
+          <div class='license-view' v-html='license.content'></div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
   </v-container>
 </template>
 
-<script>
-export default {
-  name: 'Licence',
-  data () {
-    return {
-      licences: []
-    }
-  },
+<script lang='ts'>
+import { Component, Vue } from 'vue-property-decorator'
+
+@Component
+export default class License extends Vue {
+  public licenses:Array<any> = []
+
   created () {
-    for (var licence of this.$feConfig.licences) {
-      ;((licence) => {
+    for (const license of this.$feConfig.licenses) {
+      ((license) => {
         this.$axios
           .request({
-            url: licence.link,
+            url: license.link,
             transformRequest: [
-              (data, headers) => {
+              (data: any, headers: { Authorization: any }) => {
                 delete headers.Authorization
                 return data
               }
             ]
           })
-          .then((response) => {
-            this.licences.push({
-              title: licence.name,
+          .then((response: { data: any }) => {
+            this.licenses.push({
+              title: license.name,
               content: this.$marked(response.data)
             })
           })
-          .catch((error) => {
-            this.licences.push({
-              title: licence.name,
+          .catch((error: { message: string }) => {
+            this.licenses.push({
+              title: license.name,
               content: '获取失败：' + error.message
             })
           })
-      })(licence)
+      })(license)
     }
   }
 }
@@ -65,7 +64,7 @@ export default {
   width: 80%;
 }
 
-.licence-view {
+.license-view {
   width: 100%;
   height: 40vh;
 }

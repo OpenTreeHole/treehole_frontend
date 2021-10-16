@@ -87,8 +87,8 @@
                 justify="center"
                 style="margin-bottom: -12px"
               >
-                <v-checkbox v-model="agreeLicences" label="同意"></v-checkbox>
-                <router-link to="/licence">相关协议</router-link>
+                <v-checkbox v-model="agreelicenses" label="同意"></v-checkbox>
+                <router-link to="/license">相关协议</router-link>
               </v-row>
             </div>
 
@@ -97,7 +97,7 @@
                 class="my-4"
                 color="success"
                 block
-                :disabled="!(agreeLicences && valid)"
+                :disabled="!(agreelicenses && valid)"
                 @click="register"
                 >注册
               </v-btn>
@@ -118,7 +118,7 @@ export default {
   data () {
     return {
       // 同意协议
-      agreeLicences: false,
+      agreelicenses: false,
       // 表单信息
       username: '',
       password: '',

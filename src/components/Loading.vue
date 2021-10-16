@@ -24,56 +24,49 @@
   </v-row>
 </template>
 
-<script>
-export default {
-  name: 'loading',
-  props: ['length', 'loadList'],
-  data () {
-    return {
-      // 加载状态
-      hasNext: true,
-      isLoading: true
-    }
-  },
-  methods: {
-    onIntersect (entries, observer) {
-      if (entries[0].isIntersecting) {
-        this.load()
-      }
-      if (entries[0].isIntersecting && entries[0].intersectionRatio >= 0.2) {
-        this.$emit('intersectionChange', true)
-      } else {
-        this.$emit('intersectionChange', false)
-      }
-    },
+<script lang='ts'>
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
 
-    async load () {
-      if (!this.hasNext) {
-        return
-      }
-      this.isLoading = true
-      const beforeLength = this.length
-      await this.loadList()
-      const afterLength = this.length
-      this.isLoading = false
-      if (afterLength < 10) {
-        this.hasNext = false
-        return
-      }
-      if (beforeLength === afterLength) {
-        this.hasNext = false
-        return
-      }
-      this.hasNext = true
-    }
-  },
+@Component
+export default class Loading extends Vue {
+  @Prop({ required: true, type: Number }) length!: number
+  @Prop({ required: true, type: Function }) readonly loadList!: Function
 
-  watch: {
-    length () {
-      this.isLoading = false
-      if (this.length % 10 !== 0) {
-        this.hasNext = false
-      }
+  // 加载状态
+  public hasNext = true
+  public isLoading = true
+
+  public onIntersect (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void {
+    if (entries[0].isIntersecting) {
+      this.load()
+    }
+  }
+
+  public async load () {
+    if (!this.hasNext) {
+      return
+    }
+    this.isLoading = true
+    const beforeLength = this.length
+    await this.loadList()
+    const afterLength = this.length
+    this.isLoading = false
+    if (afterLength < 10) {
+      this.hasNext = false
+      return
+    }
+    if (beforeLength === afterLength) {
+      this.hasNext = false
+      return
+    }
+    this.hasNext = true
+  }
+
+  @Watch('length')
+  lengthChanged () {
+    this.isLoading = false
+    if (this.length % 10 !== 0) {
+      this.hasNext = false
     }
   }
 }

@@ -11,7 +11,11 @@
         <DiscussionCard
           :discussion='discussion'
           :index='index'
-          :dlist='instance'
+          :style-data='styleData[index]'
+          @add-tag='addTag'
+          @change-fold-status='changeFoldStatus'
+          @refresh='refresh'
+          @change-order='this.order=value'
           :activate='toDiscussion'
         ></DiscussionCard
         >
@@ -22,31 +26,25 @@
   </v-container>
 </template>
 
-<script>
-import DiscussionListMixin from '@/mixins/DiscussionListMixin'
+<script lang='ts'>
+import DiscussionListMixin from '@/mixins/DiscussionListMixin.vue'
 import Loading from '@/components/Loading.vue'
 import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
+import { Component } from 'vue-property-decorator'
 
-export default {
-  name: 'DiscussionList',
-  data () {
-    return {
-      instance: this
-    }
-  },
+@Component({
   components: {
     DiscussionCard,
     Loading
-  },
-  methods: {
-    toDiscussion (id) {
-      setTimeout(() => {
-        this.$router.push({
-          path: `/discussion/${id}`
-        })
-      }, 50)
-    }
-  },
-  extends: DiscussionListMixin
+  }
+})
+export default class DiscussionList extends DiscussionListMixin {
+  public toDiscussion (id: number): void {
+    setTimeout(() => {
+      this.$router.push({
+        path: `/discussion/${id}`
+      })
+    }, 50)
+  }
 }
 </script>

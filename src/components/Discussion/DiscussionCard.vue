@@ -15,12 +15,13 @@
         {{ tag.name }}
       </v-chip>
     </v-card-text>
-    <v-card-text class='folded-hint' v-if='discussion.is_folded' color='grey'
-    >该内容已折叠：<span class='clickable' @click='displayIt = !displayIt'>{{
-        displayIt ? '收起' : '展开'
-      }}</span></v-card-text
-    >
-    <div class='post-content' v-show='displayIt'>
+    <v-card-text class='folded-hint' v-if='discussion.is_folded' color='grey'>
+      该内容已折叠：
+      <span class='clickable' @click='switchIfDisplay'>
+        {{ this.displayIt ? '收起' : '展开' }}
+      </span>
+    </v-card-text>
+    <div class='post-content' v-if='this.displayIt'>
       <!-- 内容主体 -->
       <v-card-text
         @click='activate(discussion.id)'
@@ -28,7 +29,7 @@
         v-ripple
       >
         <div
-          v-if="this.dlist.styleData[index]['fold']"
+          v-if='styleData.fold'
           :id="'p' + index"
           class='fold'
         >
@@ -40,8 +41,8 @@
       </v-card-text>
 
       <!-- 展开折叠按钮 -->
-      <div v-if="this.dlist.styleData[index]['lines'] > 3">
-        <div v-if="this.dlist.styleData[index]['fold']">
+      <div v-if='styleData.lines > 3'>
+        <div v-if='styleData.fold'>
           <v-btn
             text
             block
@@ -110,52 +111,64 @@
   </v-card>
 </template>
 
-<script>
+<script lang='ts'>
 import Vue from 'vue'
+import { Component, Emit, Prop } from 'vue-property-decorator'
 
-export default {
-  name: 'DiscussionCard',
-  props: {
-    discussion: {},
-    index: Number,
-    dlist: Vue,
-    activate: Function
-  },
-  data () {
-    return {
-      displayIt: !this.discussion.is_folded
-      // displayIt: true,
-    }
-  },
-  methods: {
-    orderByTimeCreated () {
-      this.dlist.order = 'last_created'
-      this.$store.dispatch('messageSuccess', '已按照发帖时间排序')
-      // 刷新列表
-      this.dlist.refresh()
-    },
-    orderByTimeUpdated () {
-      this.dlist.order = ''
-      this.$store.dispatch('messageSuccess', '已按照最新回复时间排序')
-      // 刷新列表
-      this.dlist.refresh()
-    },
-    addTag (tag) {
-      this.dlist.addTag(tag)
-    },
-    toDiscussion (discussionId) {
-      setTimeout(() => {
-        this.$router.push({
-          path: `/discussion/${discussionId}`
-        })
-      }, 50)
-    },
-    unfold (index) {
-      this.dlist.styleData[index].fold = false
-    },
-    fold (index) {
-      this.dlist.styleData[index].fold = true
-    }
+@Component
+export default class DiscussionCard extends Vue {
+  @Prop({ required: true, type: Object }) readonly discussion: any
+  @Prop({ required: true, type: Number }) index: number
+  @Prop({ required: true, type: Function }) activate: Function
+  @Prop({ required: true, type: Object }) styleData: { fold: boolean, lines: number }
+
+  displayIt: boolean = false
+
+  public orderByTimeCreated (): void {
+    this.changeOrder('last_created')
+    this.$store.dispatch('messageSuccess', '已按照发帖时间排序')
+    // 刷新列表
+    this.refreshDiscussionList()
+  }
+
+  @Emit()
+  public changeOrder (order: string) {
+  }
+
+  @Emit()
+  public changeFoldStatus (e: { index: number, fold: boolean }) {
+    this.styleData.fold = e.fold
+  }
+
+  @Emit('refresh')
+  public refreshDiscussionList (): void {
+  }
+
+  @Emit()
+  public addTag (tag: { color: string, count: number, name: string }): void {
+  }
+
+  public orderByTimeUpdated (): void {
+    this.changeOrder('')
+    this.$store.dispatch('messageSuccess', '已按照最新回复时间排序')
+    // 刷新列表
+    this.refreshDiscussionList()
+  }
+
+  public unfold (index: number): void {
+    this.changeFoldStatus({ index: index, fold: false })
+  }
+
+  public fold (index: number): void {
+    this.changeFoldStatus({ index: index, fold: true })
+  }
+
+  public switchIfDisplay (): void {
+    this.displayIt = !this.displayIt
+  }
+
+  created () {
+    this.displayIt = !this.discussion.is_folded
   }
 }
 </script>

@@ -207,26 +207,27 @@
   </v-container>
 </template>
 
-<script>
+<script lang='ts'>
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import Message from '@/components/Message.vue'
-import DiscussionMixin from '@/mixins/DiscussionMixin'
+import DiscussionMixin from '@/mixins/DiscussionMixin.vue'
+import { Component } from 'vue-property-decorator'
 
-export default {
-  extends: DiscussionMixin,
+@Component({
   components: {
     Loading,
     Editor,
     Message
-  },
-  computed: {
-    discussionId () {
-      return this.$route.params.id
-    }
-  },
+  }
+})
+export default class Discussion extends DiscussionMixin {
+  public get computedDiscussionId (): number {
+    return parseInt(this.$route.params.id)
+  }
+
   created () {
-    this.getDiscussion(this.discussionId)
+    this.getDiscussion(this.computedDiscussionId)
   }
 }
 </script>

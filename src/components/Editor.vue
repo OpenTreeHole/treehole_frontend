@@ -7,44 +7,38 @@
   </div>
 </template>
 
-<script>
+<script lang='ts'>
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
+import { Component, Prop, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'editor',
-  props: ['contentName'],
+@Component
+export default class Editor extends Vue {
+  @Prop({ type: String }) contentName: string
 
-  data () {
-    return {
-      editor: null
+  public editor: Vditor
+
+  public validate (): boolean {
+    // if (!this.content || !this.content.replace(/<.?((p)|(br))>|\s+/g, '')) {
+    if (!this.getContent()) {
+      this.$emit('error', '内容不能为空')
+      return false
+    } else {
+      return true
     }
-  },
+  }
 
-  methods: {
-    validate () {
-      // if (!this.content || !this.content.replace(/<.?((p)|(br))>|\s+/g, '')) {
-      if (!this.getContent()) {
-        this.$emit('error', '内容不能为空')
-        return false
-      } else {
-        return true
-      }
-    },
-    test () {
-      console.log(this.getHTML())
-    },
-    getContent () {
-      return this.editor.getValue() // Markdown
-      // return this.editor.getHTML()  HTML
-    },
-    setContent (content) {
-      this.editor.setValue(content)
-    }
-  },
+  public getContent (): string {
+    return this.editor.getValue() // Markdown
+    // return this.editor.getHTML()  HTML
+  }
 
-  computed: {},
+  public setContent (content: string): void {
+    this.editor.setValue(content)
+  }
+
   mounted () {
+    const storageToken = localStorage.getItem('token')
     this.editor = new Vditor(this.contentName, {
       height: 360,
       placeholder: '说些什么......',
@@ -73,7 +67,7 @@ export default {
       upload: {
         accept: 'image/*',
         url: 'https://www.fduhole.com/api/images/',
-        headers: { Authorization: localStorage.getItem('token') },
+        headers: { Authorization: storageToken || '' },
         multiple: false,
         fieldName: 'img',
         linkToImgCallback () {
@@ -93,7 +87,7 @@ export default {
         // this.editor.setValue("hello,Vditor+Vue!")
       }
     })
-  },
+  }
 
   created () {
   }

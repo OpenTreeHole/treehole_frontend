@@ -139,22 +139,27 @@
   </v-col>
 </template>
 
-<script>
+<script lang='ts'>
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import DiscussionMixin from '@/mixins/DiscussionMixin'
+import DiscussionMixin from '@/mixins/DiscussionMixin.vue'
+import { Component, Prop } from 'vue-property-decorator'
 
-export default {
-  extends: DiscussionMixin,
-  props: {
-    discussionId: Number
-  },
+@Component({
   components: {
     Loading,
     Editor
-  },
+  }
+})
+export default class DiscussionCol extends DiscussionMixin {
+  @Prop({ type: Number }) private discussionId: number
+
+  public get computedDiscussionId (): number {
+    return this.discussionId
+  }
+
   created () {
-    this.getDiscussion(this.discussionId)
+    this.getDiscussion(this.computedDiscussionId)
   }
 }
 </script>

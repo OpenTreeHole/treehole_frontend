@@ -25,49 +25,47 @@
   </v-container>
 </template>
 
-<script>
+<script lang='ts'>
 import Message from '@/components/Message.vue'
 import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
+import { Component, Watch, Vue } from 'vue-property-decorator'
 
-export default {
-  name: 'Me',
+@Component({
   components: {
     Message,
     DiscussionCard
-  },
-  data () {
-    return {
-      profile: {}
-    }
-  },
-  methods: {
-    getUserInfo () {
-      this.$axios
-        .get('/profile/')
-        .then((r) => {
-          this.profile = r.data
-        })
-        .catch((e) => {
-          this.$store.dispatch('messageError', e.r.data.msg)
-        })
-    },
-    logout () {
-      localStorage.clear()
-      console.log('111111111')
-      this.$feUtils.reloadAll()
-      console.log('2222222222222222')
-    },
-    changePassWd () {
-      alert('还没写完')
-    }
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      handler () {
-        this.getUserInfo()
-      }
-    }
+  }
+})
+export default class Me extends Vue {
+  public profile = {}
+
+  public getUserInfo (): void {
+    this.$axios
+      .get('/profile/')
+      .then((r) => {
+        this.profile = r.data
+      })
+      .catch((e) => {
+        this.$store.dispatch('messageError', e.r.data.msg)
+      })
+  }
+
+  public logout (): void {
+    localStorage.clear()
+    console.log('111111111')
+    this.$feUtils.reloadAll()
+    console.log('2222222222222222')
+  }
+
+  public changePassWd (): void {
+    alert('还没写完')
+  }
+
+  @Watch('$route', {
+    immediate: true
+  })
+  routeChanged () {
+    this.getUserInfo()
   }
 }
 </script>

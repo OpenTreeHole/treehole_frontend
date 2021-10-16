@@ -43,7 +43,7 @@
             </div>
 
             <div>
-              <v-btn text color='primary' href='#/licence'
+              <v-btn text color='primary' href='#/license'
               >登录意味着你同意这些协议
               </v-btn
               >
@@ -67,47 +67,53 @@
   </v-container>
 </template>
 
-<script>
+<script lang='ts'>
 import Message from '@/components/Message.vue'
+import { Component, Vue } from 'vue-property-decorator'
 
-export default {
-  components: { Message },
-  name: 'Login',
-  data () {
-    return {
-      alert: false,
-      valid: true,
-      username: '',
-      password: '',
-      nameRules: [
-        (v) => !!v || '用户名不能为空',
-        (v) => v.length <= 16 || '用户名不能超过16字符'
-      ],
-      passwordRules: [
-        (v) => !!v || '密码不能为空',
-        (v) => v.length <= 32 || '密码不能超过32字符',
-        (v) => v.length >= 8 || '密码不能少于8字符'
-      ]
-    }
-  },
-  methods: {
-    login () {
-      this.$refs.form.validate()
-      this.$axios
-        .post('login/', {
-          username: this.username,
-          password: this.password
-        })
-        .then((response) => {
-          localStorage.setItem('token', 'Token ' + response.data.token)
-          localStorage.setItem('username', this.username)
-          this.$router.replace('/home')
-        })
-        .catch(() => {
-          this.valid = false
-          this.$store.dispatch('messageError', '用户名或密码错误')
-        })
-    }
+@Component({
+  components: { Message }
+})
+export default class Login extends Vue {
+  public alert = false
+
+  public valid = true
+
+  public username = ''
+
+  public password = ''
+
+  public nameRules = [
+    (v: any) => !!v || '用户名不能为空',
+    (v: any) => v.length <= 16 || '用户名不能超过16字符'
+  ]
+
+  public passwordRules = [
+    (v: any) => !!v || '密码不能为空',
+    (v: any) => v.length <= 32 || '密码不能超过32字符',
+    (v: any) => v.length >= 8 || '密码不能少于8字符'
+  ]
+
+  $refs: {
+    form: HTMLFormElement
+  }
+
+  public login (): void {
+    this.$refs.form.validate()
+    this.$axios
+      .post('login/', {
+        username: this.username,
+        password: this.password
+      })
+      .then((response) => {
+        localStorage.setItem('token', 'Token ' + response.data.token)
+        localStorage.setItem('username', this.username)
+        this.$router.replace('/home')
+      })
+      .catch(() => {
+        this.valid = false
+        this.$store.dispatch('messageError', '用户名或密码错误')
+      })
   }
 }
 </script>

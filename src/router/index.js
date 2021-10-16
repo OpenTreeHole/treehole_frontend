@@ -5,14 +5,14 @@ import Home from '@/views/Home.vue'
 import Register from '@/views/Register.vue'
 import Discussion from '@/views/Discussion.vue'
 import About from '@/views/About.vue'
-import Licence from '@/views/Licence.vue'
+import license from '@/views/License.vue'
 import Search from '@/views/Search.vue'
 import Me from '@/views/Me.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/licence', meta: { title: '协议' }, component: Licence, name: 'licence' },
+  { path: '/license', meta: { title: '协议' }, component: license, name: 'license' },
   { path: '/home', meta: { title: '首页' }, component: Home, name: 'home' },
   { path: '/login', meta: { title: '登录' }, component: Login, name: 'login' },
   { path: '/', redirect: '/home' },
@@ -29,7 +29,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta.title) { document.title = to.meta.title }
-  if (to.path === '/login' || to.path === '/register' || to.path === '/licence') return next()
+  if (to.path === '/login' || to.path === '/register' || to.path === '/license') return next()
   const token = localStorage.getItem('token')
   if (!token) return next('/login')
   next()

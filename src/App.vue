@@ -42,7 +42,6 @@ export default {
   },
 
   created () {
-    console.log(1)
     document.addEventListener('onlined', (event) => {
       this.$store.dispatch('messageSuccess', event.detail)
     })
