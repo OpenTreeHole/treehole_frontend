@@ -9,11 +9,7 @@
           :discussion='discussion'
           :index='index'
           :activate='activate'
-          :style-data='styleData[index]'
-          @add-tag='addTag'
-          @change-fold-status='changeFoldStatus'
           @refresh='refresh'
-          @change-order='this.order=value'
         />
       </v-col>
     </v-row>
@@ -53,10 +49,13 @@ export default class DiscussionList extends DiscussionListMixin {
     type: Function
   }) readonly activate: Function | undefined
 
-  public height (): number {
-    const discussionListElement = document.getElementById('discussionList')
-    if (!discussionListElement) return 0
-    return parseInt(window.getComputedStyle(discussionListElement).height)
+  /**
+   * Calculate the height of the hole list.
+   */
+  public getHeight (): number {
+    const holeListElement = document.getElementById('discussionList')
+    if (!holeListElement) return 0
+    return parseInt(window.getComputedStyle(holeListElement).height)
   }
 }
 </script>

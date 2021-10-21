@@ -21,6 +21,7 @@
 </template>
 
 <script lang='ts'>
+import marked from 'marked'
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component
@@ -43,7 +44,7 @@ export default class License extends Vue {
           .then((response: { data: any }) => {
             this.licenses.push({
               title: license.name,
-              content: this.$marked(response.data)
+              content: marked(response.data)
             })
           })
           .catch((error: { message: string }) => {

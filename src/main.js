@@ -5,7 +5,6 @@ import router from './router';
 import axios from 'axios';
 import VueCookies from 'vue-cookies';
 import vuetify from './plugins/vuetify';
-import VueQuillEditor from 'vue-quill-editor';
 import marked from 'marked';
 import plugins from './components/plugins';
 import 'viewerjs/dist/viewer.css';
@@ -32,7 +31,6 @@ axios.interceptors.request.use(config => {
 Vue.prototype.$axios = axios;
 Vue.use(VueCookies);
 Vue.use(plugins);
-Vue.use(VueQuillEditor /* { default global options } */);
 Vue.use(Viewer);
 Vue.filter('plainText', function (html) {
     return html.replace(/<img.*?>/g, '[图片]').replace(/<.*?>/g, ' ');
@@ -40,7 +38,7 @@ Vue.filter('plainText', function (html) {
 Vue.filter('timeDifference', function (datestr) {
     const date = new Date(datestr);
     const now = new Date();
-    let seconds = Math.floor((now - date) / 1000);
+    let seconds = now.getSeconds() - date.getSeconds();
     if (seconds < 0) {
         seconds = 0;
     }

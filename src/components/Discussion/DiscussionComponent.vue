@@ -1,5 +1,5 @@
 <template>
-  <v-container style='overflow: visible'>
+  <v-container v-click-outside='()=>deactivate(displayCardId)' style='overflow: visible'>
     <v-row justify='center' class='ma-0'>
       <v-col class='mb-5 transrow'
              :class='isActive+" "+isEnd+" "+isStatic'
@@ -9,17 +9,15 @@
              @wheel='ScrollDiscussionListWhenActive'
       >
         <DiscussionList
-          :activate='Activate'
-          :api='api'
+          :activate='openHole'
           ref='discussionList'
-          @add-tag='addTag'
         />
       </v-col>
       <v-col v-if='displayCardId!==-1 && showDiscussion' class='mb-5' cols='5' />
       <Discussion
         v-if='displayCardId!==-1 && showDiscussion'
         :key='displayCardId'
-        :discussionId='displayCardId'
+        :wrapped-hole='displayHole'
       />
     </v-row>
   </v-container>
@@ -30,7 +28,8 @@ import DiscussionList from '@/components/Discussion/DiscussionList.vue'
 import Discussion from '@/components/Discussion/DiscussionCol.vue'
 
 import { gsap } from 'gsap'
-import { Component, Emit, Prop, Vue, Watch } from 'vue-property-decorator'
+import { Component, Emit, Vue, Watch } from 'vue-property-decorator'
+import { WrappedHole } from '@/components/Discussion/hole'
 
 @Component({
   components: {
@@ -39,7 +38,6 @@ import { Component, Emit, Prop, Vue, Watch } from 'vue-property-decorator'
   }
 })
 export default class DiscussionComponent extends Vue {
-  @Prop({ required: true, type: String }) api: string
   public isActive = 'right'
   public isEnd = 'end'
   public isStatic = ''
@@ -49,7 +47,7 @@ export default class DiscussionComponent extends Vue {
   public marginTopY = 0
   public viewport = 0
   public isLoadingVisible = false
-  public instance = this
+  public displayHole: WrappedHole | null = null
 
   $refs: {
     discussionList: DiscussionList
@@ -67,11 +65,12 @@ export default class DiscussionComponent extends Vue {
     this.$refs.discussionList.refresh()
   }
 
-  @Emit()
-  public addTag (tag: { color: string, count: number, name: string }) {
+  public openHole (wrappedHole: WrappedHole): void {
+    this.displayHole = wrappedHole
+    this.activate(wrappedHole.hole.holeId)
   }
 
-  public Activate (id: number): void {
+  public activate (id: number): void {
     if (this.isActive === 'right') {
       this.isActive = 'left'
       this.isEnd = ''
@@ -107,7 +106,7 @@ export default class DiscussionComponent extends Vue {
     const ratio = 0.7
     this.marginTopY = (this.marginTopY > -e.deltaY * ratio ? this.marginTopY + e.deltaY * ratio : 0)
 
-    const height = this.$refs.discussionList.height()
+    const height = this.$refs.discussionList.getHeight()
 
     // console.log('1: ' + this.marginTopY + ';2: ' + this.viewport + ';3: ' + height)
     if (this.marginTopY + this.viewport > height + 300) {
@@ -122,29 +121,10 @@ export default class DiscussionComponent extends Vue {
     }
   }
 
-  public DeActivate (id: number): void {
+  public deactivate (id: number): void {
     if (this.displayCardId !== -1) {
-      this.Activate(id)
+      this.activate(id)
     }
-  }
-
-  public DeActivateWhenClickEmptyArea (e: Event): void {
-    let el = e.target as HTMLElement
-    while (el && el !== document.body) {
-      if (el.id === 'header' || el.id === 'footer') {
-        return
-      }
-      if (el.tagName.toUpperCase() === 'DIV' && (
-        el.id === 'transrow' ||
-        el.id === 'discol' ||
-        el.classList.contains('v-dialog__content') ||
-        el.classList.contains('v-overlay')
-      )) {
-        return
-      }
-      el = el.parentNode as HTMLElement
-    }
-    this.DeActivate(this.displayCardId)
   }
 
   mounted () {
@@ -157,12 +137,11 @@ export default class DiscussionComponent extends Vue {
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight
     })
-    document.body.addEventListener('click', this.DeActivateWhenClickEmptyArea)
   }
 
   @Watch('showDiscussion')
   @Emit()
-  showDiscussionChanged (val: boolean) {
+  showDiscussionChanged (_val: boolean) {
   }
 
   @Watch('marginTopY')

@@ -1,6 +1,6 @@
 <template>
   <v-container fill-height>
-    <message/>
+    <message />
     <v-row align='center' justify='center'>
       <v-col cols='12' sm='8' md='6' lg='4' class='text-center'>
         <v-card class='py-8' elevation='4'>
@@ -15,16 +15,6 @@
               {{ alertMsg }}
             </v-alert>
             <div class='pl-7 pr-10'>
-              <v-text-field
-                v-model='username'
-                label='用户名'
-                prepend-icon='mdi-account'
-                :error-messages="errorMsg['username']"
-                :clearable='!valid'
-                :counter='16'
-                :rules='notEmptyRules'
-              />
-
               <v-text-field
                 v-model='email'
                 label='edu邮箱'
@@ -119,7 +109,6 @@ export default class Register extends Vue {
   // 同意协议
   public agreelicenses: boolean = false
   // 表单信息
-  public username: string = ''
   public password: string = ''
   public password2: string = ''
   public email: string = ''
@@ -133,11 +122,9 @@ export default class Register extends Vue {
   public alertMsg: string = ''
   public alertType: string = 'info'
   public errorMsg: {
-    username: string
     email: string
     password: string
   } = {
-    username: '',
     email: '',
     password: ''
   }
@@ -165,39 +152,11 @@ export default class Register extends Vue {
     form: HTMLFormElement
   }
 
-  public checkUsername (): void {
-    if (!this.username) {
-      this.errorMsg.username = '用户名不能为空'
-    } else if (this.username.length > 16) {
-      this.errorMsg.username = '用户名不能超过16字符'
-    } else if (this.username.length < 3) {
-      this.errorMsg.username = '用户名不能少于3字符'
-    } else {
-      this.$axios
-        .get('register/', { params: { username: this.username } })
-        .then((response) => {
-          if (response.data.data !== 0) {
-            this.errorMsg.username = response.data.msg
-          } else {
-            this.errorMsg.username = ''
-          }
-        })
-    }
-  }
-
   public checkEmail (): void {
     if (!/^[0-9]{11}@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
       this.errorMsg.email = '@fudan.edu.cn'
     } else {
-      this.$axios
-        .get('register/', { params: { email: this.email } })
-        .then((response) => {
-          if (response.data.data !== 0) {
-            this.errorMsg.email = response.data.msg
-          } else {
-            this.errorMsg.email = ''
-          }
-        })
+      this.errorMsg.email = ''
     }
   }
 
@@ -211,23 +170,22 @@ export default class Register extends Vue {
 
   public sendCode (): void {
     this.sendButtonChangeStatus()
-    if (!this.username || !this.email) {
+    if (!this.email) {
       this.$store.dispatch('messageError', '用户名与邮箱不能为空')
       return
     }
     this.$store.dispatch('messageInfo', '验证码已发送, 请检查邮件以继续')
     this.$axios
-      .get('register/', {
+      .get('/verify/email', {
         params: {
-          username: this.username,
           email: this.email
         }
       })
       .then((response) => {
-        if (response.data.data !== 0) {
-          this.$store.dispatch('messageError', response.data.msg)
+        if (response.data.message === '邮箱不在白名单内！') {
+          this.$store.dispatch('messageError', response.data.message)
         } else {
-          this.$store.dispatch('messageSuccess', response.data.msg)
+          this.$store.dispatch('messageSuccess', response.data.message)
         }
       })
   }
@@ -248,50 +206,28 @@ export default class Register extends Vue {
   public register (): void {
     if (this.$refs.form.validate()) {
       this.$axios
-        .post('register/', {
-          username: this.username,
+        .post('/register', {
           email: this.email,
           password: this.password,
-          code: this.code
+          verification: parseInt(this.code)
         })
         .then((response) => {
-          if (response.data.data === 0) {
+          if (response.data.message === '注册成功') {
             // 注册成功后直接跳转到主页面
-            this.$store.dispatch('messageSuccess', '注册成功，跳转至登录页面......')
+            this.$store.dispatch('messageSuccess', '注册成功！')
             localStorage.setItem('newcomer', 'true')
-            this.login()
+            localStorage.setItem('token', 'token ' + response.data.token)
+            setTimeout(() => {
+              this.$router.replace('/home')
+            }, 1000)
           } else {
-            this.$store.dispatch('messageError', response.data.msg)
+            this.$store.dispatch('messageError', response.data.message)
           }
         })
         .catch(() => {
           this.$store.dispatch('messageError', '网络错误')
         })
     }
-  }
-
-  public login (): void {
-    this.$axios
-      .post('login/', {
-        username: this.username,
-        password: this.password
-      })
-      .then((response) => {
-        localStorage.setItem('token', 'Token ' + response.data.token)
-        localStorage.setItem('username', this.username)
-        setTimeout(() => {
-          this.$router.replace('/home')
-        }, 1000)
-      })
-      .catch(() => {
-        this.valid = false
-        this.$store.dispatch('messageError', '用户名或密码错误')
-      })
-  }
-
-  @Watch('username')
-  usernameChanged () {
-    this.debouncedCheckUsername()
   }
 
   @Watch('email')
@@ -305,7 +241,6 @@ export default class Register extends Vue {
   }
 
   created () {
-    this.debouncedCheckUsername = debounce(this.checkUsername, 500)
     this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }

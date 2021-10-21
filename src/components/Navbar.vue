@@ -1,6 +1,6 @@
 <template>
   <div class='navbar'>
-    <v-system-bar app color='primary'></v-system-bar>
+<!--    <v-system-bar app color='primary'></v-system-bar>-->
     <v-app-bar app dark color='primary' dense flat style='float: top'>
       <v-app-bar-nav-icon
         v-if='!inBanMenuRoutes'
@@ -18,7 +18,7 @@
 
     <!-- 侧栏抽屉 -->
     <v-navigation-drawer app v-model='showSidebar'>
-      <div class='iphone-fitter'></div>
+      <div class='iphone-fitter'/>
 
       <v-list-item color='primary'>
         <v-list-item-content>
@@ -39,16 +39,16 @@
             :disabled='i === currentPage'
           >
             <v-list-item-icon>
-              <v-icon v-text='item.icon'></v-icon>
+              <v-icon v-text='item.icon'/>
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title v-text='item.title'></v-list-item-title>
+              <v-list-item-title v-text='item.title'/>
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
       </v-list>
 
-      <v-divider></v-divider>
+      <v-divider/>
       <v-list style='padding: 5px'>
         <!-- 搜索 -->
         <v-list-item>
@@ -97,10 +97,9 @@
 
       <!-- 侧栏底部工具按钮 -->
       <div class='drawer-bottom-container'>
-        <v-btn fab fixed bottom color='primary' @click='$feUtils.reloadAll()'
-        >重载
-        </v-btn
-        >
+        <v-btn fab fixed bottom color='primary' @click='$feUtils.reloadAll()'>
+          重载
+        </v-btn>
       </div>
     </v-navigation-drawer>
   </div>
@@ -114,7 +113,7 @@ export default class Navbar extends Vue {
   public isDarkTheme = false
   public searchText = ''
   public username = ''
-  public showSidebar = false
+  public showSidebar = true
   public currentPage = 0
   public inAllowBackRoutes = false
   public inBanMenuRoutes = true

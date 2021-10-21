@@ -191,7 +191,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
-          <v-btn color='primary' text :disabled='!valid' @click='addPost'>
+          <v-btn color='primary' text :disabled='!valid' @click='addFloor'>
             发送
           </v-btn>
         </v-card-actions>
