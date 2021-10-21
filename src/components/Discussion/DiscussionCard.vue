@@ -94,7 +94,7 @@
         <span style='float: inherit'>{{ discussion.hole.timeUpdated | timeDifference }}</span>
         <span style='float: right'>
           <v-icon small>mdi-message-processing-outline</v-icon>
-          {{ discussion.hole.reply - 1 }}
+          {{ discussion.hole.reply }}
         </span>
       </v-card-text>
     </div>

@@ -248,7 +248,7 @@ export default class Home extends Vue {
         .post('/holes', {
           content: this.$refs.editor.getContent(),
           division_id: 1,
-          tags: this.selectedTags.map(v => v.name)
+          tag_names: this.selectedTags.map(v => v.name)
         })
         .then((response) => {
           console.log(response.data)

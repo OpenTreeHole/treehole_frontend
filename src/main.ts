@@ -50,7 +50,7 @@ Vue.filter('timeDifference', function (datestr: string) {
   const date = new Date(datestr)
   const now = new Date()
 
-  let seconds = (now.getTime() - date.getTime()) / 1000
+  let seconds = ((now.getTime() - date.getTime()) / 1000)
 
   if (seconds < 0) {
     seconds = 0

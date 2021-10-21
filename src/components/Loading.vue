@@ -51,10 +51,6 @@ export default class Loading extends Vue {
     await this.loadList()
     const afterLength = this.length
     this.isLoading = false
-    if (afterLength < 10) {
-      this.hasNext = false
-      return
-    }
     if (beforeLength === afterLength) {
       this.hasNext = false
       return
@@ -65,9 +61,6 @@ export default class Loading extends Vue {
   @Watch('length')
   lengthChanged () {
     this.isLoading = false
-    if (this.length % 10 !== 0) {
-      this.hasNext = false
-    }
   }
 }
 </script>

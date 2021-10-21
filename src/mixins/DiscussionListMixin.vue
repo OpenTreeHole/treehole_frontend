@@ -17,7 +17,7 @@ export default class DiscussionListMixin extends Vue {
   /**
    * Clear the hole list and reload.
    */
-  public refresh (): void {
+  public refresh(): void {
     this.discussions = []
     this.startTime = new Date()
     this.getDiscussions()
@@ -26,7 +26,7 @@ export default class DiscussionListMixin extends Vue {
   /**
    * Calculate the number of the total lines of the display (i.e. the first floor) of each hole.
    */
-  public calculateLines (): void {
+  public calculateLines(): void {
     for (let i = 0; i < this.discussions.length; i++) {
       const element = document.getElementById('p' + i)
       const totalHeight = element ? element.scrollHeight : 0
@@ -34,7 +34,7 @@ export default class DiscussionListMixin extends Vue {
     }
   }
 
-  public getDiscussions () {
+  public getDiscussions() {
     return this.$axios
       .get('holes', {
         params: {
@@ -46,19 +46,21 @@ export default class DiscussionListMixin extends Vue {
       })
       .then((response) => {
         response.data.forEach((holeItem: any) => {
+
+          if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
           const hole = new WrappedHole(camelizeKeys(holeItem))
           this.discussions.push(hole)
         })
         this.startTime = new Date(this.discussions[this.discussions.length - 1].hole.timeUpdated)
       })
       .catch((error) => {
-        if (error.response === undefined) this.$store.dispatch('messageError', JSON.stringify(error))
+        if (error.response === undefined) this.$store.dispatch('messageError', 'data: ' + JSON.stringify(error))
         else if (error.response.data) this.$store.dispatch('messageError', error.response.data.msg)
       })
   }
 
   @Watch('discussions')
-  discussionsChanged () {
+  discussionsChanged() {
     setTimeout(() => {
       const element = document.getElementById('p1')
       this.lineHeight = (element ? parseInt(
@@ -68,13 +70,13 @@ export default class DiscussionListMixin extends Vue {
     }, 100)
   }
 
-  mounted () {
+  mounted() {
     window.onresize = () => {
       this.debouncedCalculateLines()
     }
   }
 
-  created () {
+  created() {
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
   }
 }
