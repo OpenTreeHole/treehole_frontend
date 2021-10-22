@@ -13,11 +13,12 @@
 
 <script lang='ts'>
 import PostList from '@/components/PostList.vue'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: { PostList }
 })
-export default class Search extends Vue {
+export default class Search extends BaseComponentOrView {
 }
 </script>

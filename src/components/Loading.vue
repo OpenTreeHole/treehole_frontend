@@ -25,10 +25,11 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import { Component, Prop, Watch } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class Loading extends Vue {
+export default class Loading extends BaseComponentOrView {
   @Prop({ required: true, type: Number }) length!: number
   @Prop({ required: true, type: Function }) readonly loadList!: Function
 

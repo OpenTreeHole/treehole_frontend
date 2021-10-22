@@ -19,13 +19,13 @@
 import debounce from 'lodash.debounce'
 
 import PostCard from '@/components/PostCard.vue'
-import Vue from 'vue'
 import { Component, Prop, Watch } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: { PostCard }
 })
-export default class PostList extends Vue {
+export default class PostList extends BaseComponentOrView {
   @Prop({ required: true, type: String }) api: string
   @Prop(Object) requestParams: { search: string }
   // 回复列表
@@ -57,7 +57,7 @@ export default class PostList extends Vue {
         this.posts.push.apply(this.posts, response.data)
       })
       .catch((error) => {
-        this.$store.dispatch('messageError', error.response.data.msg)
+        this.messageError(error.response.data.msg)
       })
   }
 

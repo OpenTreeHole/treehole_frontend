@@ -10,10 +10,11 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class Message extends Vue {
+export default class Message extends BaseComponentOrView {
   public alert = false
   public type = 'info'
   public message = ''
@@ -21,7 +22,7 @@ export default class Message extends Vue {
   public timeout = '2000'
 
   mounted () {
-    this.$store.commit('setMessageComponent', this)
+    this.setMessageComponent(this)
   }
 
   public success (message: string): void {

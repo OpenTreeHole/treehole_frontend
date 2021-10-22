@@ -1,111 +1,113 @@
 <!--suppress HtmlUnknownAttribute -->
 <template>
   <v-col class='mb-5' cols='6' id='discol'>
-    <transition-group name='slide-fade'>
-      <v-row
-        v-for='(floor, index) in floors'
-        :key='index'
-        justify='center'
-        align='start'
-        v-viewer
-      >
-        <v-col>
-          <v-card :id='index'>
-            <v-card-text class='pb-1 pt-2 text-body-2'>
-              <p>
-                {{ floor.anonyname }}
-                <span style='float: right'>
+    <v-container class='pa-0'>
+      <transition-group name='slide-fade'>
+        <v-row
+          v-for='(floor, index) in floors'
+          :key='index'
+          justify='center'
+          align='start'
+          v-viewer
+        >
+          <v-col>
+            <v-card :id='index'>
+              <v-card-text class='pb-1 pt-2 text-body-2'>
+                <p>
+                  {{ floor.anonyname }}
+                  <span style='float: right'>
                 {{ floor.timeUpdated | timeDifference }}
               </span>
-              </p>
-            </v-card-text>
+                </p>
+              </v-card-text>
 
-            <v-card-text class='py-0'>
-              <!-- 正文部分 -->
-              <div
-                :index='index'
-                class='floor-body rich-text text--primary ma-0 text-body-1'
-                v-html='floor.content'
-              ></div>
-            </v-card-text>
+              <v-card-text class='py-0'>
+                <!-- 正文部分 -->
+                <div
+                  :index='index'
+                  class='floor-body rich-text text--primary ma-0 text-body-1'
+                  v-html='floor.content'
+                ></div>
+              </v-card-text>
 
-            <!-- 脚标 -->
-            <v-card-text class='d-flex justify-space-between text-body-2 pb-2'>
-              <div>{{ index }}L</div>
-              <v-btn
-                x-small
-                text
-                @click="reply(floor.floorId)"
-                class='grey--text'
-                style='padding-bottom: -10px'
-              >
-                <v-icon>mdi-reply-outline</v-icon>
-                回复
-              </v-btn>
-              <v-btn
-                x-small
-                text
-                @click='report(floor.floorId)'
-                class='grey--text'
-                style='padding-bottom: -10px'
-              >
-                <v-icon>mdi-alert-outline</v-icon>
-                举报
-              </v-btn>
-            </v-card-text>
-          </v-card>
-        </v-col>
-      </v-row>
-    </transition-group>
+              <!-- 脚标 -->
+              <v-card-text class='d-flex justify-space-between text-body-2 pb-2'>
+                <div>{{ index }}L</div>
+                <v-btn
+                  x-small
+                  text
+                  @click="reply(floor.floorId)"
+                  class='grey--text'
+                  style='padding-bottom: -10px'
+                >
+                  <v-icon>mdi-reply-outline</v-icon>
+                  回复
+                </v-btn>
+                <v-btn
+                  x-small
+                  text
+                  @click='report(floor.floorId)'
+                  class='grey--text'
+                  style='padding-bottom: -10px'
+                >
+                  <v-icon>mdi-alert-outline</v-icon>
+                  举报
+                </v-btn>
+              </v-card-text>
+            </v-card>
+          </v-col>
+        </v-row>
+      </transition-group>
 
-    <!-- 弹出式表单及浮动按钮 -->
+      <!-- 弹出式表单及浮动按钮 -->
 
-    <v-dialog v-model='dialog' persistent max-width='600px'>
-      <!-- 浮动按钮 -->
-      <template v-slot:activator='{ on, attrs }'>
-        <v-btn fab color='secondary' class='fixed' v-bind='attrs' v-on='on'>
-          <v-icon>mdi-send</v-icon>
-        </v-btn>
-      </template>
-
-      <v-card>
-        <v-card-title>
-          <span class='headline'>发表回复</span>
-        </v-card-title>
-
-        <v-card-text>
-          <!-- 回复内容 -->
-          <Mention :mention-floor='replyFloor'/>
-
-          <v-form ref='form' v-model='valid' lazy-validation>
-            <!-- 回贴表单 -->
-
-            <!-- 富文本输入框 -->
-            <editor
-              ref='editor'
-              :contentName='contentName'
-              @error='editorError'
-            ></editor>
-          </v-form>
-        </v-card-text>
-
-        <!-- 下方按钮 -->
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
-          <v-btn color='primary' text :disabled='!valid' @click='addFloor'>
-            发送
+      <v-dialog v-model='dialog' persistent max-width='600px'>
+        <!-- 浮动按钮 -->
+        <template v-slot:activator='{ on, attrs }'>
+          <v-btn fab color='secondary' class='fixed' v-bind='attrs' v-on='on'>
+            <v-icon>mdi-send</v-icon>
           </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        </template>
 
-    <!-- 载入中信息 -->
-    <loading
-      ref='loading'
-      :length='floors.length'
-      :loadList='getPosts'
-    ></loading>
+        <v-card>
+          <v-card-title>
+            <span class='headline'>发表回复</span>
+          </v-card-title>
+
+          <v-card-text>
+            <!-- 回复内容 -->
+            <Mention :mention-floor='replyFloor'/>
+
+            <v-form ref='form' v-model='valid' lazy-validation>
+              <!-- 回贴表单 -->
+
+              <!-- 富文本输入框 -->
+              <editor
+                ref='editor'
+                :contentName='contentName'
+                @error='editorError'
+              ></editor>
+            </v-form>
+          </v-card-text>
+
+          <!-- 下方按钮 -->
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
+            <v-btn color='primary' text :disabled='!valid' @click='addFloor'>
+              发送
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- 载入中信息 -->
+      <loading
+        ref='loading'
+        :length='floors.length'
+        :loadList='getPosts'
+      ></loading>
+    </v-container>
   </v-col>
 </template>
 

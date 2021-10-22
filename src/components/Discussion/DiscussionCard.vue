@@ -102,12 +102,12 @@
 </template>
 
 <script lang='ts'>
-import Vue from 'vue'
 import { Component, Emit, Prop } from 'vue-property-decorator'
 import { WrappedHole } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class DiscussionCard extends Vue {
+export default class DiscussionCard extends BaseComponentOrView {
   @Prop({ required: true, type: WrappedHole }) readonly discussion: WrappedHole
   @Prop({ required: true, type: Number }) index: number
   @Prop({ required: true, type: Function }) activate: Function

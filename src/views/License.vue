@@ -22,10 +22,11 @@
 
 <script lang='ts'>
 import marked from 'marked'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class License extends Vue {
+export default class License extends BaseComponentOrView {
   public licenses:Array<any> = []
 
   created () {

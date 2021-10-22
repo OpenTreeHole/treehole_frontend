@@ -1,4 +1,4 @@
-import { camelCase } from 'lodash';
+import { camelCase, assign, pick, keys } from 'lodash';
 export default {
     reloadAll() {
         const form = document.createElement('form');
@@ -22,5 +22,9 @@ export const camelizeKeys = (obj) => {
         }), {});
     }
     return obj;
+};
+export const reduceKeys = (reduced, before) => {
+    assign(reduced, pick(before, keys(reduced)));
+    return reduced;
 };
 //# sourceMappingURL=utils.js.map

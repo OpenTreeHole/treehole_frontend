@@ -60,10 +60,11 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class Newcomer extends Vue {
+export default class Newcomer extends BaseComponentOrView {
   public newcomer = ''
   public dialog = true
 

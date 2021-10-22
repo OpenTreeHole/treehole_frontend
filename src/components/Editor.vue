@@ -10,10 +10,11 @@
 <script lang='ts'>
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class Editor extends Vue {
+export default class Editor extends BaseComponentOrView {
   @Prop({ type: String }) contentName: string
 
   public editor: Vditor

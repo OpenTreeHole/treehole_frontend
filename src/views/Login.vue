@@ -70,13 +70,14 @@
 
 <script lang='ts'>
 import Message from '@/components/Message.vue'
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import debounce from 'lodash.debounce'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: { Message }
 })
-export default class Login extends Vue {
+export default class Login extends BaseComponentOrView {
   public alert = false
 
   public valid = true
@@ -114,18 +115,18 @@ export default class Login extends Vue {
       })
       .then((response) => {
         if (response.data.message === '登录成功！') {
-          this.$store.dispatch('messageSuccess', response.data.message)
+          this.messageSuccess(response.data.message)
           localStorage.setItem('token', 'token ' + response.data.token)
           localStorage.setItem('email', this.email)
           this.$router.replace('/home')
         } else {
           this.valid = false
-          this.$store.dispatch('messageError', response.data.message)
+          this.messageError(response.data.message)
         }
       })
       .catch(() => {
         this.valid = false
-        this.$store.dispatch('messageError', '用户名或密码错误')
+        this.messageError('用户名或密码错误')
       })
   }
 

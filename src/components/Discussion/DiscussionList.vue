@@ -1,5 +1,5 @@
 <template>
-  <v-container :options='option' id='discussionList'>
+  <v-container id='discussionList' class='pa-0'>
     <v-row
       v-for='(discussion, index) in discussions'
       :key='index'
@@ -35,15 +35,6 @@ import { Component, Prop } from 'vue-property-decorator'
   }
 })
 export default class DiscussionList extends DiscussionListMixin {
-  public option = {
-    className: 'os-theme-dark',
-    sizeAutoCapable: true,
-    paddingAbsolute: true,
-    scrollbars: {
-      clickScrolling: true
-    }
-  }
-
   @Prop({
     required: true,
     type: Function

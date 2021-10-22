@@ -28,7 +28,8 @@
 <script lang='ts'>
 import Message from '@/components/Message.vue'
 import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
-import { Component, Watch, Vue } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: {
@@ -36,7 +37,7 @@ import { Component, Watch, Vue } from 'vue-property-decorator'
     DiscussionCard
   }
 })
-export default class Me extends Vue {
+export default class Me extends BaseComponentOrView {
   public profile = {}
 
   public getUserInfo (): void {
@@ -46,7 +47,7 @@ export default class Me extends Vue {
         this.profile = r.data
       })
       .catch((e) => {
-        this.$store.dispatch('messageError', e.r.data.msg)
+        this.messageError(e.r.data.msg)
       })
   }
 

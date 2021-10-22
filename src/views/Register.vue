@@ -102,10 +102,11 @@
 <script lang='ts'>
 import debounce from 'lodash.debounce'
 import Message from '@/components/Message.vue'
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Ref, Watch } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({ components: { Message } })
-export default class Register extends Vue {
+export default class Register extends BaseComponentOrView {
   // 同意协议
   public agreelicenses: boolean = false
   // 表单信息
@@ -148,9 +149,7 @@ export default class Register extends Vue {
   public debouncedCheckEmail: Function
   public debouncedCheckPassword: Function
 
-  $refs: {
-    form: HTMLFormElement
-  }
+  @Ref() readonly form: HTMLFormElement
 
   public checkEmail (): void {
     if (!/^[0-9]{11}@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
@@ -171,10 +170,10 @@ export default class Register extends Vue {
   public sendCode (): void {
     this.sendButtonChangeStatus()
     if (!this.email) {
-      this.$store.dispatch('messageError', '用户名与邮箱不能为空')
+      this.messageError('用户名与邮箱不能为空')
       return
     }
-    this.$store.dispatch('messageInfo', '验证码已发送, 请检查邮件以继续')
+    this.messageInfo('验证码已发送, 请检查邮件以继续')
     this.$axios
       .get('/verify/email', {
         params: {
@@ -183,9 +182,9 @@ export default class Register extends Vue {
       })
       .then((response) => {
         if (response.data.message === '邮箱不在白名单内！') {
-          this.$store.dispatch('messageError', response.data.message)
+          this.messageError(response.data.message)
         } else {
-          this.$store.dispatch('messageSuccess', response.data.message)
+          this.messageSuccess(response.data.message)
         }
       })
   }
@@ -204,7 +203,7 @@ export default class Register extends Vue {
   }
 
   public register (): void {
-    if (this.$refs.form.validate()) {
+    if (this.form.validate()) {
       this.$axios
         .post('/register', {
           email: this.email,
@@ -214,18 +213,18 @@ export default class Register extends Vue {
         .then((response) => {
           if (response.data.message === '注册成功') {
             // 注册成功后直接跳转到主页面
-            this.$store.dispatch('messageSuccess', '注册成功！')
+            this.messageSuccess('注册成功！')
             localStorage.setItem('newcomer', 'true')
             localStorage.setItem('token', 'token ' + response.data.token)
             setTimeout(() => {
               this.$router.replace('/home')
             }, 1000)
           } else {
-            this.$store.dispatch('messageError', response.data.message)
+            this.messageError(response.data.message)
           }
         })
         .catch(() => {
-          this.$store.dispatch('messageError', '网络错误')
+          this.messageError('网络错误')
         })
     }
   }

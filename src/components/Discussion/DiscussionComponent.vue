@@ -10,7 +10,7 @@
       >
         <DiscussionList
           :activate='openHole'
-          ref='discussionList'
+          ref='holeList'
         />
       </v-col>
       <v-col v-if='displayCardId!==-1 && showDiscussion' class='mb-5' cols='5' />
@@ -28,8 +28,9 @@ import DiscussionList from '@/components/Discussion/DiscussionList.vue'
 import Discussion from '@/components/Discussion/DiscussionCol.vue'
 
 import { gsap } from 'gsap'
-import { Component, Emit, Vue, Watch } from 'vue-property-decorator'
+import { Component, Emit, Ref, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: {
@@ -37,7 +38,7 @@ import { WrappedHole } from '@/components/Discussion/hole'
     DiscussionList
   }
 })
-export default class DiscussionComponent extends Vue {
+export default class DiscussionComponent extends BaseComponentOrView {
   public isActive = 'right'
   public isEnd = 'end'
   public isStatic = ''
@@ -49,20 +50,18 @@ export default class DiscussionComponent extends Vue {
   public isLoadingVisible = false
   public displayHole: WrappedHole | null = null
 
-  $refs: {
-    discussionList: DiscussionList
-  }
+  @Ref() readonly holeList: DiscussionList
 
   get tagName (): any {
-    return this.$refs.discussionList.tagName
+    return this.holeList.tagName
   }
 
   set tagName (val) {
-    this.$refs.discussionList.tagName = val
+    this.holeList.tagName = val
   }
 
   public refresh (): void {
-    this.$refs.discussionList.refresh()
+    this.holeList.refresh()
   }
 
   public openHole (wrappedHole: WrappedHole): void {
@@ -106,7 +105,7 @@ export default class DiscussionComponent extends Vue {
     const ratio = 0.7
     this.marginTopY = (this.marginTopY > -e.deltaY * ratio ? this.marginTopY + e.deltaY * ratio : 0)
 
-    const height = this.$refs.discussionList.getHeight()
+    const height = this.holeList.getHeight()
 
     // console.log('1: ' + this.marginTopY + ';2: ' + this.viewport + ';3: ' + height)
     if (this.marginTopY + this.viewport > height + 300) {

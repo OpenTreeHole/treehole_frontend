@@ -1,10 +1,10 @@
 <template>
   <v-container>
     <!-- 警告信息 -->
-    <message ref='message'/>
+    <message ref='message' />
 
     <!-- 新用户欢迎信息 -->
-    <newcomer/>
+    <newcomer />
 
     <!-- 标签筛选器 -->
     <v-row justify='center' class='ma-0' v-if='filtedTag'>
@@ -27,8 +27,8 @@
     </v-row>
 
     <!-- 帖子列表 -->
-    <DiscussionComponent v-if='!_isMobile' ref='discussions' @show-discussion-changed='onShowFloatBtnChanged' />
-    <DiscussionListMobile v-else ref='discussions' />
+    <DiscussionComponent v-if='!isMobile' ref='holeComp' @show-discussion-changed='onShowFloatBtnChanged' />
+    <DiscussionListMobile v-else ref='holeComp' />
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div class='float-btn' v-show='showFloatBtn'>
@@ -145,8 +145,9 @@ import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
 import DiscussionComponent from '@/components/Discussion/DiscussionComponent.vue'
 import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile.vue'
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Ref, Watch } from 'vue-property-decorator'
 import { Tag } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: {
@@ -157,7 +158,7 @@ import { Tag } from '@/components/Discussion/hole'
     DiscussionListMobile
   }
 })
-export default class Home extends Vue {
+export default class Home extends BaseComponentOrView {
   public lineHeight = 0
   public scrollTop = 0
   // 发帖表单
@@ -176,30 +177,22 @@ export default class Home extends Vue {
   public params = {}
   public showFloatBtn = true
 
-  public instance: Home = this
-
-  $refs: {
-    discussions: DiscussionComponent | DiscussionListMobile
-    editor: Editor
-    form: HTMLFormElement
-  }
+  @Ref() readonly holeComp!: DiscussionComponent | DiscussionListMobile
+  @Ref() readonly editor!: Editor
+  @Ref() readonly form!: HTMLFormElement
 
   get contentName (): string {
     return 'home-content'
   }
 
-  get _isMobile (): boolean {
-    return document.body.clientWidth <= 768
-  }
-
   public reloadHome (): void {
     this.filtedTag = null
-    this.$refs.discussions.tagName = null
-    this.$refs.discussions.refresh()
+    this.holeComp.tagName = null
+    this.holeComp.refresh()
   }
 
   public editorError (msg: string): void {
-    this.$store.dispatch('messageError', msg)
+    this.messageError(msg)
   }
 
   public randomColor (): string {
@@ -242,25 +235,25 @@ export default class Home extends Vue {
    * Send request to add a new hole.
    */
   public addHole (): void {
-    if (this.$refs.form.validate() && this.$refs.editor.validate()) {
+    if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
       this.$axios
         .post('/holes', {
-          content: this.$refs.editor.getContent(),
+          content: this.editor.getContent(),
           division_id: 1,
           tag_names: this.selectedTags.map(v => v.name)
         })
         .then((response) => {
           console.log(response.data)
-          this.$store.dispatch('messageSuccess', '发送成功')
-          this.$refs.discussions.refresh() // reload the hole list
-          this.$refs.editor.setContent('')
+          this.messageSuccess('发送成功')
+          this.holeComp.refresh() // reload the hole list
+          this.editor.setContent('')
           this.tags = []
           this.selectedTags = []
         })
         .catch((error) => {
           console.log(error.response)
-          this.$store.dispatch('messageError', error.response.data.msg)
+          this.messageError(error.response.data.msg)
         })
     }
   }
@@ -276,12 +269,25 @@ export default class Home extends Vue {
       })
       .catch((response) => {
         console.log(response.data)
-        this.$store.dispatch('messageError', response.data.msg)
+        this.messageError(response.data.msg)
       })
   }
 
   public onShowFloatBtnChanged (val: boolean): void {
     this.showFloatBtn = !val
+  }
+
+  public mounted () {
+    this.$nextTick(() => {
+      this.checkDevice()
+    })
+    window.addEventListener('resize', () => {
+      this.checkDevice()
+    })
+  }
+
+  public destroyed () {
+    window.removeEventListener('resize', this.checkDevice)
   }
 
   @Watch('selectedTags')

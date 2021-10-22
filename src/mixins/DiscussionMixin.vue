@@ -1,15 +1,16 @@
 <script lang='ts'>
 import marked from 'marked'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import { DetailedFloor, Floor, WrappedHole } from '@/components/Discussion/hole'
 import { camelizeKeys } from '@/utils'
 import Mention from '@/components/Discussion/Mention.vue'
 import vuetify from '@/plugins/vuetify'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class DiscussionMixin extends Vue {
+export default class DiscussionMixin extends BaseComponentOrView {
   // 帖子列表
   public hole: WrappedHole
   public floors: Array<Floor> = []
@@ -22,18 +23,16 @@ export default class DiscussionMixin extends Vue {
   public requiredRules = [(v: any) => !!v || '内容不能为空']
   public valid = true
 
-  $refs: {
-    form: HTMLFormElement
-    editor: Editor
-    loading: Loading
-  }
+  @Ref() readonly form!: HTMLFormElement
+  @Ref() readonly editor!: Editor
+  @Ref() readonly loading!: Loading
 
   get computedDiscussionId (): number {
     return -1
   }
 
   public editorError (msg: string): void {
-    this.$store.dispatch('messageError', msg)
+    this.messageError(msg)
   }
 
   public closeDialog (): void {
@@ -93,8 +92,8 @@ export default class DiscussionMixin extends Vue {
         }
       })
       .catch((error) => {
-        if (error.response === undefined) this.$store.dispatch('messageError', JSON.stringify(error))
-        else this.$store.dispatch('messageError', error.response.data.msg)
+        if (error.response === undefined) this.messageError(JSON.stringify(error))
+        else this.messageError(error.response.data.msg)
       })
   }
 
@@ -142,30 +141,30 @@ export default class DiscussionMixin extends Vue {
         })
       })
       .catch((error) => {
-        if (error.response === undefined) this.$store.dispatch('messageError', JSON.stringify(error))
-        else this.$store.dispatch('messageError', error.response.data.msg)
+        if (error.response === undefined) this.messageError(JSON.stringify(error))
+        else this.messageError(error.response.data.msg)
       })
   }
 
   // Create a new floor.
   public addFloor (): void {
-    if (this.$refs.form.validate() && this.$refs.editor.validate()) {
+    if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
       this.$axios
         .post('/floors', {
-          content: (this.replyFloor ? '#' + this.replyFloor.floorId + ' ' : '') + this.$refs.editor.getContent(),
+          content: (this.replyFloor ? '#' + this.replyFloor.floorId + ' ' : '') + this.editor.getContent(),
           hole_id: this.computedDiscussionId,
           mention: [this.replyFloor?.floorId]
         })
         .then(() => {
-          this.$refs.loading.isLoading = true
+          this.loading.isLoading = true
           this.getPosts()
           this.replyFloor = null // Clear the reply info.
-          this.$refs.editor.setContent('') // Clear the reply editor.
+          this.editor.setContent('') // Clear the reply editor.
         })
         .catch((error) => {
           console.log(error.response)
-          this.$store.dispatch('messageError', error.response.data.msg)
+          this.messageError(error.response.data.msg)
         })
     }
   }
@@ -178,7 +177,7 @@ export default class DiscussionMixin extends Vue {
   public report (floorId: number): void {
     const msg = prompt('输入举报理由')
     if (msg === '') {
-      this.$store.dispatch('messageError', '举报理由不能为空！')
+      this.messageError('举报理由不能为空！')
     }
     this.$axios
       .post('/reports', {
@@ -187,9 +186,9 @@ export default class DiscussionMixin extends Vue {
       })
       .then((response) => {
         if (response.status === 200) {
-          this.$store.dispatch('messageSuccess', '举报成功')
+          this.messageSuccess('举报成功')
         } else {
-          this.$store.dispatch('messageError', response.data.msg)
+          this.messageError(response.data.msg)
         }
       })
   }

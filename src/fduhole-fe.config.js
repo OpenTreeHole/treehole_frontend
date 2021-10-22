@@ -40,6 +40,11 @@ export default {
       route: '/home'
     },
     {
+      title: '收藏',
+      icon: 'mdi-star',
+      route: '/collections'
+    },
+    {
       title: '我的',
       icon: 'mdi-account',
       route: '/me'

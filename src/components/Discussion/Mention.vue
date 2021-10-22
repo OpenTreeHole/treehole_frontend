@@ -26,11 +26,12 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Vue } from 'vue-property-decorator'
+import { Component, Prop } from 'vue-property-decorator'
 import { Floor } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class Mention extends Vue {
+export default class Mention extends BaseComponentOrView {
   @Prop({ required: true }) mentionFloor: Floor | null
   @Prop({ type: Function }) gotoMentionFloor?: Function
   /**
