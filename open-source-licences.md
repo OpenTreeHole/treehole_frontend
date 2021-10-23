@@ -12,7 +12,6 @@ FDU Hole Front End 的诞生，离不开诸多开源项目。你可以前往以�
 ├── [register-service-worker: MIT](github.com/yyx990803/register-service-worker)  
 ├── [sass: MIT](github.com/sass/dart-sass)  
 ├── [vue-cookies: MIT](github.com/cmp-cc/vue-cookies)  
-├── [vue-quill-editor: MIT](github.com/surmon-china/vue-quill-editor)  
 ├── [vue-router: MIT](github.com/vuejs/vue-router)  
 ├── [vue: MIT](github.com/vuejs/vue)  
 └── [vuetify: MIT](github.com/vuetifyjs/vuetify)  

@@ -1,97 +1,81 @@
-<script>
+<script lang='ts'>
 import debounce from 'lodash.debounce'
-import Vue from 'vue'
+import { Component, Watch } from 'vue-property-decorator'
+import { WrappedHole } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { ArrayRequest, CollectionHoleListRequest, HomeHoleListRequest } from '@/api'
 
-export default {
-  props: {
-    api: null,
-    discussionComponent: Vue
-  },
-  data () {
-    return {
-      // 帖子列表
-      discussions: [],
-      page: 1,
-      // 展开折叠样式数据
-      styleData: [],
-      order: '',
-      tag_name: null
-    }
-  },
-  methods: {
-    refresh () {
-      // 刷新列表
-      this.discussions = []
-      this.page = 1
-      this.getDiscussions()
-    },
-    addTag (tag) {
-      if (this.$route.name === 'home') {
-        this.discussionComponent.$parent.addTag(tag)
-      }
-    },
-    calculateLines () {
-      for (let i = 0; i < this.styleData.length; i++) {
-        const element = document.getElementById('p' + i)
-        const totalHeight = element.scrollHeight
-        this.styleData[i].lines = totalHeight / this.lineHeight
-      }
-    },
-    getDiscussions () {
-      const marked = this.$marked
-      return this.$axios
-        .get(this.api, {
-          params: {
-            page: this.page,
-            order: this.order,
-            tag_name: this.tag_name
-          }
-        })
-        .then((response) => {
-          for (let i = 0; i < response.data.length; i++) {
-            this.styleData.push({
-              fold: true,
-              lines: 3
-            })
-          }
-          response.data.forEach(function (discussionItem) {
-            discussionItem.first_post.content = marked(
-              discussionItem.first_post.content
-            )
-            discussionItem.last_post.content = marked(
-              discussionItem.last_post.content
-            )
-          })
-          this.discussions.push.apply(this.discussions, response.data)
+@Component
+export default class DiscussionListMixin extends BaseComponentOrView {
+  // 帖子列表
+  public discussions: Array<WrappedHole> = []
+  public startTime: Date = new Date()
 
-          if (response.data.length > 0) {
-            this.page++
-          }
-        })
-        .catch((error) => {
-          this.$store.dispatch('messageError', error.response.data.msg)
-        })
+  public debouncedCalculateLines: Function
+  public lineHeight: number = 10
+
+  public request: ArrayRequest<WrappedHole>
+
+  public pauseLoading = true
+
+  /**
+   * Clear the hole list and reload.
+   */
+  public refresh (): void {
+    this.request.clear()
+    this.getHoles()
+  }
+
+  /**
+   * Calculate the number of the total lines of the display (i.e. the first floor) of each hole.
+   */
+  public calculateLines (): void {
+    for (let i = 0; i < this.discussions.length; i++) {
+      const element = document.getElementById('p' + i)
+      const totalHeight = element ? element.scrollHeight : 0
+      this.discussions[i].styleData.lines = totalHeight / this.lineHeight
     }
-  },
-  watch: {
-    discussions () {
-      setTimeout(() => {
-        const element = document.getElementById('p1')
-        this.lineHeight = parseInt(
-          window.getComputedStyle(element, null).getPropertyValue('line-height')
-        )
-        this.calculateLines()
-      }, 100)
-    }
-  },
+  }
+
+  public async getHoles (): Promise<boolean> {
+    let hasNext = false
+    await this.request.request().then((v) => {
+      hasNext = v
+    }).catch((error) => {
+      if (error.response === undefined) this.messageError(JSON.stringify(error))
+      else this.messageError(error.response.data.msg)
+    })
+    return hasNext
+  }
+
+  @Watch('discussions')
+  discussionsChanged () {
+    setTimeout(() => {
+      const element = document.getElementById('p1')
+      this.lineHeight = (element ? parseInt(
+        window.getComputedStyle(element, null).getPropertyValue('line-height')
+      ) : 10)
+      this.calculateLines()
+    }, 100)
+  }
+
   mounted () {
     window.onresize = () => {
       this.debouncedCalculateLines()
     }
-  },
+  }
+
   created () {
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
-    // this.getTags()
+    if (this.$route.name === 'home') {
+      this.request = new HomeHoleListRequest()
+    } else if (this.$route.name === 'collections') {
+      this.request = new CollectionHoleListRequest()
+    }
+    this.discussions = this.request.datas
+    this.getHoles().then(() => {
+      this.pauseLoading = false
+    })
   }
 }
 </script>

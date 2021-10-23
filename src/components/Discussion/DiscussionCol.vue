@@ -1,9 +1,41 @@
 <!--suppress HtmlUnknownAttribute -->
 <template>
-  <v-col class='mb-5' cols='6' id='discol'>
+  <v-container>
+    <v-card
+      v-if='this.$route.name==="discussion" && !this.initiating'
+      class='mx-auto mb-6'
+      max-width='700px'
+    >
+      <v-card-text class='text--primary pb-2 pt-2 font-weight-medium'>
+        <v-chip
+          v-for='(tag, tindex) in hole.hole.tags'
+          :key='tindex'
+          color='red'
+          outlined
+          class='ma-1'
+          ripple
+        >
+          {{ tag.name }}
+        </v-chip>
+      </v-card-text>
+
+      <v-divider></v-divider>
+
+      <v-card-text class='text--primary pt-2 pb-2 text-center'>
+        <span style='float: left'>#{{ hole.hole.holeId }}</span>
+        <span style='float: inherit'>{{
+            hole.hole.timeUpdated | timeDifference
+          }}</span>
+        <span style='float: right'>
+          {{ hole.hole.reply }}
+          <v-icon small>mdi-message-processing-outline</v-icon>
+        </span>
+      </v-card-text>
+    </v-card>
+
     <transition-group name='slide-fade'>
       <v-row
-        v-for='(post, index) in posts'
+        v-for='(floor, index) in floors'
         :key='index'
         justify='center'
         align='start'
@@ -13,50 +45,29 @@
           <v-card :id='index'>
             <v-card-text class='pb-1 pt-2 text-body-2'>
               <p>
-                {{ post['username'] }}
+                {{ floor.anonyname }}
                 <span style='float: right'>
-                {{ post['date_created'] | timeDifference }}
+                {{ floor.timeUpdated | timeDifference }}
               </span>
               </p>
             </v-card-text>
 
             <v-card-text class='py-0'>
-              <!-- 回复部分 -->
-              <v-card v-if="post['reply_to']" class='reply'>
-                <!-- 回复框顶栏 -->
-                <v-card-text class='pb-1 pt-2 text-body-2'>
-                  <span>
-                    {{ posts[getIndex(post.reply_to)].username }}
-                  </span>
-                  <v-icon
-                    @click='
-                    scrollTo(index, getIndex(posts[getIndex(post.reply_to)].id))
-                  '
-                    small
-                    style='float: right'
-                  >
-                    mdi-arrow-collapse-up
-                  </v-icon>
-                </v-card-text>
-                <v-card-text class='reply-text'>
-                  {{ posts[getIndex(post.reply_to)].content | plainText }}
-                </v-card-text>
-              </v-card>
-
               <!-- 正文部分 -->
               <div
-                class='rich-text text--primary ma-0 text-body-1'
-                v-html='post.content'
+                :index='index'
+                class='floor-body rich-text text--primary ma-0 text-body-1'
+                v-html='floor.content'
               ></div>
             </v-card-text>
 
             <!-- 脚标 -->
             <v-card-text class='d-flex justify-space-between text-body-2 pb-2'>
-              <div>#{{ index }}</div>
+              <div>{{ index }}L</div>
               <v-btn
                 x-small
                 text
-                @click="reply(post['id'])"
+                @click='reply(floor.floorId)'
                 class='grey--text'
                 style='padding-bottom: -10px'
               >
@@ -66,7 +77,7 @@
               <v-btn
                 x-small
                 text
-                @click='report(post.id)'
+                @click='report(floor.floorId)'
                 class='grey--text'
                 style='padding-bottom: -10px'
               >
@@ -96,16 +107,7 @@
 
         <v-card-text>
           <!-- 回复内容 -->
-          <v-card v-if='replyIndex != null' class='reply'>
-            <v-card-text>
-              <span>
-                {{ posts[replyIndex]['username'] }}
-              </span>
-            </v-card-text>
-            <v-card-text class='reply-text'>
-              {{ posts[replyIndex].content | plainText }}
-            </v-card-text>
-          </v-card>
+          <Mention :mention-floor='replyFloor' />
 
           <v-form ref='form' v-model='valid' lazy-validation>
             <!-- 回贴表单 -->
@@ -123,7 +125,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
-          <v-btn color='primary' text :disabled='!valid' @click='addPost'>
+          <v-btn color='primary' text :disabled='!valid' @click='addFloor'>
             发送
           </v-btn>
         </v-card-actions>
@@ -131,30 +133,63 @@
     </v-dialog>
 
     <!-- 载入中信息 -->
-    <loading
-      ref='loading'
-      :length='posts.length'
-      :loadList='getPosts'
-    ></loading>
-  </v-col>
+    <loading :request='getFloors' ref='loading' :pause-loading='initiating' />
+  </v-container>
 </template>
 
-<script>
+<script lang='ts'>
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import DiscussionMixin from '@/mixins/DiscussionMixin'
+import DiscussionMixin from '@/mixins/DiscussionMixin.vue'
+import { Component, Prop } from 'vue-property-decorator'
+import { WrappedHole } from '@/components/Discussion/hole'
+import Mention from '@/components/Discussion/Mention.vue'
+import { FloorListRequest } from '@/api'
 
-export default {
-  extends: DiscussionMixin,
-  props: {
-    discussionId: Number
-  },
+@Component({
   components: {
+    Mention,
     Loading,
     Editor
-  },
+  }
+})
+export default class DiscussionCol extends DiscussionMixin {
+  @Prop({ required: true }) private wrappedHoleOrId: WrappedHole | number
+
+  public initiating = true
+
+  public get computedDiscussionId (): number {
+    if (this.wrappedHoleOrId instanceof WrappedHole) {
+      return this.wrappedHoleOrId.hole.holeId
+    } else {
+      return this.wrappedHoleOrId
+    }
+  }
+
+  public getFloorsRecursive () {
+    this.getFloors().then((v) => {
+      if (v && this.request.datas.length > this.request.loadedLength) {
+        this.getFloorsRecursive()
+      }
+    })
+  }
+
+  public init () {
+    this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId)
+    this.floors = this.request.datas
+    this.initiating = false
+    this.getFloorsRecursive()
+  }
+
   created () {
-    this.getDiscussion(this.discussionId)
+    if (this.wrappedHoleOrId instanceof WrappedHole) {
+      this.hole = this.wrappedHoleOrId
+      this.init()
+    } else {
+      this.getDiscussion(this.wrappedHoleOrId).then(() => {
+        this.init()
+      })
+    }
   }
 }
 </script>
@@ -164,13 +199,6 @@ export default {
 .reply {
   margin: 0 1rem 1rem;
   padding: 0.5rem 0.5rem 0 0.5rem;
-  //background-color: #a5a4a4;
-  //color: white;
-  //overflow: hidden;
-  //text-overflow: ellipsis;
-  //display: -webkit-box;
-  //-webkit-line-clamp: 4;
-  //-webkit-box-orient: vertical;
 }
 
 .v-card__text.reply-text {

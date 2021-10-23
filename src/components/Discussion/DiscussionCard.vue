@@ -1,47 +1,47 @@
 <template>
-  <v-card class='discussion-card' :num='discussion.id'>
+  <v-card class='discussion-card' :num='discussion.hole.holeId'>
     <!-- 标签栏 -->
     <v-card-text class='pb-0 pt-2 font-weight-medium'>
       <v-chip
-        v-for='(tag, tindex) in discussion.tag'
+        v-for='(tag, tindex) in discussion.hole.tags'
         :key='tindex'
-        :color='tag.color'
+        color='red'
         outlined
         class='mx-1 my-1'
         small
         ripple
-        @click='addTag(tag)'
       >
         {{ tag.name }}
       </v-chip>
     </v-card-text>
-    <v-card-text class='folded-hint' v-if='discussion.is_folded' color='grey'
-    >该内容已折叠：<span class='clickable' @click='displayIt = !displayIt'>{{
-        displayIt ? '收起' : '展开'
-      }}</span></v-card-text
-    >
-    <div class='post-content' v-show='displayIt'>
+    <v-card-text class='folded-hint' v-if='discussion.isFolded' color='grey'>
+      该内容已折叠：
+      <span class='clickable' @click='displayIt = !displayIt'>
+        {{ displayIt ? '收起' : '展开' }}
+      </span>
+    </v-card-text>
+    <div class='post-content' v-if='displayIt'>
       <!-- 内容主体 -->
       <v-card-text
-        @click='activate(discussion.id)'
+        @click='activate(discussion)'
         class='text--primary py-2 text-body-1 clickable'
         v-ripple
       >
         <div
-          v-if="this.dlist.styleData[index]['fold']"
+          v-if='discussion.styleData.fold'
           :id="'p' + index"
           class='fold'
         >
-          {{ discussion.first_post.content | plainText }}
+          {{ discussion.firstFloor.content | plainText }}
         </div>
         <div v-else :id="'p' + index" class='unfold'>
-          <div class='rich-text' v-html='discussion.first_post.content'></div>
+          <div class='rich-text' v-html='discussion.firstFloor.content'/>
         </div>
       </v-card-text>
 
       <!-- 展开折叠按钮 -->
-      <div v-if="this.dlist.styleData[index]['lines'] > 3">
-        <div v-if="this.dlist.styleData[index]['fold']">
+      <div v-if='discussion.styleData.lines > 3'>
+        <div v-if='discussion.styleData.fold'>
           <v-btn
             text
             block
@@ -72,10 +72,7 @@
       </div>
 
       <v-card-text
-        v-if='
-          discussion.first_post.id !== discussion.last_post.id &&
-          !discussion.is_folded
-        '
+        v-if='discussion.firstFloor.floorId !== discussion.lastFloor.floorId'
       >
         <v-row class='mx-3'>
           <span
@@ -85,77 +82,56 @@
               text-overflow: ellipsis;
               white-space: nowrap;
             '
-          >RE：{{ discussion.last_post.content | plainText }}</span
-          ></v-row
-        >
+          >
+            RE：{{ discussion.lastFloor.content | plainText }}
+          </span>
+        </v-row>
       </v-card-text>
 
       <!-- 脚标 -->
       <v-card-text class='pt-0 pb-0 text-center caption'>
-        <span class='clickable' style='float: left' @click='orderByTimeCreated'
-        >#{{ discussion['id'] }}</span
-        >
-        <span
-          class='clickable'
-          style='float: inherit'
-          @click='orderByTimeUpdated'
-        >{{ discussion['date_updated'] | timeDifference }}</span
-        >
-        <span style='float: right'
-        ><v-icon small>mdi-message-processing-outline</v-icon>
-          {{ discussion['count'] }}
+        <span class='clickable' style='float: left'>#{{ discussion.hole.holeId }}</span>
+        <span style='float: inherit'>{{ discussion.hole.timeUpdated | timeDifference }}</span>
+        <span style='float: right'>
+          <v-icon small>mdi-message-processing-outline</v-icon>
+          {{ discussion.hole.reply }}
         </span>
       </v-card-text>
     </div>
   </v-card>
 </template>
 
-<script>
-import Vue from 'vue'
+<script lang='ts'>
+import { Component, Emit, Prop } from 'vue-property-decorator'
+import { WrappedHole } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
-export default {
-  name: 'DiscussionCard',
-  props: {
-    discussion: {},
-    index: Number,
-    dlist: Vue,
-    activate: Function
-  },
-  data () {
-    return {
-      displayIt: !this.discussion.is_folded
-      // displayIt: true,
-    }
-  },
-  methods: {
-    orderByTimeCreated () {
-      this.dlist.order = 'last_created'
-      this.$store.dispatch('messageSuccess', '已按照发帖时间排序')
-      // 刷新列表
-      this.dlist.refresh()
-    },
-    orderByTimeUpdated () {
-      this.dlist.order = ''
-      this.$store.dispatch('messageSuccess', '已按照最新回复时间排序')
-      // 刷新列表
-      this.dlist.refresh()
-    },
-    addTag (tag) {
-      this.dlist.addTag(tag)
-    },
-    toDiscussion (discussionId) {
-      setTimeout(() => {
-        this.$router.push({
-          path: `/discussion/${discussionId}`
-        })
-      }, 50)
-    },
-    unfold (index) {
-      this.dlist.styleData[index].fold = false
-    },
-    fold (index) {
-      this.dlist.styleData[index].fold = true
-    }
+@Component
+export default class DiscussionCard extends BaseComponentOrView {
+  @Prop({ required: true, type: WrappedHole }) readonly discussion: WrappedHole
+  @Prop({ required: true, type: Number }) index: number
+  @Prop({ required: true, type: Function }) activate: Function
+
+  displayIt: boolean = false
+
+  @Emit('refresh')
+  public refreshDiscussionList (): void {
+  }
+
+  @Emit()
+  public addTag (tag: { color: string, count: number, name: string }): void {
+  }
+
+  public unfold (index: number): void {
+    this.discussion.styleData.fold = false
+  }
+
+  public fold (index: number): void {
+    this.discussion.styleData.fold = true
+  }
+
+  created () {
+    this.displayIt = !this.discussion.isFolded
   }
 }
 </script>

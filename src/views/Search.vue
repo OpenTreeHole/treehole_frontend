@@ -11,11 +11,14 @@
   </v-container>
 </template>
 
-<script>
+<script lang='ts'>
 import PostList from '@/components/PostList.vue'
+import { Component } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
-export default {
-  name: 'Search',
+@Component({
   components: { PostList }
+})
+export default class Search extends BaseComponentOrView {
 }
 </script>

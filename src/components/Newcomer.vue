@@ -32,7 +32,7 @@
               <li>
                 &#8226; 本站服务器位于中国香港特别行政区,
                 受当地法律保护。使用本树洞意味着你同意
-                <router-link to='/licence'
+                <router-link to='/license'
                 >相关协议
                 </router-link
                 >
@@ -59,32 +59,29 @@
   </v-dialog>
 </template>
 
-<script>
-export default {
-  name: 'newcomer',
-  data () {
-    return {
-      newcomer: '',
-      dialog: true
-    }
-  },
-  methods: {
-    acceptDialog () {
-      this.dialog = false
-      localStorage.removeItem('newcomer')
-    },
-    closeDialog () {
-      this.dialog = false
-      this.$router.replace('login')
-    }
-  },
-  watch: {
-    $route: {
-      immediate: true,
-      handler () {
-        this.newcomer = localStorage.getItem('newcomer')
-      }
-    }
+<script lang='ts'>
+import { Component, Watch } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+
+@Component
+export default class Newcomer extends BaseComponentOrView {
+  public newcomer = ''
+  public dialog = true
+
+  public acceptDialog (): void {
+    this.dialog = false
+    localStorage.removeItem('newcomer')
+  }
+
+  public closeDialog (): void {
+    this.dialog = false
+    this.$router.replace('login')
+  }
+
+  @Watch('$route', { immediate: true })
+  routeChanged () {
+    const storageNewcomer = localStorage.getItem('newcomer')
+    this.newcomer = storageNewcomer || ''
   }
 }
 </script>

@@ -8,7 +8,7 @@
   >
     <v-col class='text-center'>
       <v-progress-linear
-        :active='isLoading'
+        :active='isLoading || pauseLoading'
         indeterminate
         absolute
         top
@@ -16,65 +16,45 @@
       >
       </v-progress-linear>
 
-      <div v-if='isLoading'>
+      <div v-if='isLoading || pauseLoading'>
         <v-progress-circular indeterminate color='teal'></v-progress-circular>
       </div>
-      <div v-if='!hasNext && !isLoading'>没有然后了......</div>
+      <div v-if='!hasNext && !isLoading && !pauseLoading'>没有然后了......</div>
     </v-col>
   </v-row>
 </template>
 
-<script>
-export default {
-  name: 'loading',
-  props: ['length', 'loadList'],
-  data () {
-    return {
-      // 加载状态
-      hasNext: true,
-      isLoading: true
-    }
-  },
-  methods: {
-    onIntersect (entries, observer) {
-      if (entries[0].isIntersecting) {
-        this.load()
-      }
-      if (entries[0].isIntersecting && entries[0].intersectionRatio >= 0.2) {
-        this.$emit('intersectionChange', true)
-      } else {
-        this.$emit('intersectionChange', false)
-      }
-    },
+<script lang='ts'>
+import { Component, Prop } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
-    async load () {
-      if (!this.hasNext) {
-        return
-      }
-      this.isLoading = true
-      const beforeLength = this.length
-      await this.loadList()
-      const afterLength = this.length
-      this.isLoading = false
-      if (afterLength < 10) {
-        this.hasNext = false
-        return
-      }
-      if (beforeLength === afterLength) {
-        this.hasNext = false
-        return
-      }
-      this.hasNext = true
-    }
-  },
+@Component
+export default class Loading extends BaseComponentOrView {
+  @Prop({ required: true, type: Function }) request: () => Promise<boolean>
+  @Prop({ required: false, type: Boolean, default: false }) pauseLoading: boolean
 
-  watch: {
-    length () {
-      this.isLoading = false
-      if (this.length % 10 !== 0) {
-        this.hasNext = false
-      }
+  // 加载状态
+  public hasNext = true
+  public isLoading = false
+
+  public onIntersect (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void {
+    if (entries[0].isIntersecting) {
+      this.load().catch((error) => {
+        console.log(error)
+        if (error.response === undefined) this.messageError(JSON.stringify(error))
+        else this.messageError(error.response.data.msg)
+      })
     }
+  }
+
+  public async load () {
+    if (!this.hasNext || this.pauseLoading) {
+      return
+    }
+
+    this.isLoading = true
+    this.hasNext = await this.request()
+    this.isLoading = false
   }
 }
 </script>

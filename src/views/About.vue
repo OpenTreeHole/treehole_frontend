@@ -12,7 +12,7 @@
 
       <v-card-text>
         使用 FDU Hole 意味着你同意
-        <router-link to='/licence'>
+        <router-link to='/license'>
           相关协议
         </router-link>
       </v-card-text>
@@ -71,64 +71,65 @@
   </v-container>
 </template>
 
-<script>
-export default {
-  name: 'About',
-  data () {
-    return {
-      latestVersion: '正在获取',
-      installed:
-        window.matchMedia('(display-mode: standalone)').matches ||
-        window.navigator.standalone,
-      updateMsg: [
-        '您正在使用开发版，如遇 BUG 请前往 GitHub 提交 Issue 或 Pull Request！',
-        '检测到新版本，重载应用以升级！',
-        '您正在使用最新版的FDU Hole！'
-      ],
-      updateMsgIndex: 2
+<script lang='ts'>
+import { Component } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+
+@Component
+export default class About extends BaseComponentOrView {
+  public latestVersion = '正在获取'
+  public installed =
+    window.matchMedia('(display-mode: standalone)').matches
+
+  public updateMsg = [
+    '您正在使用开发版，如遇 BUG 请前往 GitHub 提交 Issue 或 Pull Request！',
+    '检测到新版本，重载应用以升级！',
+    '您正在使用最新版的FDU Hole！'
+  ]
+
+  public updateMsgIndex = 2
+
+  public updateUpdateMsgIndex (): number {
+    const currentVersion = this.$feConfig.feVersion.split('.')
+    const latestVersion = this.latestVersion.split('.')
+    if (
+      latestVersion[0] < currentVersion[0] ||
+      latestVersion[1] < currentVersion[1] ||
+      latestVersion[2] < currentVersion[2]
+    ) {
+      return 0 // 正在使用开发板
+    } else if (
+      latestVersion[0] > currentVersion[0] ||
+      latestVersion[1] > currentVersion[1] ||
+      latestVersion[2] > currentVersion[2]
+    ) {
+      return 1 // 有新版
+    } else {
+      return 2 // 正在使用最新发布版
     }
-  },
-  methods: {
-    updateUpdateMsgIndex () {
-      const currentVersion = this.$feConfig.feVersion.split('.')
-      const latestVersion = this.latestVersion.split('.')
-      if (
-        latestVersion[0] < currentVersion[0] ||
-        latestVersion[1] < currentVersion[1] ||
-        latestVersion[2] < currentVersion[2]
-      ) {
-        return 0 // 正在使用开发板
-      } else if (
-        latestVersion[0] > currentVersion[0] ||
-        latestVersion[1] > currentVersion[1] ||
-        latestVersion[2] > currentVersion[2]
-      ) {
-        return 1 // 有新版
-      } else {
-        return 2 // 正在使用最新发布版
-      }
-    },
-    getLatestVersion () {
-      this.$axios
-        .request({
-          url: this.$feConfig.latestReleasePkgJSON,
-          transformRequest: [
-            (data, headers) => {
-              delete headers.Authorization
-              return data
-            }
-          ]
-        })
-        .then((response) => {
-          this.latestVersion = response.data.version
-          this.updateMsgIndex = this.updateUpdateMsgIndex()
-        })
-        .catch((error) => {
-          this.latestVersion = '获取失败 ' + error.message
-        })
-    }
-  },
-  mounted () {
+  }
+
+  public getLatestVersion (): void {
+    this.$axios
+      .request({
+        url: this.$feConfig.latestReleasePkgJSON,
+        transformRequest: [
+          (data, headers) => {
+            delete headers.Authorization
+            return data
+          }
+        ]
+      })
+      .then((response) => {
+        this.latestVersion = response.data.version
+        this.updateMsgIndex = this.updateUpdateMsgIndex()
+      })
+      .catch((error) => {
+        this.latestVersion = '获取失败 ' + error.message
+      })
+  }
+
+  mounted (): void {
     this.getLatestVersion()
   }
 }

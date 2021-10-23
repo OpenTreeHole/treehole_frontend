@@ -1,187 +1,223 @@
-<script>
+<script lang='ts'>
 import marked from 'marked'
+import { Component, Ref } from 'vue-property-decorator'
+import Loading from '@/components/Loading.vue'
+import Editor from '@/components/Editor.vue'
+import { DetailedFloor, Floor, WrappedHole } from '@/components/Discussion/hole'
+import { camelizeKeys } from '@/utils'
+import Mention from '@/components/Discussion/Mention.vue'
+import vuetify from '@/plugins/vuetify'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { PrefetchedArrayRequest } from '@/api'
 
-export default {
-  data () {
-    return {
-      // 帖子列表
-      discussion: null,
-      posts: [],
-      page: 1,
-      // 回复信息（可选回复）
-      replyIndex: null, // 回复的贴子在 posts 数组中的序列
-      replyPk: null, // 回复的贴子的 id
-      // 发帖表单
-      dialog: false,
-      // content: '',
-      requiredRules: [(v) => !!v || '内容不能为空'],
-      valid: true,
-      escListener: (e) => {
-        if (e && e.key === 'Escape') { // 按Esc
-          this.closeDialog()
-        }
+@Component
+export default class DiscussionMixin extends BaseComponentOrView {
+  // 帖子列表
+  public hole: WrappedHole
+  public floors: Array<Floor> = []
+  public loadedLength: number = 0
+  // 回复信息（可选回复）
+  public replyFloor: Floor | null = null
+  // 发帖表单
+  public dialog = false
+  // content: '',
+  public requiredRules = [(v: any) => !!v || '内容不能为空']
+  public valid = true
+
+  public request: PrefetchedArrayRequest<Floor>
+
+  @Ref() readonly form!: HTMLFormElement
+  @Ref() readonly editor!: Editor
+  @Ref() readonly loading!: Loading
+
+  get computedDiscussionId (): number {
+    return -1
+  }
+
+  public editorError (msg: string): void {
+    this.messageError(msg)
+  }
+
+  public closeDialog (): void {
+    this.dialog = false
+    this.replyFloor = null
+  }
+
+  /**
+   * Get the index of a floor in the current hole by its floor id.
+   *
+   * @param floorId - the floor id.
+   * @returns the index, or -1 if the floor doesn't exist in the current hole.
+   */
+  public getIndex (floorId: number): number {
+    for (let i = 0; i < this.floors.length; i++) {
+      if (this.floors[i].floorId === floorId) {
+        return i
       }
     }
-  },
-  methods: {
-    editorError (msg) {
-      this.$store.dispatch('messageError', msg)
-    },
-    closeDialog () {
-      this.dialog = false
-      this.replyIndex = null
-      this.replyPk = null
-    },
-    getIndex (pk) {
-      // 接受一个 post 的 pk 并返回它在本页中的顺序（index）
-      for (let i = 0; i < this.posts.length; i++) {
-        if (this.posts[i].id === pk) {
-          return i
-        }
+    return -1
+  }
+
+  public scrollTo (currentId: number, toId: number): void {
+    const currentOffsetTop = document.getElementById(currentId.toString())?.offsetTop
+    const toOffsetTop = document.getElementById(toId.toString())?.offsetTop
+    const scrollDistance = currentOffsetTop && toOffsetTop ? toOffsetTop - currentOffsetTop : 0
+    window.scrollBy({
+      top: scrollDistance, //  正值向下
+      left: 0,
+      behavior: 'smooth'
+    })
+  }
+
+  /**
+   * Set the reply target and open the reply dialog.
+   *
+   * @param floorId - the id of the floor to reply
+   */
+  public reply (floorId: number): void {
+    this.replyFloor = this.floors[this.getIndex(floorId)]
+    this.dialog = true
+  }
+
+  /**
+   * Get the hole object by hole id from the backend.
+   * <p> the hole object contains only brief information of the prefetched floors.
+   *
+   * @param holeId - the hole id
+   */
+  public async getDiscussion (holeId: number) {
+    try {
+      const response = await this.$axios.get('/holes/' + holeId)
+      if (response.data) {
+        this.hole = new WrappedHole(camelizeKeys(response.data))
       }
-      return 0
-    },
-    scrollTo (currentId, toId) {
-      const currentOffsetTop = document.getElementById(currentId).offsetTop
-      const toOffsetTop = document.getElementById(toId).offsetTop
-      const scrollDistance = toOffsetTop - currentOffsetTop
-      window.scrollBy({
-        top: scrollDistance, //  正值向下
-        left: 0,
-        behavior: 'smooth'
+    } catch (error) {
+      if (error.response === undefined) this.messageError(JSON.stringify(error))
+      else this.messageError(error.response.data.msg)
+    }
+  }
+
+  /**
+   * Replace mention tags with empty divs with 'replyDiv' class and the mention id.
+   *
+   * @param str - the original string
+   */
+  public mentioned (str: string): string {
+    console.log(str)
+    str = str.replace(/#\w+/g, (v) => '\n\n<p mention="' + v + '"></p>\n\n')
+    str = marked(str)
+    str = str.replace(/<p mention="#\w+"><\/p>/g, (str) => {
+      return str.replace('<p', '<div class="replyDiv"').replace('/p>', '/div>')
+    })
+    return str
+  }
+
+  /**
+   * Get floors from backend.
+   */
+  public async getFloors (): Promise<boolean> {
+    if (!this.request) return false
+    let hasNext = false
+    await this.request.request().then((v) => {
+      this.floors.forEach((floor) => {
+        if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
+        console.log(floor)
+        setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
       })
-    },
-    reply (pk) {
-      // 接受一个 post 的 pk 并设置其为回复目标
-      this.replyIndex = this.getIndex(pk)
-      this.replyPk = pk
-      this.dialog = true
-    },
-    getDiscussion (pk) {
+      hasNext = v
+    }).catch((error) => {
+      if (error.response === undefined) this.messageError(JSON.stringify(error))
+      else this.messageError(error.response.data.msg)
+    })
+    return hasNext
+  }
+
+  // Create a new floor.
+  public addFloor (): void {
+    if (this.form.validate() && this.editor.validate()) {
+      this.dialog = false
       this.$axios
-        .get('discussions/', { params: { discussion_id: pk } })
-        .then((response) => {
-          response.data.first_post.content = marked(
-            response.data.first_post.content
-          )
-          this.discussion = response.data
+        .post('/floors', {
+          content: (this.replyFloor ? '#' + this.replyFloor.floorId + ' ' : '') + this.editor.getContent(),
+          hole_id: this.computedDiscussionId,
+          mention: [this.replyFloor?.floorId]
+        })
+        .then(() => {
+          this.loading.isLoading = true
+          this.getFloors()
+          this.replyFloor = null // Clear the reply info.
+          this.editor.setContent('') // Clear the reply editor.
         })
         .catch((error) => {
-          this.$store.dispatch('messageError', error.response.data.msg)
+          console.log(error.response)
+          this.messageError(error.response.data.msg)
         })
-    },
-    getPosts (page = this.page) {
-      return this.$axios
-        .get('posts/', {
-          params: {
-            id: this.discussionId,
-            page: page
-          }
-        })
-        .then((response) => {
-          response.data.forEach(function (postItem) {
-            postItem.content = marked(postItem.content)
-          })
-          this.posts.push.apply(this.posts, response.data)
-          if (response.data.length > 0) {
-            this.page++
-          }
-        })
-        .catch((error) => {
-          this.$store.dispatch('messageError', error.response.data.msg)
-        })
-    },
-    getNewPosts () {
-      this.$axios
-        .get('posts/', {
-          params: {
-            id: this.discussionId,
-            order: this.posts.length
-          }
-        })
-        .then((response) => {
-          this.posts.push.apply(this.posts, response.data)
-        })
-        .catch((error) => {
-          this.$store.dispatch('messageError', error.response.data.msg)
-        })
-    },
-    addPost () {
-      if (this.$refs.form.validate() && this.$refs.editor.validate()) {
-        // 先关闭对话框,优化用户体验
-        this.dialog = false
-        this.$axios
-          .post('posts/', {
-            content: this.$refs.editor.getContent(),
-            discussion_id: this.discussionId,
-            post_id: this.replyPk
-          })
-          .then(() => {
-            // 动态更新页面
-            this.$refs.loading.isLoading = true
-            this.getNewPosts()
-            // 重置回复信息
-            this.replyIndex = null
-            this.replyPk = null
-            // 重置内容
-            this.$refs.editor.setContent('')
-          })
-          .catch((error) => {
-            console.log(error.response)
-            this.$store.dispatch('messageError', error.response.data.msg)
-          })
-      }
-    },
-    report (postId) {
-      const msg = prompt('输入举报理由')
-      if (msg === '') {
-        this.$store.dispatch('messageError', '举报理由不能为空！')
-      }
-      this.$axios
-        .post('reports/', {
-          post_id: postId,
-          reason: msg
-        })
-        .then((response) => {
-          if (response.status === 200) {
-            this.$store.dispatch('messageSuccess', '举报成功')
-          } else {
-            this.$store.dispatch('messageError', response.data.msg)
-          }
-        })
-    },
-    CloseDialogWhenClickEmptyArea (e) {
-      let el = e.target
-      while (el !== document.body) {
-        if (el.id === 'header' || el.id === 'footer') {
-          return
-        }
-        if (el.tagName.toUpperCase() === 'DIV' && (
-          el.classList.contains('v-card')
-        )) {
-          return
-        }
-        el = el.parentNode
-      }
-      this.closeDialog()
     }
-  },
-  computed: {
-    contentName () {
-      return 'discussion-' + this.discussionId + '-content'
+  }
+
+  /**
+   * Send a report.
+   *
+   * @param floorId - the id of the floor being reported.
+   */
+  public report (floorId: number): void {
+    const msg = prompt('输入举报理由')
+    if (msg === '') {
+      this.messageError('举报理由不能为空！')
     }
-  },
-  mounted () {
-    document.body.addEventListener('click', this.CloseDialogWhenClickEmptyArea)
-    window.addEventListener('keydown', this.escListener)
-  },
-  destroyed () {
-    document.body.removeEventListener('click', this.CloseDialogWhenClickEmptyArea)
-    window.removeEventListener('keydown', this.escListener)
+    this.$axios
+      .post('/reports', {
+        floor_id: floorId,
+        reason: msg
+      })
+      .then((response) => {
+        if (response.status === 200) {
+          this.messageSuccess('举报成功')
+        } else {
+          this.messageError(response.data.msg)
+        }
+      })
+  }
+
+  get contentName (): string {
+    return 'discussion-' + this.computedDiscussionId + '-content'
+  }
+
+  /**
+   * Render the empty divs with 'replyDiv' class and 'mention' attr with the specific floor.
+   * <p> This method should be called after the original divs being rendered. </p>
+   *
+   * @param curFloor - the current floor (waiting the mention part in it to be re-rendered).
+   */
+  public renderMention (curFloor: DetailedFloor): void {
+    const curIndex = this.getIndex(curFloor.floorId)
+    const elements = document.querySelectorAll('div[index="' + curIndex + '"] > div.replyDiv')
+    for (let i = 0; i < elements.length; i++) {
+      if (elements[i].innerHTML) continue
+      const mentionAttr = elements[i].getAttribute('mention')
+      if (!mentionAttr) continue
+      const mentionId = parseInt(mentionAttr.substring(1))
+      let mentionFloor: Floor | null = null
+      curFloor.mention.forEach((mFloor) => {
+        if (mFloor.floorId === mentionId) mentionFloor = mFloor
+      })
+      if (!mentionFloor) continue
+      let gotoMentionFloor: Function | undefined
+      const mentionIndex = this.getIndex(mentionId)
+      if (mentionIndex !== -1) {
+        gotoMentionFloor = () => {
+          this.scrollTo(curIndex, mentionIndex)
+        }
+      }
+      new Mention({
+        propsData: {
+          mentionFloor: mentionFloor,
+          gotoMentionFloor: gotoMentionFloor,
+          mentionFloorInfo: (mentionIndex === -1 ? ('#' + (mentionFloor as Floor).floorId) : (mentionIndex.toString() + 'L'))
+        },
+        vuetify
+      }).$mount(elements[i])
+    }
   }
 }
 </script>
-
-<style scoped>
-
-</style>

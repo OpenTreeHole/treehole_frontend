@@ -1,34 +1,11 @@
 <template>
   <v-container>
-    <!-- 警告信息 -->
-    <message ref='message'></message>
-
     <!-- 新用户欢迎信息 -->
-    <newcomer></newcomer>
-
-    <!-- 标签筛选器 -->
-    <v-row align='top' justify='center' class='ma-0' v-if='filtedTag'>
-      <v-col cols='12' sm='10' md='9' lg='7' xl='5'>
-        <v-card>
-          <v-card-text>
-            <v-chip
-              :color='filtedTag.color'
-              outlined
-              class='mx-1 my-1'
-              small
-              ripple
-              @click.stop='reloadHome()'
-            >
-              {{ filtedTag.name }}
-            </v-chip>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <newcomer />
 
     <!-- 帖子列表 -->
-    <DiscussionComponent v-if='!_isMobile' ref='discussions' api='discussions/' />
-    <DiscussionListMobile v-else ref='discussions' api='discussions/' />
+    <DiscussionComponent v-if='!isMobile' ref='holeComp' @show-discussion-changed='onShowFloatBtnChanged' />
+    <DiscussionListMobile v-else ref='holeComp' />
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div class='float-btn' v-show='showFloatBtn'>
@@ -82,7 +59,7 @@
                     :disabled='data.disabled'
                     @click:close='data.parent.selectItem(data.item)'
                     outlined
-                    :color='data.item.color'
+                    color='red'
                     small
                   >
                     {{ data.item.name }}
@@ -90,7 +67,7 @@
                       <v-icon x-small>mdi-fire</v-icon>
                     </span>
                     <span>
-                      {{ data.item.count }}
+                      {{ data.item.temperature }}
                     </span>
                   </v-chip>
                 </template>
@@ -98,13 +75,13 @@
                 <!-- 自定义下拉框样式 -->
                 <template v-slot:item='data'>
                   <v-list-item-content>
-                    <span :class="data.item.color + '--text'">
+                    <span :class="'red' + '--text'">
                       {{ data.item.name }}
-                      <v-icon :color='data.item.color' class='tag-icon' small
+                      <v-icon color='red' class='tag-icon' small
                       >mdi-fire</v-icon
                       >
                       <span class='tag-count'>
-                        {{ data.item.count }}
+                        {{ data.item.temperature }}
                       </span>
                     </span>
                   </v-list-item-content>
@@ -128,7 +105,7 @@
               color='primary'
               text
               :disabled='!valid'
-              @click='addDiscussion'
+              @click='addHole'
             >
               发送
             </v-btn>
@@ -139,198 +116,182 @@
   </v-container>
 </template>
 
-<script>
+<script lang='ts'>
 import Editor from '@/components/Editor.vue'
-import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
 import DiscussionComponent from '@/components/Discussion/DiscussionComponent.vue'
-import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile'
+import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile.vue'
+import { Component, Ref, Watch } from 'vue-property-decorator'
+import { Tag } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
-export default {
-  name: 'Home',
+@Component({
   components: {
     Editor,
-    Message,
     Newcomer,
     DiscussionComponent,
     DiscussionListMobile
-  },
-  data () {
-    return {
-      lineHeight: 0,
-      scrollTop: 0,
-      // 发帖表单
-      content: '',
-      tags: [],
-      selectedTags: [],
-      filtedTag: null,
-      dialog: false,
-      tagRules: [
-        (v) => v.length <= 5 || '标签不能多于5个'
-      ],
-      contentRules: [(v) => !!v.trim() || '内容不能为空'],
-      errorMsg: {},
-      valid: true,
-      params: {},
-      showFloatBtn: true,
-      escListener: (e) => {
-        if (e && e.key === 'Escape') { // 按Esc
-          this.closeDialog()
-        }
-      }
-    }
-  },
+  }
+})
+export default class Home extends BaseComponentOrView {
+  public lineHeight = 0
+  public scrollTop = 0
+  // 发帖表单
+  public content = ''
+  public tags: Array<Tag> = []
+  public selectedTags: Array<Tag> = []
+  public filtedTag: { color: string, count: number, name: string } | null = null
+  public dialog = false
+  public tagRules = [
+    (v: string | any[]) => v.length <= 5 || '标签不能多于5个'
+  ]
 
-  computed: {
-    contentName () {
-      return 'home-content'
-    },
-    _isMobile () {
-      // console.log(navigator.userAgent)
-      // return navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
-      return document.body.clientWidth <= 768
-    }
-  },
+  public contentRules = [(v: string) => !!v.trim() || '内容不能为空']
+  public errorMsg: any = {}
+  public valid = true
+  public params = {}
+  public showFloatBtn = true
 
-  methods: {
-    addTag (tag) {
-      this.filtedTag = tag
-      this.$refs.discussions.tag_name = this.filtedTag.name
-      this.$refs.discussions.refresh()
-    },
-    reloadHome () {
-      this.filtedTag = null
-      this.$refs.discussions.tag_name = null
-      this.$refs.discussions.refresh()
-    },
-    editorError (msg) {
-      this.$store.dispatch('messageError', msg)
-    },
-    randomColor () {
-      const colorList = [
-        'red',
-        'pink',
-        'purple',
-        'deep-purple',
-        'indigo',
-        'blue',
-        'light-blue',
-        'cyan',
-        'teal',
-        'green',
-        'light-green',
-        'yellow',
-        'amber',
-        'orange',
-        'deep-orange',
-        'brown',
-        'blue-grey',
-        'grey'
-      ]
-      const index = Math.floor(Math.random() * colorList.length)
-      return colorList[index]
-    },
-    openDialog () {
-      this.getTags()
-    },
-    closeDialog () {
-      this.dialog = false
-      // 重置表单验证
-      this.errorMsg = {}
-      this.valid = true
-    },
-    addDiscussion () {
-      if (this.$refs.form.validate() && this.$refs.editor.validate()) {
-        // 先关闭对话框,优化用户体验
-        this.closeDialog()
-        // 发送请求
-        this.$axios
-          .post('discussions/', {
-            content: this.$refs.editor.getContent(),
-            tags: this.selectedTags
-          })
-          .then((response) => {
-            console.log(response.data)
-            this.$store.dispatch('messageSuccess', '发送成功')
-            // 重新加载页面
-            this.$refs.discussions.refresh()
-            // 重置表单内容
-            this.$refs.editor.setContent('')
-            this.tags = []
-            this.selectedTags = []
-          })
-          .catch((error) => {
-            console.log(error.response)
-            this.$store.dispatch('messageError', error.response.data.msg)
-          })
-        // 发送完请求后，刷新讨论页面以让用户能看到自己的消息，并弹出发帖成功通知
-      }
-    },
-    getTags () {
-      // 获取 所有的 tags
-      this.$axios
-        .get('tags/')
-        .then((response) => {
-          this.tags = response.data
-        })
-        .catch((response) => {
-          console.log(response.data)
-          this.$store.dispatch('messageError', response.data.msg)
-        })
-    },
-    CloseDialogWhenClickEmptyArea (e) {
-      let el = e.target
-      while (el !== document.body) {
-        if (el.id === 'header' || el.id === 'footer') {
-          return
-        }
-        if (el.tagName.toUpperCase() === 'DIV' && (
-          el.classList.contains('v-card')
-        )) {
-          return
-        }
-        el = el.parentNode
-      }
+  @Ref() readonly holeComp!: DiscussionComponent | DiscussionListMobile
+  @Ref() readonly editor!: Editor
+  @Ref() readonly form!: HTMLFormElement
+
+  get contentName (): string {
+    return 'home-content'
+  }
+
+  public reloadHome (): void {
+    this.filtedTag = null
+    this.holeComp.refresh()
+  }
+
+  public editorError (msg: string): void {
+    this.messageError(msg)
+  }
+
+  public randomColor (): string {
+    const colorList = [
+      'red',
+      'pink',
+      'purple',
+      'deep-purple',
+      'indigo',
+      'blue',
+      'light-blue',
+      'cyan',
+      'teal',
+      'green',
+      'light-green',
+      'yellow',
+      'amber',
+      'orange',
+      'deep-orange',
+      'brown',
+      'blue-grey',
+      'grey'
+    ]
+    const index = Math.floor(Math.random() * colorList.length)
+    return colorList[index]
+  }
+
+  public openDialog (): void {
+    this.getTags()
+  }
+
+  public closeDialog (): void {
+    this.dialog = false
+    // 重置表单验证
+    this.errorMsg = {}
+    this.valid = true
+  }
+
+  /**
+   * Send request to add a new hole.
+   */
+  public addHole (): void {
+    if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
+      this.$axios
+        .post('/holes', {
+          content: this.editor.getContent(),
+          division_id: 1,
+          tag_names: this.selectedTags.map(v => v.name)
+        })
+        .then((response) => {
+          console.log(response.data)
+          this.messageSuccess('发送成功')
+          this.holeComp.refresh() // reload the hole list
+          this.editor.setContent('')
+          this.tags = []
+          this.selectedTags = []
+        })
+        .catch((error) => {
+          console.log(error.response)
+          this.messageError(error.response.data.msg)
+        })
     }
-  },
-  mounted () {
-    document.body.addEventListener('click', this.CloseDialogWhenClickEmptyArea)
-    window.addEventListener('keydown', this.escListener)
-  },
-  destroyed () {
-    document.body.removeEventListener('click', this.CloseDialogWhenClickEmptyArea)
-    window.removeEventListener('keydown', this.escListener)
-  },
-  watch: {
-    selectedTags: function () {
-      for (let i = 0; i < this.selectedTags.length; i++) {
-        if (typeof this.selectedTags[i] !== 'object') {
-          const tagStr = this.selectedTags[i].trim()
-          // 校验新增的 tag
-          if (tagStr.length > 8) {
-            this.errorMsg.tags = '标签不能超过8个字符'
-            this.selectedTags.pop()
-            break
-          } else if (
-            this.tags.find(
-              (tag) => tag.name.toLowerCase() === tagStr.toLowerCase()
-            )
-          ) {
-            this.errorMsg.tags = '标签不能重复'
-            this.selectedTags.pop()
-            break
-          } else if (tagStr.length === 0) {
-            this.errorMsg.tags = '标签不能为空'
-            this.selectedTags.pop()
-            break
-          } else {
-            this.errorMsg.tags = ''
-            this.selectedTags[i] = {
-              name: tagStr,
-              color: this.randomColor(),
-              count: 0
-            }
+  }
+
+  /**
+   * Get the tag list from the backend.
+   */
+  public getTags (): void {
+    this.$axios
+      .get('/tags')
+      .then((response) => {
+        this.tags = response.data
+      })
+      .catch((response) => {
+        console.log(response.data)
+        this.messageError(response.data.msg)
+      })
+  }
+
+  public mounted () {
+    this.$nextTick(() => {
+      this.checkDevice()
+    })
+    window.addEventListener('resize', () => {
+      this.checkDevice()
+    })
+  }
+
+  public destroyed () {
+    window.removeEventListener('resize', this.checkDevice)
+  }
+
+  public onShowFloatBtnChanged (val: boolean): void {
+    this.showFloatBtn = !val
+  }
+
+  @Watch('selectedTags')
+  selectedTagsChanged () {
+    for (let i = 0; i < this.selectedTags.length; i++) {
+      if (typeof this.selectedTags[i] !== 'object') {
+        const tagStr = this.selectedTags[i].name.trim()
+        // 校验新增的 tag
+        if (tagStr.length > 8) {
+          this.errorMsg.tags = '标签不能超过8个字符'
+          this.selectedTags.pop()
+          break
+        } else if (
+          this.tags.find(
+            (tag) => tag.name.toLowerCase() === tagStr.toLowerCase()
+          )
+        ) {
+          this.errorMsg.tags = '标签不能重复'
+          this.selectedTags.pop()
+          break
+        } else if (tagStr.length === 0) {
+          this.errorMsg.tags = '标签不能为空'
+          this.selectedTags.pop()
+          break
+        } else {
+          this.errorMsg.tags = ''
+          this.selectedTags[i] = {
+            name: tagStr,
+            temperature: 0,
+            tagId: -1
           }
         }
       }

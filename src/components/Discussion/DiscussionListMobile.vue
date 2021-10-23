@@ -6,47 +6,45 @@
       justify='center'
       class='ma-0'
     >
-      <v-col cols='12' sm='10' md='8' lg='6' xl='4'
-      >
+      <v-col cols='12' sm='10' md='8' lg='6' xl='4'>
         <DiscussionCard
           :discussion='discussion'
           :index='index'
-          :dlist='instance'
+          @refresh='refresh'
           :activate='toDiscussion'
-        ></DiscussionCard
-        >
+        />
       </v-col>
     </v-row>
     <!-- 载入中信息 -->
-    <loading :length='discussions.length' :loadList='getDiscussions'></loading>
+    <loading :request='getHoles' ref='loading' :pause-loading='pauseLoading'/>
   </v-container>
 </template>
 
-<script>
-import DiscussionListMixin from '@/mixins/DiscussionListMixin'
+<script lang='ts'>
+import DiscussionListMixin from '@/mixins/DiscussionListMixin.vue'
 import Loading from '@/components/Loading.vue'
 import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
+import { Component } from 'vue-property-decorator'
+import { WrappedHole } from '@/components/Discussion/hole'
 
-export default {
-  name: 'DiscussionList',
-  data () {
-    return {
-      instance: this
-    }
-  },
+@Component({
   components: {
     DiscussionCard,
     Loading
-  },
-  methods: {
-    toDiscussion (id) {
-      setTimeout(() => {
-        this.$router.push({
-          path: `/discussion/${id}`
-        })
-      }, 50)
-    }
-  },
-  extends: DiscussionListMixin
+  }
+})
+export default class DiscussionList extends DiscussionListMixin {
+  /**
+   * Set router to the hole page.
+   *
+   * @param wrappedHole - the hole.
+   */
+  public toDiscussion (wrappedHole: WrappedHole): void {
+    setTimeout(() => {
+      this.$router.push({
+        path: `/discussion/${wrappedHole.hole.holeId}`
+      })
+    }, 50)
+  }
 }
 </script>

@@ -63,41 +63,49 @@
   </v-card>
 </template>
 
-<script>
-export default {
-  name: 'PostCard',
-  props: {
-    index: Number(),
-    post: {
-      id: Number(),
-      content: '',
-      username: '',
-      reply_to: '',
-      date_created: '',
-      discussion: Number()
-    }
-  },
-  methods: {
-    toDiscussion (discussionId) {
-      setTimeout(() => {
-        this.$router.push({
-          path: `/discussion/${discussionId}`
-        })
-      }, 50)
-    },
-    unfold (index) {
-      this.scrollTop = document.documentElement.scrollTop
-      this.$parent.styleData[index].fold = false
-    },
-    fold (index) {
-      this.$parent.styleData[index].fold = true
-      const scrollDistance = this.scrollTop - document.documentElement.scrollTop
-      window.scrollBy({
-        top: scrollDistance, //  正值向下
-        left: 0,
-        behavior: 'smooth'
+<script lang='ts'>
+
+import Vue from 'vue'
+import { Component, Prop } from 'vue-property-decorator'
+import PostList from '@/components/PostList.vue'
+
+@Component
+export default class PostCard extends Vue {
+  @Prop(Number) public index: number
+  @Prop(Object) public post: {
+    id: number
+    content: string
+    username: string
+    // eslint-disable-next-line camelcase
+    reply_to: string
+    // eslint-disable-next-line camelcase
+    date_created: string
+    discussion: number
+  }
+
+  @Prop({ required: true, type: Vue }) public postList: PostList
+
+  public toDiscussion (discussionId: number): void {
+    setTimeout(() => {
+      this.$router.push({
+        path: `/discussion/${discussionId}`
       })
-    }
+    }, 50)
+  }
+
+  public unfold (index: number): void {
+    (this as unknown as HTMLElement).scrollTop = document.documentElement.scrollTop
+    this.postList.styleData[index].fold = false
+  }
+
+  public fold (index: number): void {
+    this.postList.styleData[index].fold = true
+    const scrollDistance = (this as unknown as HTMLElement).scrollTop - document.documentElement.scrollTop
+    window.scrollBy({
+      top: scrollDistance, //  正值向下
+      left: 0,
+      behavior: 'smooth'
+    })
   }
 }
 </script>

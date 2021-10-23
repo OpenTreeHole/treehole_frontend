@@ -1,5 +1,5 @@
 <template>
-  <v-container :options='option'>
+  <v-container id='discussionList' class='pa-0'>
     <v-row
       v-for='(discussion, index) in discussions'
       :key='index'
@@ -8,57 +8,45 @@
         <DiscussionCard
           :discussion='discussion'
           :index='index'
-          :dlist='instance'
           :activate='activate'
+          @refresh='refresh'
         />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <!-- 载入中信息 -->
-        <loading :length='discussions.length' :loadList='getDiscussions' ref='loading'
-                 @intersectionChange='ChangeLoadingVisibility' />
+        <loading :request='getHoles' ref='loading' :pause-loading='pauseLoading'/>
       </v-col>
     </v-row>
   </v-container>
 </template>
 
-<script>
-import DiscussionCard from '@/components/Discussion/DiscussionCard'
-import DiscussionListMixin from '@/mixins/DiscussionListMixin'
-import Loading from '@/components/Loading'
+<script lang='ts'>
+import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
+import DiscussionListMixin from '@/mixins/DiscussionListMixin.vue'
+import Loading from '@/components/Loading.vue'
+import { Component, Prop } from 'vue-property-decorator'
 
-export default {
-  name: 'DiscussionList',
-  extends: DiscussionListMixin,
-  data () {
-    return {
-      option: {
-        className: 'os-theme-dark',
-        sizeAutoCapable: true,
-        paddingAbsolute: true,
-        scrollbars: {
-          clickScrolling: true
-        }
-      },
-      instance: this
-    }
-  },
-  props: {
-    activate: Function
-  },
+@Component({
   components: {
     DiscussionCard,
     Loading
-  },
-  methods: {
-    ChangeLoadingVisibility (e) {
-      this.isLoadingVisible = e
-    }
+  }
+})
+export default class DiscussionList extends DiscussionListMixin {
+  @Prop({
+    required: true,
+    type: Function
+  }) readonly activate: Function | undefined
+
+  /**
+   * Calculate the height of the hole list.
+   */
+  public getHeight (): number {
+    const holeListElement = document.getElementById('discussionList')
+    if (!holeListElement) return 0
+    return parseInt(window.getComputedStyle(holeListElement).height)
   }
 }
 </script>
-
-<style scoped>
-
-</style>
