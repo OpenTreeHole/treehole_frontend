@@ -247,10 +247,6 @@ export default class Home extends BaseComponentOrView {
       })
   }
 
-  public onShowFloatBtnChanged (val: boolean): void {
-    this.showFloatBtn = !val
-  }
-
   public mounted () {
     this.$nextTick(() => {
       this.checkDevice()
@@ -262,6 +258,10 @@ export default class Home extends BaseComponentOrView {
 
   public destroyed () {
     window.removeEventListener('resize', this.checkDevice)
+  }
+
+  public onShowFloatBtnChanged (val: boolean): void {
+    this.showFloatBtn = !val
   }
 
   @Watch('selectedTags')

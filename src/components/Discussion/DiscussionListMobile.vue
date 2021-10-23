@@ -16,7 +16,7 @@
       </v-col>
     </v-row>
     <!-- 载入中信息 -->
-    <loading :request='request' ref='loading' />
+    <loading :request='getHoles' ref='loading' :pause-loading='pauseLoading'/>
   </v-container>
 </template>
 

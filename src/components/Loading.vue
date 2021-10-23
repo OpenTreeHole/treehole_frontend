@@ -8,7 +8,7 @@
   >
     <v-col class='text-center'>
       <v-progress-linear
-        :active='isLoading'
+        :active='isLoading || pauseLoading'
         indeterminate
         absolute
         top
@@ -16,26 +16,26 @@
       >
       </v-progress-linear>
 
-      <div v-if='isLoading'>
+      <div v-if='isLoading || pauseLoading'>
         <v-progress-circular indeterminate color='teal'></v-progress-circular>
       </div>
-      <div v-if='!hasNext && !isLoading'>没有然后了......</div>
+      <div v-if='!hasNext && !isLoading && !pauseLoading'>没有然后了......</div>
     </v-col>
   </v-row>
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Watch } from 'vue-property-decorator'
+import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { ArrayRequest } from '@/api'
 
 @Component
 export default class Loading extends BaseComponentOrView {
-  @Prop({ required: true, type: Object }) request: ArrayRequest<any>
+  @Prop({ required: true, type: Function }) request: () => Promise<boolean>
+  @Prop({ required: false, type: Boolean, default: false }) pauseLoading: boolean
 
   // 加载状态
   public hasNext = true
-  public isLoading = true
+  public isLoading = false
 
   public onIntersect (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void {
     if (entries[0].isIntersecting) {
@@ -48,16 +48,12 @@ export default class Loading extends BaseComponentOrView {
   }
 
   public async load () {
-    if (!this.hasNext) {
+    if (!this.hasNext || this.pauseLoading) {
       return
     }
-    this.isLoading = true
-    this.hasNext = await this.request.request()
-    this.isLoading = false
-  }
 
-  @Watch('length')
-  lengthChanged () {
+    this.isLoading = true
+    this.hasNext = await this.request()
     this.isLoading = false
   }
 }

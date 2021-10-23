@@ -16,12 +16,14 @@ export default class DiscussionListMixin extends BaseComponentOrView {
 
   public request: ArrayRequest<WrappedHole>
 
+  public pauseLoading = true
+
   /**
    * Clear the hole list and reload.
    */
   public refresh (): void {
     this.request.clear()
-    this.getDiscussions()
+    this.getHoles()
   }
 
   /**
@@ -35,11 +37,15 @@ export default class DiscussionListMixin extends BaseComponentOrView {
     }
   }
 
-  public getDiscussions () {
-    this.request.request().catch((error) => {
+  public async getHoles (): Promise<boolean> {
+    let hasNext = false
+    await this.request.request().then((v) => {
+      hasNext = v
+    }).catch((error) => {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
       else this.messageError(error.response.data.msg)
     })
+    return hasNext
   }
 
   @Watch('discussions')
@@ -67,6 +73,9 @@ export default class DiscussionListMixin extends BaseComponentOrView {
       this.request = new CollectionHoleListRequest()
     }
     this.discussions = this.request.datas
+    this.getHoles().then(() => {
+      this.pauseLoading = false
+    })
   }
 }
 </script>

@@ -14,11 +14,15 @@
         />
       </v-col>
       <v-col v-if='displayCardId!==-1 && showDiscussion' class='mb-5' cols='5' />
-      <Discussion
-        v-if='displayCardId!==-1 && showDiscussion'
-        :key='displayCardId'
-        :wrapped-hole='displayHole'
-      />
+
+      <v-col class='mb-5' cols='6' id='discol'>
+        <Discussion
+          v-if='displayCardId!==-1 && showDiscussion'
+          :key='displayCardId'
+          :wrapped-hole-or-id='displayHole'
+          class='pa-0'
+        />
+      </v-col>
     </v-row>
   </v-container>
 </template>
@@ -28,10 +32,9 @@ import DiscussionList from '@/components/Discussion/DiscussionList.vue'
 import Discussion from '@/components/Discussion/DiscussionCol.vue'
 
 import { gsap } from 'gsap'
-import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
+import { Component, Emit, Ref, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/components/Discussion/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { HomeHoleListRequest } from '@/api'
 
 @Component({
   components: {
@@ -50,11 +53,6 @@ export default class DiscussionComponent extends BaseComponentOrView {
   public viewport = 0
   public isLoadingVisible = false
   public displayHole: WrappedHole | null = null
-  public wheelListener = (e: WheelEvent) => {
-    if (this.isActive === 'right' && this.isEnd === 'end') {
-      this.ScrollDiscussionList(e)
-    }
-  }
 
   @Ref() readonly holeList: DiscussionList
 
@@ -108,6 +106,12 @@ export default class DiscussionComponent extends BaseComponentOrView {
     // console.log('1: ' + this.marginTopY + ';2: ' + this.viewport + ';3: ' + height)
     if (this.marginTopY + this.viewport > height + 300) {
       this.marginTopY = height - this.viewport + 300
+    }
+  }
+
+  public wheelListener (e: WheelEvent) {
+    if (this.isActive === 'right' && this.isEnd === 'end') {
+      this.ScrollDiscussionList(e)
     }
   }
 

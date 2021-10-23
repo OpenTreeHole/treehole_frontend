@@ -148,6 +148,7 @@ export default class Navbar extends BaseComponentOrView {
 
   public mounted () {
     this.$nextTick(this.checkDevice)
+    this.showSidebar = !this.isMobile
   }
 
   @Watch('isDarkTheme')

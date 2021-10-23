@@ -8,7 +8,7 @@ import { camelizeKeys } from '@/utils'
 import Mention from '@/components/Discussion/Mention.vue'
 import vuetify from '@/plugins/vuetify'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { ArrayRequest } from '@/api'
+import { PrefetchedArrayRequest } from '@/api'
 
 @Component
 export default class DiscussionMixin extends BaseComponentOrView {
@@ -24,7 +24,7 @@ export default class DiscussionMixin extends BaseComponentOrView {
   public requiredRules = [(v: any) => !!v || '内容不能为空']
   public valid = true
 
-  public request: ArrayRequest<Floor>
+  public request: PrefetchedArrayRequest<Floor>
 
   @Ref() readonly form!: HTMLFormElement
   @Ref() readonly editor!: Editor
@@ -85,19 +85,16 @@ export default class DiscussionMixin extends BaseComponentOrView {
    *
    * @param holeId - the hole id
    */
-  public getDiscussion (holeId: number): void {
-    this.$axios
-      .get('/holes/' + holeId)
-      .then((response) => {
-        if (response.data) {
-          this.hole = new WrappedHole(camelizeKeys(response.data))
-          this.floors = this.hole.floors
-        }
-      })
-      .catch((error) => {
-        if (error.response === undefined) this.messageError(JSON.stringify(error))
-        else this.messageError(error.response.data.msg)
-      })
+  public async getDiscussion (holeId: number) {
+    try {
+      const response = await this.$axios.get('/holes/' + holeId)
+      if (response.data) {
+        this.hole = new WrappedHole(camelizeKeys(response.data))
+      }
+    } catch (error) {
+      if (error.response === undefined) this.messageError(JSON.stringify(error))
+      else this.messageError(error.response.data.msg)
+    }
   }
 
   /**
@@ -118,16 +115,21 @@ export default class DiscussionMixin extends BaseComponentOrView {
   /**
    * Get floors from backend.
    */
-  public getPosts (): void {
-    this.request.request().then(() => {
+  public async getFloors (): Promise<boolean> {
+    if (!this.request) return false
+    let hasNext = false
+    await this.request.request().then((v) => {
       this.floors.forEach((floor) => {
         if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
+        console.log(floor)
         setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
       })
+      hasNext = v
     }).catch((error) => {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
       else this.messageError(error.response.data.msg)
     })
+    return hasNext
   }
 
   // Create a new floor.
@@ -142,7 +144,7 @@ export default class DiscussionMixin extends BaseComponentOrView {
         })
         .then(() => {
           this.loading.isLoading = true
-          this.getPosts()
+          this.getFloors()
           this.replyFloor = null // Clear the reply info.
           this.editor.setContent('') // Clear the reply editor.
         })
