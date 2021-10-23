@@ -1,30 +1,7 @@
 <template>
   <v-container>
-    <!-- 警告信息 -->
-    <message ref='message' />
-
     <!-- 新用户欢迎信息 -->
     <newcomer />
-
-    <!-- 标签筛选器 -->
-    <v-row justify='center' class='ma-0' v-if='filtedTag'>
-      <v-col cols='12' sm='10' md='9' lg='7' xl='5'>
-        <v-card>
-          <v-card-text>
-            <v-chip
-              :color='filtedTag.color'
-              outlined
-              class='mx-1 my-1'
-              small
-              ripple
-              @click.stop='reloadHome()'
-            >
-              {{ filtedTag.name }}
-            </v-chip>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
 
     <!-- 帖子列表 -->
     <DiscussionComponent v-if='!isMobile' ref='holeComp' @show-discussion-changed='onShowFloatBtnChanged' />
@@ -141,7 +118,6 @@
 
 <script lang='ts'>
 import Editor from '@/components/Editor.vue'
-import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
 import DiscussionComponent from '@/components/Discussion/DiscussionComponent.vue'
 import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile.vue'
@@ -152,7 +128,6 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 @Component({
   components: {
     Editor,
-    Message,
     Newcomer,
     DiscussionComponent,
     DiscussionListMobile
@@ -187,7 +162,6 @@ export default class Home extends BaseComponentOrView {
 
   public reloadHome (): void {
     this.filtedTag = null
-    this.holeComp.tagName = null
     this.holeComp.refresh()
   }
 

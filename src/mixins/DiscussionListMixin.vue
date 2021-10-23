@@ -1,9 +1,9 @@
 <script lang='ts'>
 import debounce from 'lodash.debounce'
-import { camelizeKeys } from '@/utils'
 import { Component, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/components/Discussion/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { ArrayRequest, CollectionHoleListRequest, HomeHoleListRequest } from '@/api'
 
 @Component
 export default class DiscussionListMixin extends BaseComponentOrView {
@@ -11,16 +11,16 @@ export default class DiscussionListMixin extends BaseComponentOrView {
   public discussions: Array<WrappedHole> = []
   public startTime: Date = new Date()
 
-  public tagName = null
   public debouncedCalculateLines: Function
-  lineHeight: number = 10
+  public lineHeight: number = 10
+
+  public request: ArrayRequest<WrappedHole>
 
   /**
    * Clear the hole list and reload.
    */
   public refresh (): void {
-    this.discussions = []
-    this.startTime = new Date()
+    this.request.clear()
     this.getDiscussions()
   }
 
@@ -36,27 +36,10 @@ export default class DiscussionListMixin extends BaseComponentOrView {
   }
 
   public getDiscussions () {
-    return this.$axios
-      .get('holes', {
-        params: {
-          start_time: this.startTime.toISOString(),
-          length: 10,
-          prefetch_length: 8,
-          division_id: 1
-        }
-      })
-      .then((response) => {
-        response.data.forEach((holeItem: any) => {
-          if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
-          const hole = new WrappedHole(camelizeKeys(holeItem))
-          this.discussions.push(hole)
-        })
-        this.startTime = new Date(this.discussions[this.discussions.length - 1].hole.timeUpdated)
-      })
-      .catch((error) => {
-        if (error.response === undefined) this.messageError('data: ' + JSON.stringify(error))
-        else if (error.response.data) this.messageError(error.response.data.msg)
-      })
+    this.request.request().catch((error) => {
+      if (error.response === undefined) this.messageError(JSON.stringify(error))
+      else this.messageError(error.response.data.msg)
+    })
   }
 
   @Watch('discussions')
@@ -78,6 +61,12 @@ export default class DiscussionListMixin extends BaseComponentOrView {
 
   created () {
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
+    if (this.$route.name === 'home') {
+      this.request = new HomeHoleListRequest()
+    } else if (this.$route.name === 'collections') {
+      this.request = new CollectionHoleListRequest()
+    }
+    this.discussions = this.request.datas
   }
 }
 </script>

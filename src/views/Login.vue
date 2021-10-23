@@ -1,8 +1,5 @@
 <template>
   <v-container fill-height>
-    <!-- 警告信息 -->
-    <message ref='message'></message>
-
     <v-row align='center' justify='center'>
       <v-col cols='10' sm='8' md='6' lg='4' class='text-center'>
         <v-card class='py-8' elevation='4'>
@@ -69,14 +66,11 @@
 </template>
 
 <script lang='ts'>
-import Message from '@/components/Message.vue'
 import { Component, Watch } from 'vue-property-decorator'
 import debounce from 'lodash.debounce'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
-@Component({
-  components: { Message }
-})
+@Component
 export default class Login extends BaseComponentOrView {
   public alert = false
 

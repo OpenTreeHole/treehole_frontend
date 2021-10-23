@@ -27,11 +27,11 @@
 <script lang='ts'>
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { ArrayRequest } from '@/api'
 
 @Component
 export default class Loading extends BaseComponentOrView {
-  @Prop({ required: true, type: Number }) length!: number
-  @Prop({ required: true, type: Function }) readonly loadList!: Function
+  @Prop({ required: true, type: Object }) request: ArrayRequest<any>
 
   // 加载状态
   public hasNext = true
@@ -39,7 +39,11 @@ export default class Loading extends BaseComponentOrView {
 
   public onIntersect (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void {
     if (entries[0].isIntersecting) {
-      this.load()
+      this.load().catch((error) => {
+        console.log(error)
+        if (error.response === undefined) this.messageError(JSON.stringify(error))
+        else this.messageError(error.response.data.msg)
+      })
     }
   }
 
@@ -48,15 +52,8 @@ export default class Loading extends BaseComponentOrView {
       return
     }
     this.isLoading = true
-    const beforeLength = this.length
-    await this.loadList()
-    const afterLength = this.length
+    this.hasNext = await this.request.request()
     this.isLoading = false
-    if (beforeLength === afterLength) {
-      this.hasNext = false
-      return
-    }
-    this.hasNext = true
   }
 
   @Watch('length')

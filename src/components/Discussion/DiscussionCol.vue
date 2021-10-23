@@ -102,11 +102,7 @@
       </v-dialog>
 
       <!-- 载入中信息 -->
-      <loading
-        ref='loading'
-        :length='floors.length'
-        :loadList='getPosts'
-      ></loading>
+      <loading :request='request' ref='loading' />
     </v-container>
   </v-col>
 </template>
@@ -118,6 +114,7 @@ import DiscussionMixin from '@/mixins/DiscussionMixin.vue'
 import { Component, Prop } from 'vue-property-decorator'
 import { WrappedHole } from '@/components/Discussion/hole'
 import Mention from '@/components/Discussion/Mention.vue'
+import { FloorListRequest } from '@/api'
 
 @Component({
   components: {
@@ -135,7 +132,8 @@ export default class DiscussionCol extends DiscussionMixin {
 
   created () {
     this.hole = this.wrappedHole
-    this.getPosts()
+    this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId)
+    this.floors = this.request.datas
   }
 }
 </script>

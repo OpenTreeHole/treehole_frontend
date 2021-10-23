@@ -8,6 +8,7 @@ import About from '@/views/About.vue'
 import license from '@/views/License.vue'
 import Search from '@/views/Search.vue'
 import Me from '@/views/Me.vue'
+import Collections from '@/views/Collections.vue'
 
 Vue.use(VueRouter)
 
@@ -15,6 +16,7 @@ const routes = [
   { path: '/license', meta: { title: '协议' }, component: license, name: 'license' },
   { path: '/home', meta: { title: '首页' }, component: Home, name: 'home' },
   { path: '/login', meta: { title: '登录' }, component: Login, name: 'login' },
+  { path: '/collections', meta: { title: '收藏' }, component: Collections, name: 'collections' },
   { path: '/', redirect: '/home' },
   { path: '/about', meta: { title: '关于' }, component: About, name: 'about' },
   { path: '/register', meta: { title: '注册' }, component: Register, name: 'register' },

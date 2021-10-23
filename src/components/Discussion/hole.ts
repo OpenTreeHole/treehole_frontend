@@ -31,7 +31,7 @@ export class NativeFloor implements Floor {
   timeUpdated: string
 }
 
-export interface DetailedFloor extends Floor{
+export interface DetailedFloor extends Floor {
   isMe: boolean
   liked: boolean
   mention: Array<Floor>
@@ -75,5 +75,10 @@ export class WrappedHole {
     this.firstFloor.content = marked(this.firstFloor.content)
     this.lastFloor.content = marked(this.lastFloor.content)
     this.isFolded = this.firstFloor.fold.length > 0
+    hole.tags.forEach((v: Tag) => {
+      if (v.name.charAt(0) === '*') {
+        this.isFolded = true
+      }
+    })
   }
 }

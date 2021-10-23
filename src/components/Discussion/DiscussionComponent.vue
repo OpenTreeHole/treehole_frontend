@@ -28,9 +28,10 @@ import DiscussionList from '@/components/Discussion/DiscussionList.vue'
 import Discussion from '@/components/Discussion/DiscussionCol.vue'
 
 import { gsap } from 'gsap'
-import { Component, Emit, Ref, Watch } from 'vue-property-decorator'
+import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/components/Discussion/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { HomeHoleListRequest } from '@/api'
 
 @Component({
   components: {
@@ -49,16 +50,13 @@ export default class DiscussionComponent extends BaseComponentOrView {
   public viewport = 0
   public isLoadingVisible = false
   public displayHole: WrappedHole | null = null
+  public wheelListener = (e: WheelEvent) => {
+    if (this.isActive === 'right' && this.isEnd === 'end') {
+      this.ScrollDiscussionList(e)
+    }
+  }
 
   @Ref() readonly holeList: DiscussionList
-
-  get tagName (): any {
-    return this.holeList.tagName
-  }
-
-  set tagName (val) {
-    this.holeList.tagName = val
-  }
 
   public refresh (): void {
     this.holeList.refresh()
@@ -128,14 +126,14 @@ export default class DiscussionComponent extends BaseComponentOrView {
 
   mounted () {
     this.viewport = window.innerHeight
-    window.addEventListener('wheel', (e) => {
-      if (this.isActive === 'right' && this.isEnd === 'end') {
-        this.ScrollDiscussionList(e)
-      }
-    })
+    window.addEventListener('wheel', this.wheelListener)
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight
     })
+  }
+
+  destroyed () {
+    window.removeEventListener('wheel', this.wheelListener)
   }
 
   @Watch('showDiscussion')

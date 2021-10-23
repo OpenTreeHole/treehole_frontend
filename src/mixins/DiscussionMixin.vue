@@ -8,6 +8,7 @@ import { camelizeKeys } from '@/utils'
 import Mention from '@/components/Discussion/Mention.vue'
 import vuetify from '@/plugins/vuetify'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { ArrayRequest } from '@/api'
 
 @Component
 export default class DiscussionMixin extends BaseComponentOrView {
@@ -22,6 +23,8 @@ export default class DiscussionMixin extends BaseComponentOrView {
   // content: '',
   public requiredRules = [(v: any) => !!v || '内容不能为空']
   public valid = true
+
+  public request: ArrayRequest<Floor>
 
   @Ref() readonly form!: HTMLFormElement
   @Ref() readonly editor!: Editor
@@ -115,35 +118,16 @@ export default class DiscussionMixin extends BaseComponentOrView {
   /**
    * Get floors from backend.
    */
-  public getPosts (): Promise<any> {
-    return this.$axios
-      .get('/floors', {
-        params: {
-          hole_id: this.computedDiscussionId,
-          start_floor: this.loadedLength,
-          length: 10
-        }
+  public getPosts (): void {
+    this.request.request().then(() => {
+      this.floors.forEach((floor) => {
+        if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
+        setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
       })
-      .then((response) => {
-        let index = response.config.params.start_floor
-        response.data.forEach((floorItem: any) => {
-          const floor: DetailedFloor = camelizeKeys(floorItem)
-          floor.mention.push(floor)
-          floor.content = this.mentioned(floor.content)
-          if (this.floors.length > index) {
-            this.floors[index] = floor
-          } else {
-            this.floors.push(floor)
-          }
-          index++
-          if (index > this.loadedLength) this.loadedLength = index
-          setTimeout(() => this.renderMention(floor), 100)
-        })
-      })
-      .catch((error) => {
-        if (error.response === undefined) this.messageError(JSON.stringify(error))
-        else this.messageError(error.response.data.msg)
-      })
+    }).catch((error) => {
+      if (error.response === undefined) this.messageError(JSON.stringify(error))
+      else this.messageError(error.response.data.msg)
+    })
   }
 
   // Create a new floor.
@@ -204,7 +188,6 @@ export default class DiscussionMixin extends BaseComponentOrView {
    * @param curFloor - the current floor (waiting the mention part in it to be re-rendered).
    */
   public renderMention (curFloor: DetailedFloor): void {
-    if (!('mention' in curFloor) || curFloor.mention.length === 0) return
     const curIndex = this.getIndex(curFloor.floorId)
     const elements = document.querySelectorAll('div[index="' + curIndex + '"] > div.replyDiv')
     for (let i = 0; i < elements.length; i++) {

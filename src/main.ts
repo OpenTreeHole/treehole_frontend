@@ -16,6 +16,7 @@ import FDUHoleFEConfig from './fduhole-fe.config.js'
 
 // 引入实用工具
 import FEUtils from './utils.js'
+import setApiAxios from '@/api'
 
 // require styles
 import 'quill/dist/quill.core.css'
@@ -35,6 +36,7 @@ axios.interceptors.request.use(config => {
   return config
 })
 Vue.prototype.$axios = axios
+setApiAxios(axios)
 
 Vue.use(VueCookies)
 Vue.use(plugins)

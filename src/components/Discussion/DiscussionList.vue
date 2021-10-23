@@ -16,7 +16,7 @@
     <v-row>
       <v-col>
         <!-- 载入中信息 -->
-        <loading :length='discussions.length' :loadList='getDiscussions' ref='loading' />
+        <loading :request='request' ref='loading' />
       </v-col>
     </v-row>
   </v-container>
