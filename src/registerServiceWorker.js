@@ -1,13 +1,13 @@
 /* eslint-disable no-console */
 import { register } from 'register-service-worker';
 // eslint-disable-next-line no-unused-vars
-const notifyOffline = async function (data) {
-    if (Notification.permission === 'default') {
-        await Notification.requestPermission();
-    }
-    // eslint-disable-next-line no-new
-    new Notification('网络已断开', { body: '正在以离线模式浏览' });
-};
+// const notifyOffline = async function (data) {
+//   if (Notification.permission === 'default') {
+//     await Notification.requestPermission()
+//   }
+//   // eslint-disable-next-line no-new
+//   new Notification('网络已断开', { body: '正在以离线模式浏览' })
+// }
 if (process.env.NODE_ENV === 'production') {
     register(`${process.env.BASE_URL}service-worker.js`, {
         ready() {

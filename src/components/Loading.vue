@@ -25,12 +25,13 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator'
+import { Component, Prop, Watch } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { ArrayRequest } from '@/api'
 
 @Component
-export default class Loading extends Vue {
-  @Prop({ required: true, type: Number }) length!: number
-  @Prop({ required: true, type: Function }) readonly loadList!: Function
+export default class Loading extends BaseComponentOrView {
+  @Prop({ required: true, type: Object }) request: ArrayRequest<any>
 
   // 加载状态
   public hasNext = true
@@ -38,7 +39,11 @@ export default class Loading extends Vue {
 
   public onIntersect (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void {
     if (entries[0].isIntersecting) {
-      this.load()
+      this.load().catch((error) => {
+        console.log(error)
+        if (error.response === undefined) this.messageError(JSON.stringify(error))
+        else this.messageError(error.response.data.msg)
+      })
     }
   }
 
@@ -47,27 +52,13 @@ export default class Loading extends Vue {
       return
     }
     this.isLoading = true
-    const beforeLength = this.length
-    await this.loadList()
-    const afterLength = this.length
+    this.hasNext = await this.request.request()
     this.isLoading = false
-    if (afterLength < 10) {
-      this.hasNext = false
-      return
-    }
-    if (beforeLength === afterLength) {
-      this.hasNext = false
-      return
-    }
-    this.hasNext = true
   }
 
   @Watch('length')
   lengthChanged () {
     this.isLoading = false
-    if (this.length % 10 !== 0) {
-      this.hasNext = false
-    }
   }
 }
 </script>

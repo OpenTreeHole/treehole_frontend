@@ -1,5 +1,5 @@
 <template>
-  <v-container style='overflow: visible' v-click-outside='DeActivateWhenClickEmptyArea'>
+  <v-container v-click-outside='()=>deactivate(displayCardId)' style='overflow: visible'>
     <v-row justify='center' class='ma-0'>
       <v-col class='mb-5 transrow'
              :class='isActive+" "+isEnd+" "+isStatic'
@@ -9,17 +9,15 @@
              @wheel='ScrollDiscussionListWhenActive'
       >
         <DiscussionList
-          :activate='Activate'
-          :api='api'
-          ref='discussionList'
-          @add-tag='addTag'
+          :activate='openHole'
+          ref='holeList'
         />
       </v-col>
       <v-col v-if='displayCardId!==-1 && showDiscussion' class='mb-5' cols='5' />
       <Discussion
         v-if='displayCardId!==-1 && showDiscussion'
         :key='displayCardId'
-        :discussionId='displayCardId'
+        :wrapped-hole='displayHole'
       />
     </v-row>
   </v-container>
@@ -30,7 +28,10 @@ import DiscussionList from '@/components/Discussion/DiscussionList.vue'
 import Discussion from '@/components/Discussion/DiscussionCol.vue'
 
 import { gsap } from 'gsap'
-import { Component, Emit, Prop, Vue, Watch } from 'vue-property-decorator'
+import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
+import { WrappedHole } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { HomeHoleListRequest } from '@/api'
 
 @Component({
   components: {
@@ -38,8 +39,7 @@ import { Component, Emit, Prop, Vue, Watch } from 'vue-property-decorator'
     DiscussionList
   }
 })
-export default class DiscussionComponent extends Vue {
-  @Prop({ required: true, type: String }) api: string
+export default class DiscussionComponent extends BaseComponentOrView {
   public isActive = 'right'
   public isEnd = 'end'
   public isStatic = ''
@@ -49,28 +49,25 @@ export default class DiscussionComponent extends Vue {
   public marginTopY = 0
   public viewport = 0
   public isLoadingVisible = false
-
-  $refs: {
-    discussionList: DiscussionList
+  public displayHole: WrappedHole | null = null
+  public wheelListener = (e: WheelEvent) => {
+    if (this.isActive === 'right' && this.isEnd === 'end') {
+      this.ScrollDiscussionList(e)
+    }
   }
 
-  get tagName (): any {
-    return this.$refs.discussionList.tagName
-  }
-
-  set tagName (val) {
-    this.$refs.discussionList.tagName = val
-  }
+  @Ref() readonly holeList: DiscussionList
 
   public refresh (): void {
-    this.$refs.discussionList.refresh()
+    this.holeList.refresh()
   }
 
-  @Emit()
-  public addTag (tag: { color: string, count: number, name: string }) {
+  public openHole (wrappedHole: WrappedHole): void {
+    this.displayHole = wrappedHole
+    this.activate(wrappedHole.hole.holeId)
   }
 
-  public Activate (id: number): void {
+  public activate (id: number): void {
     if (this.isActive === 'right') {
       this.isActive = 'left'
       this.isEnd = ''
@@ -98,6 +95,7 @@ export default class DiscussionComponent extends Vue {
     if (this.isActive === 'left') {
       document.body.scrollTop = document.documentElement.scrollTop = 0
       this.showDiscussion = true
+    } else {
     }
   }
 
@@ -105,7 +103,7 @@ export default class DiscussionComponent extends Vue {
     const ratio = 0.7
     this.marginTopY = (this.marginTopY > -e.deltaY * ratio ? this.marginTopY + e.deltaY * ratio : 0)
 
-    const height = this.$refs.discussionList.height()
+    const height = this.holeList.getHeight()
 
     // console.log('1: ' + this.marginTopY + ';2: ' + this.viewport + ';3: ' + height)
     if (this.marginTopY + this.viewport > height + 300) {
@@ -113,38 +111,34 @@ export default class DiscussionComponent extends Vue {
     }
   }
 
-  public ScrollDiscussionListWhenActive (e: WheelEvent): void {
+  public ScrollDiscussionListWhenActive (e: any): void {
     if (this.isActive === 'left' || this.isEnd !== 'end') {
       e.preventDefault()
       this.ScrollDiscussionList(e)
     }
   }
 
-  public DeActivate (id: number): void {
+  public deactivate (id: number): void {
     if (this.displayCardId !== -1) {
-      this.Activate(id)
+      this.activate(id)
     }
-  }
-
-  public DeActivateWhenClickEmptyArea (): void {
-    this.DeActivate(this.displayCardId)
   }
 
   mounted () {
     this.viewport = window.innerHeight
-    window.addEventListener('wheel', (e) => {
-      if (this.isActive === 'right' && this.isEnd === 'end') {
-        this.ScrollDiscussionList(e)
-      }
-    })
+    window.addEventListener('wheel', this.wheelListener)
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight
     })
   }
 
+  destroyed () {
+    window.removeEventListener('wheel', this.wheelListener)
+  }
+
   @Watch('showDiscussion')
   @Emit()
-  showDiscussionChanged (val: boolean) {
+  showDiscussionChanged (_val: boolean) {
   }
 
   @Watch('marginTopY')

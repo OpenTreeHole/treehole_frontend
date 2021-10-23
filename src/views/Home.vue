@@ -1,35 +1,11 @@
 <template>
   <v-container>
-    <!-- 警告信息 -->
-    <message ref='message'></message>
-
     <!-- 新用户欢迎信息 -->
-    <newcomer></newcomer>
-
-    <!-- 标签筛选器 -->
-    <v-row justify='center' class='ma-0' v-if='filtedTag'>
-      <v-col cols='12' sm='10' md='9' lg='7' xl='5'>
-        <v-card>
-          <v-card-text>
-            <v-chip
-              :color='filtedTag.color'
-              outlined
-              class='mx-1 my-1'
-              small
-              ripple
-              @click.stop='reloadHome()'
-            >
-              {{ filtedTag.name }}
-            </v-chip>
-          </v-card-text>
-        </v-card>
-      </v-col>
-    </v-row>
+    <newcomer />
 
     <!-- 帖子列表 -->
-    <DiscussionComponent v-if='!_isMobile' ref='discussions' api='discussions/'
-                         @add-tag='addTag' @show-discussion-changed='onShowFloatBtnChanged' />
-    <DiscussionListMobile v-else ref='discussions' api='discussions/' @add-tag='addTag' />
+    <DiscussionComponent v-if='!isMobile' ref='holeComp' @show-discussion-changed='onShowFloatBtnChanged' />
+    <DiscussionListMobile v-else ref='holeComp' />
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div class='float-btn' v-show='showFloatBtn'>
@@ -83,7 +59,7 @@
                     :disabled='data.disabled'
                     @click:close='data.parent.selectItem(data.item)'
                     outlined
-                    :color='data.item.color'
+                    color='red'
                     small
                   >
                     {{ data.item.name }}
@@ -91,7 +67,7 @@
                       <v-icon x-small>mdi-fire</v-icon>
                     </span>
                     <span>
-                      {{ data.item.count }}
+                      {{ data.item.temperature }}
                     </span>
                   </v-chip>
                 </template>
@@ -99,13 +75,13 @@
                 <!-- 自定义下拉框样式 -->
                 <template v-slot:item='data'>
                   <v-list-item-content>
-                    <span :class="data.item.color + '--text'">
+                    <span :class="'red' + '--text'">
                       {{ data.item.name }}
-                      <v-icon :color='data.item.color' class='tag-icon' small
+                      <v-icon color='red' class='tag-icon' small
                       >mdi-fire</v-icon
                       >
                       <span class='tag-count'>
-                        {{ data.item.count }}
+                        {{ data.item.temperature }}
                       </span>
                     </span>
                   </v-list-item-content>
@@ -129,7 +105,7 @@
               color='primary'
               text
               :disabled='!valid'
-              @click='addDiscussion'
+              @click='addHole'
             >
               发送
             </v-btn>
@@ -142,28 +118,28 @@
 
 <script lang='ts'>
 import Editor from '@/components/Editor.vue'
-import Message from '@/components/Message.vue'
 import Newcomer from '@/components/Newcomer.vue'
 import DiscussionComponent from '@/components/Discussion/DiscussionComponent.vue'
 import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile.vue'
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Ref, Watch } from 'vue-property-decorator'
+import { Tag } from '@/components/Discussion/hole'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: {
     Editor,
-    Message,
     Newcomer,
     DiscussionComponent,
     DiscussionListMobile
   }
 })
-export default class Home extends Vue {
+export default class Home extends BaseComponentOrView {
   public lineHeight = 0
   public scrollTop = 0
   // 发帖表单
   public content = ''
-  public tags: Array<any> = []
-  public selectedTags: Array<any> = []
+  public tags: Array<Tag> = []
+  public selectedTags: Array<Tag> = []
   public filtedTag: { color: string, count: number, name: string } | null = null
   public dialog = false
   public tagRules = [
@@ -175,44 +151,22 @@ export default class Home extends Vue {
   public valid = true
   public params = {}
   public showFloatBtn = true
-  public escListener = (e: KeyboardEvent) => {
-    if (e && e.key === 'Escape') { // 按Esc
-      this.closeDialog()
-    }
-  }
 
-  public instance: Home = this
-
-  $refs: {
-    discussions: DiscussionComponent | DiscussionListMobile
-    editor: Editor
-    form: HTMLFormElement
-  }
+  @Ref() readonly holeComp!: DiscussionComponent | DiscussionListMobile
+  @Ref() readonly editor!: Editor
+  @Ref() readonly form!: HTMLFormElement
 
   get contentName (): string {
     return 'home-content'
   }
 
-  get _isMobile (): boolean {
-    // console.log(navigator.userAgent)
-    // return navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
-    return document.body.clientWidth <= 768
-  }
-
-  public addTag (tag: { color: string, count: number, name: string }): void {
-    this.filtedTag = tag
-    this.$refs.discussions.tagName = this.filtedTag.name
-    this.$refs.discussions.refresh()
-  }
-
   public reloadHome (): void {
     this.filtedTag = null
-    this.$refs.discussions.tagName = null
-    this.$refs.discussions.refresh()
+    this.holeComp.refresh()
   }
 
   public editorError (msg: string): void {
-    this.$store.dispatch('messageError', msg)
+    this.messageError(msg)
   }
 
   public randomColor (): string {
@@ -251,44 +205,45 @@ export default class Home extends Vue {
     this.valid = true
   }
 
-  public addDiscussion (): void {
-    if (this.$refs.form.validate() && this.$refs.editor.validate()) {
-      // 先关闭对话框,优化用户体验
+  /**
+   * Send request to add a new hole.
+   */
+  public addHole (): void {
+    if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
-      // 发送请求
       this.$axios
-        .post('discussions/', {
-          content: this.$refs.editor.getContent(),
-          tags: this.selectedTags
+        .post('/holes', {
+          content: this.editor.getContent(),
+          division_id: 1,
+          tag_names: this.selectedTags.map(v => v.name)
         })
         .then((response) => {
           console.log(response.data)
-          this.$store.dispatch('messageSuccess', '发送成功')
-          // 重新加载页面
-          this.$refs.discussions.refresh()
-          // 重置表单内容
-          this.$refs.editor.setContent('')
+          this.messageSuccess('发送成功')
+          this.holeComp.refresh() // reload the hole list
+          this.editor.setContent('')
           this.tags = []
           this.selectedTags = []
         })
         .catch((error) => {
           console.log(error.response)
-          this.$store.dispatch('messageError', error.response.data.msg)
+          this.messageError(error.response.data.msg)
         })
-      // 发送完请求后，刷新讨论页面以让用户能看到自己的消息，并弹出发帖成功通知
     }
   }
 
+  /**
+   * Get the tag list from the backend.
+   */
   public getTags (): void {
-    // 获取 所有的 tags
     this.$axios
-      .get('tags/')
+      .get('/tags')
       .then((response) => {
         this.tags = response.data
       })
       .catch((response) => {
         console.log(response.data)
-        this.$store.dispatch('messageError', response.data.msg)
+        this.messageError(response.data.msg)
       })
   }
 
@@ -296,19 +251,24 @@ export default class Home extends Vue {
     this.showFloatBtn = !val
   }
 
-  mounted () {
-    window.addEventListener('keydown', this.escListener)
+  public mounted () {
+    this.$nextTick(() => {
+      this.checkDevice()
+    })
+    window.addEventListener('resize', () => {
+      this.checkDevice()
+    })
   }
 
-  destroyed () {
-    window.removeEventListener('keydown', this.escListener)
+  public destroyed () {
+    window.removeEventListener('resize', this.checkDevice)
   }
 
   @Watch('selectedTags')
   selectedTagsChanged () {
     for (let i = 0; i < this.selectedTags.length; i++) {
       if (typeof this.selectedTags[i] !== 'object') {
-        const tagStr = this.selectedTags[i].trim()
+        const tagStr = this.selectedTags[i].name.trim()
         // 校验新增的 tag
         if (tagStr.length > 8) {
           this.errorMsg.tags = '标签不能超过8个字符'
@@ -330,8 +290,8 @@ export default class Home extends Vue {
           this.errorMsg.tags = ''
           this.selectedTags[i] = {
             name: tagStr,
-            color: this.randomColor(),
-            count: 0
+            temperature: 0,
+            tagId: -1
           }
         }
       }

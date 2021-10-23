@@ -1,5 +1,5 @@
 <template>
-  <v-container :options='option' id='discussionList'>
+  <v-container id='discussionList' class='pa-0'>
     <v-row
       v-for='(discussion, index) in discussions'
       :key='index'
@@ -9,18 +9,14 @@
           :discussion='discussion'
           :index='index'
           :activate='activate'
-          :style-data='styleData[index]'
-          @add-tag='addTag'
-          @change-fold-status='changeFoldStatus'
           @refresh='refresh'
-          @change-order='this.order=value'
         />
       </v-col>
     </v-row>
     <v-row>
       <v-col>
         <!-- 载入中信息 -->
-        <loading :length='discussions.length' :loadList='getDiscussions' ref='loading' />
+        <loading :request='request' ref='loading' />
       </v-col>
     </v-row>
   </v-container>
@@ -39,24 +35,18 @@ import { Component, Prop } from 'vue-property-decorator'
   }
 })
 export default class DiscussionList extends DiscussionListMixin {
-  public option = {
-    className: 'os-theme-dark',
-    sizeAutoCapable: true,
-    paddingAbsolute: true,
-    scrollbars: {
-      clickScrolling: true
-    }
-  }
-
   @Prop({
     required: true,
     type: Function
   }) readonly activate: Function | undefined
 
-  public height (): number {
-    const discussionListElement = document.getElementById('discussionList')
-    if (!discussionListElement) return 0
-    return parseInt(window.getComputedStyle(discussionListElement).height)
+  /**
+   * Calculate the height of the hole list.
+   */
+  public getHeight (): number {
+    const holeListElement = document.getElementById('discussionList')
+    if (!holeListElement) return 0
+    return parseInt(window.getComputedStyle(holeListElement).height)
   }
 }
 </script>

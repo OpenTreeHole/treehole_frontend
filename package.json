@@ -1,6 +1,6 @@
 {
   "name": "fduhole-fe",
-  "version": "0.4.0",
+  "version": "0.6.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -8,10 +8,12 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "@types/lodash.clonedeep": "^4.5.6",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
     "gsap": "^3.8.0",
     "highlight.js": "^10.6.0",
+    "lodash.clonedeep": "^4.5.0",
     "lodash.debounce": "^4.0.8",
     "marked": "^3.0.7",
     "quill-image-resize-module": "^3.0.0",
@@ -25,7 +27,8 @@
     "vue-property-decorator": "^9.1.2",
     "vue-router": "^3.2.0",
     "vuetify": "^2.4.0",
-    "vuex": "^3.6.2"
+    "vuex": "^3.6.2",
+    "vuex-module-decorators": "^1.0.1"
   },
   "devDependencies": {
     "@types/lodash.debounce": "^4.0.6",

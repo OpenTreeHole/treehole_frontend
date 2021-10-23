@@ -1,8 +1,5 @@
 <template>
   <v-container fill-height>
-    <!-- 警告信息 -->
-    <message ref='message'></message>
-
     <v-row align='center' justify='center'>
       <v-col cols='10' sm='8' md='6' lg='4' class='text-center'>
         <v-card class='py-8' elevation='4'>
@@ -10,12 +7,13 @@
           <v-form ref='form' v-model='valid' lazy-validation>
             <div class='pl-7 pr-10'>
               <v-text-field
-                v-model='username'
-                label='用户名'
-                prepend-icon='mdi-account'
+                v-model='email'
+                label='edu邮箱'
+                prepend-icon='mdi-email'
                 :clearable='!valid'
-                :counter='16'
-                :rules='nameRules'
+                :counter='32'
+                :error-messages='errorMsg.email'
+                :rules='notEmptyRules'
               />
 
               <v-text-field
@@ -68,31 +66,35 @@
 </template>
 
 <script lang='ts'>
-import Message from '@/components/Message.vue'
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
+import debounce from 'lodash.debounce'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
-@Component({
-  components: { Message }
-})
-export default class Login extends Vue {
+@Component
+export default class Login extends BaseComponentOrView {
   public alert = false
 
   public valid = true
 
-  public username = ''
+  public email = ''
 
   public password = ''
 
-  public nameRules = [
-    (v: any) => !!v || '用户名不能为空',
-    (v: any) => v.length <= 16 || '用户名不能超过16字符'
-  ]
+  public notEmptyRules: Array<Function> = [(v: string) => !!v || '内容不能为空']
 
   public passwordRules = [
-    (v: any) => !!v || '密码不能为空',
-    (v: any) => v.length <= 32 || '密码不能超过32字符',
-    (v: any) => v.length >= 8 || '密码不能少于8字符'
+    (v: string) => !!v || '密码不能为空',
+    (v: string) => v.length <= 32 || '密码不能超过32字符',
+    (v: string) => v.length >= 8 || '密码不能少于8字符'
   ]
+
+  public errorMsg: {
+    email: string
+  } = {
+    email: ''
+  }
+
+  public debouncedCheckEmail: Function
 
   $refs: {
     form: HTMLFormElement
@@ -101,19 +103,42 @@ export default class Login extends Vue {
   public login (): void {
     this.$refs.form.validate()
     this.$axios
-      .post('login/', {
-        username: this.username,
+      .post('login', {
+        email: this.email,
         password: this.password
       })
       .then((response) => {
-        localStorage.setItem('token', 'Token ' + response.data.token)
-        localStorage.setItem('username', this.username)
-        this.$router.replace('/home')
+        if (response.data.message === '登录成功！') {
+          this.messageSuccess(response.data.message)
+          localStorage.setItem('token', 'token ' + response.data.token)
+          localStorage.setItem('email', this.email)
+          this.$router.replace('/home')
+        } else {
+          this.valid = false
+          this.messageError(response.data.message)
+        }
       })
       .catch(() => {
         this.valid = false
-        this.$store.dispatch('messageError', '用户名或密码错误')
+        this.messageError('用户名或密码错误')
       })
+  }
+
+  public checkEmail (): void {
+    if (!/^[0-9]{11}@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
+      this.errorMsg.email = '@fudan.edu.cn'
+    } else {
+      this.errorMsg.email = ''
+    }
+  }
+
+  @Watch('email')
+  emailChanged () {
+    this.debouncedCheckEmail()
+  }
+
+  created () {
+    this.debouncedCheckEmail = debounce(this.checkEmail, 500)
   }
 }
 </script>

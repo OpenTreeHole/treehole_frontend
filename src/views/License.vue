@@ -21,10 +21,12 @@
 </template>
 
 <script lang='ts'>
-import { Component, Vue } from 'vue-property-decorator'
+import marked from 'marked'
+import { Component } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class License extends Vue {
+export default class License extends BaseComponentOrView {
   public licenses:Array<any> = []
 
   created () {
@@ -43,7 +45,7 @@ export default class License extends Vue {
           .then((response: { data: any }) => {
             this.licenses.push({
               title: license.name,
-              content: this.$marked(response.data)
+              content: marked(response.data)
             })
           })
           .catch((error: { message: string }) => {

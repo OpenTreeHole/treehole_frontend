@@ -16,6 +16,7 @@ import FDUHoleFEConfig from './fduhole-fe.config.js'
 
 // 引入实用工具
 import FEUtils from './utils.js'
+import setApiAxios from '@/api'
 
 // require styles
 import 'quill/dist/quill.core.css'
@@ -23,33 +24,35 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
 
-Vue.prototype.$marked = marked
 Vue.prototype.$feConfig = FDUHoleFEConfig
 Vue.prototype.$feUtils = FEUtils
 
 Vue.config.productionTip = false
 
 axios.defaults.baseURL = FDUHoleFEConfig.backEndApi
-// axios.defaults.withCredentials = true
 axios.interceptors.request.use(config => {
+  // Put token into header.
   config.headers.Authorization = localStorage.getItem('token')
   return config
 })
 Vue.prototype.$axios = axios
+setApiAxios(axios)
 
 Vue.use(VueCookies)
 Vue.use(plugins)
 Vue.use(Viewer)
 
 Vue.filter('plainText', function (html: string) {
-  return html.replace(/<img.*?>/g, '[图片]').replace(/<.*?>/g, ' ')
+  return html.replace(/<img.*?>/g, '[图片]')
+    .replace(/<.*?>/g, ' ')
+    .replace(/#\w+/g, (v) => '[回复' + v + ']')
 })
 
 Vue.filter('timeDifference', function (datestr: string) {
   const date = new Date(datestr)
   const now = new Date()
 
-  let seconds = now.getSeconds() - date.getSeconds()
+  let seconds = ((now.getTime() - date.getTime()) / 1000)
 
   if (seconds < 0) {
     seconds = 0
@@ -75,11 +78,3 @@ new Vue({
   store,
   render: h => h(App)
 }).$mount('#app')
-
-// new Vue({
-//   el: '#app',
-//   router,
-//   axios,
-//   components: { App },
-//   template: '<App/>'
-// })

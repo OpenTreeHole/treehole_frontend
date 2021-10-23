@@ -1,7 +1,7 @@
 <template>
   <div class='navbar'>
-    <v-system-bar app color='primary'></v-system-bar>
-    <v-app-bar app dark color='primary' dense flat style='float: top'>
+    <!--    <v-system-bar app color='primary'></v-system-bar>-->
+    <v-app-bar app elevate-on-scroll dark color='primary' dense flat>
       <v-app-bar-nav-icon
         v-if='!inBanMenuRoutes'
         icon
@@ -18,7 +18,7 @@
 
     <!-- 侧栏抽屉 -->
     <v-navigation-drawer app v-model='showSidebar'>
-      <div class='iphone-fitter'></div>
+      <div class='iphone-fitter' />
 
       <v-list-item color='primary'>
         <v-list-item-content>
@@ -39,16 +39,16 @@
             :disabled='i === currentPage'
           >
             <v-list-item-icon>
-              <v-icon v-text='item.icon'></v-icon>
+              <v-icon v-text='item.icon' />
             </v-list-item-icon>
             <v-list-item-content>
-              <v-list-item-title v-text='item.title'></v-list-item-title>
+              <v-list-item-title v-text='item.title' />
             </v-list-item-content>
           </v-list-item>
         </v-list-item-group>
       </v-list>
 
-      <v-divider></v-divider>
+      <v-divider />
       <v-list style='padding: 5px'>
         <!-- 搜索 -->
         <v-list-item>
@@ -97,24 +97,29 @@
 
       <!-- 侧栏底部工具按钮 -->
       <div class='drawer-bottom-container'>
-        <v-btn fab fixed bottom color='primary' @click='$feUtils.reloadAll()'
-        >重载
-        </v-btn
-        >
+        <v-btn fab fixed bottom color='primary' @click='$feUtils.reloadAll()'>
+          重载
+        </v-btn>
       </div>
     </v-navigation-drawer>
   </div>
 </template>
 
 <script lang='ts'>
-import { Component, Vue, Watch } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class Navbar extends Vue {
+export default class Navbar extends BaseComponentOrView {
   public isDarkTheme = false
   public searchText = ''
   public username = ''
-  public showSidebar = false
+
+  /**
+   * The display status of side bar.
+   * <p> show by default on wide screen device, and hide by default on narrow screen device. </p>
+   */
+  public showSidebar = !this.isMobile
   public currentPage = 0
   public inAllowBackRoutes = false
   public inBanMenuRoutes = true
@@ -141,12 +146,16 @@ export default class Navbar extends Vue {
     this.$router.back()
   }
 
+  public mounted () {
+    this.$nextTick(this.checkDevice)
+  }
+
   @Watch('isDarkTheme')
   isDarkThemeChange () {
     this.$vuetify.theme.dark = this.isDarkTheme
     console.log(
       `%c [切换主题] 当前主题 %c ${
-        this.$vuetify.theme.dark === false ? 'light' : 'dark'
+        !this.$vuetify.theme.dark ? 'light' : 'dark'
       } %c`,
       'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
       'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
@@ -165,7 +174,7 @@ export default class Navbar extends Vue {
     )
     this.inAllowBackRoutes = (() => {
       const currentRoute = this.$router.currentRoute.name
-      var i
+      let i
       for (i of this.$feConfig.allowBackRoutes) {
         if (currentRoute === i) {
           return true
@@ -175,7 +184,7 @@ export default class Navbar extends Vue {
     })()
     this.inBanMenuRoutes = (() => {
       const currentRoute = this.$router.currentRoute.name
-      var i
+      let i
       for (i of this.$feConfig.banMenuRoutes) {
         if (currentRoute === i) {
           return true

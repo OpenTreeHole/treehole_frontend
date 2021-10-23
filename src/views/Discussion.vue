@@ -1,8 +1,5 @@
 <template>
   <v-container>
-    <!-- 警告信息 -->
-    <message ref='message'></message>
-
     <v-card
       v-if='this.$vuetify.breakpoint.mdAndUp && this.discussion'
       class='mx-auto mb-6'
@@ -191,7 +188,7 @@
         <v-card-actions>
           <v-spacer></v-spacer>
           <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
-          <v-btn color='primary' text :disabled='!valid' @click='addPost'>
+          <v-btn color='primary' text :disabled='!valid' @click='addFloor'>
             发送
           </v-btn>
         </v-card-actions>
@@ -199,26 +196,21 @@
     </v-dialog>
 
     <!-- 载入中信息 -->
-    <loading
-      ref='loading'
-      :length='posts.length'
-      :loadList='getPosts'
-    ></loading>
+    <loading :request='request' ref='loading' />
   </v-container>
 </template>
 
 <script lang='ts'>
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import Message from '@/components/Message.vue'
 import DiscussionMixin from '@/mixins/DiscussionMixin.vue'
 import { Component } from 'vue-property-decorator'
+import { FloorListRequest } from '@/api'
 
 @Component({
   components: {
     Loading,
-    Editor,
-    Message
+    Editor
   }
 })
 export default class Discussion extends DiscussionMixin {
@@ -228,6 +220,8 @@ export default class Discussion extends DiscussionMixin {
 
   created () {
     this.getDiscussion(this.computedDiscussionId)
+    this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId)
+    this.floors = this.request.datas
   }
 }
 </script>
