@@ -162,14 +162,14 @@ export default class DiscussionComponent extends BaseComponentOrView {
 }
 
 .holelist-right {
-  transition: all 0.5s ease;
+  transition: transform 0.5s, flex 0.5s, max-width 0.5s;
   transform: translateX(0);
   flex: 40vw;
   max-width: 40vw;
 }
 
 .holelist-left {
-  transition: all 0.5s ease;
+  transition: transform 0.5s, flex 0.5s, max-width 0.5s;
   transform: translateX(-18vw);
   flex: 28vw;
   max-width: 28vw;
