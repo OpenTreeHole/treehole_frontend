@@ -66,6 +66,7 @@ export default class DiscussionComponent extends BaseComponentOrView {
   }
 
   public activate (id: number): void {
+    console.log(`activate: ${id}`)
     if (this.isActive === 'right') {
       this.isActive = 'left'
       this.isEnd = ''

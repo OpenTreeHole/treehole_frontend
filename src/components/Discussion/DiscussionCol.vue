@@ -36,7 +36,7 @@
     <transition-group name='slide-fade'>
       <v-row
         v-for='(floor, index) in floors'
-        :key='index'
+        :key='`${index}-${floor.content}`'
         justify='center'
         align='start'
         v-viewer
@@ -91,46 +91,53 @@
     </transition-group>
 
     <!-- 弹出式表单及浮动按钮 -->
-
-    <v-dialog v-model='dialog' persistent max-width='600px'>
-      <!-- 浮动按钮 -->
-      <template v-slot:activator='{ on, attrs }'>
-        <v-btn fab color='secondary' class='fixed' v-bind='attrs' v-on='on'>
-          <v-icon>mdi-send</v-icon>
-        </v-btn>
-      </template>
-
-      <v-card>
-        <v-card-title>
-          <span class='headline'>发表回复</span>
-        </v-card-title>
-
-        <v-card-text>
-          <!-- 回复内容 -->
-          <Mention :mention-floor='replyFloor' />
-
-          <v-form ref='form' v-model='valid' lazy-validation>
-            <!-- 回贴表单 -->
-
-            <!-- 富文本输入框 -->
-            <editor
-              ref='editor'
-              :contentName='contentName'
-              @error='editorError'
-            ></editor>
-          </v-form>
-        </v-card-text>
-
-        <!-- 下方按钮 -->
-        <v-card-actions>
-          <v-spacer></v-spacer>
-          <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
-          <v-btn color='primary' text :disabled='!valid' @click='addFloor'>
-            发送
+    <div class='float-btn'>
+      <v-dialog v-model='dialog' persistent max-width='600px'>
+        <!-- 浮动按钮 -->
+        <template v-slot:activator='{ on, attrs }'>
+          <v-btn fab color='secondary' v-bind='attrs' v-on='on'>
+            <v-icon>mdi-send</v-icon>
           </v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
+        </template>
+
+        <v-card>
+          <v-card-title>
+            <span class='headline'>发表回复</span>
+          </v-card-title>
+
+          <v-card-text>
+            <!-- 回复内容 -->
+            <Mention :mention-floor='replyFloor' />
+
+            <v-form ref='form' v-model='valid' lazy-validation>
+              <!-- 回贴表单 -->
+
+              <!-- 富文本输入框 -->
+              <editor
+                ref='editor'
+                :contentName='contentName'
+                @error='editorError'
+              ></editor>
+            </v-form>
+          </v-card-text>
+
+          <!-- 下方按钮 -->
+          <v-card-actions>
+            <v-spacer></v-spacer>
+            <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
+            <v-btn color='primary' text :disabled='!valid' @click='addFloor'>
+              发送
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <br/>
+
+      <v-btn fab color='secondary' @click='addCollection'>
+        <v-icon>mdi-star</v-icon>
+      </v-btn>
+    </div>
 
     <!-- 载入中信息 -->
     <loading :request='getFloors' ref='loading' :pause-loading='initiating' />
@@ -168,6 +175,7 @@ export default class DiscussionCol extends DiscussionMixin {
 
   public getFloorsRecursive () {
     this.getFloors().then((v) => {
+      this.loading.hasNext = v
       if (v && this.request.datas.length > this.request.loadedLength) {
         this.getFloorsRecursive()
       }
@@ -175,7 +183,7 @@ export default class DiscussionCol extends DiscussionMixin {
   }
 
   public init () {
-    this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId)
+    this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId, this.getIndex)
     this.floors = this.request.datas
     this.initiating = false
     this.getFloorsRecursive()
@@ -213,7 +221,7 @@ export default class DiscussionCol extends DiscussionMixin {
 }
 
 /* 浮动按钮 固定在右下角 */
-.fixed {
+.float-btn {
   position: fixed;
   right: 8px;
   bottom: 64px;
@@ -228,7 +236,7 @@ export default class DiscussionCol extends DiscussionMixin {
 }
 
 .slide-fade-leave-active {
-  transition: all .8s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
 }
 
 .slide-fade-enter, .slide-fade-leave-to {

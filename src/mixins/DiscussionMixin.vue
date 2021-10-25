@@ -58,17 +58,6 @@ export default class DiscussionMixin extends BaseComponentOrView {
     return -1
   }
 
-  public scrollTo (currentId: number, toId: number): void {
-    const currentOffsetTop = document.getElementById(currentId.toString())?.offsetTop
-    const toOffsetTop = document.getElementById(toId.toString())?.offsetTop
-    const scrollDistance = currentOffsetTop && toOffsetTop ? toOffsetTop - currentOffsetTop : 0
-    window.scrollBy({
-      top: scrollDistance, //  正值向下
-      left: 0,
-      behavior: 'smooth'
-    })
-  }
-
   /**
    * Set the reply target and open the reply dialog.
    *
@@ -112,6 +101,16 @@ export default class DiscussionMixin extends BaseComponentOrView {
     return str
   }
 
+  public addCollection (): void {
+    this.$axios.post('/user/favorites', {
+      hole_id: this.hole.hole.holeId
+    }).then((response) => {
+      this.messageSuccess(response.data)
+    }).catch((error) => {
+      this.messageError(error.response.data.msg)
+    })
+  }
+
   /**
    * Get floors from backend.
    */
@@ -119,11 +118,11 @@ export default class DiscussionMixin extends BaseComponentOrView {
     if (!this.request) return false
     let hasNext = false
     await this.request.request().then((v) => {
-      this.floors.forEach((floor) => {
-        if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
-        console.log(floor)
-        setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
-      })
+      // this.floors.forEach((floor) => {
+      //   if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
+      //   console.log(floor)
+      //   setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
+      // })
       hasNext = v
     }).catch((error) => {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
@@ -181,43 +180,6 @@ export default class DiscussionMixin extends BaseComponentOrView {
 
   get contentName (): string {
     return 'discussion-' + this.computedDiscussionId + '-content'
-  }
-
-  /**
-   * Render the empty divs with 'replyDiv' class and 'mention' attr with the specific floor.
-   * <p> This method should be called after the original divs being rendered. </p>
-   *
-   * @param curFloor - the current floor (waiting the mention part in it to be re-rendered).
-   */
-  public renderMention (curFloor: DetailedFloor): void {
-    const curIndex = this.getIndex(curFloor.floorId)
-    const elements = document.querySelectorAll('div[index="' + curIndex + '"] > div.replyDiv')
-    for (let i = 0; i < elements.length; i++) {
-      if (elements[i].innerHTML) continue
-      const mentionAttr = elements[i].getAttribute('mention')
-      if (!mentionAttr) continue
-      const mentionId = parseInt(mentionAttr.substring(1))
-      let mentionFloor: Floor | null = null
-      curFloor.mention.forEach((mFloor) => {
-        if (mFloor.floorId === mentionId) mentionFloor = mFloor
-      })
-      if (!mentionFloor) continue
-      let gotoMentionFloor: Function | undefined
-      const mentionIndex = this.getIndex(mentionId)
-      if (mentionIndex !== -1) {
-        gotoMentionFloor = () => {
-          this.scrollTo(curIndex, mentionIndex)
-        }
-      }
-      new Mention({
-        propsData: {
-          mentionFloor: mentionFloor,
-          gotoMentionFloor: gotoMentionFloor,
-          mentionFloorInfo: (mentionIndex === -1 ? ('#' + (mentionFloor as Floor).floorId) : (mentionIndex.toString() + 'L'))
-        },
-        vuetify
-      }).$mount(elements[i])
-    }
   }
 }
 </script>

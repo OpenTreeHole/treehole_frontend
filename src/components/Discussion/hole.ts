@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash.clonedeep'
 import marked from 'marked'
+import CollectionStore from '@/store/modules/CollectionStore'
 
 export interface Tag {
   name: string
@@ -62,6 +63,7 @@ export class WrappedHole {
   public firstFloor: Floor
   public lastFloor: Floor
   public isFolded: boolean
+  public isStarred: boolean
 
   constructor (hole: Hole) {
     this.hole = hole
@@ -75,6 +77,7 @@ export class WrappedHole {
     this.firstFloor.content = marked(this.firstFloor.content)
     this.lastFloor.content = marked(this.lastFloor.content)
     this.isFolded = this.firstFloor.fold.length > 0
+    this.isStarred = CollectionStore.isStarred(hole.holeId)
     hole.tags.forEach((v: Tag) => {
       if (v.name.charAt(0) === '*') {
         this.isFolded = true

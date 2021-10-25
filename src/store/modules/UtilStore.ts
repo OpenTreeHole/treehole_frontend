@@ -1,21 +1,15 @@
 import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
 import store from '@/store'
+import { AxiosStatic } from 'axios'
 
 @Module({ store: store, dynamic: true, name: 'UtilStore', namespaced: true })
 class UtilStore extends VuexModule {
   public _isMobile: boolean = false
+  public _axios: AxiosStatic
 
-  get isMobile (): boolean {
-    return this._isMobile
-  }
-
-  /**
-   * Set the device info to decide which view to display.
-   * @param newVal
-   */
   @Mutation
-  public setIsMobile (newVal: boolean): void {
-    this._isMobile = newVal
+  public setIsMobile (val: boolean): void{
+    this._isMobile = val
   }
 
   /**
@@ -25,6 +19,20 @@ class UtilStore extends VuexModule {
   public checkDevice (): void {
     this.setIsMobile(document.body.clientWidth <= 768)
   }
+
+  get isMobile (): boolean {
+    return this._isMobile
+  }
+
+  get axios () {
+    return this._axios
+  }
+
+  @Mutation
+  public setAxios ($axios: AxiosStatic): void {
+    this._axios = $axios
+  }
 }
 
-export default getModule(UtilStore)
+const module = getModule(UtilStore)
+export default module

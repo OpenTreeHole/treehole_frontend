@@ -16,13 +16,13 @@ import FDUHoleFEConfig from './fduhole-fe.config.js'
 
 // 引入实用工具
 import FEUtils from './utils.js'
-import setApiAxios from '@/api'
 
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
+import user from '@/api/user'
 
 Vue.prototype.$feConfig = FDUHoleFEConfig
 Vue.prototype.$feUtils = FEUtils
@@ -36,11 +36,11 @@ axios.interceptors.request.use(config => {
   return config
 })
 Vue.prototype.$axios = axios
-setApiAxios(axios)
 
 Vue.use(VueCookies)
 Vue.use(plugins)
 Vue.use(Viewer)
+Vue.use(user)
 
 Vue.filter('plainText', function (html: string) {
   return html.replace(/<img.*?>/g, '[图片]')

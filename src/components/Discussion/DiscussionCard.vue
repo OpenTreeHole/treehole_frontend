@@ -1,7 +1,7 @@
 <template>
   <v-card class='discussion-card' :num='discussion.hole.holeId'>
     <!-- 标签栏 -->
-    <v-card-text class='pb-0 pt-2 font-weight-medium'>
+    <v-card-actions class='pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
       <v-chip
         v-for='(tag, tindex) in discussion.hole.tags'
         :key='tindex'
@@ -13,7 +13,7 @@
       >
         {{ tag.name }}
       </v-chip>
-    </v-card-text>
+    </v-card-actions>
     <v-card-text class='folded-hint' v-if='discussion.isFolded' color='grey'>
       该内容已折叠：
       <span class='clickable' @click='displayIt = !displayIt'>
@@ -89,14 +89,16 @@
       </v-card-text>
 
       <!-- 脚标 -->
-      <v-card-text class='pt-0 pb-0 text-center caption'>
-        <span class='clickable' style='float: left'>#{{ discussion.hole.holeId }}</span>
-        <span style='float: inherit'>{{ discussion.hole.timeUpdated | timeDifference }}</span>
-        <span style='float: right'>
+      <v-card-actions class='pt-0 pb-0 caption'>
+        <span>#{{ discussion.hole.holeId }}</span>
+        <v-spacer/>
+        <span>{{ discussion.hole.timeUpdated | timeDifference }}</span>
+        <v-spacer/>
+        <span>
           <v-icon small>mdi-message-processing-outline</v-icon>
           {{ discussion.hole.reply }}
         </span>
-      </v-card-text>
+      </v-card-actions>
     </div>
   </v-card>
 </template>

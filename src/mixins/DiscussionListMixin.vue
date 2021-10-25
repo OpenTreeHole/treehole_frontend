@@ -1,15 +1,18 @@
 <script lang='ts'>
 import debounce from 'lodash.debounce'
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Ref, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/components/Discussion/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { ArrayRequest, CollectionHoleListRequest, HomeHoleListRequest } from '@/api'
+import Loading from '@/components/Loading.vue'
 
 @Component
 export default class DiscussionListMixin extends BaseComponentOrView {
   // 帖子列表
   public discussions: Array<WrappedHole> = []
   public startTime: Date = new Date()
+
+  public collectionIds: Array<number> = []
 
   public debouncedCalculateLines: Function
   public lineHeight: number = 10
@@ -18,12 +21,16 @@ export default class DiscussionListMixin extends BaseComponentOrView {
 
   public pauseLoading = true
 
+  public route: string
+
+  @Ref() loading: Loading
+
   /**
    * Clear the hole list and reload.
    */
   public refresh (): void {
     this.request.clear()
-    this.getHoles()
+    this.discussions = this.request.datas
   }
 
   /**
@@ -60,21 +67,32 @@ export default class DiscussionListMixin extends BaseComponentOrView {
   }
 
   mounted () {
+    console.log(`Mounted: ${this.route}`)
     window.onresize = () => {
       this.debouncedCalculateLines()
     }
   }
 
+  destroyed () {
+    console.log(`Destroyed: ${this.route}`)
+    this.$user.collection.unregisterUpdateHoleArray(this.$route.name as string)
+  }
+
   created () {
+    this.route = this.$route.name as string
+    console.log(`Created: ${this.route}`)
+    this.$user.collection.getCollections()
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
-    if (this.$route.name === 'home') {
+    if (this.route === 'home') {
       this.request = new HomeHoleListRequest()
-    } else if (this.$route.name === 'collections') {
+    } else if (this.route === 'collections') {
       this.request = new CollectionHoleListRequest()
     }
     this.discussions = this.request.datas
-    this.getHoles().then(() => {
+    this.$user.collection.registerUpdateHoleArray(this.route, this.discussions)
+    this.getHoles().then((v) => {
       this.pauseLoading = false
+      this.loading.hasNext = v
     })
   }
 }
