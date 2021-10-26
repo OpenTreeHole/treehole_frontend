@@ -1,10 +1,7 @@
 <template>
   <v-container>
-    <!-- 新用户欢迎信息 -->
-    <newcomer />
-
     <!-- 帖子列表 -->
-    <DiscussionComponent v-if='!isMobile' ref='holeComp' @show-discussion-changed='onShowFloatBtnChanged' />
+    <DiscussionComponent v-if='!isMobile' ref='holeComp'/>
     <DiscussionListMobile v-else ref='holeComp' />
 
     <!-- 新帖编辑器及浮动按钮 -->
@@ -101,7 +98,7 @@
                 ref='editor'
                 :contentName='contentName'
                 @error='editorError'
-              ></editor>
+              />
             </v-form>
           </v-card-text>
 
@@ -121,34 +118,33 @@
         </v-card>
       </v-dialog>
     </div>
+
   </v-container>
 </template>
 
 <script lang='ts'>
-import Editor from '@/components/Editor.vue'
-import Newcomer from '@/components/Newcomer.vue'
+import { Component, Ref, Watch } from 'vue-property-decorator'
 import DiscussionComponent from '@/components/Discussion/DiscussionComponent.vue'
 import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile.vue'
-import { Component, Ref, Watch } from 'vue-property-decorator'
-import { Division, Tag } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { Division as IDivision, Tag } from '@/api/hole'
+import Editor from '@/components/Editor.vue'
 
 @Component({
   components: {
     Editor,
-    Newcomer,
     DiscussionComponent,
     DiscussionListMobile
   }
 })
-export default class Home extends BaseComponentOrView {
+export default class Division extends BaseComponentOrView {
   public lineHeight = 0
   public scrollTop = 0
   // 发帖表单
   public content = ''
   public tags: Array<Tag> = []
   public selectedTags: Array<Tag> = []
-  public selectedDivision: Division = {
+  public selectedDivision: IDivision = {
     divisionId: 0,
     description: '',
     name: '',
@@ -212,6 +208,11 @@ export default class Home extends BaseComponentOrView {
   public openDialog (): void {
     this.getTags()
     this.selectedDivision = this.$user.divisions[0]
+    this.$user.divisions.forEach((v) => {
+      if (v.divisionId.toString() === this.$route.params.id) {
+        this.selectedDivision = v
+      }
+    })
   }
 
   public closeDialog (): void {

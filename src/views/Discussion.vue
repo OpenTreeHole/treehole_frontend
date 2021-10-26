@@ -24,13 +24,6 @@ export default class Discussion extends BaseComponentOrView {
 .reply {
   margin: 0 1rem 1rem;
   padding: 0.5rem 0.5rem 0 0.5rem;
-  //background-color: #a5a4a4;
-  //color: white;
-  //overflow: hidden;
-  //text-overflow: ellipsis;
-  //display: -webkit-box;
-  //-webkit-line-clamp: 4;
-  //-webkit-box-orient: vertical;
 }
 
 .v-card__text.reply-text {

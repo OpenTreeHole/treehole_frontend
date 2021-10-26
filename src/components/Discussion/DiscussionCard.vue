@@ -1,7 +1,7 @@
 <template>
-  <v-card class='discussion-card' :num='discussion.hole.holeId'>
+  <v-card :class='isActive ? "discussion-card--active" : "discussion-card"'>
     <!-- 标签栏 -->
-    <v-card-text class='pb-0 pt-2 font-weight-medium'>
+    <v-card-actions class='pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
       <v-chip
         v-for='(tag, tindex) in discussion.hole.tags'
         :key='tindex'
@@ -13,7 +13,7 @@
       >
         {{ tag.name }}
       </v-chip>
-    </v-card-text>
+    </v-card-actions>
     <v-card-text class='folded-hint' v-if='discussion.isFolded' color='grey'>
       该内容已折叠：
       <span class='clickable' @click='displayIt = !displayIt'>
@@ -35,7 +35,7 @@
           {{ discussion.firstFloor.content | plainText }}
         </div>
         <div v-else :id="'p' + index" class='unfold'>
-          <div class='rich-text' v-html='discussion.firstFloor.content'/>
+          <div class='rich-text' v-html='discussion.firstFloor.content' />
         </div>
       </v-card-text>
 
@@ -89,21 +89,23 @@
       </v-card-text>
 
       <!-- 脚标 -->
-      <v-card-text class='pt-0 pb-0 text-center caption'>
-        <span class='clickable' style='float: left'>#{{ discussion.hole.holeId }}</span>
-        <span style='float: inherit'>{{ discussion.hole.timeUpdated | timeDifference }}</span>
-        <span style='float: right'>
+      <v-card-actions class='pt-0 pb-0 caption'>
+        <span>#{{ discussion.hole.holeId }}</span>
+        <v-spacer />
+        <span>{{ discussion.hole.timeUpdated | timeDifference }}</span>
+        <v-spacer />
+        <span>
           <v-icon small>mdi-message-processing-outline</v-icon>
           {{ discussion.hole.reply }}
         </span>
-      </v-card-text>
+      </v-card-actions>
     </div>
   </v-card>
 </template>
 
 <script lang='ts'>
 import { Component, Emit, Prop } from 'vue-property-decorator'
-import { WrappedHole } from '@/components/Discussion/hole'
+import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
@@ -111,6 +113,7 @@ export default class DiscussionCard extends BaseComponentOrView {
   @Prop({ required: true, type: WrappedHole }) readonly discussion: WrappedHole
   @Prop({ required: true, type: Number }) index: number
   @Prop({ required: true, type: Function }) activate: Function
+  @Prop({ required: false, type: Boolean, default: false }) isActive: boolean
 
   displayIt: boolean = false
 
@@ -135,3 +138,14 @@ export default class DiscussionCard extends BaseComponentOrView {
   }
 }
 </script>
+
+<style lang='scss' scoped>
+.discussion-card {
+  transition: 1s;
+}
+
+.discussion-card--active {
+  transition: 1s;
+  background-color: #DFDFDF !important;
+}
+</style>

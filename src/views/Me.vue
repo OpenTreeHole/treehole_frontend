@@ -1,16 +1,7 @@
 <template>
-  <v-container>
-    <h1>{{ profile.user.username }}</h1>
-
-    <h2>我的收藏</h2>
-    <p v-if='profile.favored_discussion.length === 0'>
-      该功能正在开发中，敬请期待~
-    </p>
-    <DiscussionCard
-      v-for='discussion in profile.favored_discussion'
-      :key='discussion.id'
-      :discussion='discussion'
-    ></DiscussionCard>
+  <v-container v-if='profile'>
+    <h1>注册时间：{{ joinedTimeDisplayMsg }}</h1>
+    <h1 v-if='profile.isAdmin'>您当前为管理员身份</h1>
 
     <v-row justify='space-around' style='margin: 20px 0; width: 100%'
     >
@@ -25,8 +16,10 @@
 
 <script lang='ts'>
 import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
-import { Component, Watch } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { UserProfile } from '@/api/user'
+import { camelizeKeys, convertDate } from '@/utils'
 
 @Component({
   components: {
@@ -34,34 +27,31 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
   }
 })
 export default class Me extends BaseComponentOrView {
-  public profile = {}
+  public profile: UserProfile | null = null
+  public joinedTimeDisplayMsg: string
 
   public getUserInfo (): void {
-    this.$axios
-      .get('/profile/')
-      .then((r) => {
-        this.profile = r.data
-      })
-      .catch((e) => {
-        this.messageError(e.r.data.msg)
-      })
+    this.$axios.get('/users').then((response) => {
+      const profile : UserProfile = camelizeKeys(response.data)
+      this.profile = profile
+      this.joinedTimeDisplayMsg = convertDate(profile.joinedTime)
+      this.$user.userProfile = profile
+    }).catch((error) => {
+      this.messageError(error)
+    })
   }
 
   public logout (): void {
     localStorage.clear()
-    console.log('111111111')
-    this.$feUtils.reloadAll()
-    console.log('2222222222222222')
+    this.$user.clear()
+    this.$router.push('/login')
   }
 
   public changePassWd (): void {
     alert('还没写完')
   }
 
-  @Watch('$route', {
-    immediate: true
-  })
-  routeChanged () {
+  created () {
     this.getUserInfo()
   }
 }

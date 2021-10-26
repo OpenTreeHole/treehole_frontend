@@ -1,24 +1,24 @@
 <template>
-  <v-container v-click-outside='()=>deactivate(displayCardId)' style='overflow: visible'>
+  <v-container v-click-outside='clickOutside' style='overflow: visible'>
     <v-row justify='center' class='ma-0'>
-      <v-col class='mb-5 transrow'
-             :class='isActive+" "+isEnd+" "+isStatic'
-             id='transrow'
+      <v-col class='mb-5 holelist'
+             :class='isActive ? "holelist-left" : "holelist-right"'
              :style="{marginTop: '-'+posY.toString()+'px'}"
-             @animationend='Fix'
+             @transitionend='Fix'
              @wheel='ScrollDiscussionListWhenActive'
       >
         <DiscussionList
           :activate='openHole'
+          :display-hole-id='displayHoleId'
           ref='holeList'
         />
       </v-col>
-      <v-col v-if='displayCardId!==-1 && showDiscussion' class='mb-5' cols='5' />
+      <v-col v-if='displayHoleId!==-1 && showDiscussion' class='mb-5' cols='5' />
 
       <v-col class='mb-5' cols='6' id='discol'>
         <Discussion
-          v-if='displayCardId!==-1 && showDiscussion'
-          :key='displayCardId'
+          v-if='displayHoleId!==-1 && showDiscussion'
+          :key='displayHoleId'
           :wrapped-hole-or-id='displayHole'
           class='pa-0'
         />
@@ -33,7 +33,7 @@ import Discussion from '@/components/Discussion/DiscussionCol.vue'
 
 import { gsap } from 'gsap'
 import { Component, Emit, Ref, Watch } from 'vue-property-decorator'
-import { WrappedHole } from '@/components/Discussion/hole'
+import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
@@ -43,11 +43,10 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
   }
 })
 export default class DiscussionComponent extends BaseComponentOrView {
-  public isActive = 'right'
-  public isEnd = 'end'
-  public isStatic = ''
+  public isActive = false
+  public isEnd = true
   public showDiscussion = false
-  public displayCardId = -1
+  public displayHoleId = -1
   public posY = 0
   public marginTopY = 0
   public viewport = 0
@@ -66,34 +65,28 @@ export default class DiscussionComponent extends BaseComponentOrView {
   }
 
   public activate (id: number): void {
-    if (this.isActive === 'right') {
-      this.isActive = 'left'
-      this.isEnd = ''
+    if (!this.isActive) {
+      this.isActive = true
+      this.isEnd = false
     }
-    if (this.displayCardId !== id) {
-      this.displayCardId = id
+    if (this.displayHoleId !== id) {
+      this.displayHoleId = id
+      document.body.scrollTop = document.documentElement.scrollTop = 0
     } else {
-      this.displayCardId = -1
+      this.displayHoleId = -1
       this.showDiscussion = false
-      this.isActive = 'right'
-      this.isEnd = ''
-    }
-    const elements = document.getElementsByClassName('discussion-card')
-    for (let i = 0; i < elements.length; i++) {
-      if (elements[i].getAttribute('num') === this.displayCardId.toString()) {
-        elements[i].classList.add('active')
-      } else {
-        elements[i].classList.remove('active')
-      }
+      this.isActive = false
+      this.isEnd = false
     }
   }
 
-  public Fix (): void {
-    this.isEnd = 'end'
-    if (this.isActive === 'left') {
-      document.body.scrollTop = document.documentElement.scrollTop = 0
-      this.showDiscussion = true
-    } else {
+  public Fix (e: TransitionEvent): void {
+    if (e.propertyName === 'transform') {
+      this.isEnd = true
+      if (this.isActive) {
+        document.body.scrollTop = document.documentElement.scrollTop = 0
+        this.showDiscussion = true
+      }
     }
   }
 
@@ -110,22 +103,32 @@ export default class DiscussionComponent extends BaseComponentOrView {
   }
 
   public wheelListener (e: WheelEvent) {
-    if (this.isActive === 'right' && this.isEnd === 'end') {
+    if (!this.isActive && this.isEnd) {
       this.ScrollDiscussionList(e)
     }
   }
 
   public ScrollDiscussionListWhenActive (e: any): void {
-    if (this.isActive === 'left' || this.isEnd !== 'end') {
+    if (this.isActive || !this.isEnd) {
       e.preventDefault()
       this.ScrollDiscussionList(e)
     }
   }
 
   public deactivate (id: number): void {
-    if (this.displayCardId !== -1) {
+    if (this.displayHoleId !== -1) {
       this.activate(id)
     }
+  }
+
+  public clickOutside (e: { path: HTMLElement[] }) {
+    let flag = true
+    console.log(e.path)
+    for (let i = 0; i < e.path.length; i++) {
+      if (e.path[i].className && e.path[i].className.includes && (e.path[i].className.includes('navbar') ||
+        e.path[i].className.includes('vditor'))) flag = false
+    }
+    if (flag) this.deactivate(this.displayHoleId)
   }
 
   mounted () {
@@ -156,61 +159,22 @@ export default class DiscussionComponent extends BaseComponentOrView {
 </script>
 
 <style>
-.transrow {
+.holelist {
   position: fixed;
 }
 
-.transrow.right {
-  animation: move-right 0.5s ease;
-}
-
-.transrow.right.end {
+.holelist-right {
+  transition: transform 0.5s, flex 0.5s, max-width 0.5s;
   transform: translateX(0);
   flex: 40vw;
   max-width: 40vw;
 }
 
-.transrow.left {
-  animation: move-left 0.5s ease;
-}
-
-.transrow.left.end {
+.holelist-left {
+  transition: transform 0.5s, flex 0.5s, max-width 0.5s;
   transform: translateX(-18vw);
   flex: 28vw;
   max-width: 28vw;
 }
 
-.discussion-card {
-  transition: 1s;
-}
-
-.discussion-card.active {
-  background-color: #DFDFDF !important;
-}
-
-@keyframes move-left {
-  0% {
-    transform: translateX(0);
-    flex: 40vw;
-    max-width: 40vw;
-  }
-  100% {
-    transform: translateX(-18vw);
-    flex: 28vw;
-    max-width: 28vw;
-  }
-}
-
-@keyframes move-right {
-  0% {
-    transform: translateX(-18vw);
-    flex: 28vw;
-    max-width: 28vw;
-  }
-  100% {
-    transform: translateX(0);
-    flex: 40vw;
-    max-width: 40vw;
-  }
-}
 </style>

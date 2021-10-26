@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <!-- 帖子列表 -->
-    <DiscussionComponent v-if='!isMobile' ref='holeComp'/>
-    <DiscussionListMobile v-else ref='holeComp' />
+    <DiscussionComponent v-if='!isMobile'/>
+    <DiscussionListMobile v-else />
 
   </v-container>
 </template>

@@ -27,7 +27,7 @@
 
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator'
-import { Floor } from '@/components/Discussion/hole'
+import { Floor } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component

@@ -4,6 +4,7 @@ import Login from '@/views/Login.vue'
 import Home from '@/views/Home.vue'
 import Register from '@/views/Register.vue'
 import Discussion from '@/views/Discussion.vue'
+import Division from '@/views/Division.vue'
 import About from '@/views/About.vue'
 import license from '@/views/License.vue'
 import Search from '@/views/Search.vue'
@@ -16,6 +17,7 @@ const routes = [
   { path: '/license', meta: { title: '协议' }, component: license, name: 'license' },
   { path: '/home', meta: { title: '首页' }, component: Home, name: 'home' },
   { path: '/login', meta: { title: '登录' }, component: Login, name: 'login' },
+  { path: '/division/:id', meta: { title: '分区' }, component: Division, name: 'division' },
   { path: '/collections', meta: { title: '收藏' }, component: Collections, name: 'collections' },
   { path: '/', redirect: '/home' },
   { path: '/about', meta: { title: '关于' }, component: About, name: 'about' },

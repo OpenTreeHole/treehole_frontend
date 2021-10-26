@@ -1,12 +1,9 @@
 <script lang='ts'>
-import marked from 'marked'
 import { Component, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import { DetailedFloor, Floor, WrappedHole } from '@/components/Discussion/hole'
+import { Floor, WrappedHole } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
-import Mention from '@/components/Discussion/Mention.vue'
-import vuetify from '@/plugins/vuetify'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { PrefetchedArrayRequest } from '@/api'
 
@@ -58,17 +55,6 @@ export default class DiscussionMixin extends BaseComponentOrView {
     return -1
   }
 
-  public scrollTo (currentId: number, toId: number): void {
-    const currentOffsetTop = document.getElementById(currentId.toString())?.offsetTop
-    const toOffsetTop = document.getElementById(toId.toString())?.offsetTop
-    const scrollDistance = currentOffsetTop && toOffsetTop ? toOffsetTop - currentOffsetTop : 0
-    window.scrollBy({
-      top: scrollDistance, //  正值向下
-      left: 0,
-      behavior: 'smooth'
-    })
-  }
-
   /**
    * Set the reply target and open the reply dialog.
    *
@@ -97,19 +83,31 @@ export default class DiscussionMixin extends BaseComponentOrView {
     }
   }
 
-  /**
-   * Replace mention tags with empty divs with 'replyDiv' class and the mention id.
-   *
-   * @param str - the original string
-   */
-  public mentioned (str: string): string {
-    console.log(str)
-    str = str.replace(/#\w+/g, (v) => '\n\n<p mention="' + v + '"></p>\n\n')
-    str = marked(str)
-    str = str.replace(/<p mention="#\w+"><\/p>/g, (str) => {
-      return str.replace('<p', '<div class="replyDiv"').replace('/p>', '/div>')
-    })
-    return str
+  public changeCollectionStatus (): void {
+    if (this.hole.isStarred) {
+      this.$axios.delete('/user/favorites', {
+        data: {
+          hole_id: this.hole.hole.holeId
+        }
+      }).then((response) => {
+        this.messageSuccess(response.data.message)
+        this.$user.collection.setCollection(response.data.data)
+      }).catch((error) => {
+        this.messageError(error.response.data.msg)
+        this.hole.isStarred = !this.hole.isStarred
+      })
+    } else {
+      this.$axios.post('/user/favorites', {
+        hole_id: this.hole.hole.holeId
+      }).then((response) => {
+        this.messageSuccess(response.data.message)
+        this.$user.collection.setCollection(response.data.data)
+      }).catch((error) => {
+        this.messageError(error.response.data.msg)
+        this.hole.isStarred = !this.hole.isStarred
+      })
+    }
+    this.hole.isStarred = !this.hole.isStarred
   }
 
   /**
@@ -119,11 +117,11 @@ export default class DiscussionMixin extends BaseComponentOrView {
     if (!this.request) return false
     let hasNext = false
     await this.request.request().then((v) => {
-      this.floors.forEach((floor) => {
-        if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
-        console.log(floor)
-        setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
-      })
+      // this.floors.forEach((floor) => {
+      //   if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
+      //   console.log(floor)
+      //   setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
+      // })
       hasNext = v
     }).catch((error) => {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
@@ -140,7 +138,7 @@ export default class DiscussionMixin extends BaseComponentOrView {
         .post('/floors', {
           content: (this.replyFloor ? '#' + this.replyFloor.floorId + ' ' : '') + this.editor.getContent(),
           hole_id: this.computedDiscussionId,
-          mention: [this.replyFloor?.floorId]
+          mention: this.replyFloor ? [this.replyFloor.floorId] : []
         })
         .then(() => {
           this.loading.isLoading = true
@@ -181,43 +179,6 @@ export default class DiscussionMixin extends BaseComponentOrView {
 
   get contentName (): string {
     return 'discussion-' + this.computedDiscussionId + '-content'
-  }
-
-  /**
-   * Render the empty divs with 'replyDiv' class and 'mention' attr with the specific floor.
-   * <p> This method should be called after the original divs being rendered. </p>
-   *
-   * @param curFloor - the current floor (waiting the mention part in it to be re-rendered).
-   */
-  public renderMention (curFloor: DetailedFloor): void {
-    const curIndex = this.getIndex(curFloor.floorId)
-    const elements = document.querySelectorAll('div[index="' + curIndex + '"] > div.replyDiv')
-    for (let i = 0; i < elements.length; i++) {
-      if (elements[i].innerHTML) continue
-      const mentionAttr = elements[i].getAttribute('mention')
-      if (!mentionAttr) continue
-      const mentionId = parseInt(mentionAttr.substring(1))
-      let mentionFloor: Floor | null = null
-      curFloor.mention.forEach((mFloor) => {
-        if (mFloor.floorId === mentionId) mentionFloor = mFloor
-      })
-      if (!mentionFloor) continue
-      let gotoMentionFloor: Function | undefined
-      const mentionIndex = this.getIndex(mentionId)
-      if (mentionIndex !== -1) {
-        gotoMentionFloor = () => {
-          this.scrollTo(curIndex, mentionIndex)
-        }
-      }
-      new Mention({
-        propsData: {
-          mentionFloor: mentionFloor,
-          gotoMentionFloor: gotoMentionFloor,
-          mentionFloorInfo: (mentionIndex === -1 ? ('#' + (mentionFloor as Floor).floorId) : (mentionIndex.toString() + 'L'))
-        },
-        vuetify
-      }).$mount(elements[i])
-    }
   }
 }
 </script>

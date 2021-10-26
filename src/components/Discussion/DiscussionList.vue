@@ -1,14 +1,15 @@
 <template>
   <v-container id='discussionList' class='pa-0'>
     <v-row
-      v-for='(discussion, index) in discussions'
+      v-for='(hole, index) in discussions'
       :key='index'
     >
       <v-col>
         <DiscussionCard
-          :discussion='discussion'
+          :discussion='hole'
           :index='index'
           :activate='activate'
+          :is-active='hole.hole.holeId === displayHoleId'
           @refresh='refresh'
         />
       </v-col>
@@ -16,7 +17,7 @@
     <v-row>
       <v-col>
         <!-- 载入中信息 -->
-        <loading :request='getHoles' ref='loading' :pause-loading='pauseLoading'/>
+        <loading :request='getHoles' ref='loading' :pause-loading='pauseLoading' />
       </v-col>
     </v-row>
   </v-container>
@@ -39,6 +40,8 @@ export default class DiscussionList extends DiscussionListMixin {
     required: true,
     type: Function
   }) readonly activate: Function | undefined
+
+  @Prop({ required: false, type: Number, default: -1 }) displayHoleId: number
 
   /**
    * Calculate the height of the hole list.

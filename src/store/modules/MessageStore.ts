@@ -56,4 +56,5 @@ class MessageStore extends VuexModule {
   }
 }
 
-export default getModule(MessageStore)
+const module = getModule(MessageStore)
+export default module

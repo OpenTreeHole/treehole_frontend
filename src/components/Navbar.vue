@@ -32,19 +32,47 @@
       <!-- 导航列表 -->
       <v-list nav dense>
         <v-list-item-group v-model='currentPage' color='primary'>
-          <v-list-item
-            v-for='(item, i) in $feConfig.navItems'
-            :key='i'
-            @click.stop='$router.replace(item.route)'
-            :disabled='i === currentPage'
-          >
-            <v-list-item-icon>
-              <v-icon v-text='item.icon' />
-            </v-list-item-icon>
-            <v-list-item-content>
-              <v-list-item-title v-text='item.title' />
-            </v-list-item-content>
-          </v-list-item>
+          <template v-for='item in $feConfig.navItems'>
+            <v-list-item
+              :key='item.route'
+              v-if='!item.group'
+              @click.stop='$router.replace(item.route)'
+              :class="item.route === $route.path ? activeClass : ''"
+              :disabled='item.route===$route.path'
+            >
+              <v-list-item-icon>
+                <v-icon v-text='item.icon' />
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title v-text='item.title' />
+              </v-list-item-content>
+            </v-list-item>
+            <v-list-group
+              :key='item.route'
+              v-else
+              no-action
+              :color="`primary ${$vuetify.theme.dark ? 'lighten-1' : 'darken-2'}`"
+            >
+              <template #activator>
+                <v-list-item-icon>
+                  <v-icon v-text='item.icon' />
+                </v-list-item-icon>
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </template>
+              <v-list-item
+                v-for='childItem in groupNavItem.get(item.route)'
+                :key='item.route+childItem.route'
+                :class="item.route+childItem.route===$route.fullPath ? activeClass : ''"
+                @click.stop='$router.replace(item.route+childItem.route)'
+                :disabled='item.route+childItem.route===$route.fullPath'
+              >
+                <v-list-item-content>
+                  <v-list-item-title v-text='childItem.name' />
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-group>
+          </template>
+
         </v-list-item-group>
       </v-list>
 
@@ -108,12 +136,13 @@
 <script lang='ts'>
 import { Component, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { Division } from '@/api/hole'
+import { camelizeKeys } from '@/utils'
 
 @Component
 export default class Navbar extends BaseComponentOrView {
   public isDarkTheme = false
   public searchText = ''
-  public username = ''
 
   /**
    * The display status of side bar.
@@ -125,6 +154,14 @@ export default class Navbar extends BaseComponentOrView {
   public inBanMenuRoutes = true
   public showSearchBox = false
   public floorToGo = ''
+  public groupNavItem = new Map()
+
+  get activeClass () {
+    return {
+      'v-list-item--active': true,
+      'white--text': this.$vuetify.theme.dark
+    }
+  }
 
   public searchIt (): void {
     this.$router.push({
@@ -149,6 +186,18 @@ export default class Navbar extends BaseComponentOrView {
   public mounted () {
     this.$nextTick(this.checkDevice)
     this.showSidebar = !this.isMobile
+  }
+
+  public created () {
+    this.$axios.get('/divisions').then((response) => {
+      const divisions: Division[] = camelizeKeys(response.data)
+      this.$user.divisions = divisions
+      const divisionInfos: { route: string, name: string }[] = []
+      divisions.forEach((v) => {
+        divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
+      })
+      this.groupNavItem = new Map(this.groupNavItem.set('/division', divisionInfos))
+    })
   }
 
   @Watch('isDarkTheme')
@@ -193,8 +242,6 @@ export default class Navbar extends BaseComponentOrView {
       }
       return false
     })()
-    const storageUsername = localStorage.getItem('username')
-    this.username = storageUsername || ''
   }
 }
 </script>

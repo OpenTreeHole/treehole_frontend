@@ -27,6 +27,7 @@ import Message from '@/components/Message.vue'
 import '@/style/global.scss'
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import UtilStore from '@/store/modules/UtilStore'
 
 @Component({
   components: {
@@ -36,6 +37,9 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 })
 export default class App extends BaseComponentOrView {
   created () {
+    UtilStore.setAxios(this.$axios)
+    UtilStore.setUser(this.$user)
+
     document.addEventListener('onlined', (event: any) => {
       this.messageSuccess(event.detail)
     })
