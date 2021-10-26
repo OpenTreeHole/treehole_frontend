@@ -1,6 +1,21 @@
-import { WrappedHole } from '@/components/Discussion/hole'
+import { Division, WrappedHole } from '@/api/hole'
 import UtilStore from '@/store/modules/UtilStore'
 import Vue from 'vue'
+
+export interface UserProfile {
+  userId: number
+  nickname: string
+  permission: {
+    admin: Date
+    silent: Array<any>
+  }
+  config: {
+    showFolded: string
+    notify: Array<string>
+  }
+  joinedTime: Date
+  isAdmin: boolean
+}
 
 class Collection {
   public collectionIds: Array<number> = []
@@ -10,6 +25,21 @@ class Collection {
     this.collectionIds = []
   }
 
+  public setCollection (collectionIds: Array<number>) {
+    this.collectionIds = collectionIds
+    this.update()
+  }
+
+  public update () {
+    for (const value of this.updateHoleMap.values()) {
+      for (let i = 0; i < value.length; i++) {
+        if (value[i].isStarred !== this.isStarred(value[i].hole.holeId)) {
+          Vue.set(value, i, new WrappedHole(value[i].hole))
+        }
+      }
+    }
+  }
+
   public getCollections (): void {
     UtilStore.axios.get('/user/favorites').then((response) => {
       this.clearCollection()
@@ -17,13 +47,7 @@ class Collection {
         if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
         this.collectionIds.push(holeItem.hole_id)
       })
-      for (const value of this.updateHoleMap.values()) {
-        for (let i = 0; i < value.length; i++) {
-          if (value[i].isStarred !== this.isStarred(value[i].hole.holeId)) {
-            Vue.set(value, i, new WrappedHole(value[i].hole))
-          }
-        }
-      }
+      this.update()
     }).catch((error) => {
       throw new Error(error)
     })
@@ -34,7 +58,6 @@ class Collection {
   }
 
   public registerUpdateHoleArray (name: string, holeArray: Array<WrappedHole>) {
-    console.log(`${name} ${holeArray}`)
     this.updateHoleMap.set(name, holeArray)
   }
 
@@ -45,6 +68,12 @@ class Collection {
 
 export class User {
   public collection = new Collection()
+  public divisions : Division[]
+  public userProfile : UserProfile
+
+  public clear () {
+    this.collection = new Collection()
+  }
 
   public install (): void {
     Vue.prototype.$user = this

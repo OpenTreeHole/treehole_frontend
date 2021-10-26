@@ -1,12 +1,9 @@
 <script lang='ts'>
-import marked from 'marked'
 import { Component, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import { DetailedFloor, Floor, WrappedHole } from '@/components/Discussion/hole'
+import { Floor, WrappedHole } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
-import Mention from '@/components/Discussion/Mention.vue'
-import vuetify from '@/plugins/vuetify'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { PrefetchedArrayRequest } from '@/api'
 
@@ -86,29 +83,31 @@ export default class DiscussionMixin extends BaseComponentOrView {
     }
   }
 
-  /**
-   * Replace mention tags with empty divs with 'replyDiv' class and the mention id.
-   *
-   * @param str - the original string
-   */
-  public mentioned (str: string): string {
-    console.log(str)
-    str = str.replace(/#\w+/g, (v) => '\n\n<p mention="' + v + '"></p>\n\n')
-    str = marked(str)
-    str = str.replace(/<p mention="#\w+"><\/p>/g, (str) => {
-      return str.replace('<p', '<div class="replyDiv"').replace('/p>', '/div>')
-    })
-    return str
-  }
-
-  public addCollection (): void {
-    this.$axios.post('/user/favorites', {
-      hole_id: this.hole.hole.holeId
-    }).then((response) => {
-      this.messageSuccess(response.data)
-    }).catch((error) => {
-      this.messageError(error.response.data.msg)
-    })
+  public changeCollectionStatus (): void {
+    if (this.hole.isStarred) {
+      this.$axios.delete('/user/favorites', {
+        data: {
+          hole_id: this.hole.hole.holeId
+        }
+      }).then((response) => {
+        this.messageSuccess(response.data.message)
+        this.$user.collection.setCollection(response.data.data)
+      }).catch((error) => {
+        this.messageError(error.response.data.msg)
+        this.hole.isStarred = !this.hole.isStarred
+      })
+    } else {
+      this.$axios.post('/user/favorites', {
+        hole_id: this.hole.hole.holeId
+      }).then((response) => {
+        this.messageSuccess(response.data.message)
+        this.$user.collection.setCollection(response.data.data)
+      }).catch((error) => {
+        this.messageError(error.response.data.msg)
+        this.hole.isStarred = !this.hole.isStarred
+      })
+    }
+    this.hole.isStarred = !this.hole.isStarred
   }
 
   /**
@@ -139,7 +138,7 @@ export default class DiscussionMixin extends BaseComponentOrView {
         .post('/floors', {
           content: (this.replyFloor ? '#' + this.replyFloor.floorId + ' ' : '') + this.editor.getContent(),
           hole_id: this.computedDiscussionId,
-          mention: [this.replyFloor?.floorId]
+          mention: this.replyFloor ? [this.replyFloor.floorId] : []
         })
         .then(() => {
           this.loading.isLoading = true

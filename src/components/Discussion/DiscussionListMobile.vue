@@ -25,7 +25,7 @@ import DiscussionListMixin from '@/mixins/DiscussionListMixin.vue'
 import Loading from '@/components/Loading.vue'
 import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
 import { Component } from 'vue-property-decorator'
-import { WrappedHole } from '@/components/Discussion/hole'
+import { WrappedHole } from '@/api/hole'
 
 @Component({
   components: {

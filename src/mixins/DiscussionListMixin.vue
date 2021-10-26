@@ -1,9 +1,9 @@
 <script lang='ts'>
 import debounce from 'lodash.debounce'
 import { Component, Ref, Watch } from 'vue-property-decorator'
-import { WrappedHole } from '@/components/Discussion/hole'
+import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { ArrayRequest, CollectionHoleListRequest, HomeHoleListRequest } from '@/api'
+import { ArrayRequest, CollectionHoleListRequest, DivisionHoleListRequest, HomeHoleListRequest } from '@/api'
 import Loading from '@/components/Loading.vue'
 
 @Component
@@ -67,26 +67,25 @@ export default class DiscussionListMixin extends BaseComponentOrView {
   }
 
   mounted () {
-    console.log(`Mounted: ${this.route}`)
     window.onresize = () => {
       this.debouncedCalculateLines()
     }
   }
 
   destroyed () {
-    console.log(`Destroyed: ${this.route}`)
     this.$user.collection.unregisterUpdateHoleArray(this.$route.name as string)
   }
 
   created () {
     this.route = this.$route.name as string
-    console.log(`Created: ${this.route}`)
     this.$user.collection.getCollections()
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
     if (this.route === 'home') {
       this.request = new HomeHoleListRequest()
     } else if (this.route === 'collections') {
       this.request = new CollectionHoleListRequest()
+    } else if (this.route === 'division') {
+      this.request = new DivisionHoleListRequest(parseInt(this.$route.params.id))
     }
     this.discussions = this.request.datas
     this.$user.collection.registerUpdateHoleArray(this.route, this.discussions)

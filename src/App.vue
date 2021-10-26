@@ -38,6 +38,7 @@ import UtilStore from '@/store/modules/UtilStore'
 export default class App extends BaseComponentOrView {
   created () {
     UtilStore.setAxios(this.$axios)
+    UtilStore.setUser(this.$user)
 
     document.addEventListener('onlined', (event: any) => {
       this.messageSuccess(event.detail)

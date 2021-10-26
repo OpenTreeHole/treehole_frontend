@@ -62,8 +62,9 @@
             </v-card-text>
 
             <!-- 脚标 -->
-            <v-card-text class='d-flex justify-space-between text-body-2 pb-2'>
-              <div>{{ index }}L</div>
+            <v-card-text class='d-flex text-body-2 pb-2'>
+              <span><b>{{ index }}L</b>(#{{ floor.floorId }})</span>
+              <v-spacer/>
               <v-btn
                 x-small
                 text
@@ -74,6 +75,7 @@
                 <v-icon>mdi-reply-outline</v-icon>
                 回复
               </v-btn>
+              <v-spacer/>
               <v-btn
                 x-small
                 text
@@ -95,7 +97,7 @@
       <v-dialog v-model='dialog' persistent max-width='600px'>
         <!-- 浮动按钮 -->
         <template v-slot:activator='{ on, attrs }'>
-          <v-btn fab color='secondary' v-bind='attrs' v-on='on'>
+          <v-btn fab color='secondary' @mousedown.prevent v-bind='attrs' v-on='on'>
             <v-icon>mdi-send</v-icon>
           </v-btn>
         </template>
@@ -134,8 +136,8 @@
 
       <br/>
 
-      <v-btn fab color='secondary' @click='addCollection'>
-        <v-icon>mdi-star</v-icon>
+      <v-btn fab color='secondary' @mousedown.prevent @click='changeCollectionStatus'>
+        <v-icon :class='hole.isStarred ? "v-icon--starred" : ""'>mdi-star</v-icon>
       </v-btn>
     </div>
 
@@ -149,7 +151,7 @@ import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import DiscussionMixin from '@/mixins/DiscussionMixin.vue'
 import { Component, Prop } from 'vue-property-decorator'
-import { WrappedHole } from '@/components/Discussion/hole'
+import { WrappedHole } from '@/api/hole'
 import Mention from '@/components/Discussion/Mention.vue'
 import { FloorListRequest } from '@/api'
 
@@ -228,6 +230,11 @@ export default class DiscussionCol extends DiscussionMixin {
 
   .v-btn {
     margin: 5px;
+    .v-btn__content {
+      .v-icon--starred {
+        color: #FF9300;
+      }
+    }
   }
 }
 

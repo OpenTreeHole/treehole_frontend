@@ -1,19 +1,9 @@
 import { camelCase, assign, pick, keys } from 'lodash'
 
-export default {
-  reloadAll () {
-    const form = document.createElement('form')
-    form.method = 'POST'
-    form.action = '/'
-    document.body.appendChild(form)
-    form.submit()
-    location.href = '/'
-  },
-  whichPlatform () { // 检测当前浏览器平台
-
-  }
+export const convertDate = (v: any): string => {
+  const date = new Date(v)
+  return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
 }
-
 export const camelizeKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(v => camelizeKeys(v))

@@ -1,5 +1,7 @@
+// noinspection DuplicatedCode
+
 import { AxiosStatic } from 'axios'
-import { DetailedFloor, Floor, WrappedHole } from '@/components/Discussion/hole'
+import { DetailedFloor, Floor, WrappedHole } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
 import cloneDeep from 'lodash.clonedeep'
 import marked from 'marked'
@@ -35,16 +37,33 @@ export abstract class PrefetchedArrayRequest<T> extends ArrayRequest<T> {
     this.datas = cloneDeep(prefetchedDataSet)
   }
 
-  public pushData (data: T, index?: number) {
+  /**
+   * Push a new data item int the data set.
+   * <p> If an index is given, the item will be pushed into the targeted position. (and replace the item at this position) </p>
+   * <p> The replacement will be directly assign value to this position at default, but you can give a check method to decide whether to use Vue.set instead. </p>
+   *
+   * @param data
+   * @param index
+   * @param check - false: datas[index]=newVal; true: Vue.set(datas,index,newVal)
+   */
+  public pushData (data: T, index?: number, check?: (newVal: T, oldVal: T) => boolean) {
     if (index === undefined || index >= this.loadedLength) {
       if (this.loadedLength === this.datas.length) {
         this.datas.push(data)
         this.loadedLength++
       } else {
-        Vue.set(this.datas, this.loadedLength++, data)
+        if (check && check(data, this.datas[this.loadedLength])) {
+          Vue.set(this.datas, this.loadedLength++, data)
+        } else {
+          this.datas[this.loadedLength++] = data
+        }
       }
     } else {
-      Vue.set(this.datas, index, data)
+      if (check && check(data, this.datas[index])) {
+        Vue.set(this.datas, index, data)
+      } else {
+        this.datas[index] = data
+      }
     }
   }
 }
@@ -73,7 +92,45 @@ export class HomeHoleListRequest extends ArrayRequest<WrappedHole> {
         this.pushData(hole)
         hasNext = true
       })
-      this.startTime = new Date(this.datas[this.datas.length - 1].hole.timeUpdated)
+      if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].hole.timeUpdated)
+    }).catch((error) => {
+      throw new Error(error)
+    })
+    return hasNext
+  }
+}
+
+export class DivisionHoleListRequest extends ArrayRequest<WrappedHole> {
+  public startTime: Date = new Date()
+  public divisionId: number
+
+  constructor (divisionId: number) {
+    super()
+    this.divisionId = divisionId
+  }
+
+  public clear (): void {
+    super.clear()
+    this.startTime = new Date()
+  }
+
+  public async request (): Promise<boolean> {
+    let hasNext = false
+    await UtilStore.axios.get('/holes', {
+      params: {
+        start_time: this.startTime.toISOString(),
+        length: 10,
+        prefetch_length: 8,
+        division_id: this.divisionId
+      }
+    }).then((response) => {
+      response.data.forEach((holeItem: any) => {
+        if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
+        const hole = new WrappedHole(camelizeKeys(holeItem))
+        this.pushData(hole)
+        hasNext = true
+      })
+      if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].hole.timeUpdated)
     }).catch((error) => {
       throw new Error(error)
     })
@@ -101,6 +158,9 @@ export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
   public getIndex: (id: number) => number
 
   public constructor (prefetchedDataSet: Array<Floor>, holeId: number, getIndex: (id: number) => number) {
+    prefetchedDataSet.forEach((floor: Floor) => {
+      floor.content = marked(floor.content)
+    })
     super(prefetchedDataSet)
     this.holeId = holeId
     this.getIndex = getIndex
@@ -124,7 +184,9 @@ export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
           floor.content = this.mentioned(floor.content)
           if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
           setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
-          this.pushData(floor, index++)
+          this.pushData(floor, index++, (newVal:Floor, oldVal:Floor) => {
+            return newVal.content !== oldVal.content
+          })
 
           hasNext = true
         })
