@@ -126,7 +126,7 @@ export default class DiscussionComponent extends BaseComponentOrView {
     console.log(e.path)
     for (let i = 0; i < e.path.length; i++) {
       if (e.path[i].className && e.path[i].className.includes && (e.path[i].className.includes('navbar') ||
-        e.path[i].className.includes('vditor'))) flag = false
+        e.path[i].className.includes('vditor') || e.path[i].className.includes('overlay'))) flag = false
     }
     if (flag) this.deactivate(this.displayHoleId)
   }

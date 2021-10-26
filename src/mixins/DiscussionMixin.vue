@@ -134,23 +134,27 @@ export default class DiscussionMixin extends BaseComponentOrView {
   public addFloor (): void {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
+      const sLoading = this.loading
+      const sEditor = this.editor
       this.$axios
         .post('/floors', {
           content: (this.replyFloor ? '#' + this.replyFloor.floorId + ' ' : '') + this.editor.getContent(),
           hole_id: this.computedDiscussionId,
           mention: this.replyFloor ? [this.replyFloor.floorId] : []
         })
-        .then(() => {
-          this.loading.isLoading = true
+        .then((response) => {
+          this.messageSuccess(response.data.message)
+          sLoading.isLoading = true
           this.getFloors()
           this.replyFloor = null // Clear the reply info.
-          this.editor.setContent('') // Clear the reply editor.
+          sEditor.setContent('') // Clear the reply editor.
         })
         .catch((error) => {
-          console.log(error.response)
-          this.messageError(error.response.data.msg)
+          console.log(error)
+          this.messageError(error)
         })
     }
+    console.log(this.$refs)
   }
 
   /**

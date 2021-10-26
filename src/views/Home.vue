@@ -236,6 +236,7 @@ export default class Home extends BaseComponentOrView {
         .then((response) => {
           console.log(response.data)
           this.messageSuccess('发送成功')
+          console.log(this.holeComp + ' ' + this.editor)
           this.holeComp.refresh() // reload the hole list
           this.editor.setContent('')
           this.tags = []
