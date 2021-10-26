@@ -7,7 +7,6 @@ import Discussion from '@/views/Discussion.vue'
 import Division from '@/views/Division.vue'
 import About from '@/views/About.vue'
 import license from '@/views/License.vue'
-import Search from '@/views/Search.vue'
 import Me from '@/views/Me.vue'
 import Collections from '@/views/Collections.vue'
 
@@ -23,7 +22,6 @@ const routes = [
   { path: '/about', meta: { title: '关于' }, component: About, name: 'about' },
   { path: '/register', meta: { title: '注册' }, component: Register, name: 'register' },
   { path: '/discussion/:id', meta: { title: '树洞' }, component: Discussion, name: 'discussion' },
-  { path: '/s', meta: { title: '搜索' }, component: Search, name: 'search' },
   { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' }
 ]
 

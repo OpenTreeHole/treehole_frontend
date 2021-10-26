@@ -166,11 +166,11 @@ export default class Register extends BaseComponentOrView {
   }
 
   public sendCode (): void {
-    this.sendButtonChangeStatus()
     if (!this.email) {
       this.messageError('用户名与邮箱不能为空')
       return
     }
+    this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
     this.$axios
       .get('/verify/email', {

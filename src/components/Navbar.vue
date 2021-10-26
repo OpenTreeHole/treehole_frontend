@@ -31,7 +31,7 @@
 
       <!-- 导航列表 -->
       <v-list nav dense>
-        <v-list-item-group v-model='currentPage' color='primary'>
+        <v-list-item-group color='primary'>
           <template v-for='item in $feConfig.navItems'>
             <v-list-item
               :key='item.route'
@@ -78,54 +78,54 @@
 
       <v-divider />
       <v-list style='padding: 5px'>
-        <!-- 搜索 -->
-        <v-list-item>
-          <v-form>
-            <v-row>
-              <v-text-field
-                type='search'
-                v-model='searchText'
-                placeholder='搜索'
-              >
-              </v-text-field>
-              <v-list-item-icon>
-                <v-btn
-                  type='submit'
-                  icon
-                  @click='searchIt'
-                  :disabled='searchText.length === 0'
-                >
-                  <v-icon>mdi-magnify</v-icon>
-                </v-btn>
-              </v-list-item-icon>
-            </v-row>
-          </v-form>
-        </v-list-item>
+<!--        &lt;!&ndash; 搜索 &ndash;&gt;-->
+<!--        <v-list-item>-->
+<!--          <v-form>-->
+<!--            <v-row>-->
+<!--              <v-text-field-->
+<!--                type='search'-->
+<!--                v-model='searchText'-->
+<!--                placeholder='搜索'-->
+<!--              >-->
+<!--              </v-text-field>-->
+<!--              <v-list-item-icon>-->
+<!--                <v-btn-->
+<!--                  type='submit'-->
+<!--                  icon-->
+<!--                  @click='searchIt'-->
+<!--                  :disabled='searchText.length === 0'-->
+<!--                >-->
+<!--                  <v-icon>mdi-magnify</v-icon>-->
+<!--                </v-btn>-->
+<!--              </v-list-item-icon>-->
+<!--            </v-row>-->
+<!--          </v-form>-->
+<!--        </v-list-item>-->
 
-        <!-- 跳转 -->
-        <v-list-item>
-          <v-form>
-            <v-row>
-              <v-text-field v-model='floorToGo' placeholder='电梯直达'>
-              </v-text-field>
-              <v-list-item-icon>
-                <v-btn
-                  type='submit'
-                  icon
-                  @click='goFloor'
-                  :disabled='floorToGo.length === 0'
-                >
-                  <v-icon>mdi-elevator</v-icon>
-                </v-btn>
-              </v-list-item-icon>
-            </v-row>
-          </v-form>
-        </v-list-item>
+<!--        &lt;!&ndash; 跳转 &ndash;&gt;-->
+<!--        <v-list-item>-->
+<!--          <v-form>-->
+<!--            <v-row>-->
+<!--              <v-text-field v-model='floorToGo' placeholder='电梯直达'>-->
+<!--              </v-text-field>-->
+<!--              <v-list-item-icon>-->
+<!--                <v-btn-->
+<!--                  type='submit'-->
+<!--                  icon-->
+<!--                  @click='goFloor'-->
+<!--                  :disabled='floorToGo.length === 0'-->
+<!--                >-->
+<!--                  <v-icon>mdi-elevator</v-icon>-->
+<!--                </v-btn>-->
+<!--              </v-list-item-icon>-->
+<!--            </v-row>-->
+<!--          </v-form>-->
+<!--        </v-list-item>-->
       </v-list>
 
       <!-- 侧栏底部工具按钮 -->
       <div class='drawer-bottom-container'>
-        <v-btn fab fixed bottom color='primary' @click='$feUtils.reloadAll()'>
+        <v-btn fab fixed bottom color='primary' @mousedown.prevent @click='load'>
           重载
         </v-btn>
       </div>
@@ -179,6 +179,18 @@ export default class Navbar extends BaseComponentOrView {
     this.floorToGo = ''
   }
 
+  public load (): void {
+    this.$axios.get('/divisions').then((response) => {
+      const divisions: Division[] = camelizeKeys(response.data)
+      this.$user.divisions = divisions
+      const divisionInfos: { route: string, name: string }[] = []
+      divisions.forEach((v) => {
+        divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
+      })
+      this.groupNavItem = new Map(this.groupNavItem.set('/division', divisionInfos))
+    })
+  }
+
   public back (): void {
     this.$router.back()
   }
@@ -189,15 +201,7 @@ export default class Navbar extends BaseComponentOrView {
   }
 
   public created () {
-    this.$axios.get('/divisions').then((response) => {
-      const divisions: Division[] = camelizeKeys(response.data)
-      this.$user.divisions = divisions
-      const divisionInfos: { route: string, name: string }[] = []
-      divisions.forEach((v) => {
-        divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
-      })
-      this.groupNavItem = new Map(this.groupNavItem.set('/division', divisionInfos))
-    })
+    this.load()
   }
 
   @Watch('isDarkTheme')
