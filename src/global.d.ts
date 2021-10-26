@@ -7,7 +7,6 @@ declare module 'vue/types/vue' {
   interface Vue {
     $axios: AxiosStatic
     $feConfig: any
-    $feUtils: any
     $store: Vuex.Store
     $router: VueRouter
     $route: Route

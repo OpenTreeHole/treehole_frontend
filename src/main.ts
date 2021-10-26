@@ -14,9 +14,6 @@ import Viewer from 'v-viewer'
 // 引入项目配置文件
 import FDUHoleFEConfig from './fduhole-fe.config.js'
 
-// 引入实用工具
-import FEUtils from './utils.js'
-
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
@@ -25,7 +22,6 @@ import store from './store'
 import user from '@/api/user'
 
 Vue.prototype.$feConfig = FDUHoleFEConfig
-Vue.prototype.$feUtils = FEUtils
 
 Vue.config.productionTip = false
 
