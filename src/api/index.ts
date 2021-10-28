@@ -1,10 +1,8 @@
 // noinspection DuplicatedCode
 
-import { AxiosStatic } from 'axios'
-import { DetailedFloor, Floor, WrappedHole } from '@/api/hole'
+import { Floor, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
 import cloneDeep from 'lodash.clonedeep'
-import marked from 'marked'
 import Vue from 'vue'
 import Mention from '@/components/Discussion/Mention.vue'
 import vuetify from '@/plugins/vuetify'
@@ -153,14 +151,11 @@ export class CollectionHoleListRequest extends ArrayRequest<WrappedHole> {
   }
 }
 
-export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
+export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
   public holeId: number
   public getIndex: (id: number) => number
 
-  public constructor (prefetchedDataSet: Array<Floor>, holeId: number, getIndex: (id: number) => number) {
-    prefetchedDataSet.forEach((floor: Floor) => {
-      floor.content = marked(floor.content)
-    })
+  public constructor (prefetchedDataSet: Array<MarkedFloor>, holeId: number, getIndex: (id: number) => number) {
     super(prefetchedDataSet)
     this.holeId = holeId
     this.getIndex = getIndex
@@ -179,13 +174,12 @@ export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
       .then((response) => {
         let index = response.config.params.start_floor
         response.data.forEach((floorItem: any) => {
-          const floor: DetailedFloor = camelizeKeys(floorItem)
-          floor.mention.push(floor)
-          floor.content = this.mentioned(floor.content)
-          if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
-          setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
-          this.pushData(floor, index++, (newVal:Floor, oldVal:Floor) => {
-            return newVal.content !== oldVal.content
+          const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(floorItem))
+          if (('mention' in floor) && floor.mention.length !== 0) {
+            setTimeout(() => this.renderMention(floor), 100)
+          }
+          this.pushData(floor, index++, (newVal:MarkedFloor, oldVal:MarkedFloor) => {
+            return newVal.html !== oldVal.html
           })
 
           hasNext = true
@@ -203,7 +197,7 @@ export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
    *
    * @param curFloor - the current floor (waiting the mention part in it to be re-rendered).
    */
-  public renderMention (curFloor: DetailedFloor): void {
+  public renderMention (curFloor: MarkedDetailedFloor): void {
     const curIndex = this.getIndex(curFloor.floorId)
     const elements = document.querySelectorAll('div[index="' + curIndex + '"] > div.replyDiv')
     for (let i = 0; i < elements.length; i++) {
@@ -211,11 +205,12 @@ export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
       const mentionAttr = elements[i].getAttribute('mention')
       if (!mentionAttr) continue
       const mentionId = parseInt(mentionAttr.substring(1))
-      let mentionFloor: Floor | null = null
+      let mentionFloorOrNull: Floor | null = null
       curFloor.mention.forEach((mFloor) => {
-        if (mFloor.floorId === mentionId) mentionFloor = mFloor
+        if (mFloor.floorId === mentionId) mentionFloorOrNull = mFloor
       })
-      if (!mentionFloor) continue
+      if (!mentionFloorOrNull) continue
+      const mentionFloor: MarkedFloor = new MarkedFloor(mentionFloorOrNull)
       let gotoMentionFloor: Function | undefined
       const mentionIndex = this.getIndex(mentionId)
       if (mentionIndex !== -1) {
@@ -227,25 +222,11 @@ export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
         propsData: {
           mentionFloor: mentionFloor,
           gotoMentionFloor: gotoMentionFloor,
-          mentionFloorInfo: (mentionIndex === -1 ? ('#' + (mentionFloor as Floor).floorId) : (mentionIndex.toString() + 'L'))
+          mentionFloorInfo: (mentionIndex === -1 ? ('#' + mentionFloor.floorId) : (mentionIndex.toString() + 'L'))
         },
         vuetify
       }).$mount(elements[i])
     }
-  }
-
-  /**
-   * Replace mention tags with empty divs with 'replyDiv' class and the mention id.
-   *
-   * @param str - the original string
-   */
-  public mentioned (str: string): string {
-    str = str.replace(/#\w+/g, (v) => '\n\n<p mention="' + v + '"></p>\n\n')
-    str = marked(str)
-    str = str.replace(/<p mention="#\w+"><\/p>/g, (str) => {
-      return str.replace('<p', '<div class="replyDiv"').replace('/p>', '/div>')
-    })
-    return str
   }
 
   public scrollTo (currentId: number, toId: number): void {

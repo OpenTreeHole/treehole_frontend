@@ -49,6 +49,7 @@ export default class DiscussionListMixin extends BaseComponentOrView {
     await this.request.request().then((v) => {
       hasNext = v
     }).catch((error) => {
+      console.log(error)
       if (error.response === undefined) this.messageError(JSON.stringify(error))
       else this.messageError(error.response.data.msg)
     })

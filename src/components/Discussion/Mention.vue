@@ -1,38 +1,33 @@
 <template>
   <v-card v-if='mentionFloor' class='reply'>
     <!-- 回复框顶栏 -->
-    <v-card-text class='pb-1 pt-2 text-body-2'>
-      <span>
-        {{ mentionFloor.anonyname }}
+    <v-card-actions class='pb-0 pl-4 pr-4 pt-4 text-body-2'>
+      <span style='color: rgba(85,93,86,0.48); '>
+        <b>{{ mentionFloor.anonyname }}</b> {{ mentionFloorInfo }}
       </span>
-      <v-divider
-        class="mx-4"
-        vertical
-      ></v-divider>
-      {{ mentionFloorInfo }}
+      <v-spacer/>
       <v-icon
         v-if='gotoMentionFloor'
         @click='gotoMentionFloor'
         small
-        style='float: right'
       >
         mdi-arrow-collapse-up
       </v-icon>
-    </v-card-text>
-    <v-card-text class='reply-text'>
-      {{ mentionFloor.content | plainText }}
+    </v-card-actions>
+    <v-card-text class='reply-text pb-1' v-html='mentionFloor.html'>
     </v-card-text>
   </v-card>
 </template>
 
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator'
-import { Floor } from '@/api/hole'
+import { MarkedFloor } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import hljs from 'highlight.js'
 
 @Component
 export default class Mention extends BaseComponentOrView {
-  @Prop({ required: true }) mentionFloor: Floor | null
+  @Prop({ required: true }) mentionFloor: MarkedFloor | null
   @Prop({ type: Function }) gotoMentionFloor?: Function
   /**
    * Info which indicates the place where the floor is published.
@@ -40,6 +35,10 @@ export default class Mention extends BaseComponentOrView {
    * e.g. 6L, #12354
    */
   @Prop({ type: String }) mentionFloorInfo?: string
+
+  mounted () {
+    hljs.highlightAll()
+  }
 }
 </script>
 

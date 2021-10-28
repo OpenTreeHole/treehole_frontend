@@ -2,7 +2,7 @@
 import { Component, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import { Floor, WrappedHole } from '@/api/hole'
+import { MarkedFloor, WrappedHole } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { PrefetchedArrayRequest } from '@/api'
@@ -11,17 +11,17 @@ import { PrefetchedArrayRequest } from '@/api'
 export default class DiscussionMixin extends BaseComponentOrView {
   // 帖子列表
   public hole: WrappedHole
-  public floors: Array<Floor> = []
+  public floors: Array<MarkedFloor> = []
   public loadedLength: number = 0
   // 回复信息（可选回复）
-  public replyFloor: Floor | null = null
+  public replyFloor: MarkedFloor | null = null
   // 发帖表单
   public dialog = false
   // content: '',
   public requiredRules = [(v: any) => !!v || '内容不能为空']
   public valid = true
 
-  public request: PrefetchedArrayRequest<Floor>
+  public request: PrefetchedArrayRequest<MarkedFloor>
 
   @Ref() readonly form!: HTMLFormElement
   @Ref() readonly editor!: Editor
@@ -130,7 +130,9 @@ export default class DiscussionMixin extends BaseComponentOrView {
     return hasNext
   }
 
-  // Create a new floor.
+  /**
+   * Create a new floor.
+   */
   public addFloor (): void {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
@@ -144,8 +146,7 @@ export default class DiscussionMixin extends BaseComponentOrView {
         })
         .then((response) => {
           this.messageSuccess(response.data.message)
-          sLoading.isLoading = true
-          this.getFloors()
+          sLoading.continueLoad()
           this.replyFloor = null // Clear the reply info.
           sEditor.setContent('') // Clear the reply editor.
         })

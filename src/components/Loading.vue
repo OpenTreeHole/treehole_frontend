@@ -37,7 +37,7 @@ export default class Loading extends BaseComponentOrView {
   public hasNext = true
   public isLoading = false
 
-  public onIntersect (entries: IntersectionObserverEntry[], observer: IntersectionObserver): void {
+  public onIntersect (entries: IntersectionObserverEntry[]): void {
     if (entries[0].isIntersecting) {
       this.load().catch((error) => {
         console.log(error)
@@ -55,6 +55,11 @@ export default class Loading extends BaseComponentOrView {
     this.isLoading = true
     this.hasNext = await this.request()
     this.isLoading = false
+  }
+
+  public continueLoad () {
+    this.hasNext = true
+    this.load()
   }
 }
 </script>

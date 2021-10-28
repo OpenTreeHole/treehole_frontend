@@ -1,6 +1,6 @@
-import cloneDeep from 'lodash.clonedeep'
-import marked from 'marked'
 import UtilStore from '@/store/modules/UtilStore'
+import { convertKatex } from '@/utils'
+import marked from 'marked'
 
 export interface Tag {
   name: string
@@ -20,7 +20,7 @@ export interface Floor {
   timeUpdated: string
 }
 
-export class NativeFloor implements Floor {
+export class MarkedFloor implements Floor {
   anonyname: string
   content: string
   deleted: boolean
@@ -30,12 +30,46 @@ export class NativeFloor implements Floor {
   like: number
   timeCreated: string
   timeUpdated: string
+  html: string
+
+  constructor (floor: Floor) {
+    Object.assign(this, floor)
+    this.convertHtml()
+  }
+
+  public convertHtml () {
+    this.html = marked(convertKatex(this.content))
+  }
 }
 
 export interface DetailedFloor extends Floor {
   isMe: boolean
   liked: boolean
   mention: Array<Floor>
+}
+
+export class MarkedDetailedFloor extends MarkedFloor implements DetailedFloor {
+  isMe: boolean
+  liked: boolean
+  mention: Array<Floor>
+
+  public convertHtml () {
+    this.html = this.mentioned(convertKatex(this.content))
+  }
+
+  /**
+   * Replace mention tags with empty divs with 'replyDiv' class and the mention id.
+   *
+   * @param str - the original string
+   */
+  public mentioned (str: string): string {
+    str = str.replace(/#\w+/g, (v) => '\n\n<p mention="' + v + '"></p>\n\n')
+    str = marked(convertKatex(str))
+    str = str.replace(/<p mention="#\w+"><\/p>/g, (str) => {
+      return str.replace('<p', '<div class="replyDiv"').replace('/p>', '/div>')
+    })
+    return str
+  }
 }
 
 export interface Hole {
@@ -66,9 +100,9 @@ export class WrappedHole {
     lines: number
   }
 
-  public floors: Array<Floor>
-  public firstFloor: Floor
-  public lastFloor: Floor
+  public floors: Array<MarkedFloor> = []
+  public firstFloor: MarkedFloor
+  public lastFloor: MarkedFloor
   public isFolded: boolean
   public isStarred: boolean
 
@@ -78,11 +112,11 @@ export class WrappedHole {
       fold: true,
       lines: 3
     }
-    this.floors = cloneDeep(hole.floors.prefetch)
-    this.firstFloor = cloneDeep(hole.floors.firstFloor)
-    this.lastFloor = cloneDeep(hole.floors.lastFloor)
-    this.firstFloor.content = marked(this.firstFloor.content)
-    this.lastFloor.content = marked(this.lastFloor.content)
+    hole.floors.prefetch.forEach((floor: Floor) => {
+      this.floors.push(new MarkedFloor(floor))
+    })
+    this.firstFloor = new MarkedFloor(hole.floors.firstFloor)
+    this.lastFloor = new MarkedFloor(hole.floors.lastFloor)
     this.isFolded = this.firstFloor.fold.length > 0
     this.isStarred = UtilStore.user.collection.isStarred(hole.holeId)
     hole.tags.forEach((v: Tag) => {

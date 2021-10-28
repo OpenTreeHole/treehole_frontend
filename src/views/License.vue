@@ -21,9 +21,10 @@
 </template>
 
 <script lang='ts'>
-import marked from 'marked'
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { convertKatex } from '@/utils'
+import marked from 'marked'
 
 @Component
 export default class License extends BaseComponentOrView {
@@ -45,7 +46,7 @@ export default class License extends BaseComponentOrView {
           .then((response: { data: any }) => {
             this.licenses.push({
               title: license.name,
-              content: marked(response.data)
+              content: marked(convertKatex(response.data))
             })
           })
           .catch((error: { message: string }) => {

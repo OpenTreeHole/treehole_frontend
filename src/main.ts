@@ -6,7 +6,6 @@ import axios from 'axios'
 import VueCookies from 'vue-cookies'
 import vuetify from './plugins/vuetify'
 
-import marked from 'marked'
 import plugins from './components/plugins'
 import 'viewerjs/dist/viewer.css'
 import Viewer from 'v-viewer'

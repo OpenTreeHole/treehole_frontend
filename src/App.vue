@@ -25,6 +25,9 @@ import Navbar from '@/components/Navbar.vue'
 import Message from '@/components/Message.vue'
 
 import '@/style/global.scss'
+import 'github-markdown-css/github-markdown.css'
+import 'highlight.js/styles/github.css'
+
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UtilStore from '@/store/modules/UtilStore'

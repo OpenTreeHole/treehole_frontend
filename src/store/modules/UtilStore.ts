@@ -1,4 +1,4 @@
-import { VuexModule, Module, Mutation, Action, getModule } from 'vuex-module-decorators'
+import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
 import { AxiosStatic } from 'axios'
 import { User } from '@/api/user'

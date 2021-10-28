@@ -36,7 +36,7 @@
     <transition-group name='slide-fade'>
       <v-row
         v-for='(floor, index) in floors'
-        :key='`${index}-${floor.content}`'
+        :key='`${index}-${floor.html}`'
         justify='center'
         align='start'
         v-viewer
@@ -56,8 +56,8 @@
               <!-- 正文部分 -->
               <div
                 :index='index'
-                class='floor-body rich-text text--primary ma-0 text-body-1'
-                v-html='floor.content'
+                class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
+                v-html='floor.html'
               ></div>
             </v-card-text>
 
@@ -154,6 +154,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
 import Mention from '@/components/Discussion/Mention.vue'
 import { FloorListRequest } from '@/api'
+import hljs from 'highlight.js'
 
 @Component({
   components: {
@@ -200,6 +201,10 @@ export default class DiscussionCol extends DiscussionMixin {
         this.init()
       })
     }
+  }
+
+  updated () {
+    hljs.highlightAll()
   }
 }
 </script>
