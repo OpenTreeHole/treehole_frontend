@@ -1,7 +1,7 @@
 <template>
   <v-card v-if='mentionFloor' class='reply'>
     <!-- 回复框顶栏 -->
-    <v-card-actions class='pb-0 pl-4 pr-4 pt-4 text-body-2'>
+    <v-card-actions class='pb-0 pl-4 pr-4 pt-2 text-body-2'>
       <span style='color: rgba(85,93,86,0.48); '>
         <b>{{ mentionFloor.anonyname }}</b> {{ mentionFloorInfo }}
       </span>
@@ -14,7 +14,7 @@
         mdi-arrow-collapse-up
       </v-icon>
     </v-card-actions>
-    <v-card-text class='reply-text pb-1' v-html='mentionFloor.html'>
+    <v-card-text class='reply-text pt-2 pb-2' v-html='mentionFloor.html'>
     </v-card-text>
   </v-card>
 </template>
