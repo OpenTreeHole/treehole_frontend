@@ -1,5 +1,5 @@
 <template>
-  <v-card v-if='mentionFloor' class='reply'>
+  <v-card v-if='mentionFloor' class='reply' :class='additionalClass'>
     <!-- 回复框顶栏 -->
     <v-card-actions class='pb-0 pl-4 pr-4 pt-2 text-body-2'>
       <span style='color: rgba(85,93,86,0.48); '>
@@ -34,7 +34,8 @@ export default class Mention extends BaseComponentOrView {
    * <p> The info will be displayed after the anonyname. </p>
    * e.g. 6L, #12354
    */
-  @Prop({ type: String }) mentionFloorInfo?: string
+  @Prop({ type: String, default: '' }) mentionFloorInfo: string
+  @Prop({ type: String, default: '' }) additionalClass: string
 
   mounted () {
     hljs.highlightAll()

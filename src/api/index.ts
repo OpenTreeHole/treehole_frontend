@@ -218,8 +218,17 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
           this.scrollTo(curIndex, mentionIndex)
         }
       }
+      let additionalClass = ''
+      if (elements[i].parentElement && (elements[i].parentElement as HTMLElement).firstChild !== elements[i]) {
+        additionalClass += 'mt-3 '
+      }
+      if (elements[i].parentElement && (elements[i].parentElement as HTMLElement).lastChild !== elements[i]) {
+        additionalClass += 'mb-3 '
+      }
+      additionalClass = additionalClass.trimEnd()
       new Mention({
         propsData: {
+          additionalClass: additionalClass,
           mentionFloor: mentionFloor,
           gotoMentionFloor: gotoMentionFloor,
           mentionFloorInfo: (mentionIndex === -1 ? ('#' + mentionFloor.floorId) : (mentionIndex.toString() + 'L'))
