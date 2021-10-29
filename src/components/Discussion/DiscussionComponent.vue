@@ -96,7 +96,6 @@ export default class DiscussionComponent extends BaseComponentOrView {
 
     const height = this.holeList.getHeight()
 
-    // console.log('1: ' + this.marginTopY + ';2: ' + this.viewport + ';3: ' + height)
     if (this.marginTopY + this.viewport > height + 300) {
       this.marginTopY = height - this.viewport + 300
     }
@@ -122,8 +121,10 @@ export default class DiscussionComponent extends BaseComponentOrView {
   }
 
   public clickOutside (e: { path: HTMLElement[] }) {
+    // The length of e.path will be 5 only when dragging cursor from the dialog to the overlay.
+    // The floor list should not be closed in this situation.
+    if (!e.path || e.path.length === 5) return
     let flag = true
-    console.log(e.path)
     for (let i = 0; i < e.path.length; i++) {
       if (e.path[i].className && e.path[i].className.includes && (e.path[i].className.includes('navbar') ||
         e.path[i].className.includes('dialog') || e.path[i].className.includes('overlay'))) flag = false

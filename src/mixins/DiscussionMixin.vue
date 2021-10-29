@@ -161,7 +161,6 @@ export default class DiscussionMixin extends BaseComponentOrView {
           this.messageError(error)
         })
     }
-    console.log(this.$refs)
   }
 
   /**
