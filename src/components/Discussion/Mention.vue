@@ -14,8 +14,20 @@
         mdi-arrow-collapse-up
       </v-icon>
     </v-card-actions>
-    <v-card-text class='reply-text pt-2 pb-2' v-html='mentionFloor.html'>
-    </v-card-text>
+    <v-card-text class='reply-text pt-2 pb-2' v-html='mentionFloor.html' :class='clipClass'/>
+    <v-btn
+      v-if='needClip'
+      text
+      block
+      depressed
+      x-small
+      class='btn-fixed-br'
+      color='grey lighten-1'
+      @click='isClipped=!isClipped'
+    >
+      <v-icon v-if='isClipped'>mdi-chevron-double-down</v-icon>
+      <v-icon v-else>mdi-chevron-double-up</v-icon>
+    </v-btn>
   </v-card>
 </template>
 
@@ -36,13 +48,28 @@ export default class Mention extends BaseComponentOrView {
    */
   @Prop({ type: String, default: '' }) mentionFloorInfo: string
   @Prop({ type: String, default: '' }) additionalClass: string
+  public maxHeight = 200
+  public needClip = false
+  public isClipped = false
+  get clipClass () {
+    return this.isClipped ? ' reply-clip' : ''
+  }
 
   mounted () {
     hljs.highlightAll()
+    const height = parseInt(window.getComputedStyle(this.$el).height)
+    if (height > this.maxHeight) {
+      this.needClip = true
+      this.isClipped = true
+    }
   }
 }
 </script>
 
 <style scoped>
-
+.btn-fixed-br {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+}
 </style>

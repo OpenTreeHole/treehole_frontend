@@ -138,11 +138,17 @@ export default class DiscussionMixin extends BaseComponentOrView {
       this.dialog = false
       const sLoading = this.loading
       const sEditor = this.editor
+      const content = (this.replyFloor ? '#' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
+      const mention: number[] = []
+      content.replace(/(^|\s)#(\w+)/g, (original, ignore, v) => {
+        mention.push(parseInt(v))
+        return original
+      })
       this.$axios
         .post('/floors', {
-          content: (this.replyFloor ? '#' + this.replyFloor.floorId + ' ' : '') + this.editor.getContent(),
+          content: content,
           hole_id: this.computedDiscussionId,
-          mention: this.replyFloor ? [this.replyFloor.floorId] : []
+          mention: mention
         })
         .then((response) => {
           this.messageSuccess(response.data.message)

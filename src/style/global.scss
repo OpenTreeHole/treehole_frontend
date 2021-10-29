@@ -6,8 +6,24 @@
 
 .unfold {
   overflow: hidden;
-  max-height: 100rem;
+  max-height: 100vw;
   transition: max-height 1s ease-in-out;
+}
+
+.reply-text {
+  transition: max-height 1s ease-in-out;
+  max-height: 100vw;
+  overflow: hidden;
+  font-size: small !important;
+}
+
+.reply-text pre code{
+  font-size: small !important;
+}
+
+.reply-text.reply-clip {
+  transition: max-height 0.5s cubic-bezier(0, 1, 0, 1);
+  max-height: 9rem;
 }
 
 .clickable {
