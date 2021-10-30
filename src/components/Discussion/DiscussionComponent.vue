@@ -65,12 +65,12 @@ export default class DiscussionComponent extends BaseComponentOrView {
 
   public openHole (wrappedHole: WrappedHole, displayFloorId?: number, preventClose: boolean = false): void {
     this.displayHole = wrappedHole
-    if (!this.isActive || !preventClose) {
+    if (!this.isActive || !preventClose || this.displayHoleId !== wrappedHole.hole.holeId) {
       this.activate(wrappedHole.hole.holeId)
     }
     if (displayFloorId) {
       this.displayFloorId = displayFloorId
-      if (this.showDiscussion && preventClose) {
+      if (this.showDiscussion && preventClose && this.displayHoleId === wrappedHole.hole.holeId) {
         this.floorList.tryScrollTo(0, this.floorList.getIndex(displayFloorId), 5, 350)
       }
     }
