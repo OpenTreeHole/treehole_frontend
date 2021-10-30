@@ -16,11 +16,11 @@
     </v-card-actions>
     <v-card-text class='folded-hint' v-if='discussion.isFolded' color='grey'>
       该内容已折叠：
-      <span class='clickable' @click='displayIt = !displayIt'>
-        {{ displayIt ? '收起' : '展开' }}
+      <span class='clickable' @click='discussion.styleData.displayIt = !discussion.styleData.displayIt'>
+        {{ discussion.styleData.displayIt ? '收起' : '展开' }}
       </span>
     </v-card-text>
-    <div class='post-content' v-if='displayIt'>
+    <div class='post-content' v-if='discussion.styleData.displayIt'>
       <!-- 内容主体 -->
       <v-card-text
         @click='activate(discussion)'
@@ -35,7 +35,7 @@
           {{ discussion.firstFloor.content | plainText }}
         </div>
         <div v-else :id="'p' + index" class='unfold'>
-          <div class='rich-text' v-html='discussion.firstFloor.content' />
+          <div class='rich-text' v-html='discussion.firstFloor.html' />
         </div>
       </v-card-text>
 
@@ -73,17 +73,21 @@
 
       <v-card-text
         v-if='discussion.firstFloor.floorId !== discussion.lastFloor.floorId'
+        v-ripple
+        class='clickable'
       >
-        <v-row class='mx-3'>
+        <v-row class='mx-0'>
           <span
             style='
               width: 100%;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
+              color: rgba(19,13,10,0.83)
             '
+            @click='activate(discussion,discussion.lastFloor.floorId,true)'
           >
-            RE：{{ discussion.lastFloor.content | plainText }}
+            RE：{{ discussion.lastFloor.content | plainText | wordLimit}}
           </span>
         </v-row>
       </v-card-text>
@@ -103,6 +107,7 @@
   </v-card>
 </template>
 
+<!--suppress JSUnusedLocalSymbols -->
 <script lang='ts'>
 import { Component, Emit, Prop } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
@@ -114,8 +119,6 @@ export default class DiscussionCard extends BaseComponentOrView {
   @Prop({ required: true, type: Number }) index: number
   @Prop({ required: true, type: Function }) activate: Function
   @Prop({ required: false, type: Boolean, default: false }) isActive: boolean
-
-  displayIt: boolean = false
 
   @Emit('refresh')
   public refreshDiscussionList (): void {
@@ -131,10 +134,6 @@ export default class DiscussionCard extends BaseComponentOrView {
 
   public fold (index: number): void {
     this.discussion.styleData.fold = true
-  }
-
-  created () {
-    this.displayIt = !this.discussion.isFolded
   }
 }
 </script>

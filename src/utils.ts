@@ -40,3 +40,14 @@ export const convertKatex = (str: string) => {
     })
   })
 }
+
+export const scrollTo = (currentIndex: number, toIndex: number):void => {
+  const currentOffsetTop = document.getElementById(currentIndex.toString())?.offsetTop
+  const toOffsetTop = document.getElementById(toIndex.toString())?.offsetTop
+  const scrollDistance = currentOffsetTop && toOffsetTop ? toOffsetTop - currentOffsetTop : 0
+  window.scrollBy({
+    top: scrollDistance,
+    left: 0,
+    behavior: 'smooth'
+  })
+}

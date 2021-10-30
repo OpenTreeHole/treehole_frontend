@@ -19,7 +19,9 @@
         <Discussion
           v-if='displayHoleId!==-1 && showDiscussion'
           :key='displayHoleId'
+          :display-floor-id='displayFloorId'
           :wrapped-hole-or-id='displayHole'
+          ref='floorList'
           class='pa-0'
         />
       </v-col>
@@ -52,16 +54,26 @@ export default class DiscussionComponent extends BaseComponentOrView {
   public viewport = 0
   public isLoadingVisible = false
   public displayHole: WrappedHole | null = null
+  public displayFloorId = -1
 
   @Ref() readonly holeList: DiscussionList
+  @Ref() readonly floorList: Discussion
 
   public refresh (): void {
     this.holeList.refresh()
   }
 
-  public openHole (wrappedHole: WrappedHole): void {
+  public openHole (wrappedHole: WrappedHole, displayFloorId?: number, preventClose: boolean = false): void {
     this.displayHole = wrappedHole
-    this.activate(wrappedHole.hole.holeId)
+    if (!this.isActive || !preventClose) {
+      this.activate(wrappedHole.hole.holeId)
+    }
+    if (displayFloorId) {
+      this.displayFloorId = displayFloorId
+      if (this.showDiscussion && preventClose) {
+        this.floorList.tryScrollTo(0, this.floorList.getIndex(displayFloorId), 5, 350)
+      }
+    }
   }
 
   public activate (id: number): void {
@@ -123,7 +135,7 @@ export default class DiscussionComponent extends BaseComponentOrView {
   public clickOutside (e: { path: HTMLElement[] }) {
     // The length of e.path will be 5 only when dragging cursor from the dialog to the overlay.
     // The floor list should not be closed in this situation.
-    if (!e.path || e.path.length === 5) return
+    if (!e.path || e.path.length === 5 || !e.path[0].className.includes('main')) return
     let flag = true
     for (let i = 0; i < e.path.length; i++) {
       if (e.path[i].className && e.path[i].className.includes && (e.path[i].className.includes('navbar') ||

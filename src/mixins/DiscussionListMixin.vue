@@ -1,10 +1,16 @@
 <script lang='ts'>
 import debounce from 'lodash.debounce'
 import { Component, Ref, Watch } from 'vue-property-decorator'
-import { WrappedHole } from '@/api/hole'
+import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { ArrayRequest, CollectionHoleListRequest, DivisionHoleListRequest, HomeHoleListRequest } from '@/api'
+import {
+  CollectionHoleListRequest,
+  DivisionHoleListRequest,
+  HoleListRequest,
+  HomeHoleListRequest
+} from '@/api'
 import Loading from '@/components/Loading.vue'
+import { EventBus } from '@/event-bus'
 
 @Component
 export default class DiscussionListMixin extends BaseComponentOrView {
@@ -17,7 +23,7 @@ export default class DiscussionListMixin extends BaseComponentOrView {
   public debouncedCalculateLines: Function
   public lineHeight: number = 10
 
-  public request: ArrayRequest<WrappedHole>
+  public request: HoleListRequest
 
   public pauseLoading = true
 
@@ -56,6 +62,9 @@ export default class DiscussionListMixin extends BaseComponentOrView {
     return hasNext
   }
 
+  public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
+  }
+
   @Watch('discussions')
   discussionsChanged () {
     setTimeout(() => {
@@ -68,13 +77,19 @@ export default class DiscussionListMixin extends BaseComponentOrView {
   }
 
   mounted () {
-    window.onresize = () => {
-      this.debouncedCalculateLines()
-    }
+    window.addEventListener('resize', () => { this.debouncedCalculateLines() })
+    EventBus.$on('goto-mention-floor', this.onGotoMentionFloor)
+
+    const sLoading = this.loading
+    this.getHoles().then((v) => {
+      this.pauseLoading = false
+      sLoading.hasNext = v
+    })
   }
 
   destroyed () {
     this.$user.collection.unregisterUpdateHoleArray(this.$route.name as string)
+    EventBus.$off('goto-mention-floor', this.onGotoMentionFloor)
   }
 
   created () {
@@ -90,10 +105,6 @@ export default class DiscussionListMixin extends BaseComponentOrView {
     }
     this.discussions = this.request.datas
     this.$user.collection.registerUpdateHoleArray(this.route, this.discussions)
-    this.getHoles().then((v) => {
-      this.pauseLoading = false
-      this.loading.hasNext = v
-    })
   }
 }
 </script>

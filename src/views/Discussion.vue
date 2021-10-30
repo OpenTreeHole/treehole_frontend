@@ -1,5 +1,5 @@
 <template>
-  <DiscussionCol :wrapped-hole-or-id='computedDiscussionId'/>
+  <DiscussionCol :wrapped-hole-or-id='computedDiscussionId' :display-floor-id='mentionFloorId'/>
 </template>
 
 <script lang='ts'>
@@ -15,6 +15,10 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 export default class Discussion extends BaseComponentOrView {
   public get computedDiscussionId (): number {
     return parseInt(this.$route.params.id)
+  }
+
+  public get mentionFloorId (): number {
+    return (this.$route.query.mention && typeof this.$route.query.mention === 'string') ? parseInt(this.$route.query.mention) : -1
   }
 }
 </script>

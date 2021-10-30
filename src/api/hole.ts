@@ -98,6 +98,7 @@ export class WrappedHole {
   public styleData: {
     fold: boolean
     lines: number
+    displayIt: boolean
   }
 
   public floors: Array<MarkedFloor> = []
@@ -108,10 +109,6 @@ export class WrappedHole {
 
   constructor (hole: Hole) {
     this.hole = hole
-    this.styleData = {
-      fold: true,
-      lines: 3
-    }
     hole.floors.prefetch.forEach((floor: Floor) => {
       this.floors.push(new MarkedFloor(floor))
     })
@@ -124,5 +121,11 @@ export class WrappedHole {
         this.isFolded = true
       }
     })
+    this.styleData = {
+      fold: true,
+      lines: 3,
+      displayIt: !this.isFolded
+    }
+    console.log(`${this.isFolded} ${this.styleData.displayIt}`)
   }
 }

@@ -11,7 +11,7 @@
         @click='gotoMentionFloor'
         small
       >
-        mdi-arrow-collapse-up
+        {{ gotoMentionFloorIcon }}
       </v-icon>
     </v-card-actions>
     <v-card-text class='reply-text pt-2 pb-2' v-html='mentionFloor.html' :class='clipClass'/>
@@ -25,6 +25,7 @@
       color='grey lighten-1'
       @click='isClipped=!isClipped'
     >
+      <v-spacer></v-spacer>
       <v-icon v-if='isClipped'>mdi-chevron-double-down</v-icon>
       <v-icon v-else>mdi-chevron-double-up</v-icon>
     </v-btn>
@@ -41,6 +42,7 @@ import hljs from 'highlight.js'
 export default class Mention extends BaseComponentOrView {
   @Prop({ required: true }) mentionFloor: MarkedFloor | null
   @Prop({ type: Function }) gotoMentionFloor?: Function
+  @Prop({ type: String, default: 'mdi-arrow-collapse-up' }) gotoMentionFloorIcon: string
   /**
    * Info which indicates the place where the floor is published.
    * <p> The info will be displayed after the anonyname. </p>
@@ -57,6 +59,7 @@ export default class Mention extends BaseComponentOrView {
 
   mounted () {
     hljs.highlightAll()
+    if (!this.$el) return
     const height = parseInt(window.getComputedStyle(this.$el).height)
     if (height > this.maxHeight) {
       this.needClip = true

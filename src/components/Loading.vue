@@ -30,7 +30,7 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
 export default class Loading extends BaseComponentOrView {
-  @Prop({ required: true, type: Function }) request: () => Promise<boolean>
+  @Prop({ required: true, type: Array }) request: (() => Promise<boolean>)[]
   @Prop({ required: false, type: Boolean, default: false }) pauseLoading: boolean
 
   // 加载状态
@@ -47,19 +47,41 @@ export default class Loading extends BaseComponentOrView {
     }
   }
 
-  public async load () {
+  public async load (index: number = 0) {
     if (!this.hasNext || this.pauseLoading) {
       return
     }
 
     this.isLoading = true
-    this.hasNext = await this.request()
+    this.hasNext = await this.request[index]()
     this.isLoading = false
   }
 
-  public continueLoad () {
+  public async loadOnce (index: number = 0) {
+    if (this.pauseLoading) {
+      console.error('Try to load when loading is paused.')
+      return
+    }
+
+    this.isLoading = true
+    this.hasNext = await this.request[index]()
+    this.isLoading = false
+  }
+
+  public async loadCustomRequestOnce (customRequest: () => Promise<void>) {
+    if (this.pauseLoading) {
+      console.error('Try to load when loading is paused.')
+      return
+    }
+
+    this.isLoading = true
+    await customRequest()
+    this.isLoading = false
+  }
+
+  public continueLoad (index: number = 0) {
     this.hasNext = true
-    this.load()
+    this.load(index)
   }
 }
 </script>

@@ -43,6 +43,11 @@ Vue.filter('plainText', function (html: string) {
     .replace(/#\w+/g, (v) => '[回复' + v + ']')
 })
 
+Vue.filter('wordLimit', function (html: string) {
+  const maxlength = document.body.clientWidth <= 454 ? 30 : 40
+  return html.length > maxlength ? html.substring(0, maxlength - 4) + ' ...' : html
+})
+
 Vue.filter('timeDifference', function (datestr: string) {
   const date = new Date(datestr)
   const now = new Date()

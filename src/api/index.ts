@@ -1,12 +1,13 @@
 // noinspection DuplicatedCode
 
 import { Floor, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
-import { camelizeKeys } from '@/utils'
+import { camelizeKeys, scrollTo } from '@/utils'
 import cloneDeep from 'lodash.clonedeep'
 import Vue from 'vue'
 import Mention from '@/components/Discussion/Mention.vue'
 import vuetify from '@/plugins/vuetify'
 import UtilStore from '@/store/modules/UtilStore'
+import { EventBus } from '@/event-bus'
 
 export abstract class ArrayRequest<T> {
   public datas: Array<T> = []
@@ -66,7 +67,34 @@ export abstract class PrefetchedArrayRequest<T> extends ArrayRequest<T> {
   }
 }
 
-export class HomeHoleListRequest extends ArrayRequest<WrappedHole> {
+export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
+  /**
+   * Request the backend for a specific hole and add to the hole list.
+   * @param holeId - the id of the specific hole.
+   * @param position - the specific position at which the hole added. 0 if undefined.
+   */
+  public async requestHole (holeId: number, position: number = 0) {
+    await UtilStore.axios.get(`/holes/${holeId}`).then((response) => {
+      const hole = new WrappedHole(camelizeKeys(response.data))
+      this.datas.splice(position, 0, hole)
+    }).catch(error => {
+      throw new Error(error)
+    })
+  }
+
+  public pushData (data: WrappedHole) {
+    let flag = false
+    this.datas.forEach((v) => {
+      if (v.hole.holeId === data.hole.holeId) {
+        flag = true
+      }
+    })
+    if (flag) return
+    super.pushData(data)
+  }
+}
+
+export class HomeHoleListRequest extends HoleListRequest {
   public startTime: Date = new Date()
 
   public clear (): void {
@@ -80,7 +108,7 @@ export class HomeHoleListRequest extends ArrayRequest<WrappedHole> {
       params: {
         start_time: this.startTime.toISOString(),
         length: 10,
-        prefetch_length: 8,
+        prefetch_length: 10,
         division_id: 1
       }
     }).then((response) => {
@@ -98,7 +126,7 @@ export class HomeHoleListRequest extends ArrayRequest<WrappedHole> {
   }
 }
 
-export class DivisionHoleListRequest extends ArrayRequest<WrappedHole> {
+export class DivisionHoleListRequest extends HoleListRequest {
   public startTime: Date = new Date()
   public divisionId: number
 
@@ -118,7 +146,7 @@ export class DivisionHoleListRequest extends ArrayRequest<WrappedHole> {
       params: {
         start_time: this.startTime.toISOString(),
         length: 10,
-        prefetch_length: 8,
+        prefetch_length: 10,
         division_id: this.divisionId
       }
     }).then((response) => {
@@ -136,7 +164,7 @@ export class DivisionHoleListRequest extends ArrayRequest<WrappedHole> {
   }
 }
 
-export class CollectionHoleListRequest extends ArrayRequest<WrappedHole> {
+export class CollectionHoleListRequest extends HoleListRequest {
   public async request (): Promise<boolean> {
     await UtilStore.axios.get('/user/favorites').then((response) => {
       response.data.forEach((holeItem: any) => {
@@ -168,7 +196,7 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
         params: {
           hole_id: this.holeId,
           start_floor: this.loadedLength,
-          length: 10
+          length: 30
         }
       })
       .then((response) => {
@@ -178,7 +206,7 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
           if (('mention' in floor) && floor.mention.length !== 0) {
             setTimeout(() => this.renderMention(floor), 100)
           }
-          this.pushData(floor, index++, (newVal:MarkedFloor, oldVal:MarkedFloor) => {
+          this.pushData(floor, index++, (newVal: MarkedFloor, oldVal: MarkedFloor) => {
             return newVal.html !== oldVal.html
           })
 
@@ -215,7 +243,11 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
       const mentionIndex = this.getIndex(mentionId)
       if (mentionIndex !== -1) {
         gotoMentionFloor = () => {
-          this.scrollTo(curIndex, mentionIndex)
+          scrollTo(curIndex, mentionIndex)
+        }
+      } else {
+        gotoMentionFloor = () => {
+          EventBus.$emit('goto-mention-floor', curFloor, mentionFloor)
         }
       }
       let additionalClass = ''
@@ -228,24 +260,14 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
       additionalClass = additionalClass.trimEnd()
       new Mention({
         propsData: {
-          additionalClass: additionalClass,
           mentionFloor: mentionFloor,
           gotoMentionFloor: gotoMentionFloor,
-          mentionFloorInfo: (mentionIndex === -1 ? ('#' + mentionFloor.floorId) : (mentionIndex.toString() + 'L'))
+          gotoMentionFloorIcon: 'mdi-arrow-collapse-up',
+          mentionFloorInfo: (mentionIndex === -1 ? ('#' + mentionFloor.floorId) : (mentionIndex.toString() + 'L')),
+          additionalClass: additionalClass
         },
         vuetify
       }).$mount(elements[i])
     }
-  }
-
-  public scrollTo (currentId: number, toId: number): void {
-    const currentOffsetTop = document.getElementById(currentId.toString())?.offsetTop
-    const toOffsetTop = document.getElementById(toId.toString())?.offsetTop
-    const scrollDistance = currentOffsetTop && toOffsetTop ? toOffsetTop - currentOffsetTop : 0
-    window.scrollBy({
-      top: scrollDistance, //  正值向下
-      left: 0,
-      behavior: 'smooth'
-    })
   }
 }

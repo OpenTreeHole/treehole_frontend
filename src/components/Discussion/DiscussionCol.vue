@@ -64,7 +64,7 @@
             <!-- 脚标 -->
             <v-card-text class='d-flex text-body-2 pb-2'>
               <span><b>{{ index }}L</b>(#{{ floor.floorId }})</span>
-              <v-spacer/>
+              <v-spacer />
               <v-btn
                 x-small
                 text
@@ -75,7 +75,7 @@
                 <v-icon>mdi-reply-outline</v-icon>
                 回复
               </v-btn>
-              <v-spacer/>
+              <v-spacer />
               <v-btn
                 x-small
                 text
@@ -93,7 +93,7 @@
     </transition-group>
 
     <!-- 弹出式表单及浮动按钮 -->
-    <div class='float-btn'>
+    <div class='float-btn' v-if='!initiating'>
       <v-dialog v-model='dialog' persistent max-width='600px'>
         <!-- 浮动按钮 -->
         <template v-slot:activator='{ on, attrs }'>
@@ -134,7 +134,7 @@
         </v-card>
       </v-dialog>
 
-      <br/>
+      <br />
 
       <v-btn fab color='secondary' @mousedown.prevent @click='changeCollectionStatus'>
         <v-icon :class='hole.isStarred ? "v-icon--starred" : ""'>mdi-star</v-icon>
@@ -142,7 +142,7 @@
     </div>
 
     <!-- 载入中信息 -->
-    <loading :request='getFloors' ref='loading' :pause-loading='initiating' />
+    <loading :request='[getFloors]' ref='loading' :pause-loading='initiating' />
   </v-container>
 </template>
 
@@ -155,6 +155,7 @@ import { WrappedHole } from '@/api/hole'
 import Mention from '@/components/Discussion/Mention.vue'
 import { FloorListRequest } from '@/api'
 import hljs from 'highlight.js'
+import { scrollTo } from '@/utils'
 
 @Component({
   components: {
@@ -176,31 +177,56 @@ export default class DiscussionCol extends DiscussionMixin {
     }
   }
 
-  public getFloorsRecursive () {
-    this.getFloors().then((v) => {
-      this.loading.hasNext = v
-      if (v && this.request.datas.length > this.request.loadedLength) {
-        this.getFloorsRecursive()
+  public tryScrollTo (currentIndex:number, toIndex:number, retryTimes: number, interval: number) {
+    setTimeout(() => {
+      if (document.getElementById(currentIndex.toString()) && document.getElementById(toIndex.toString())) {
+        console.log(retryTimes)
+        scrollTo(currentIndex, toIndex)
+      } else {
+        this.tryScrollTo(currentIndex, toIndex, retryTimes - 1, interval)
+      }
+    }, interval)
+  }
+
+  public getFloorsRecursive (waitingFloorId: number = -1) {
+    this.loading.load().then(() => {
+      let found = false
+      if (waitingFloorId !== -1) {
+        for (let i = 0; i < this.request.loadedLength; i++) {
+          if (this.floors[i].floorId === waitingFloorId) {
+            console.log(i)
+            this.tryScrollTo(0, i, 5, 350)
+            found = true
+            break
+          }
+        }
+      }
+      if (this.loading.hasNext && this.request.datas.length > this.request.loadedLength) {
+        if (waitingFloorId !== -1 && !found) this.getFloorsRecursive(waitingFloorId)
+        else this.getFloorsRecursive()
       }
     })
   }
 
-  public init () {
+  public init (displayFloorId: number) {
     this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId, this.getIndex)
     this.floors = this.request.datas
     this.initiating = false
-    this.getFloorsRecursive()
+    this.$nextTick(() => this.getFloorsRecursive(displayFloorId))
+  }
+
+  mounted () {
+    if (this.wrappedHoleOrId instanceof WrappedHole) {
+      this.hole = this.wrappedHoleOrId
+      this.init(this.displayFloorId)
+    } else {
+      this.getDiscussion(this.wrappedHoleOrId).then(() => {
+        this.init(this.displayFloorId)
+      })
+    }
   }
 
   created () {
-    if (this.wrappedHoleOrId instanceof WrappedHole) {
-      this.hole = this.wrappedHoleOrId
-      this.init()
-    } else {
-      this.getDiscussion(this.wrappedHoleOrId).then(() => {
-        this.init()
-      })
-    }
   }
 
   updated () {
@@ -235,6 +261,7 @@ export default class DiscussionCol extends DiscussionMixin {
 
   .v-btn {
     margin: 5px;
+
     .v-btn__content {
       .v-icon--starred {
         color: #FF9300;

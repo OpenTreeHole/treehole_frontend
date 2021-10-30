@@ -1,11 +1,11 @@
 <script lang='ts'>
-import { Component, Ref } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import { MarkedFloor, WrappedHole } from '@/api/hole'
-import { camelizeKeys } from '@/utils'
+import { camelizeKeys, scrollTo } from '@/utils'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { PrefetchedArrayRequest } from '@/api'
+import { FloorListRequest } from '@/api'
 
 @Component
 export default class DiscussionMixin extends BaseComponentOrView {
@@ -21,7 +21,9 @@ export default class DiscussionMixin extends BaseComponentOrView {
   public requiredRules = [(v: any) => !!v || '内容不能为空']
   public valid = true
 
-  public request: PrefetchedArrayRequest<MarkedFloor>
+  public request: FloorListRequest
+
+  @Prop({ type: Number, default: -1 }) displayFloorId: number
 
   @Ref() readonly form!: HTMLFormElement
   @Ref() readonly editor!: Editor
@@ -185,6 +187,12 @@ export default class DiscussionMixin extends BaseComponentOrView {
           this.messageError(response.data.msg)
         }
       })
+  }
+
+  mounted () {
+    if (this.displayFloorId !== -1) {
+      scrollTo(0, this.getIndex(this.displayFloorId))
+    }
   }
 
   get contentName (): string {

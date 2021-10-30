@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class='pa-0'>
     <v-row
       v-for='(discussion, index) in discussions'
       :key='index'
@@ -16,7 +16,7 @@
       </v-col>
     </v-row>
     <!-- 载入中信息 -->
-    <loading :request='getHoles' ref='loading' :pause-loading='pauseLoading'/>
+    <loading :request='[getHoles]' ref='loading' :pause-loading='pauseLoading'/>
   </v-container>
 </template>
 
@@ -25,7 +25,7 @@ import DiscussionListMixin from '@/mixins/DiscussionListMixin.vue'
 import Loading from '@/components/Loading.vue'
 import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
 import { Component } from 'vue-property-decorator'
-import { WrappedHole } from '@/api/hole'
+import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 
 @Component({
   components: {
@@ -38,13 +38,28 @@ export default class DiscussionList extends DiscussionListMixin {
    * Set router to the hole page.
    *
    * @param wrappedHole - the hole.
+   * @param displayFloorId - if this argument is set, the floor list will be scrolled to the specific floor after being loaded.
    */
-  public toDiscussion (wrappedHole: WrappedHole): void {
+  public toDiscussion (wrappedHole: WrappedHole, displayFloorId?: number): void {
     setTimeout(() => {
-      this.$router.push({
-        path: `/discussion/${wrappedHole.hole.holeId}`
-      })
+      if (!displayFloorId) {
+        this.$router.push({
+          path: `/discussion/${wrappedHole.hole.holeId}`
+        })
+      } else {
+        this.$router.push({
+          path: `/discussion/${wrappedHole.hole.holeId}`,
+          query: { mention: displayFloorId.toString() }
+        })
+      }
     }, 50)
+  }
+
+  public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
+    this.$router.push({
+      path: `/discussion/${mentionFloor.holeId}`,
+      query: { mention: mentionFloor.floorId.toString() }
+    })
   }
 }
 </script>
