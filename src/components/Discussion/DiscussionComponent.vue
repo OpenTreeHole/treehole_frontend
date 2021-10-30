@@ -73,6 +73,8 @@ export default class DiscussionComponent extends BaseComponentOrView {
       if (this.showDiscussion && preventClose && this.displayHoleId === wrappedHole.hole.holeId) {
         this.floorList.tryScrollTo(0, this.floorList.getIndex(displayFloorId), 5, 350)
       }
+    } else {
+      this.displayFloorId = -1
     }
   }
 
