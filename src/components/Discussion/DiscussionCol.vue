@@ -226,9 +226,6 @@ export default class DiscussionCol extends DiscussionMixin {
     }
   }
 
-  created () {
-  }
-
   updated () {
     hljs.highlightAll()
   }

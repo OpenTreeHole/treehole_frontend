@@ -29,6 +29,7 @@ import DiscussionListMixin from '@/mixins/DiscussionListMixin.vue'
 import Loading from '@/components/Loading.vue'
 import { Component, Prop } from 'vue-property-decorator'
 import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { EventBus } from '@/event-bus'
 
 @Component({
   components: {
@@ -54,30 +55,49 @@ export default class DiscussionList extends DiscussionListMixin {
   }
 
   public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
-    let curHole: WrappedHole | undefined, curIndex:number | undefined, mentionHole: WrappedHole | undefined, mentionIndex: number | undefined
+    let curHole: WrappedHole | undefined, curIndex: number | undefined
     this.discussions.forEach((hole, index) => {
       if (hole.hole.holeId === curFloor.holeId) {
         curHole = hole
         curIndex = index
-      } else if (hole.hole.holeId === mentionFloor.holeId) {
-        mentionHole = hole
-        mentionIndex = index
       }
     })
     if (curHole === undefined || curIndex === undefined) {
       console.error('Current Hole Not Found!')
       return
     }
-    if (mentionHole === undefined || mentionIndex === undefined) {
-      this.loading.loadCustomRequestOnce(async () => this.request.requestHole(mentionFloor.holeId, curIndex)).then(() => {
-        mentionHole = this.discussions[curIndex as number]
-        this.activate(mentionHole, mentionFloor.floorId)
+    this.openNewOrExistHole(mentionFloor.holeId, curIndex, mentionFloor.floorId)
+  }
+
+  public openNewOrExistHole (holeId: number, toIndex = 0, floorId?: number) {
+    let hole: WrappedHole | undefined, index: number | undefined
+    this.discussions.forEach((h, i) => {
+      if (h.hole.holeId === holeId) {
+        hole = h
+        index = i
+      }
+    })
+
+    if (hole === undefined || index === undefined) {
+      this.loading.loadCustomRequestOnce(async () => this.request.requestHole(holeId, toIndex)).then(() => {
+        hole = this.discussions[toIndex]
+        if (floorId) this.activate(hole, floorId)
+        else this.activate(hole)
       })
     } else {
-      this.discussions.splice(mentionIndex, 1)
-      this.discussions.splice(mentionIndex > curIndex ? curIndex : (curIndex - 1), 0, mentionHole)
-      this.activate(mentionHole, mentionFloor.floorId)
+      this.discussions.splice(index, 1)
+      this.discussions.splice(index > toIndex ? toIndex : (toIndex - 1), 0, hole)
+      this.activate(hole, floorId)
     }
+  }
+
+  mounted () {
+    EventBus.$on('goto-hole', this.openNewOrExistHole)
+  }
+
+  destroyed () {
+    super.destroyed()
+    EventBus.$off('goto-hole', this.openNewOrExistHole)
   }
 }
 </script>

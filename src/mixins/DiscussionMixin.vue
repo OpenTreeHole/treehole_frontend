@@ -119,11 +119,6 @@ export default class DiscussionMixin extends BaseComponentOrView {
     if (!this.request) return false
     let hasNext = false
     await this.request.request().then((v) => {
-      // this.floors.forEach((floor) => {
-      //   if (!('mention' in floor) || (floor as DetailedFloor).mention.length === 0) return
-      //   console.log(floor)
-      //   setTimeout(() => this.renderMention(floor as DetailedFloor), 100)
-      // })
       hasNext = v
     }).catch((error) => {
       if (error.response === undefined) this.messageError(JSON.stringify(error))

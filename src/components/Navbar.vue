@@ -78,49 +78,49 @@
 
       <v-divider />
       <v-list style='padding: 5px'>
-<!--        &lt;!&ndash; 搜索 &ndash;&gt;-->
-<!--        <v-list-item>-->
-<!--          <v-form>-->
-<!--            <v-row>-->
-<!--              <v-text-field-->
-<!--                type='search'-->
-<!--                v-model='searchText'-->
-<!--                placeholder='搜索'-->
-<!--              >-->
-<!--              </v-text-field>-->
-<!--              <v-list-item-icon>-->
-<!--                <v-btn-->
-<!--                  type='submit'-->
-<!--                  icon-->
-<!--                  @click='searchIt'-->
-<!--                  :disabled='searchText.length === 0'-->
-<!--                >-->
-<!--                  <v-icon>mdi-magnify</v-icon>-->
-<!--                </v-btn>-->
-<!--              </v-list-item-icon>-->
-<!--            </v-row>-->
-<!--          </v-form>-->
-<!--        </v-list-item>-->
+        <!-- 搜索 -->
+        <v-list-item>
+          <v-form>
+            <v-row>
+              <v-text-field
+                type='search'
+                v-model='searchText'
+                placeholder='搜索'
+              >
+              </v-text-field>
+              <v-list-item-icon>
+                <v-btn
+                  type='submit'
+                  icon
+                  @click='search'
+                  :disabled='searchText.length === 0'
+                >
+                  <v-icon>mdi-magnify</v-icon>
+                </v-btn>
+              </v-list-item-icon>
+            </v-row>
+          </v-form>
+        </v-list-item>
 
-<!--        &lt;!&ndash; 跳转 &ndash;&gt;-->
-<!--        <v-list-item>-->
-<!--          <v-form>-->
-<!--            <v-row>-->
-<!--              <v-text-field v-model='floorToGo' placeholder='电梯直达'>-->
-<!--              </v-text-field>-->
-<!--              <v-list-item-icon>-->
-<!--                <v-btn-->
-<!--                  type='submit'-->
-<!--                  icon-->
-<!--                  @click='goFloor'-->
-<!--                  :disabled='floorToGo.length === 0'-->
-<!--                >-->
-<!--                  <v-icon>mdi-elevator</v-icon>-->
-<!--                </v-btn>-->
-<!--              </v-list-item-icon>-->
-<!--            </v-row>-->
-<!--          </v-form>-->
-<!--        </v-list-item>-->
+        <!-- 跳转 -->
+        <v-list-item>
+          <v-form>
+            <v-row>
+              <v-text-field v-model='holeToGo' placeholder='电梯直达'>
+              </v-text-field>
+              <v-list-item-icon>
+                <v-btn
+                  type='submit'
+                  icon
+                  @click='gotoHole'
+                  :disabled='holeToGo.length === 0'
+                >
+                  <v-icon>mdi-elevator</v-icon>
+                </v-btn>
+              </v-list-item-icon>
+            </v-row>
+          </v-form>
+        </v-list-item>
       </v-list>
 
       <!-- 侧栏底部工具按钮 -->
@@ -138,6 +138,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Division } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
+import { EventBus } from '@/event-bus'
 
 @Component
 export default class Navbar extends BaseComponentOrView {
@@ -153,7 +154,7 @@ export default class Navbar extends BaseComponentOrView {
   public inAllowBackRoutes = false
   public inBanMenuRoutes = true
   public showSearchBox = false
-  public floorToGo = ''
+  public holeToGo = ''
   public groupNavItem = new Map()
 
   get activeClass () {
@@ -163,20 +164,27 @@ export default class Navbar extends BaseComponentOrView {
     }
   }
 
-  public searchIt (): void {
-    this.$router.push({
-      name: 'search',
-      query: { wd: this.searchText }
-    })
+  public search (): void {
+    if (this.$route.path !== 'search') {
+      this.$router.push({
+        name: 'search',
+        query: { wd: this.searchText }
+      })
+    }
+    EventBus.$emit('search', this.searchText)
     this.searchText = ''
   }
 
-  public goFloor (): void {
-    this.$router.push({
-      name: 'discussion',
-      params: { id: this.floorToGo }
-    })
-    this.floorToGo = ''
+  public gotoHole (): void {
+    const holeId = this.holeToGo.charAt(0) === '#' ? parseInt(this.holeToGo.substring(1)) : parseInt(this.holeToGo)
+    if (this.$route.path === '/home' || this.$route.path === '/division') {
+      EventBus.$emit('goto-hole', holeId)
+    } else {
+      this.$router.push('/home').then(() => {
+        EventBus.$emit('goto-hole', holeId)
+      })
+    }
+    this.holeToGo = ''
   }
 
   public load (): void {

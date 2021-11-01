@@ -126,6 +126,5 @@ export class WrappedHole {
       lines: 3,
       displayIt: !this.isFolded
     }
-    console.log(`${this.isFolded} ${this.styleData.displayIt}`)
   }
 }

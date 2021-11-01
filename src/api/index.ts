@@ -179,6 +179,29 @@ export class CollectionHoleListRequest extends HoleListRequest {
   }
 }
 
+export class SearchFloorListRequest extends ArrayRequest<MarkedFloor> {
+  public searchStr: string
+
+  public constructor (searchStr: string) {
+    super()
+    this.searchStr = searchStr
+  }
+
+  public async request (): Promise<boolean> {
+    await UtilStore.axios.get('/floors', {
+      params: {
+        s: this.searchStr
+      }
+    }).then(response => {
+      response.data.forEach((floorItem: any) => {
+        const floor: MarkedFloor = new MarkedFloor(camelizeKeys(floorItem))
+        this.pushData(floor)
+      })
+    })
+    return false
+  }
+}
+
 export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
   public holeId: number
   public getIndex: (id: number) => number
@@ -212,9 +235,6 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
 
           hasNext = true
         })
-      })
-      .catch((error) => {
-        throw new Error(error)
       })
     return hasNext
   }

@@ -34,7 +34,9 @@ class MessageStore extends VuexModule {
    */
   @Action({ rawError: true })
   public messageSuccess (str: string): void {
-    if (this.message) this.message.success(str)
+    if (this.message) {
+      this.message.success(str)
+    }
   }
 
   /**

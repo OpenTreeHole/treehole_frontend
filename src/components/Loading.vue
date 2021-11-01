@@ -48,7 +48,7 @@ export default class Loading extends BaseComponentOrView {
   }
 
   public async load (index: number = 0) {
-    if (!this.hasNext || this.pauseLoading) {
+    if (!this.hasNext || this.pauseLoading || this.request.length === 0) {
       return
     }
 
