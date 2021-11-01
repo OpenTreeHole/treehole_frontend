@@ -1,15 +1,15 @@
 <template>
-  <DiscussionCol :wrapped-hole-or-id='computedDiscussionId' :display-floor-id='mentionFloorId'/>
+  <FloorList :wrapped-hole-or-id='computedDiscussionId' :display-floor-id='mentionFloorId'/>
 </template>
 
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
-import DiscussionCol from '@/components/Discussion/DiscussionCol.vue'
+import FloorList from '@/components/hole/FloorList.vue'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: {
-    DiscussionCol
+    FloorList
   }
 })
 export default class Discussion extends BaseComponentOrView {

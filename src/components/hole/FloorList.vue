@@ -149,10 +149,10 @@
 <script lang='ts'>
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import DiscussionMixin from '@/mixins/DiscussionMixin.vue'
+import FloorListMixin from '@/mixins/FloorListMixin.vue'
 import { Component, Prop } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
-import Mention from '@/components/Discussion/Mention.vue'
+import Mention from '@/components/hole/Mention.vue'
 import { FloorListRequest } from '@/api'
 import hljs from 'highlight.js'
 import { scrollTo } from '@/utils'
@@ -164,7 +164,7 @@ import { scrollTo } from '@/utils'
     Editor
   }
 })
-export default class DiscussionCol extends DiscussionMixin {
+export default class FloorList extends FloorListMixin {
   @Prop({ required: true }) private wrappedHoleOrId: WrappedHole | number
 
   public initiating = true

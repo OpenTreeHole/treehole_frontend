@@ -4,7 +4,7 @@ import { Floor, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole
 import { camelizeKeys, scrollTo } from '@/utils'
 import cloneDeep from 'lodash.clonedeep'
 import Vue from 'vue'
-import Mention from '@/components/Discussion/Mention.vue'
+import Mention from '@/components/hole/Mention.vue'
 import vuetify from '@/plugins/vuetify'
 import UtilStore from '@/store/modules/UtilStore'
 import { EventBus } from '@/event-bus'
@@ -219,7 +219,7 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
         params: {
           hole_id: this.holeId,
           start_floor: this.loadedLength,
-          length: 30
+          length: 10
         }
       })
       .then((response) => {

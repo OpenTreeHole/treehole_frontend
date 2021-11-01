@@ -13,9 +13,9 @@ import Loading from '@/components/Loading.vue'
 import { EventBus } from '@/event-bus'
 
 @Component
-export default class DiscussionListMixin extends BaseComponentOrView {
+export default class HoleListMixin extends BaseComponentOrView {
   // 帖子列表
-  public discussions: Array<WrappedHole> = []
+  public holes: Array<WrappedHole> = []
   public startTime: Date = new Date()
 
   public collectionIds: Array<number> = []
@@ -36,17 +36,17 @@ export default class DiscussionListMixin extends BaseComponentOrView {
    */
   public refresh (): void {
     this.request.clear()
-    this.discussions = this.request.datas
+    this.holes = this.request.datas
   }
 
   /**
    * Calculate the number of the total lines of the display (i.e. the first floor) of each hole.
    */
   public calculateLines (): void {
-    for (let i = 0; i < this.discussions.length; i++) {
+    for (let i = 0; i < this.holes.length; i++) {
       const element = document.getElementById('p' + i)
       const totalHeight = element ? element.scrollHeight : 0
-      this.discussions[i].styleData.lines = totalHeight / this.lineHeight
+      this.holes[i].styleData.lines = totalHeight / this.lineHeight
     }
   }
 
@@ -103,8 +103,8 @@ export default class DiscussionListMixin extends BaseComponentOrView {
     } else if (this.route === 'division') {
       this.request = new DivisionHoleListRequest(parseInt(this.$route.params.id))
     }
-    this.discussions = this.request.datas
-    this.$user.collection.registerUpdateHoleArray(this.route, this.discussions)
+    this.holes = this.request.datas
+    this.$user.collection.registerUpdateHoleArray(this.route, this.holes)
   }
 }
 </script>

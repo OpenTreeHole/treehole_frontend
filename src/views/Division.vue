@@ -124,8 +124,8 @@
 
 <script lang='ts'>
 import { Component, Ref, Watch } from 'vue-property-decorator'
-import DiscussionComponent from '@/components/Discussion/DiscussionComponent.vue'
-import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile.vue'
+import HolePanel from '@/components/hole/HolePanel.vue'
+import DiscussionListMobile from '@/components/hole/HoleListMobile.vue'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Division as IDivision, Tag } from '@/api/hole'
 import Editor from '@/components/Editor.vue'
@@ -133,7 +133,7 @@ import Editor from '@/components/Editor.vue'
 @Component({
   components: {
     Editor,
-    DiscussionComponent,
+    DiscussionComponent: HolePanel,
     DiscussionListMobile
   }
 })
@@ -163,7 +163,7 @@ export default class Division extends BaseComponentOrView {
   public params = {}
   public showFloatBtn = true
 
-  @Ref() readonly holeComp!: DiscussionComponent | DiscussionListMobile
+  @Ref() readonly holeComp!: HolePanel | DiscussionListMobile
   @Ref() readonly editor!: Editor
   @Ref() readonly form!: HTMLFormElement
 

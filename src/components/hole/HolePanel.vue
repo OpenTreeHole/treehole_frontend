@@ -4,20 +4,20 @@
       <v-col class='mb-5 holelist'
              :class='isActive ? "holelist-left" : "holelist-right"'
              :style="{marginTop: '-'+posY.toString()+'px'}"
-             @transitionend='Fix'
-             @wheel='ScrollDiscussionListWhenActive'
+             @transitionend='onActivationEnd'
+             @wheel='scrollHoleListWhenActive'
       >
-        <DiscussionList
+        <HoleList
           :activate='openHole'
           :display-hole-id='displayHoleId'
           ref='holeList'
         />
       </v-col>
-      <v-col v-if='displayHoleId!==-1 && showDiscussion' class='mb-5' cols='5' />
+      <v-col v-if='displayHoleId!==-1 && showFloorList' class='mb-5' cols='5' />
 
       <v-col class='mb-5' cols='6' id='discol'>
-        <Discussion
-          v-if='displayHoleId!==-1 && showDiscussion'
+        <FloorList
+          v-if='displayHoleId!==-1 && showFloorList'
           :key='displayHoleId'
           :display-floor-id='displayFloorId'
           :wrapped-hole-or-id='displayHole'
@@ -30,8 +30,8 @@
 </template>
 
 <script lang='ts'>
-import DiscussionList from '@/components/Discussion/DiscussionList.vue'
-import Discussion from '@/components/Discussion/DiscussionCol.vue'
+import HoleList from '@/components/hole/HoleList.vue'
+import FloorList from '@/components/hole/FloorList.vue'
 
 import { gsap } from 'gsap'
 import { Component, Emit, Ref, Watch } from 'vue-property-decorator'
@@ -40,14 +40,14 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: {
-    Discussion,
-    DiscussionList
+    FloorList,
+    HoleList
   }
 })
-export default class DiscussionComponent extends BaseComponentOrView {
+export default class HolePanel extends BaseComponentOrView {
   public isActive = false
   public isEnd = true
-  public showDiscussion = false
+  public showFloorList = false
   public displayHoleId = -1
   public posY = 0
   public marginTopY = 0
@@ -56,8 +56,8 @@ export default class DiscussionComponent extends BaseComponentOrView {
   public displayHole: WrappedHole | null = null
   public displayFloorId = -1
 
-  @Ref() readonly holeList: DiscussionList
-  @Ref() readonly floorList: Discussion
+  @Ref() readonly holeList: HoleList
+  @Ref() readonly floorList: FloorList
 
   public refresh (): void {
     this.holeList.refresh()
@@ -70,7 +70,7 @@ export default class DiscussionComponent extends BaseComponentOrView {
     }
     if (displayFloorId) {
       this.displayFloorId = displayFloorId
-      if (this.showDiscussion && preventClose && this.displayHoleId === wrappedHole.hole.holeId) {
+      if (this.showFloorList && preventClose && this.displayHoleId === wrappedHole.hole.holeId) {
         this.floorList.tryScrollTo(0, this.floorList.getIndex(displayFloorId), 5, 350)
       }
     } else {
@@ -88,23 +88,23 @@ export default class DiscussionComponent extends BaseComponentOrView {
       document.body.scrollTop = document.documentElement.scrollTop = 0
     } else {
       this.displayHoleId = -1
-      this.showDiscussion = false
+      this.showFloorList = false
       this.isActive = false
       this.isEnd = false
     }
   }
 
-  public Fix (e: TransitionEvent): void {
+  public onActivationEnd (e: TransitionEvent): void {
     if (e.propertyName === 'transform') {
       this.isEnd = true
       if (this.isActive) {
         document.body.scrollTop = document.documentElement.scrollTop = 0
-        this.showDiscussion = true
+        this.showFloorList = true
       }
     }
   }
 
-  public ScrollDiscussionList (e: WheelEvent): void {
+  public scrollHoleList (e: WheelEvent): void {
     const ratio = 0.7
     this.marginTopY = (this.marginTopY > -e.deltaY * ratio ? this.marginTopY + e.deltaY * ratio : 0)
 
@@ -117,14 +117,14 @@ export default class DiscussionComponent extends BaseComponentOrView {
 
   public wheelListener (e: WheelEvent) {
     if (!this.isActive && this.isEnd) {
-      this.ScrollDiscussionList(e)
+      this.scrollHoleList(e)
     }
   }
 
-  public ScrollDiscussionListWhenActive (e: any): void {
+  public scrollHoleListWhenActive (e: any): void {
     if (this.isActive || !this.isEnd) {
       e.preventDefault()
-      this.ScrollDiscussionList(e)
+      this.scrollHoleList(e)
     }
   }
 

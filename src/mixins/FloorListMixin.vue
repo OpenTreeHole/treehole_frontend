@@ -8,7 +8,7 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { FloorListRequest } from '@/api'
 
 @Component
-export default class DiscussionMixin extends BaseComponentOrView {
+export default class FloorListMixin extends BaseComponentOrView {
   // 帖子列表
   public hole: WrappedHole
   public floors: Array<MarkedFloor> = []

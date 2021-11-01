@@ -1,14 +1,14 @@
 <template>
   <v-container class='pa-0'>
     <v-row
-      v-for='(discussion, index) in discussions'
+      v-for='(hole, index) in holes'
       :key='index'
       justify='center'
       class='ma-0'
     >
       <v-col cols='12' sm='10' md='8' lg='6' xl='4'>
-        <DiscussionCard
-          :discussion='discussion'
+        <HoleCard
+          :hole='hole'
           :index='index'
           @refresh='refresh'
           :activate='toDiscussion'
@@ -21,19 +21,19 @@
 </template>
 
 <script lang='ts'>
-import DiscussionListMixin from '@/mixins/DiscussionListMixin.vue'
+import HoleListMixin from '@/mixins/HoleListMixin.vue'
 import Loading from '@/components/Loading.vue'
-import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
+import HoleCard from '@/components/hole/HoleCard.vue'
 import { Component } from 'vue-property-decorator'
 import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 
 @Component({
   components: {
-    DiscussionCard,
+    HoleCard,
     Loading
   }
 })
-export default class DiscussionList extends DiscussionListMixin {
+export default class HoleListMobile extends HoleListMixin {
   /**
    * Set router to the hole page.
    *
@@ -44,11 +44,11 @@ export default class DiscussionList extends DiscussionListMixin {
     setTimeout(() => {
       if (!displayFloorId) {
         this.$router.push({
-          path: `/discussion/${wrappedHole.hole.holeId}`
+          path: `/hole/${wrappedHole.hole.holeId}`
         })
       } else {
         this.$router.push({
-          path: `/discussion/${wrappedHole.hole.holeId}`,
+          path: `/hole/${wrappedHole.hole.holeId}`,
           query: { mention: displayFloorId.toString() }
         })
       }
@@ -57,7 +57,7 @@ export default class DiscussionList extends DiscussionListMixin {
 
   public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
     this.$router.push({
-      path: `/discussion/${mentionFloor.holeId}`,
+      path: `/hole/${mentionFloor.holeId}`,
       query: { mention: mentionFloor.floorId.toString() }
     })
   }

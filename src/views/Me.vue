@@ -15,7 +15,7 @@
 </template>
 
 <script lang='ts'>
-import DiscussionCard from '@/components/Discussion/DiscussionCard.vue'
+import HoleCard from '@/components/hole/HoleCard.vue'
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { UserProfile } from '@/api/user'
@@ -23,7 +23,7 @@ import { camelizeKeys, convertDate } from '@/utils'
 
 @Component({
   components: {
-    DiscussionCard
+    DiscussionCard: HoleCard
   }
 })
 export default class Me extends BaseComponentOrView {

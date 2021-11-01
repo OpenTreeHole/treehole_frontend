@@ -6,7 +6,7 @@
 import Component from 'vue-class-component'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { EventBus } from '@/event-bus'
-import SearchFloorList from '@/components/Discussion/SearchFloorList.vue'
+import SearchFloorList from '@/components/hole/SearchFloorList.vue'
 
 @Component({
   components: {

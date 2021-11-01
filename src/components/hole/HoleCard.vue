@@ -1,9 +1,9 @@
 <template>
-  <v-card :class='isActive ? "discussion-card--active" : "discussion-card"'>
+  <v-card :class='isActive ? "hole-card--active" : "hole-card"'>
     <!-- 标签栏 -->
     <v-card-actions class='pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
       <v-chip
-        v-for='(tag, tindex) in discussion.hole.tags'
+        v-for='(tag, tindex) in hole.hole.tags'
         :key='tindex'
         color='red'
         outlined
@@ -14,34 +14,34 @@
         {{ tag.name }}
       </v-chip>
     </v-card-actions>
-    <v-card-text class='folded-hint' v-if='discussion.isFolded' color='grey'>
+    <v-card-text class='folded-hint' v-if='hole.isFolded' color='grey'>
       该内容已折叠：
-      <span class='clickable' @click='discussion.styleData.displayIt = !discussion.styleData.displayIt'>
-        {{ discussion.styleData.displayIt ? '收起' : '展开' }}
+      <span class='clickable' @click='hole.styleData.displayIt = !hole.styleData.displayIt'>
+        {{ hole.styleData.displayIt ? '收起' : '展开' }}
       </span>
     </v-card-text>
-    <div class='post-content' v-if='discussion.styleData.displayIt'>
+    <div class='post-content' v-if='hole.styleData.displayIt'>
       <!-- 内容主体 -->
       <v-card-text
-        @click='activate(discussion)'
+        @click='activate(hole)'
         class='text--primary py-2 text-body-1 clickable'
         v-ripple
       >
         <div
-          v-if='discussion.styleData.fold'
+          v-if='hole.styleData.fold'
           :id="'p' + index"
           class='fold'
         >
-          {{ discussion.firstFloor.content | plainText }}
+          {{ hole.firstFloor.content | plainText }}
         </div>
         <div v-else :id="'p' + index" class='unfold'>
-          <div class='rich-text' v-html='discussion.firstFloor.html' />
+          <div class='rich-text' v-html='hole.firstFloor.html' />
         </div>
       </v-card-text>
 
       <!-- 展开折叠按钮 -->
-      <div v-if='discussion.styleData.lines > 3'>
-        <div v-if='discussion.styleData.fold'>
+      <div v-if='hole.styleData.lines > 3'>
+        <div v-if='hole.styleData.fold'>
           <v-btn
             text
             block
@@ -72,9 +72,10 @@
       </div>
 
       <v-card-text
-        v-if='discussion.firstFloor.floorId !== discussion.lastFloor.floorId'
+        v-if='hole.firstFloor.floorId !== hole.lastFloor.floorId'
         v-ripple
         class='clickable'
+        @click='activate(hole,hole.lastFloor.floorId,true)'
       >
         <v-row class='mx-0'>
           <span
@@ -85,22 +86,21 @@
               white-space: nowrap;
               color: rgba(19,13,10,0.83)
             '
-            @click='activate(discussion,discussion.lastFloor.floorId,true)'
           >
-            RE：{{ discussion.lastFloor.content | plainText | wordLimit}}
+            RE：{{ hole.lastFloor.content | plainText | wordLimit }}
           </span>
         </v-row>
       </v-card-text>
 
       <!-- 脚标 -->
       <v-card-actions class='pt-0 pb-0 caption'>
-        <span>#{{ discussion.hole.holeId }}</span>
+        <span>#{{ hole.hole.holeId }}</span>
         <v-spacer />
-        <span>{{ discussion.hole.timeUpdated | timeDifference }}</span>
+        <span>{{ hole.hole.timeUpdated | timeDifference }}</span>
         <v-spacer />
         <span>
           <v-icon small>mdi-message-processing-outline</v-icon>
-          {{ discussion.hole.reply }}
+          {{ hole.hole.reply }}
         </span>
       </v-card-actions>
     </div>
@@ -114,14 +114,14 @@ import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class DiscussionCard extends BaseComponentOrView {
-  @Prop({ required: true, type: WrappedHole }) readonly discussion: WrappedHole
+export default class HoleCard extends BaseComponentOrView {
+  @Prop({ required: true, type: WrappedHole }) readonly hole: WrappedHole
   @Prop({ required: true, type: Number }) index: number
   @Prop({ required: true, type: Function }) activate: Function
   @Prop({ required: false, type: Boolean, default: false }) isActive: boolean
 
   @Emit('refresh')
-  public refreshDiscussionList (): void {
+  public refreshHoleList (): void {
   }
 
   @Emit()
@@ -129,21 +129,21 @@ export default class DiscussionCard extends BaseComponentOrView {
   }
 
   public unfold (index: number): void {
-    this.discussion.styleData.fold = false
+    this.hole.styleData.fold = false
   }
 
   public fold (index: number): void {
-    this.discussion.styleData.fold = true
+    this.hole.styleData.fold = true
   }
 }
 </script>
 
 <style lang='scss' scoped>
-.discussion-card {
+.hole-card {
   transition: 1s;
 }
 
-.discussion-card--active {
+.hole-card--active {
   transition: 1s;
   background-color: #DFDFDF !important;
 }

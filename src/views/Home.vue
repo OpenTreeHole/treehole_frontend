@@ -4,8 +4,8 @@
     <newcomer />
 
     <!-- 帖子列表 -->
-    <DiscussionComponent v-if='!isMobile' ref='holeComp' @show-discussion-changed='onShowFloatBtnChanged' />
-    <DiscussionListMobile v-else ref='holeComp' />
+    <HolePanel v-if='!isMobile' ref='holeComp' @show-discussion-changed='onShowFloatBtnChanged' />
+    <HoleListMobile v-else ref='holeComp' />
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div class='float-btn' v-show='showFloatBtn'>
@@ -127,8 +127,8 @@
 <script lang='ts'>
 import Editor from '@/components/Editor.vue'
 import Newcomer from '@/components/Newcomer.vue'
-import DiscussionComponent from '@/components/Discussion/DiscussionComponent.vue'
-import DiscussionListMobile from '@/components/Discussion/DiscussionListMobile.vue'
+import HolePanel from '@/components/hole/HolePanel.vue'
+import HoleListMobile from '@/components/hole/HoleListMobile.vue'
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import { Division, Tag } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
@@ -137,8 +137,8 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
   components: {
     Editor,
     Newcomer,
-    DiscussionComponent,
-    DiscussionListMobile
+    HolePanel,
+    HoleListMobile
   }
 })
 export default class Home extends BaseComponentOrView {
@@ -167,7 +167,7 @@ export default class Home extends BaseComponentOrView {
   public params = {}
   public showFloatBtn = true
 
-  @Ref() readonly holeComp!: DiscussionComponent | DiscussionListMobile
+  @Ref() readonly holeComp!: HolePanel | HoleListMobile
   @Ref() readonly editor!: Editor
   @Ref() readonly form!: HTMLFormElement
 

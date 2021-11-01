@@ -3,7 +3,7 @@ import VueRouter from 'vue-router'
 import Login from '@/views/Login.vue'
 import Home from '@/views/Home.vue'
 import Register from '@/views/Register.vue'
-import Discussion from '@/views/Discussion.vue'
+import Hole from '@/views/Hole.vue'
 import Division from '@/views/Division.vue'
 import About from '@/views/About.vue'
 import Search from '@/views/Search.vue'
@@ -23,7 +23,7 @@ const routes = [
   { path: '/', redirect: '/home' },
   { path: '/about', meta: { title: '关于' }, component: About, name: 'about' },
   { path: '/register', meta: { title: '注册' }, component: Register, name: 'register' },
-  { path: '/discussion/:id', meta: { title: '树洞' }, component: Discussion, name: 'discussion' },
+  { path: '/discussion/:id', meta: { title: '树洞' }, component: Hole, name: 'discussion' },
   { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' }
 ]
 
