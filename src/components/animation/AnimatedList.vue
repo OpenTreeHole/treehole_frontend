@@ -118,9 +118,16 @@ export default class AnimatedList extends BaseComponentOrView {
           duration: 900
         })
       }
+      if (computedData.class === 'invisible') {
+        animation.add({
+          translateX: -100,
+          duration: 0
+        })
+      }
       animation.add({
+        translateX: 0,
         opacity: 1,
-        duration: 800,
+        duration: 550,
         easing: 'cubicBezier(0.385, 0.900, 0.570, 1.010)'
       }, '+=50')
       animation.finished.then(() => {
