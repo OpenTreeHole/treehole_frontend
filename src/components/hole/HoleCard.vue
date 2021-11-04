@@ -115,7 +115,7 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
 export default class HoleCard extends BaseComponentOrView {
-  @Prop({ required: true, type: WrappedHole }) readonly hole: WrappedHole
+  @Prop({ required: true }) readonly hole: WrappedHole
   @Prop({ required: true, type: Number }) index: number
   @Prop({ required: true, type: Function }) activate: Function
   @Prop({ required: false, type: Boolean, default: false }) isActive: boolean

@@ -1,21 +1,16 @@
 <template>
   <v-container id='holeList' class='pa-0'>
-    <transition-group name='slide-fade'>
-      <v-row
-        v-for='(hole, index) in holes'
-        :key='hole.hole.holeId'
-      >
-        <v-col>
-          <HoleCard
-            :hole='hole'
-            :index='index'
-            :activate='activate'
-            :is-active='hole.hole.holeId === displayHoleId'
-            @refresh='refresh'
-          />
-        </v-col>
-      </v-row>
-    </transition-group>
+    <animated-list :datas='holes' vkey='holeIdStr' v-slot='{ data, index }'>
+      <v-col>
+        <HoleCard
+          :hole='data'
+          :index='index'
+          :activate='activate'
+          :is-active='data.holeId === displayHoleId'
+          @refresh='refresh'
+        />
+      </v-col>
+    </animated-list>
     <v-row>
       <v-col>
         <!-- 载入中信息 -->
@@ -32,11 +27,13 @@ import Loading from '@/components/Loading.vue'
 import { Component, Prop } from 'vue-property-decorator'
 import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 import { EventBus } from '@/event-bus'
+import AnimatedList from '@/components/animation/AnimatedList.vue'
 
 @Component({
   components: {
     HoleCard,
-    Loading
+    Loading,
+    AnimatedList
   }
 })
 export default class HoleList extends HoleListMixin {
@@ -51,7 +48,7 @@ export default class HoleList extends HoleListMixin {
    * Calculate the height of the hole list.
    */
   public getHeight (): number {
-    const holeListElement = document.getElementById('discussionList')
+    const holeListElement = document.getElementById('holeList')
     if (!holeListElement) return 0
     return parseInt(window.getComputedStyle(holeListElement).height)
   }
@@ -105,18 +102,3 @@ export default class HoleList extends HoleListMixin {
   }
 }
 </script>
-
-<style lang='scss'>
-.slide-fade-enter-active {
-  transition: all .3s ease;
-}
-
-.slide-fade-leave-active {
-  transition: all .1s cubic-bezier(1.0, 0.5, 0.8, 1.0);
-}
-
-.slide-fade-enter, .slide-fade-leave-to {
-  transform: translateX(-30px);
-  opacity: 0;
-}
-</style>

@@ -15,7 +15,7 @@
       </v-col>
       <v-col v-if='displayHoleId!==-1 && showFloorList' class='mb-5' cols='5' />
 
-      <v-col class='mb-5' cols='6' id='discol'>
+      <v-col class='mb-5' cols='6'>
         <FloorList
           v-if='displayHoleId!==-1 && showFloorList'
           :key='displayHoleId'
@@ -110,8 +110,8 @@ export default class HolePanel extends BaseComponentOrView {
 
     const height = this.holeList.getHeight()
 
-    if (this.marginTopY + this.viewport > height + 300) {
-      this.marginTopY = height - this.viewport + 300
+    if (this.marginTopY + this.viewport > height + 200) {
+      this.marginTopY = height - this.viewport + 200
     }
   }
 

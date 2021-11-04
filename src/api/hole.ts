@@ -106,6 +106,8 @@ export class WrappedHole {
   public lastFloor: MarkedFloor
   public isFolded: boolean
   public isStarred: boolean
+  public holeId: number
+  public holeIdStr: string
 
   constructor (hole: Hole) {
     this.hole = hole
@@ -116,6 +118,8 @@ export class WrappedHole {
     this.lastFloor = new MarkedFloor(hole.floors.lastFloor)
     this.isFolded = this.firstFloor.fold.length > 0
     this.isStarred = UtilStore.user.collection.isStarred(hole.holeId)
+    this.holeId = this.hole.holeId
+    this.holeIdStr = this.holeId.toString()
     hole.tags.forEach((v: Tag) => {
       if (v.name.charAt(0) === '*') {
         this.isFolded = true
