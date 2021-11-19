@@ -2,7 +2,7 @@
 <template>
   <v-container>
     <v-card
-      v-if='this.$route.name==="discussion" && !this.initiating'
+      v-if='this.$route.name==="hole" && !this.initiating'
       class='mx-auto mb-6'
       max-width='700px'
     >
@@ -38,10 +38,9 @@
         v-for='(floor, index) in floors'
         :key='`${index}-${floor.html}`'
         justify='center'
-        align='start'
         v-viewer
       >
-        <v-col>
+        <v-col md='10' lg='7'>
           <v-card :id='index'>
             <v-card-text class='pb-1 pt-2 text-body-2'>
               <p>

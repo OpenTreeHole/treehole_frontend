@@ -23,7 +23,7 @@ const routes = [
   { path: '/', redirect: '/home' },
   { path: '/about', meta: { title: '关于' }, component: About, name: 'about' },
   { path: '/register', meta: { title: '注册' }, component: Register, name: 'register' },
-  { path: '/discussion/:id', meta: { title: '树洞' }, component: Hole, name: 'discussion' },
+  { path: '/hole/:id', meta: { title: '树洞' }, component: Hole, name: 'hole' },
   { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' }
 ]
 
