@@ -11,6 +11,7 @@
           :activate='openHole'
           :display-hole-id='displayHoleId'
           ref='holeList'
+          @refresh='refresh'
         />
       </v-col>
       <v-col v-if='displayHoleId!==-1 && showFloorList' class='mb-5' cols='5' />
@@ -60,7 +61,9 @@ export default class HolePanel extends BaseComponentOrView {
   @Ref() readonly floorList: FloorList
 
   public refresh (): void {
+    this.deactivate()
     this.holeList.refresh()
+    this.resetScrollTop()
   }
 
   public openHole (wrappedHole: WrappedHole, displayFloorId?: number, preventClose: boolean = false): void {
@@ -104,6 +107,10 @@ export default class HolePanel extends BaseComponentOrView {
     }
   }
 
+  public resetScrollTop () {
+    this.marginTopY = this.posY = 0
+  }
+
   public scrollHoleList (e: WheelEvent): void {
     const ratio = 0.7
     this.marginTopY = (this.marginTopY > -e.deltaY * ratio ? this.marginTopY + e.deltaY * ratio : 0)
@@ -128,9 +135,9 @@ export default class HolePanel extends BaseComponentOrView {
     }
   }
 
-  public deactivate (id: number): void {
+  public deactivate (): void {
     if (this.displayHoleId !== -1) {
-      this.activate(id)
+      this.activate(this.displayHoleId)
     }
   }
 
@@ -143,7 +150,7 @@ export default class HolePanel extends BaseComponentOrView {
       if (e.path[i].className && e.path[i].className.includes && (e.path[i].className.includes('navbar') ||
         e.path[i].className.includes('dialog') || e.path[i].className.includes('overlay'))) flag = false
     }
-    if (flag) this.deactivate(this.displayHoleId)
+    if (flag) this.deactivate()
   }
 
   mounted () {

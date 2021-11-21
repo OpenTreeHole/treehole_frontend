@@ -77,7 +77,8 @@
                 style='margin-bottom: -12px'
               >
                 <v-checkbox v-model='agreelicenses' label='同意'></v-checkbox>
-                <router-link to='/license'>相关协议</router-link>
+                <!--suppress HtmlUnknownAnchorTarget -->
+                <a href='/#/license' target='_blank'>相关协议</a>
               </v-row>
             </div>
 

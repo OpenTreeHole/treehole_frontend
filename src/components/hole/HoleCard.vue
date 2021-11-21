@@ -2,17 +2,12 @@
   <v-card :class='isActive ? "hole-card--active" : "hole-card"'>
     <!-- 标签栏 -->
     <v-card-actions class='pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
-      <v-chip
+      <tag-chip
         v-for='(tag, tindex) in hole.hole.tags'
         :key='tindex'
-        color='red'
-        outlined
-        class='mx-1 my-1'
-        small
-        ripple
+        :tag='tag'
       >
-        {{ tag.name }}
-      </v-chip>
+      </tag-chip>
     </v-card-actions>
     <v-card-text class='folded-hint' v-if='hole.isFolded' color='grey'>
       该内容已折叠：
@@ -112,8 +107,13 @@
 import { Component, Emit, Prop } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import TagChip from '@/components/hole/TagChip.vue'
 
-@Component
+@Component({
+  components: {
+    TagChip
+  }
+})
 export default class HoleCard extends BaseComponentOrView {
   @Prop({ required: true }) readonly hole: WrappedHole
   @Prop({ required: true, type: Number }) index: number
@@ -122,10 +122,6 @@ export default class HoleCard extends BaseComponentOrView {
 
   @Emit('refresh')
   public refreshHoleList (): void {
-  }
-
-  @Emit()
-  public addTag (tag: { color: string, count: number, name: string }): void {
   }
 
   public unfold (index: number): void {

@@ -155,7 +155,6 @@ export default class Home extends BaseComponentOrView {
     pinned: []
   }
 
-  public filtedTag: { color: string, count: number, name: string } | null = null
   public dialog = false
   public tagRules = [
     (v: string | any[]) => v.length <= 5 || '标签不能多于5个'
@@ -176,7 +175,7 @@ export default class Home extends BaseComponentOrView {
   }
 
   public reload (): void {
-    this.filtedTag = null
+    this.clearTag()
     this.holeComp.refresh()
   }
 
@@ -233,13 +232,10 @@ export default class Home extends BaseComponentOrView {
           division_id: this.selectedDivision.divisionId,
           tag_names: this.selectedTags.map(v => v.name)
         })
-        .then((response) => {
-          console.log(response.data)
+        .then(() => {
           this.messageSuccess('发送成功')
-          console.log(this.holeComp + ' ' + this.editor)
           this.holeComp.refresh() // reload the hole list
           this.editor.setContent('')
-          this.tags = []
           this.selectedTags = []
         })
         .catch((error) => {

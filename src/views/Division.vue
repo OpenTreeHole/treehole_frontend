@@ -172,7 +172,7 @@ export default class Division extends BaseComponentOrView {
   }
 
   public reload (): void {
-    this.filtedTag = null
+    this.clearTag()
     this.holeComp.refresh()
   }
 
@@ -239,7 +239,6 @@ export default class Division extends BaseComponentOrView {
           this.messageSuccess('发送成功')
           this.holeComp.refresh() // reload the hole list
           this.editor.setContent('')
-          this.tags = []
           this.selectedTags = []
         })
         .catch((error) => {

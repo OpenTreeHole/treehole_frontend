@@ -37,6 +37,7 @@ export default class HoleListMixin extends BaseComponentOrView {
   public refresh (): void {
     this.request.clear()
     this.holes = this.request.datas
+    console.log(this.holes)
   }
 
   /**
@@ -77,7 +78,9 @@ export default class HoleListMixin extends BaseComponentOrView {
   }
 
   mounted () {
-    window.addEventListener('resize', () => { this.debouncedCalculateLines() })
+    window.addEventListener('resize', () => {
+      this.debouncedCalculateLines()
+    })
     EventBus.$on('goto-mention-floor', this.onGotoMentionFloor)
 
     const sLoading = this.loading
@@ -105,6 +108,14 @@ export default class HoleListMixin extends BaseComponentOrView {
     }
     this.holes = this.request.datas
     this.$user.collection.registerUpdateHoleArray(this.route, this.holes)
+  }
+
+  @Watch('filtedTagMap', {
+    deep: true
+  })
+  filtedTagMapChanged () {
+    this.request.tag = this.filtedTagMap[this.route] ? this.filtedTagMap[this.route] : null
+    this.$emit('refresh')
   }
 }
 </script>

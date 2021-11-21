@@ -86,6 +86,10 @@ export default class AnimatedList extends BaseComponentOrView {
 
   @Watch('datas', { immediate: true })
   async datasChanged () {
+    if (!this.datas || this.datas.length === 0) {
+      this.computedDatas = []
+      return
+    }
     const isFirst = this.computedDatas.length === 0
     this.datas.forEach(data => {
       if (this.getComputedDatasFromKey(data[this.vkey]) === null) {

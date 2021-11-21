@@ -1,6 +1,6 @@
 // noinspection DuplicatedCode
 
-import { Floor, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { Floor, MarkedDetailedFloor, MarkedFloor, Tag, WrappedHole } from '@/api/hole'
 import { camelizeKeys, scrollTo } from '@/utils'
 import cloneDeep from 'lodash.clonedeep'
 import Vue from 'vue'
@@ -68,6 +68,8 @@ export abstract class PrefetchedArrayRequest<T> extends ArrayRequest<T> {
 }
 
 export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
+  public tag: Tag | null = null
+
   /**
    * Request the backend for a specific hole and add to the hole list.
    * @param holeId - the id of the specific hole.
@@ -104,13 +106,20 @@ export class HomeHoleListRequest extends HoleListRequest {
 
   public async request (): Promise<boolean> {
     let hasNext = false
+
+    const params: any = {
+      start_time: this.startTime.toISOString(),
+      length: 10,
+      prefetch_length: 10,
+      division_id: 1
+    }
+
+    if (this.tag) {
+      params.tag = this.tag.name
+    }
+
     await UtilStore.axios.get('/holes', {
-      params: {
-        start_time: this.startTime.toISOString(),
-        length: 10,
-        prefetch_length: 10,
-        division_id: 1
-      }
+      params: params
     }).then((response) => {
       response.data.forEach((holeItem: any) => {
         if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
@@ -142,13 +151,17 @@ export class DivisionHoleListRequest extends HoleListRequest {
 
   public async request (): Promise<boolean> {
     let hasNext = false
+    const params: any = {
+      start_time: this.startTime.toISOString(),
+      length: 10,
+      prefetch_length: 10,
+      division_id: this.divisionId
+    }
+    if (this.tag) {
+      params.tag = this.tag.name
+    }
     await UtilStore.axios.get('/holes', {
-      params: {
-        start_time: this.startTime.toISOString(),
-        length: 10,
-        prefetch_length: 10,
-        division_id: this.divisionId
-      }
+      params: params
     }).then((response) => {
       response.data.forEach((holeItem: any) => {
         if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return

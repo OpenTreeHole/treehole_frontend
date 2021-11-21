@@ -4,7 +4,7 @@
       <v-icon left>
         {{ icon }}
       </v-icon>
-      <span>{{ message }}</span>
+      {{ message }}
     </v-snackbar>
   </div>
 </template>

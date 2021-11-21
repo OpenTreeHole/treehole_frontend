@@ -78,6 +78,9 @@
 
       <v-divider />
       <v-list style='padding: 5px'>
+        <v-list-item v-if='filtedTagMap && filtedTagMap[$route.name]'>
+          <TagChip :tag='filtedTagMap[$route.name]' :key='"filtedTag-"+filtedTagMap[$route.name].tagId' :remove='true'></TagChip>
+        </v-list-item>
         <!-- 搜索 -->
         <v-list-item>
           <v-form>
@@ -139,8 +142,10 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Division } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
 import { EventBus } from '@/event-bus'
-
-@Component
+import TagChip from '@/components/hole/TagChip.vue'
+@Component({
+  components: { TagChip }
+})
 export default class Navbar extends BaseComponentOrView {
   public isDarkTheme = false
   public searchText = ''
@@ -227,6 +232,8 @@ export default class Navbar extends BaseComponentOrView {
 
   @Watch('$route', { immediate: true })
   routeChange () {
+    this.clearTag()
+
     this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
     matchMedia('(prefers-color-scheme: dark)').addEventListener(
       'change',

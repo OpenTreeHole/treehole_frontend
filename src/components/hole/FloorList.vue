@@ -40,7 +40,7 @@
         justify='center'
         v-viewer
       >
-        <v-col md='10' lg='7'>
+        <v-col>
           <v-card :id='index'>
             <v-card-text class='pb-1 pt-2 text-body-2'>
               <p>
