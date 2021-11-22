@@ -143,6 +143,7 @@ import { Division } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
 import { EventBus } from '@/event-bus'
 import TagChip from '@/components/hole/TagChip.vue'
+
 @Component({
   components: { TagChip }
 })
@@ -201,6 +202,11 @@ export default class Navbar extends BaseComponentOrView {
         divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
       })
       this.groupNavItem = new Map(this.groupNavItem.set('/division', divisionInfos))
+    })
+    this.$axios.get('/users').then((response) => {
+      this.$user.userProfile = camelizeKeys(response.data)
+    }).catch((error) => {
+      this.messageError(error)
     })
   }
 

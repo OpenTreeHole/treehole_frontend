@@ -2,7 +2,7 @@
 import { Component, Prop, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import { MarkedFloor, WrappedHole } from '@/api/hole'
+import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 import { camelizeKeys, scrollTo } from '@/utils'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { FloorListRequest } from '@/api'
@@ -17,6 +17,14 @@ export default class FloorListMixin extends BaseComponentOrView {
   public replyFloor: MarkedFloor | null = null
   // 发帖表单
   public dialog = false
+  /**
+   * 本次dialog的操作
+   * 'add': 新增回帖
+   * 'reply': 回复某帖
+   * 'edit': 修改回帖
+   */
+  public operation = 'add'
+  public editingFloorId: number = 0
   // content: '',
   public requiredRules = [(v: any) => !!v || '内容不能为空']
   public valid = true
@@ -40,6 +48,17 @@ export default class FloorListMixin extends BaseComponentOrView {
   public closeDialog (): void {
     this.dialog = false
     this.replyFloor = null
+    this.operation = 'add'
+  }
+
+  /**
+   * Clear the floor list and reload.
+   */
+  public refresh (): void {
+    this.request.clear()
+    this.floors = this.request.datas
+    this.loading.hasNext = true
+    this.loading.load()
   }
 
   /**
@@ -64,6 +83,17 @@ export default class FloorListMixin extends BaseComponentOrView {
    */
   public reply (floorId: number): void {
     this.replyFloor = this.floors[this.getIndex(floorId)]
+    this.operation = 'reply'
+    this.dialog = true
+  }
+
+  public edit (floorId: number): void {
+    const curFloor = this.floors[this.getIndex(floorId)]
+    if (curFloor instanceof MarkedDetailedFloor && curFloor.mention[0]) {
+      this.replyFloor = new MarkedFloor(curFloor.mention[0])
+    }
+    this.operation = 'edit'
+    this.editingFloorId = floorId
     this.dialog = true
   }
 
@@ -161,27 +191,34 @@ export default class FloorListMixin extends BaseComponentOrView {
   }
 
   /**
-   * Send a report.
-   *
-   * @param floorId - the id of the floor being reported.
+   * Edit a floor.
    */
-  public report (floorId: number): void {
-    const msg = prompt('输入举报理由')
-    if (msg === '') {
-      this.messageError('举报理由不能为空！')
+  public editFloor (): void {
+    if (this.form.validate() && this.editor.validate()) {
+      this.dialog = false
+      const sEditor = this.editor
+      const content = (this.replyFloor ? '#' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
+      const mention: number[] = []
+      content.replace(/(^|\s)#(\w+)/g, (original, ignore, v) => {
+        mention.push(parseInt(v))
+        return original
+      })
+      this.$axios
+        .put(`/floors/${this.editingFloorId}`, {
+          content: content,
+          mention: mention
+        })
+        .then(() => {
+          this.messageSuccess('修改成功')
+          this.refresh()
+          this.replyFloor = null // Clear the reply info.
+          sEditor.setContent('') // Clear the reply editor.
+        })
+        .catch((error) => {
+          console.log(error)
+          this.messageError(error)
+        })
     }
-    this.$axios
-      .post('/reports', {
-        floor_id: floorId,
-        reason: msg
-      })
-      .then((response) => {
-        if (response.status === 200) {
-          this.messageSuccess('举报成功')
-        } else {
-          this.messageError(response.data.msg)
-        }
-      })
   }
 
   mounted () {

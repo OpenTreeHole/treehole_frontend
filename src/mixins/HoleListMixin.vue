@@ -37,7 +37,6 @@ export default class HoleListMixin extends BaseComponentOrView {
   public refresh (): void {
     this.request.clear()
     this.holes = this.request.datas
-    console.log(this.holes)
   }
 
   /**

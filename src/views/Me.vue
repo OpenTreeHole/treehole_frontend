@@ -19,7 +19,7 @@ import HoleCard from '@/components/hole/HoleCard.vue'
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { UserProfile } from '@/api/user'
-import { camelizeKeys, convertDate } from '@/utils'
+import { convertDate } from '@/utils'
 
 @Component({
   components: {
@@ -31,14 +31,8 @@ export default class Me extends BaseComponentOrView {
   public joinedTimeDisplayMsg: string
 
   public getUserInfo (): void {
-    this.$axios.get('/users').then((response) => {
-      const profile : UserProfile = camelizeKeys(response.data)
-      this.profile = profile
-      this.joinedTimeDisplayMsg = convertDate(profile.joinedTime)
-      this.$user.userProfile = profile
-    }).catch((error) => {
-      this.messageError(error)
-    })
+    this.profile = this.$user.userProfile
+    this.joinedTimeDisplayMsg = convertDate(this.$user.userProfile.joinedTime)
   }
 
   public logout (): void {

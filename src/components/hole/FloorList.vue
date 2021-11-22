@@ -41,52 +41,7 @@
         v-viewer
       >
         <v-col>
-          <v-card :id='index'>
-            <v-card-text class='pb-1 pt-2 text-body-2'>
-              <p>
-                {{ floor.anonyname }}
-                <span style='float: right'>
-                {{ floor.timeUpdated | timeDifference }}
-              </span>
-              </p>
-            </v-card-text>
-
-            <v-card-text class='py-0'>
-              <!-- 正文部分 -->
-              <div
-                :index='index'
-                class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
-                v-html='floor.html'
-              ></div>
-            </v-card-text>
-
-            <!-- 脚标 -->
-            <v-card-text class='d-flex text-body-2 pb-2'>
-              <span><b>{{ index }}L</b>(#{{ floor.floorId }})</span>
-              <v-spacer />
-              <v-btn
-                x-small
-                text
-                @click='reply(floor.floorId)'
-                class='grey--text'
-                style='padding-bottom: -10px'
-              >
-                <v-icon>mdi-reply-outline</v-icon>
-                回复
-              </v-btn>
-              <v-spacer />
-              <v-btn
-                x-small
-                text
-                @click='report(floor.floorId)'
-                class='grey--text'
-                style='padding-bottom: -10px'
-              >
-                <v-icon>mdi-alert-outline</v-icon>
-                举报
-              </v-btn>
-            </v-card-text>
-          </v-card>
+          <FloorCard :floor='floor' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)'/>
         </v-col>
       </v-row>
     </transition-group>
@@ -126,8 +81,11 @@
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
-            <v-btn color='primary' text :disabled='!valid' @click='addFloor'>
+            <v-btn v-if='operation === "reply" || operation === "add"' color='primary' text :disabled='!valid' @click='addFloor'>
               发送
+            </v-btn>
+            <v-btn v-else-if='operation === "edit"' color='primary' text :disabled='!valid' @click='editFloor'>
+              修改
             </v-btn>
           </v-card-actions>
         </v-card>
@@ -155,12 +113,14 @@ import Mention from '@/components/hole/Mention.vue'
 import { FloorListRequest } from '@/api'
 import hljs from 'highlight.js'
 import { scrollTo } from '@/utils'
+import FloorCard from '@/components/hole/FloorCard.vue'
 
 @Component({
   components: {
     Mention,
     Loading,
-    Editor
+    Editor,
+    FloorCard
   }
 })
 export default class FloorList extends FloorListMixin {

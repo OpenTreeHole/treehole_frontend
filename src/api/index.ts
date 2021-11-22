@@ -36,6 +36,11 @@ export abstract class PrefetchedArrayRequest<T> extends ArrayRequest<T> {
     this.datas = cloneDeep(prefetchedDataSet)
   }
 
+  public clear () {
+    super.clear()
+    this.loadedLength = 0
+  }
+
   /**
    * Push a new data item int the data set.
    * <p> If an index is given, the item will be pushed into the targeted position. (and replace the item at this position) </p>
@@ -243,6 +248,9 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
             setTimeout(() => this.renderMention(floor), 100)
           }
           this.pushData(floor, index++, (newVal: MarkedFloor, oldVal: MarkedFloor) => {
+            if (newVal instanceof MarkedDetailedFloor) {
+              if (newVal.isMe) return true
+            }
             return newVal.html !== oldVal.html
           })
 

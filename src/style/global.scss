@@ -17,7 +17,7 @@
   font-size: small !important;
 }
 
-.reply-text pre code{
+.reply-text pre code {
   font-size: small !important;
 }
 
@@ -41,5 +41,26 @@ img {
 }
 
 .theme--light.v-application code {
-  background-color: rgba(0,0,0,0) !important;
+  background-color: rgba(0, 0, 0, 0) !important;
+}
+
+.flex-left {
+  flex: 1; /* shorthand for: flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.flex-center {
+  flex: 1; /* shorthand for: flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.flex-right {
+  flex: 1; /* shorthand for: flex-grow: 1, flex-shrink: 1, flex-basis: 0 */
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
 }
