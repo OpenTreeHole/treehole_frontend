@@ -36,7 +36,7 @@
     <transition-group name='slide-fade'>
       <v-row
         v-for='(floor, index) in floors'
-        :key='`${index}-${floor.html}`'
+        :key='`${index}`'
         justify='center'
         v-viewer
       >
@@ -63,7 +63,7 @@
 
           <v-card-text>
             <!-- 回复内容 -->
-            <Mention :mention-floor='replyFloor' />
+            <Mention v-if='replyFloor' :mention-floor='replyFloor' />
 
             <v-form ref='form' v-model='valid' lazy-validation>
               <!-- 回贴表单 -->
@@ -168,7 +168,7 @@ export default class FloorList extends FloorListMixin {
   }
 
   public init (displayFloorId: number) {
-    this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId, this.getIndex)
+    this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId, this.renderFloor)
     this.floors = this.request.datas
     this.initiating = false
     this.$nextTick(() => this.getFloorsRecursive(displayFloorId))

@@ -3,12 +3,7 @@ import debounce from 'lodash.debounce'
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import {
-  CollectionHoleListRequest,
-  DivisionHoleListRequest,
-  HoleListRequest,
-  HomeHoleListRequest
-} from '@/api'
+import { CollectionHoleListRequest, DivisionHoleListRequest, HoleListRequest, HomeHoleListRequest } from '@/api'
 import Loading from '@/components/Loading.vue'
 import { EventBus } from '@/event-bus'
 

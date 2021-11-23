@@ -154,7 +154,6 @@ export default class FloorCard extends BaseComponentOrView {
       text: '处罚',
       operation: this.penalty
     }
-    console.log(this.floor)
     if (this.floor instanceof MarkedDetailedFloor && this.floor.isMe) {
       this.operations = [opRemoveFloor, opEdit]
     } else if (this.$user.userProfile.isAdmin) {

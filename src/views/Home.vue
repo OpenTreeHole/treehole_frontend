@@ -4,7 +4,7 @@
     <newcomer />
 
     <!-- 帖子列表 -->
-    <HolePanel v-if='!isMobile' ref='holeComp' @show-discussion-changed='onShowFloatBtnChanged' />
+    <HolePanel v-if='!isMobile' ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged' />
     <HoleListMobile v-else ref='holeComp' />
 
     <!-- 新帖编辑器及浮动按钮 -->

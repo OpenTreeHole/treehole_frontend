@@ -2,10 +2,14 @@
 import { Component, Prop, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { Floor, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 import { camelizeKeys, scrollTo } from '@/utils'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { FloorListRequest } from '@/api'
+import { EventBus } from '@/event-bus'
+import Mention from '@/components/hole/Mention.vue'
+import vuetify from '@/plugins/vuetify'
+import Vue from 'vue'
 
 @Component
 export default class FloorListMixin extends BaseComponentOrView {
@@ -208,9 +212,12 @@ export default class FloorListMixin extends BaseComponentOrView {
           content: content,
           mention: mention
         })
-        .then(() => {
+        .then((response) => {
           this.messageSuccess('修改成功')
-          this.refresh()
+          const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(response.data))
+          this.renderFloor(floor)
+          this.checkAndRerenderFloors(floor)
+          Vue.set(this.floors, this.getIndex(floor.floorId), floor)
           this.replyFloor = null // Clear the reply info.
           sEditor.setContent('') // Clear the reply editor.
         })
@@ -218,6 +225,90 @@ export default class FloorListMixin extends BaseComponentOrView {
           console.log(error)
           this.messageError(error)
         })
+    }
+  }
+
+  public checkAndRerenderFloors (mentionFloor: MarkedFloor) {
+    this.floors.forEach((floor, index) => {
+      if (floor instanceof MarkedDetailedFloor && floor.mention.length !== 0) {
+        let flag = false
+        for (let i = 0; i < floor.mention.length; i++) {
+          if (floor.mention[i].floorId === mentionFloor.floorId) {
+            floor.mention[i] = mentionFloor
+            flag = true
+          }
+        }
+        if (flag) {
+          floor.convertHtml()
+          console.log(floor)
+          this.renderFloor(floor)
+          Vue.set(this.floors, index, floor)
+        }
+      }
+    })
+  }
+
+  public async renderFloor (curFloor: MarkedDetailedFloor): Promise<void> {
+    if (('mention' in curFloor) && curFloor.mention.length !== 0) {
+      // setTimeout(() => this.renderMention(curFloor), 100)
+      await this.$nextTick()
+      this.renderMention(curFloor)
+    }
+  }
+
+  /**
+   * Render the empty divs with 'replyDiv' class and 'mention' attr with the specific floor.
+   * <p> This method should be called after the original divs being rendered. </p>
+   *
+   * @param curFloor - the current floor (waiting the mention part in it to be re-rendered).
+   */
+  public renderMention (curFloor: MarkedDetailedFloor): void {
+    const curIndex = this.getIndex(curFloor.floorId)
+    const elements = document.querySelectorAll('div[index="' + curIndex + '"] > div.replyDiv')
+    for (let i = 0; i < elements.length; i++) {
+      if (elements[i].innerHTML) continue
+      const mentionAttr = elements[i].getAttribute('mention')
+      if (!mentionAttr) continue
+      const mentionId = parseInt(mentionAttr.substring(1))
+      let mentionFloorOrNull: Floor | null = null
+      curFloor.mention.forEach((mFloor) => {
+        if (mFloor.floorId === mentionId) mentionFloorOrNull = mFloor
+      })
+      if (!mentionFloorOrNull) continue
+      const mentionFloor: MarkedFloor = new MarkedFloor(mentionFloorOrNull)
+      let gotoMentionFloor: Function | undefined
+      const mentionIndex = this.getIndex(mentionId)
+      if (mentionIndex !== -1) {
+        gotoMentionFloor = () => {
+          scrollTo(curIndex, mentionIndex)
+        }
+      } else {
+        gotoMentionFloor = () => {
+          EventBus.$emit('goto-mention-floor', curFloor, mentionFloor)
+        }
+      }
+      let additionalClass = ''
+      if (elements[i].parentElement && (elements[i].parentElement as HTMLElement).firstChild !== elements[i]) {
+        additionalClass += 'mt-3 '
+      }
+      if (elements[i].parentElement && (elements[i].parentElement as HTMLElement).lastChild !== elements[i]) {
+        additionalClass += 'mb-3 '
+      }
+      additionalClass = additionalClass.trimEnd()
+      new Mention({
+        propsData: {
+          mentionFloor: mentionFloor,
+          gotoMentionFloor: gotoMentionFloor,
+          gotoMentionFloorIcon: 'mdi-arrow-collapse-up',
+          mentionFloorInfo: (mentionIndex === -1 ? ('#' + mentionFloor.floorId) : (mentionIndex.toString() + 'L')),
+          additionalClass: additionalClass
+        },
+        vuetify
+      }).$mount(elements[i])
+    }
+    const element = document.querySelector(`div[id="${curIndex}"] > div.v-card__text.py-0 > div`)
+    if (element != null) {
+      curFloor.html = element.innerHTML
     }
   }
 

@@ -165,9 +165,9 @@ export default class HolePanel extends BaseComponentOrView {
     window.removeEventListener('wheel', this.wheelListener)
   }
 
-  @Watch('showDiscussion')
+  @Watch('showFloorList')
   @Emit()
-  showDiscussionChanged (_val: boolean) {
+  showFloorListChanged (_val: boolean) {
   }
 
   @Watch('marginTopY')
