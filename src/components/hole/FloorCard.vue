@@ -5,7 +5,7 @@
         {{ floor.anonyname }}
       </span>
       <span class='flex-center'>
-        {{ floor.timeUpdated | timeDifference }}
+        {{ floor.timeCreated | timeDifference }}
       </span>
       <span class='flex-right'>
         <v-btn
@@ -149,11 +149,16 @@ export default class FloorCard extends BaseComponentOrView {
       text: '编辑',
       operation: () => this.$emit('edit')
     }
+    const opPenalty = {
+      icon: 'close-outline',
+      text: '处罚',
+      operation: this.penalty
+    }
     console.log(this.floor)
     if (this.floor instanceof MarkedDetailedFloor && this.floor.isMe) {
       this.operations = [opRemoveFloor, opEdit]
     } else if (this.$user.userProfile.isAdmin) {
-      this.operations = [opRemoveFloorWithReason, opEdit]
+      this.operations = [opRemoveFloorWithReason, opEdit, opPenalty]
     } else {
       this.operations = [opReport]
     }
@@ -162,6 +167,14 @@ export default class FloorCard extends BaseComponentOrView {
   @Watch('floor')
   floorChanged () {
     this.setOperation()
+  }
+
+  public penalty () {
+    const msg = prompt('输入惩罚等级')
+    if (msg == null) return
+    const level = parseInt(msg)
+    if (isNaN(level) || level < 0 || level > 3) this.messageError('非有效惩罚等级！（惩罚应为0,1,2或3）')
+    this.$axios.post(`/penalty/${this.floor.floorId}`)
   }
 
   public like () {
