@@ -40,7 +40,7 @@
         justify='center'
         v-viewer
       >
-        <v-col>
+        <v-col class='py-2'>
           <FloorCard :floor='floor' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)'/>
         </v-col>
       </v-row>

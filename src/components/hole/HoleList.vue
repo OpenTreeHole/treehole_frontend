@@ -1,7 +1,7 @@
 <template>
   <v-container id='holeList' class='pa-0'>
     <animated-list :datas='holes' vkey='holeIdStr' v-slot='{ data, index }'>
-      <v-col>
+      <v-col class='py-2'>
         <HoleCard
           :hole='data'
           :index='index'

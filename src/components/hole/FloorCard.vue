@@ -198,7 +198,11 @@ export default class FloorCard extends BaseComponentOrView {
       })
       .catch((error) => {
         console.log(error)
-        this.messageError(error)
+        if (error.response && error.response.data.message) {
+          this.messageError(error.response.data.message)
+        } else if (error.status) {
+          this.messageError('未知错误，状态码：' + error.status)
+        } else this.messageError(error)
       })
   }
 
