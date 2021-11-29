@@ -131,8 +131,9 @@ import HolePanel from '@/components/hole/HolePanel.vue'
 import HoleListMobile from '@/components/hole/HoleListMobile.vue'
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import { Division, Tag } from '@/api/hole'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UserStore from '@/store/modules/UserStore'
+import BaseView from '@/mixins/BaseView.vue'
+import { delay } from '@/utils'
 
 @Component({
   components: {
@@ -142,7 +143,7 @@ import UserStore from '@/store/modules/UserStore'
     HoleListMobile
   }
 })
-export default class Home extends BaseComponentOrView {
+export default class Home extends BaseView {
   public lineHeight = 0
   public scrollTop = 0
   // 发帖表单
@@ -158,7 +159,8 @@ export default class Home extends BaseComponentOrView {
 
   public dialog = false
   public tagRules = [
-    (v: string | any[]) => v.length <= 5 || '标签不能多于5个'
+    (v: string | any[]) => v.length <= 5 || '标签不能多于5个',
+    (v: string | any[]) => v.length >= 1 || '请至少选择1个标签'
   ]
 
   public contentRules = [(v: string) => !!v.trim() || '内容不能为空']
@@ -203,7 +205,7 @@ export default class Home extends BaseComponentOrView {
   /**
    * Send request to add a new hole.
    */
-  public addHole (): void {
+  public addHole (): Promise<void> {
     if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
       this.$axios
@@ -214,8 +216,9 @@ export default class Home extends BaseComponentOrView {
             return { name: v.name }
           })
         })
-        .then(() => {
+        .then(async () => {
           this.messageSuccess('发送成功')
+          await delay(3000)
           this.holeComp.refresh() // reload the hole list
           this.editor.setContent('')
           this.selectedTags = []
