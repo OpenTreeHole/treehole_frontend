@@ -13,6 +13,13 @@
       >
         {{ gotoMentionFloorIcon }}
       </v-icon>
+      <v-icon
+        v-else-if='cancel'
+        @click='cancel'
+        small
+      >
+        mdi-close
+      </v-icon>
     </v-card-actions>
     <v-card-text class='reply-text pt-2 pb-2' v-html='mentionFloor.html' :class='clipClass'/>
     <v-btn
@@ -50,6 +57,7 @@ export default class Mention extends BaseComponentOrView {
    */
   @Prop({ type: String, default: '' }) mentionFloorInfo: string
   @Prop({ type: String, default: '' }) additionalClass: string
+  @Prop({ type: Function }) cancel?: Function
   public maxHeight = 200
   public needClip = false
   public isClipped = false

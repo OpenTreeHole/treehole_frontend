@@ -63,7 +63,7 @@
 
           <v-card-text>
             <!-- 回复内容 -->
-            <Mention v-if='replyFloor' :mention-floor='replyFloor' />
+            <Mention v-if='replyFloor' :mention-floor='replyFloor' :cancel='removeReplyFloor'/>
 
             <v-form ref='form' v-model='valid' lazy-validation>
               <!-- 回贴表单 -->

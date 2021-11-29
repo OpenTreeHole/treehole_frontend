@@ -101,6 +101,10 @@ export default class FloorListMixin extends BaseComponentOrView {
     this.dialog = true
   }
 
+  public removeReplyFloor () {
+    this.replyFloor = null
+  }
+
   /**
    * Get the hole object by hole id from the backend.
    * <p> the hole object contains only brief information of the prefetched floors.
@@ -239,8 +243,7 @@ export default class FloorListMixin extends BaseComponentOrView {
           }
         }
         if (flag) {
-          floor.convertHtml()
-          console.log(floor)
+          floor.html += ' '
           this.renderFloor(floor)
           Vue.set(this.floors, index, floor)
         }
@@ -284,6 +287,7 @@ export default class FloorListMixin extends BaseComponentOrView {
         }
       } else {
         gotoMentionFloor = () => {
+          console.log(1)
           EventBus.$emit('goto-mention-floor', curFloor, mentionFloor)
         }
       }
@@ -308,7 +312,8 @@ export default class FloorListMixin extends BaseComponentOrView {
     }
     const element = document.querySelector(`div[id="${curIndex}"] > div.v-card__text.py-0 > div`)
     if (element != null) {
-      curFloor.html = element.innerHTML
+      // console.log(element.innerHTML)
+      // curFloor.html = element.innerHTML
     }
   }
 

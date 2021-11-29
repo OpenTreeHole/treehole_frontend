@@ -193,7 +193,6 @@ export default class Navbar extends BaseComponentOrView {
   }
 
   public onPreloaded () {
-    console.log(1)
     const divisionInfos: { route: string, name: string }[] = []
     UserStore.divisions.forEach((v) => {
       divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
