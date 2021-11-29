@@ -73,10 +73,10 @@
 
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import BaseView from '@/mixins/BaseView.vue'
 
 @Component
-export default class About extends BaseComponentOrView {
+export default class About extends BaseView {
   public latestVersion = '正在获取'
   public installed =
     window.matchMedia('(display-mode: standalone)').matches

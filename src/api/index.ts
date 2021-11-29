@@ -242,11 +242,8 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
         response.data.forEach((floorItem: any) => {
           const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(floorItem))
           this.renderFloor(floor)
-          this.pushData(floor, index++, (newVal: MarkedFloor, oldVal: MarkedFloor) => {
-            if (newVal instanceof MarkedDetailedFloor) {
-              if (newVal.isMe) return true
-            }
-            return newVal.html !== oldVal.html
+          this.pushData(floor, index++, () => {
+            return true
           })
 
           hasNext = true

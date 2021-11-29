@@ -68,10 +68,11 @@
 <script lang='ts'>
 import { Component, Watch } from 'vue-property-decorator'
 import debounce from 'lodash.debounce'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import BaseView from '@/mixins/BaseView.vue'
+import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component
-export default class Login extends BaseComponentOrView {
+export default class Login extends BaseView {
   public alert = false
 
   public valid = true
@@ -110,9 +111,10 @@ export default class Login extends BaseComponentOrView {
       .then((response) => {
         if (response.data.message === '登录成功！') {
           this.messageSuccess(response.data.message)
-          localStorage.setItem('token', 'token ' + response.data.token)
-          localStorage.setItem('email', this.email)
+          LocalStorageStore.setToken('token ' + response.data.token)
+          LocalStorageStore.setEmail(this.email)
           this.$router.replace('/home')
+          this.preload()
         } else {
           this.valid = false
           this.messageError(response.data.message)

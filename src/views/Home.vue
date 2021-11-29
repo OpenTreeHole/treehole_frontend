@@ -38,7 +38,7 @@
             <v-form ref='form' v-model='valid' lazy-validation>
               <v-combobox
                 v-model='selectedDivision'
-                :items='$user.divisions'
+                :items='divisions'
                 item-text='name'
                 label='分区'
                 hide-selected
@@ -132,6 +132,7 @@ import HoleListMobile from '@/components/hole/HoleListMobile.vue'
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import { Division, Tag } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import UserStore from '@/store/modules/UserStore'
 
 @Component({
   components: {
@@ -174,6 +175,10 @@ export default class Home extends BaseComponentOrView {
     return 'home-content'
   }
 
+  get divisions () {
+    return UserStore.divisions
+  }
+
   public reload (): void {
     this.clearTag()
     this.holeComp.refresh()
@@ -183,34 +188,9 @@ export default class Home extends BaseComponentOrView {
     this.messageError(msg)
   }
 
-  public randomColor (): string {
-    const colorList = [
-      'red',
-      'pink',
-      'purple',
-      'deep-purple',
-      'indigo',
-      'blue',
-      'light-blue',
-      'cyan',
-      'teal',
-      'green',
-      'light-green',
-      'yellow',
-      'amber',
-      'orange',
-      'deep-orange',
-      'brown',
-      'blue-grey',
-      'grey'
-    ]
-    const index = Math.floor(Math.random() * colorList.length)
-    return colorList[index]
-  }
-
   public openDialog (): void {
     this.getTags()
-    this.selectedDivision = this.$user.divisions[0]
+    this.selectedDivision = UserStore.divisions[0]
   }
 
   public closeDialog (): void {
@@ -230,7 +210,9 @@ export default class Home extends BaseComponentOrView {
         .post('/holes', {
           content: this.editor.getContent(),
           division_id: this.selectedDivision.divisionId,
-          tag_names: this.selectedTags.map(v => v.name)
+          tags: this.selectedTags.map(v => {
+            return { name: v.name }
+          })
         })
         .then(() => {
           this.messageSuccess('发送成功')

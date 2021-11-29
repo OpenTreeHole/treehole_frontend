@@ -102,10 +102,11 @@
 <script lang='ts'>
 import debounce from 'lodash.debounce'
 import { Component, Ref, Watch } from 'vue-property-decorator'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import BaseView from '@/mixins/BaseView.vue'
+import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component
-export default class Register extends BaseComponentOrView {
+export default class Register extends BaseView {
   // 同意协议
   public agreelicenses: boolean = false
   // 表单信息
@@ -214,7 +215,7 @@ export default class Register extends BaseComponentOrView {
             // 注册成功后直接跳转到主页面
             this.messageSuccess('注册成功！')
             localStorage.setItem('newcomer', 'true')
-            localStorage.setItem('token', 'token ' + response.data.token)
+            LocalStorageStore.setToken('token ' + response.data.token)
             setTimeout(() => {
               this.$router.replace('/home')
             }, 1000)

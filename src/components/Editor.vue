@@ -12,6 +12,7 @@ import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component
 export default class Editor extends BaseComponentOrView {
@@ -39,7 +40,7 @@ export default class Editor extends BaseComponentOrView {
   }
 
   mounted () {
-    const storageToken = localStorage.getItem('token')
+    const storageToken = LocalStorageStore.token
     this.editor = new Vditor(this.contentName, {
       height: 360,
       placeholder: '说些什么......',
@@ -67,10 +68,10 @@ export default class Editor extends BaseComponentOrView {
       },
       upload: {
         accept: 'image/*',
-        url: 'https://www.fduhole.com/api/images/',
+        url: this.$feConfig.backEndApi + 'images',
         headers: { Authorization: storageToken || '' },
         multiple: false,
-        fieldName: 'img',
+        fieldName: 'image',
         linkToImgCallback () {
           console.log('api处理')
         },

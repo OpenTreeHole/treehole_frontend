@@ -10,6 +10,7 @@ import { EventBus } from '@/event-bus'
 import Mention from '@/components/hole/Mention.vue'
 import vuetify from '@/plugins/vuetify'
 import Vue from 'vue'
+import UserStore from '@/store/modules/UserStore'
 
 @Component
 export default class FloorListMixin extends BaseComponentOrView {
@@ -61,8 +62,7 @@ export default class FloorListMixin extends BaseComponentOrView {
   public refresh (): void {
     this.request.clear()
     this.floors = this.request.datas
-    this.loading.hasNext = true
-    this.loading.load()
+    this.loading.continueLoad()
   }
 
   /**
@@ -127,7 +127,7 @@ export default class FloorListMixin extends BaseComponentOrView {
         }
       }).then((response) => {
         this.messageSuccess(response.data.message)
-        this.$user.collection.setCollection(response.data.data)
+        UserStore.collection.setCollection(response.data.data)
       }).catch((error) => {
         this.messageError(error.response.data.msg)
         this.hole.isStarred = !this.hole.isStarred
@@ -137,7 +137,7 @@ export default class FloorListMixin extends BaseComponentOrView {
         hole_id: this.hole.hole.holeId
       }).then((response) => {
         this.messageSuccess(response.data.message)
-        this.$user.collection.setCollection(response.data.data)
+        UserStore.collection.setCollection(response.data.data)
       }).catch((error) => {
         this.messageError(error.response.data.msg)
         this.hole.isStarred = !this.hole.isStarred

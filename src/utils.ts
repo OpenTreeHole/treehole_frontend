@@ -3,6 +3,27 @@ import katex from 'katex'
 
 const macros: any = []
 
+const colorList = [
+  'red',
+  'pink',
+  'purple',
+  'deep-purple',
+  'indigo',
+  'blue',
+  'light-blue',
+  'cyan',
+  'teal',
+  'green',
+  'light-green',
+  'yellow',
+  'amber',
+  'orange',
+  'deep-orange',
+  'brown',
+  'blue-grey',
+  'grey'
+]
+
 export const convertDate = (v: any): string => {
   const date = new Date(v)
   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
@@ -41,7 +62,7 @@ export const convertKatex = (str: string) => {
   })
 }
 
-export const scrollTo = (currentIndex: number, toIndex: number):void => {
+export const scrollTo = (currentIndex: number, toIndex: number): void => {
   const currentOffsetTop = document.getElementById(currentIndex.toString())?.offsetTop
   const toOffsetTop = document.getElementById(toIndex.toString())?.offsetTop
   const scrollDistance = currentOffsetTop && toOffsetTop ? toOffsetTop - currentOffsetTop : 0
@@ -50,4 +71,20 @@ export const scrollTo = (currentIndex: number, toIndex: number):void => {
     left: 0,
     behavior: 'smooth'
   })
+}
+
+/**
+ * Randomly generate a specific color for a certain tag name.
+ * @param tagName - the name of the tag.
+ * @return - the generated color.
+ */
+export const parseTagColor = (tagName: string): string => {
+  if (tagName === null) return ''
+  if (tagName[0] === '*') return 'red'
+  let num = 0
+  for (let i = 0; i < tagName.length; i++) {
+    num += tagName.charCodeAt(i)
+  }
+  num %= colorList.length
+  return colorList[num]
 }

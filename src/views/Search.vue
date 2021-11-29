@@ -4,16 +4,16 @@
 
 <script lang='ts'>
 import Component from 'vue-class-component'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { EventBus } from '@/event-bus'
 import SearchFloorList from '@/components/hole/SearchFloorList.vue'
+import BaseView from '@/mixins/BaseView.vue'
 
 @Component({
   components: {
     SearchFloorList
   }
 })
-export default class Search extends BaseComponentOrView {
+export default class Search extends BaseView {
   public searchStr: string = ''
 
   public search (searchStr: string) {

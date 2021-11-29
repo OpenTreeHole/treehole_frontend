@@ -97,7 +97,6 @@ export default class HoleList extends HoleListMixin {
   }
 
   destroyed () {
-    super.destroyed()
     EventBus.$off('goto-hole', this.openNewOrExistHole)
   }
 }

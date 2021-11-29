@@ -43,7 +43,7 @@
             depressed
             x-small
             color='grey lighten-1'
-            @click='unfold(index)'
+            @click='unfold()'
           >
             <v-icon>mdi-chevron-double-down</v-icon>
           </v-btn>
@@ -56,7 +56,7 @@
             depressed
             x-small
             color='grey lighten-1'
-            @click='fold(index)'
+            @click='fold()'
           >
             <v-icon>mdi-chevron-double-up</v-icon>
           </v-btn>
@@ -124,11 +124,11 @@ export default class HoleCard extends BaseComponentOrView {
   public refreshHoleList (): void {
   }
 
-  public unfold (index: number): void {
+  public unfold (): void {
     this.hole.styleData.fold = false
   }
 
-  public fold (index: number): void {
+  public fold (): void {
     this.hole.styleData.fold = true
   }
 }

@@ -1,6 +1,6 @@
-import UtilStore from '@/store/modules/UtilStore'
 import { convertKatex } from '@/utils'
 import marked from 'marked'
+import UserStore from '@/store/modules/UserStore'
 
 export interface Tag {
   name: string
@@ -117,7 +117,7 @@ export class WrappedHole {
     this.firstFloor = new MarkedFloor(hole.floors.firstFloor)
     this.lastFloor = new MarkedFloor(hole.floors.lastFloor)
     this.isFolded = this.firstFloor.fold.length > 0
-    this.isStarred = UtilStore.user.collection.isStarred(hole.holeId)
+    this.isStarred = UserStore.collection.isStarred(hole.holeId)
     this.holeId = this.hole.holeId
     this.holeIdStr = this.holeId.toString()
     hole.tags.forEach((v: Tag) => {

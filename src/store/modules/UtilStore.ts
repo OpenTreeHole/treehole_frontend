@@ -1,13 +1,11 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
 import { AxiosStatic } from 'axios'
-import { User } from '@/api/user'
 
 @Module({ store: store, dynamic: true, name: 'UtilStore', namespaced: true })
 class UtilStore extends VuexModule {
   public _isMobile: boolean = false
   public _axios: AxiosStatic
-  public _user: User
 
   @Mutation
   public setIsMobile (val: boolean): void{
@@ -30,18 +28,9 @@ class UtilStore extends VuexModule {
     return this._axios
   }
 
-  get user () {
-    return this._user
-  }
-
   @Mutation
   public setAxios ($axios: AxiosStatic): void {
     this._axios = $axios
-  }
-
-  @Mutation
-  public setUser ($user: User): void {
-    this._user = $user
   }
 }
 

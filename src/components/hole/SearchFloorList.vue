@@ -6,7 +6,7 @@
           <transition-group name='slide-fade'>
             <v-row
               v-for='(floor, index) in floors'
-              :key='`${index}-${floor.html}`'
+              :key='`${index}`'
               justify='center'
               align='start'
               v-viewer

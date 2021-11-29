@@ -17,27 +17,30 @@
 <script lang='ts'>
 import HoleCard from '@/components/hole/HoleCard.vue'
 import { Component } from 'vue-property-decorator'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { UserProfile } from '@/api/user'
 import { convertDate } from '@/utils'
+import UserStore from '@/store/modules/UserStore'
+import BaseView from '@/mixins/BaseView.vue'
+import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component({
   components: {
     DiscussionCard: HoleCard
   }
 })
-export default class Me extends BaseComponentOrView {
+export default class Me extends BaseView {
   public profile: UserProfile | null = null
   public joinedTimeDisplayMsg: string
 
   public getUserInfo (): void {
-    this.profile = this.$user.userProfile
-    this.joinedTimeDisplayMsg = convertDate(this.$user.userProfile.joinedTime)
+    this.profile = UserStore.userProfile
+    this.joinedTimeDisplayMsg = convertDate(UserStore.userProfile?.joinedTime)
   }
 
   public logout (): void {
-    localStorage.clear()
-    this.$user.clear()
+    LocalStorageStore.clear()
+    UserStore.clear()
+    console.log(1)
     this.$router.push('/login')
   }
 
@@ -45,7 +48,7 @@ export default class Me extends BaseComponentOrView {
     alert('还没写完')
   }
 
-  created () {
+  public onPreloaded () {
     this.getUserInfo()
   }
 }

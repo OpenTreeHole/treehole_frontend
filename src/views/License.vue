@@ -22,12 +22,12 @@
 
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { convertKatex } from '@/utils'
 import marked from 'marked'
+import BaseView from '@/mixins/BaseView.vue'
 
 @Component
-export default class License extends BaseComponentOrView {
+export default class License extends BaseView {
   public licenses:Array<any> = []
 
   created () {

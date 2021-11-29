@@ -18,7 +18,6 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
-import user from '@/api/user'
 
 Vue.prototype.$feConfig = FDUHoleFEConfig
 
@@ -35,7 +34,6 @@ Vue.prototype.$axios = axios
 Vue.use(VueCookies)
 Vue.use(plugins)
 Vue.use(Viewer)
-Vue.use(user)
 
 Vue.filter('plainText', function (html: string) {
   return html.replace(/<img.*?>/g, '[图片]')

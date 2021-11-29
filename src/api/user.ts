@@ -1,4 +1,6 @@
-import { Division, WrappedHole } from '@/api/hole'
+// noinspection JSUnusedGlobalSymbols
+
+import { WrappedHole } from '@/api/hole'
 import UtilStore from '@/store/modules/UtilStore'
 import Vue from 'vue'
 
@@ -17,7 +19,7 @@ export interface UserProfile {
   isAdmin: boolean
 }
 
-class Collection {
+export class Collection {
   public collectionIds: Array<number> = []
   public updateHoleMap = new Map<string, Array<WrappedHole>>()
 
@@ -65,19 +67,3 @@ class Collection {
     this.updateHoleMap.delete(name)
   }
 }
-
-export class User {
-  public collection = new Collection()
-  public divisions : Division[]
-  public userProfile : UserProfile
-
-  public clear () {
-    this.collection = new Collection()
-  }
-
-  public install (): void {
-    Vue.prototype.$user = this
-  }
-}
-
-export default new User()

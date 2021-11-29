@@ -7,7 +7,6 @@ export default {
   teamMail: 'fduhole@gmail.com',
   latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/package.json', // 前端最新发布版版本号获取地址
   feVersion: pksjson.version,
-  // 配套后端的源码请移步 https://github.com/fduhole/fduhole
   backEndApi: 'https://hole.hath.top/', // 后端 api 地址
 
   // 协议

@@ -1,7 +1,6 @@
 import { AxiosStatic } from 'axios'
 import Vuex from 'vuex'
 import VueRouter, { Route } from 'vue-router'
-import { User } from '@/api/user'
 
 declare module 'vue/types/vue' {
   interface Vue {
@@ -10,6 +9,5 @@ declare module 'vue/types/vue' {
     $store: Vuex.Store
     $router: VueRouter
     $route: Route
-    $user: User
   }
 }

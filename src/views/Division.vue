@@ -35,7 +35,7 @@
             <v-form ref='form' v-model='valid' lazy-validation>
               <v-combobox
                 v-model='selectedDivision'
-                :items='$user.divisions'
+                :items='divisions'
                 item-text='name'
                 label='分区'
                 hide-selected
@@ -126,9 +126,10 @@
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import HolePanel from '@/components/hole/HolePanel.vue'
 import DiscussionListMobile from '@/components/hole/HoleListMobile.vue'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Division as IDivision, Tag } from '@/api/hole'
 import Editor from '@/components/Editor.vue'
+import UserStore from '@/store/modules/UserStore'
+import BaseView from '@/mixins/BaseView.vue'
 
 @Component({
   components: {
@@ -137,7 +138,7 @@ import Editor from '@/components/Editor.vue'
     DiscussionListMobile
   }
 })
-export default class Division extends BaseComponentOrView {
+export default class Division extends BaseView {
   public lineHeight = 0
   public scrollTop = 0
   // 发帖表单
@@ -163,6 +164,10 @@ export default class Division extends BaseComponentOrView {
   public params = {}
   public showFloatBtn = true
 
+  get divisions () {
+    return UserStore.divisions
+  }
+
   @Ref() readonly holeComp!: HolePanel | DiscussionListMobile
   @Ref() readonly editor!: Editor
   @Ref() readonly form!: HTMLFormElement
@@ -180,35 +185,10 @@ export default class Division extends BaseComponentOrView {
     this.messageError(msg)
   }
 
-  public randomColor (): string {
-    const colorList = [
-      'red',
-      'pink',
-      'purple',
-      'deep-purple',
-      'indigo',
-      'blue',
-      'light-blue',
-      'cyan',
-      'teal',
-      'green',
-      'light-green',
-      'yellow',
-      'amber',
-      'orange',
-      'deep-orange',
-      'brown',
-      'blue-grey',
-      'grey'
-    ]
-    const index = Math.floor(Math.random() * colorList.length)
-    return colorList[index]
-  }
-
   public openDialog (): void {
     this.getTags()
-    this.selectedDivision = this.$user.divisions[0]
-    this.$user.divisions.forEach((v) => {
+    this.selectedDivision = UserStore.divisions[0]
+    UserStore.divisions.forEach((v) => {
       if (v.divisionId.toString() === this.$route.params.id) {
         this.selectedDivision = v
       }
@@ -232,7 +212,9 @@ export default class Division extends BaseComponentOrView {
         .post('/holes', {
           content: this.editor.getContent(),
           division_id: this.selectedDivision.divisionId,
-          tag_names: this.selectedTags.map(v => v.name)
+          tags: this.selectedTags.map(v => {
+            return { name: v.name }
+          })
         })
         .then((response) => {
           console.log(response.data)

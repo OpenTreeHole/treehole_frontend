@@ -6,6 +6,7 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { CollectionHoleListRequest, DivisionHoleListRequest, HoleListRequest, HomeHoleListRequest } from '@/api'
 import Loading from '@/components/Loading.vue'
 import { EventBus } from '@/event-bus'
+import UserStore from '@/store/modules/UserStore'
 
 @Component
 export default class HoleListMixin extends BaseComponentOrView {
@@ -32,6 +33,7 @@ export default class HoleListMixin extends BaseComponentOrView {
   public refresh (): void {
     this.request.clear()
     this.holes = this.request.datas
+    this.loading.continueLoad()
   }
 
   /**
@@ -85,13 +87,13 @@ export default class HoleListMixin extends BaseComponentOrView {
   }
 
   destroyed () {
-    this.$user.collection.unregisterUpdateHoleArray(this.$route.name as string)
+    UserStore.collection.unregisterUpdateHoleArray(this.$route.name as string)
     EventBus.$off('goto-mention-floor', this.onGotoMentionFloor)
   }
 
   created () {
     this.route = this.$route.name as string
-    this.$user.collection.getCollections()
+    UserStore.collection.getCollections()
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
     if (this.route === 'home') {
       this.request = new HomeHoleListRequest()
@@ -101,7 +103,7 @@ export default class HoleListMixin extends BaseComponentOrView {
       this.request = new DivisionHoleListRequest(parseInt(this.$route.params.id))
     }
     this.holes = this.request.datas
-    this.$user.collection.registerUpdateHoleArray(this.route, this.holes)
+    UserStore.collection.registerUpdateHoleArray(this.route, this.holes)
   }
 
   @Watch('filtedTagMap', {

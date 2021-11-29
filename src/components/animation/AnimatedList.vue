@@ -90,7 +90,13 @@ export default class AnimatedList extends BaseComponentOrView {
       this.computedDatas = []
       return
     }
-    const isFirst = this.computedDatas.length === 0
+    let isPush = true
+    for (let i = 0; i < this.computedDatas.length; i++) {
+      if (!this.datas[i] || this.computedDatas[i].data !== this.datas[i]) {
+        isPush = false
+        break
+      }
+    }
     this.datas.forEach(data => {
       if (this.getComputedDatasFromKey(data[this.vkey]) === null) {
         this.computedDatas.push({ data: data, class: 'invisible' })
@@ -116,7 +122,7 @@ export default class AnimatedList extends BaseComponentOrView {
         targets: document.getElementById('animated-' + computedData.data[this.vkey])
       })
 
-      if (!isFirst) {
+      if (!isPush) {
         animation.add({
           translateY: to - from,
           duration: 900

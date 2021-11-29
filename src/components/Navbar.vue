@@ -128,7 +128,7 @@
 
       <!-- 侧栏底部工具按钮 -->
       <div class='drawer-bottom-container'>
-        <v-btn fab fixed bottom color='primary' @mousedown.prevent @click='load'>
+        <v-btn fab fixed bottom color='primary' @mousedown.prevent>
           重载
         </v-btn>
       </div>
@@ -139,10 +139,9 @@
 <script lang='ts'>
 import { Component, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Division } from '@/api/hole'
-import { camelizeKeys } from '@/utils'
 import { EventBus } from '@/event-bus'
 import TagChip from '@/components/hole/TagChip.vue'
+import UserStore from '@/store/modules/UserStore'
 
 @Component({
   components: { TagChip }
@@ -193,21 +192,13 @@ export default class Navbar extends BaseComponentOrView {
     this.holeToGo = ''
   }
 
-  public load (): void {
-    this.$axios.get('/divisions').then((response) => {
-      const divisions: Division[] = camelizeKeys(response.data)
-      this.$user.divisions = divisions
-      const divisionInfos: { route: string, name: string }[] = []
-      divisions.forEach((v) => {
-        divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
-      })
-      this.groupNavItem = new Map(this.groupNavItem.set('/division', divisionInfos))
+  public onPreloaded () {
+    console.log(1)
+    const divisionInfos: { route: string, name: string }[] = []
+    UserStore.divisions.forEach((v) => {
+      divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
     })
-    this.$axios.get('/users').then((response) => {
-      this.$user.userProfile = camelizeKeys(response.data)
-    }).catch((error) => {
-      this.messageError(error)
-    })
+    this.groupNavItem = new Map(this.groupNavItem.set('/division', divisionInfos))
   }
 
   public back (): void {
@@ -217,10 +208,6 @@ export default class Navbar extends BaseComponentOrView {
   public mounted () {
     this.$nextTick(this.checkDevice)
     this.showSidebar = !this.isMobile
-  }
-
-  public created () {
-    this.load()
   }
 
   @Watch('isDarkTheme')

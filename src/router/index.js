@@ -10,6 +10,7 @@ import Search from '@/views/Search.vue'
 import license from '@/views/License.vue'
 import Me from '@/views/Me.vue'
 import Collections from '@/views/Collections.vue'
+import LocalStorageStore from '../store/modules/LocalStorageStore'
 
 Vue.use(VueRouter)
 
@@ -34,8 +35,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   if (to.meta.title) { document.title = to.meta.title }
   if (to.path === '/login' || to.path === '/register' || to.path === '/license') return next()
-  const token = localStorage.getItem('token')
-  if (!token) return next('/login')
+  if (!LocalStorageStore.token) return next('/login')
   next()
 })
 

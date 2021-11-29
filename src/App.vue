@@ -4,11 +4,15 @@
     <Navbar></Navbar>
 
     <v-main>
-      <keep-alive include='Home, AirConditioner'>
+      <keep-alive v-if='hasToken' include='Home'>
         <router-view
           :key="$route.fullPath + ($route.params.id || '') + $route.query"
         ></router-view>
       </keep-alive>
+      <router-view
+        v-else
+        :key="$route.fullPath + ($route.params.id || '') + $route.query"
+      ></router-view>
     </v-main>
 
     <!-- <v-footer>
@@ -31,6 +35,7 @@ import 'highlight.js/styles/github.css'
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UtilStore from '@/store/modules/UtilStore'
+import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component({
   components: {
@@ -39,9 +44,12 @@ import UtilStore from '@/store/modules/UtilStore'
   }
 })
 export default class App extends BaseComponentOrView {
+  get hasToken (): boolean {
+    return !!LocalStorageStore.token
+  }
+
   created () {
     UtilStore.setAxios(this.$axios)
-    UtilStore.setUser(this.$user)
 
     document.addEventListener('onlined', (event: any) => {
       this.messageSuccess(event.detail)

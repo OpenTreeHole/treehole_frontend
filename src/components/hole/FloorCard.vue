@@ -70,7 +70,7 @@
     </v-card-text>
 
     <!-- 脚标 -->
-    <v-card-text class='d-flex text-body-2 pb-2' :key='`${floor.floorId}-${JSON.stringify(floor)}`'>
+    <v-card-text class='d-flex text-body-2 pb-2'>
       <span class='flex-left'><b>{{ index }}L</b>(#{{ floor.floorId }})</span>
       <span class='flex-center'>
         <v-btn
@@ -107,6 +107,8 @@
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import { MarkedDetailedFloor, MarkedFloor } from '@/api/hole'
+import Vue from 'vue'
+import UserStore from '@/store/modules/UserStore'
 
 interface Operation {
   icon: string
@@ -123,10 +125,6 @@ export default class FloorCard extends BaseComponentOrView {
    * Any other operation except reply.
    */
   public operations: Operation[] = []
-
-  mounted () {
-    this.setOperation()
-  }
 
   public setOperation () {
     const opReport = {
@@ -156,14 +154,16 @@ export default class FloorCard extends BaseComponentOrView {
     }
     if (this.floor instanceof MarkedDetailedFloor && this.floor.isMe) {
       this.operations = [opRemoveFloor, opEdit]
-    } else if (this.$user.userProfile.isAdmin) {
+    } else if (UserStore.userProfile?.isAdmin) {
       this.operations = [opRemoveFloorWithReason, opEdit, opPenalty]
     } else {
       this.operations = [opReport]
     }
   }
 
-  @Watch('floor')
+  @Watch('floor', {
+    immediate: true
+  })
   floorChanged () {
     this.setOperation()
   }
@@ -179,14 +179,14 @@ export default class FloorCard extends BaseComponentOrView {
   public like () {
     if (!(this.floor instanceof MarkedDetailedFloor)) return
     if (this.floor.liked) {
-      this.floor.like--
+      Vue.set(this.floor, 'like', this.floor.like - 1)
     } else {
       this.floor.like++
     }
     const data = {
       like: this.floor.liked ? 'cancel' : 'add'
     }
-    this.floor.liked = !this.floor.liked
+    Vue.set(this.floor, 'liked', !this.floor.liked)
     this.$axios
       .put(`/floors/${this.floor.floorId}`, data)
       .then((response) => {
