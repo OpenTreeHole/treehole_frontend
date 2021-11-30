@@ -224,8 +224,6 @@ export default class Navbar extends BaseComponentOrView {
 
   @Watch('$route', { immediate: true })
   routeChange () {
-    this.clearTag()
-
     this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
     matchMedia('(prefers-color-scheme: dark)').addEventListener(
       'change',

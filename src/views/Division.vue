@@ -177,7 +177,7 @@ export default class Division extends BaseView {
   }
 
   public reload (): void {
-    this.clearTag()
+    this.clearTag(this.$route.name ?? undefined)
     this.holeComp.refresh()
   }
 

@@ -90,12 +90,6 @@ export default class HoleListMixin extends BaseComponentOrView {
       this.debouncedCalculateLines()
     })
     EventBus.$on('goto-mention-floor', this.onGotoMentionFloor)
-
-    const sLoading = this.loading
-    this.getHoles().then((v) => {
-      this.pauseLoading = false
-      sLoading.hasNext = v
-    })
   }
 
   destroyed () {
@@ -127,8 +121,11 @@ export default class HoleListMixin extends BaseComponentOrView {
     }
   }
 
-  onPreloaded () {
+  async onPreloaded () {
     this.pin()
+    this.pauseLoading = false
+    await this.$nextTick()
+    this.loading.continueLoad()
   }
 
   created () {

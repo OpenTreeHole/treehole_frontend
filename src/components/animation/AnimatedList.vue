@@ -23,15 +23,19 @@ export default class AnimatedList extends BaseComponentOrView {
   @Prop({ required: true, type: Array }) datas: any[]
   @Prop({ required: true, type: String }) vkey: string
   public computedDatas: ComputedData[] = []
+  public intermediateDatas: any[] = []
+
+  public animating = false
+  public animatingCount = 0
+  public completeCount = 0
 
   public computedHeight: Map<string, number> = new Map()
   public currentTop: Map<string, number> = new Map()
   public updatedTop: Map<string, number> = new Map()
-  public completeCount: 0
 
   public generateComputedData (): ComputedData[] {
     const ret: ComputedData[] = []
-    this.datas.forEach(data => {
+    this.intermediateDatas.forEach(data => {
       ret.push({ data: data, class: '' })
     })
     return ret
@@ -49,6 +53,7 @@ export default class AnimatedList extends BaseComponentOrView {
 
   public measureCurrentTop () {
     let top = 0
+    this.currentTop = new Map()
     this.computedDatas.forEach(computedData => {
       this.currentTop.set(computedData.data[this.vkey], top)
       const height = this.computedHeight.get(computedData.data[this.vkey])
@@ -59,7 +64,8 @@ export default class AnimatedList extends BaseComponentOrView {
 
   public measureUpdatedTop () {
     let top = 0
-    this.datas.forEach(data => {
+    this.updatedTop = new Map()
+    this.intermediateDatas.forEach(data => {
       this.updatedTop.set(data[this.vkey], top)
       const height = this.computedHeight.get(data[this.vkey])
       if (!height) throw new Error('Computed Height Not Found!')
@@ -77,27 +83,51 @@ export default class AnimatedList extends BaseComponentOrView {
     return ret
   }
 
+  public finishAnimation () {
+    this.animating = false
+    this.updateData()
+  }
+
   public complete () {
     this.completeCount++
-    if (this.completeCount === this.datas.length) {
+    if (this.completeCount === this.animatingCount) {
       this.computedDatas = this.generateComputedData()
+      this.finishAnimation()
     }
   }
 
-  @Watch('datas', { immediate: true })
-  async datasChanged () {
-    if (!this.datas || this.datas.length === 0) {
+  public isDataUpToDate (): boolean {
+    if (this.intermediateDatas.length !== this.datas.length) return false
+    for (let i = 0; i < this.intermediateDatas.length && i < this.datas.length; i++) {
+      if (this.intermediateDatas[i] !== this.datas[i]) return false
+    }
+    return true
+  }
+
+  public updateData () {
+    if (this.isDataUpToDate()) return
+    this.intermediateDatas = this.datas.map(v => v)
+  }
+
+  @Watch('datas')
+  datasChanged () {
+    if (!this.animating) this.updateData()
+  }
+
+  @Watch('intermediateDatas', { immediate: true })
+  async intermediateDatasChanged () {
+    if (!this.intermediateDatas || this.intermediateDatas.length === 0) {
       this.computedDatas = []
       return
     }
     let isPush = true
     for (let i = 0; i < this.computedDatas.length; i++) {
-      if (!this.datas[i] || this.computedDatas[i].data !== this.datas[i]) {
+      if (!this.intermediateDatas[i] || this.computedDatas[i].data !== this.intermediateDatas[i]) {
         isPush = false
         break
       }
     }
-    this.datas.forEach(data => {
+    this.intermediateDatas.forEach(data => {
       if (this.getComputedDatasFromKey(data[this.vkey]) === null) {
         this.computedDatas.push({ data: data, class: 'invisible' })
       }
@@ -107,6 +137,10 @@ export default class AnimatedList extends BaseComponentOrView {
     this.measureCurrentTop()
     this.measureUpdatedTop()
     this.completeCount = 0
+    if (this.computedDatas.length > 0) {
+      this.animating = true
+      this.animatingCount = this.computedDatas.length
+    }
     this.computedDatas.forEach(computedData => {
       const from = this.currentTop.get(computedData.data[this.vkey])
       const to = this.updatedTop.get(computedData.data[this.vkey])
@@ -114,7 +148,12 @@ export default class AnimatedList extends BaseComponentOrView {
       if (to === undefined) {
         anime({
           targets: document.getElementById('animated-' + computedData.data[this.vkey]),
-          opacity: 0
+          opacity: 0,
+          translateX: 100,
+          duration: 550,
+          easing: 'cubicBezier(0.385, 0.900, 0.570, 1.010)'
+        }).finished.then(() => {
+          this.complete()
         })
         return
       }
@@ -141,11 +180,11 @@ export default class AnimatedList extends BaseComponentOrView {
         easing: 'cubicBezier(0.385, 0.900, 0.570, 1.010)'
       }, '+=50')
       animation.finished.then(() => {
+        this.complete()
         const element = document.getElementById('animated-' + computedData.data[this.vkey])
         if (!element) return
         anime.remove(element)
         element.removeAttribute('style')
-        this.complete()
       })
     })
   }

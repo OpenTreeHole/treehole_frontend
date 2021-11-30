@@ -111,7 +111,7 @@
 
 <!--suppress JSUnusedLocalSymbols -->
 <script lang='ts'>
-import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
+import { Component, Prop, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import TagChip from '@/components/hole/TagChip.vue'
@@ -129,18 +129,22 @@ export default class HoleCard extends BaseComponentOrView {
   @Prop({ type: Boolean, default: false }) fixHeight: boolean
   @Prop({ type: Boolean, default: false }) pinned: boolean
 
-  public fixedHeight: string
+  public fixedHeight: string = '4.5rem'
 
-  @Watch('fixHeight', { immediate: true })
-  onFixHeightChanged () {
+  calculateFixHeight () {
     const element = document.getElementById('p' + this.index)
     if (element) {
       this.fixedHeight = window.getComputedStyle(element).height
     }
   }
 
-  @Emit('refresh')
-  public refreshHoleList (): void {
+  @Watch('fixHeight')
+  onFixHeightChanged () {
+    this.calculateFixHeight()
+  }
+
+  mounted () {
+    this.calculateFixHeight()
   }
 
   public unfold (): void {

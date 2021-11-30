@@ -182,7 +182,7 @@ export default class Home extends BaseView {
   }
 
   public reload (): void {
-    this.clearTag()
+    this.clearTag(this.$route.name ?? undefined)
     this.holeComp.refresh()
   }
 
@@ -218,7 +218,7 @@ export default class Home extends BaseView {
         })
         .then(async () => {
           this.messageSuccess('发送成功')
-          await delay(3000)
+          await delay(1000)
           this.holeComp.refresh() // reload the hole list
           this.editor.setContent('')
           this.selectedTags = []

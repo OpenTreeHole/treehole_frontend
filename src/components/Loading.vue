@@ -80,8 +80,10 @@ export default class Loading extends BaseComponentOrView {
   }
 
   public continueLoad (index: number = 0) {
-    this.hasNext = true
-    this.load(index)
+    if (!this.isLoading) {
+      this.hasNext = true
+      this.load(index)
+    }
   }
 }
 </script>

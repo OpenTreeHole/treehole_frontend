@@ -8,7 +8,6 @@
           :activate='activate'
           :is-active='data.holeId === displayHoleId'
           :fix-height='fixCardHeight'
-          @refresh='refresh'
         />
       </v-col>
     </animated-list>
