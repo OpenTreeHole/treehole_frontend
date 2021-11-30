@@ -1,8 +1,8 @@
 <template>
   <v-container>
     <!-- 帖子列表 -->
-    <DiscussionComponent v-if='!isMobile' ref='holeComp'/>
-    <DiscussionListMobile v-else ref='holeComp' />
+    <HolePanel v-if='!isMobile' ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged' />
+    <HoleListMobile v-else ref='holeComp' />
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div class='float-btn' v-show='showFloatBtn'>
@@ -125,7 +125,7 @@
 <script lang='ts'>
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import HolePanel from '@/components/hole/HolePanel.vue'
-import DiscussionListMobile from '@/components/hole/HoleListMobile.vue'
+import HoleListMobile from '@/components/hole/HoleListMobile.vue'
 import { Division as IDivision, Tag } from '@/api/hole'
 import Editor from '@/components/Editor.vue'
 import UserStore from '@/store/modules/UserStore'
@@ -134,8 +134,8 @@ import BaseView from '@/mixins/BaseView.vue'
 @Component({
   components: {
     Editor,
-    DiscussionComponent: HolePanel,
-    DiscussionListMobile
+    HolePanel,
+    HoleListMobile
   }
 })
 export default class Division extends BaseView {
@@ -168,7 +168,7 @@ export default class Division extends BaseView {
     return UserStore.divisions
   }
 
-  @Ref() readonly holeComp!: HolePanel | DiscussionListMobile
+  @Ref() readonly holeComp!: HolePanel | HoleListMobile
   @Ref() readonly editor!: Editor
   @Ref() readonly form!: HTMLFormElement
 

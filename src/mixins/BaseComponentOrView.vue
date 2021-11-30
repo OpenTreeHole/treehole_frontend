@@ -35,5 +35,9 @@ export default class BaseComponentOrView extends Vue {
   created () {
     EventBus.$on('preloaded', this.onPreloaded)
   }
+
+  destroyed () {
+    EventBus.$off('preloaded', this.onPreloaded)
+  }
 }
 </script>

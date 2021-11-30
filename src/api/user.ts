@@ -43,7 +43,8 @@ export class Collection {
   }
 
   public getCollections (): void {
-    UtilStore.axios.get('/user/favorites').then((response) => {
+    // eslint-disable-next-line no-unused-expressions
+    UtilStore.axios?.get('/user/favorites').then((response) => {
       this.clearCollection()
       response.data.forEach((holeItem: any) => {
         if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return

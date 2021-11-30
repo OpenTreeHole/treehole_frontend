@@ -4,12 +4,12 @@ import { AxiosStatic } from 'axios'
 
 @Module({ store: store, dynamic: true, name: 'UtilStore', namespaced: true })
 class UtilStore extends VuexModule {
-  public _isMobile: boolean = false
-  public _axios: AxiosStatic
+  public isMobile: boolean = false
+  public axios: AxiosStatic | null = null
 
   @Mutation
   public setIsMobile (val: boolean): void{
-    this._isMobile = val
+    this.isMobile = val
   }
 
   /**
@@ -20,17 +20,9 @@ class UtilStore extends VuexModule {
     this.setIsMobile(document.body.clientWidth <= 768)
   }
 
-  get isMobile (): boolean {
-    return this._isMobile
-  }
-
-  get axios () {
-    return this._axios
-  }
-
   @Mutation
   public setAxios ($axios: AxiosStatic): void {
-    this._axios = $axios
+    this.axios = $axios
   }
 }
 

@@ -7,41 +7,29 @@ import UtilStore from '@/store/modules/UtilStore'
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {
-  public _collection: Collection = new Collection()
-  public _divisions: Division[] = []
-  public _userProfile: UserProfile | null = null
-
-  get divisions () {
-    return this._divisions
-  }
-
-  get collection () {
-    return this._collection
-  }
-
-  get userProfile () {
-    return this._userProfile
-  }
+  public collection: Collection = new Collection()
+  public divisions: Division[] = []
+  public userProfile: UserProfile | null = null
 
   @Mutation
   public clear () {
-    this._collection = new Collection()
-    this._divisions = []
+    this.collection = new Collection()
+    this.divisions = []
   }
 
   @Mutation
   public setDivisions (divisions: Division[]) {
-    this._divisions = divisions
+    this.divisions = divisions
   }
 
   @Mutation
   public setUserProfile (userProfile: UserProfile) {
-    this._userProfile = userProfile
+    this.userProfile = userProfile
   }
 
   @Action
   public async requestDivision () {
-    await UtilStore.axios.get('/divisions').then((response) => {
+    await UtilStore.axios?.get('/divisions').then((response) => {
       const divisions: Division[] = camelizeKeys(response.data)
       this.setDivisions(divisions)
     })
@@ -49,7 +37,7 @@ class UserStore extends VuexModule {
 
   @Action
   public async requestUserProfile () {
-    await UtilStore.axios.get('/users').then((response) => {
+    await UtilStore.axios?.get('/users').then((response) => {
       this.setUserProfile(camelizeKeys(response.data))
     })
   }

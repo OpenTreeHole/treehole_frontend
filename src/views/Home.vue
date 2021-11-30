@@ -205,7 +205,7 @@ export default class Home extends BaseView {
   /**
    * Send request to add a new hole.
    */
-  public addHole (): Promise<void> {
+  public addHole () {
     if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
       this.$axios
