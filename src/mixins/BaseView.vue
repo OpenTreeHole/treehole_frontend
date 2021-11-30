@@ -1,3 +1,4 @@
+<!--suppress ES6MissingAwait -->
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'

@@ -2,12 +2,14 @@
   <v-card :class='isActive ? "hole-card--active" : "hole-card"'>
     <!-- 标签栏 -->
     <v-card-actions class='pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
-      <tag-chip
-        v-for='(tag, tindex) in hole.hole.tags'
-        :key='tindex'
-        :tag='tag'
-      >
-      </tag-chip>
+      <span>
+        <tag-chip
+          v-for='(tag, tindex) in hole.hole.tags'
+          :key='tindex'
+          :tag='tag'
+        >
+        </tag-chip>
+      </span>
     </v-card-actions>
     <v-card-text class='folded-hint' v-if='hole.isFolded' color='grey'>
       该内容已折叠：
@@ -26,16 +28,21 @@
           v-if='hole.styleData.fold'
           :id="'p' + index"
           class='fold'
+          :style='fixHeight ? `max-height: ${fixedHeight};` : ""'
         >
           {{ hole.firstFloor.content | plainText }}
         </div>
-        <div v-else :id="'p' + index" class='unfold'>
+        <div
+          v-else
+          :id="'p' + index"
+          class='unfold'
+          :style='fixHeight ? `max-height: ${fixedHeight};` : ""'>
           <div class='rich-text' v-html='hole.firstFloor.html' />
         </div>
       </v-card-text>
 
       <!-- 展开折叠按钮 -->
-      <div v-if='hole.styleData.lines > 3'>
+      <div v-if='hole.styleData.lines > 3 && isMobile'>
         <div v-if='hole.styleData.fold'>
           <v-btn
             text
@@ -104,7 +111,7 @@
 
 <!--suppress JSUnusedLocalSymbols -->
 <script lang='ts'>
-import { Component, Emit, Prop } from 'vue-property-decorator'
+import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import TagChip from '@/components/hole/TagChip.vue'
@@ -119,6 +126,18 @@ export default class HoleCard extends BaseComponentOrView {
   @Prop({ required: true, type: Number }) index: number
   @Prop({ required: true, type: Function }) activate: Function
   @Prop({ required: false, type: Boolean, default: false }) isActive: boolean
+  @Prop({ type: Boolean, default: false }) fixHeight: boolean
+  @Prop({ type: Boolean, default: false }) pinned: boolean
+
+  public fixedHeight: string
+
+  @Watch('fixHeight', { immediate: true })
+  onFixHeightChanged () {
+    const element = document.getElementById('p' + this.index)
+    if (element) {
+      this.fixedHeight = window.getComputedStyle(element).height
+    }
+  }
 
   @Emit('refresh')
   public refreshHoleList (): void {

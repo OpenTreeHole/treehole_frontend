@@ -100,10 +100,22 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
 
 export class HomeHoleListRequest extends HoleListRequest {
   public startTime: Date = new Date()
+  public pinned: WrappedHole[] = []
 
   public clear (): void {
     super.clear()
     this.startTime = new Date()
+  }
+
+  public pushData (data: WrappedHole) {
+    let flag = false
+    this.pinned.forEach((v) => {
+      if (v.hole.holeId === data.hole.holeId) {
+        flag = true
+      }
+    })
+    if (flag) return
+    super.pushData(data)
   }
 
   public async request (): Promise<boolean> {
@@ -139,6 +151,7 @@ export class HomeHoleListRequest extends HoleListRequest {
 
 export class DivisionHoleListRequest extends HoleListRequest {
   public startTime: Date = new Date()
+  public pinned: WrappedHole[] = []
   public divisionId: number
 
   constructor (divisionId: number) {
@@ -149,6 +162,17 @@ export class DivisionHoleListRequest extends HoleListRequest {
   public clear (): void {
     super.clear()
     this.startTime = new Date()
+  }
+
+  public pushData (data: WrappedHole) {
+    let flag = false
+    this.pinned.forEach((v) => {
+      if (v.hole.holeId === data.hole.holeId) {
+        flag = true
+      }
+    })
+    if (flag) return
+    super.pushData(data)
   }
 
   public async request (): Promise<boolean> {

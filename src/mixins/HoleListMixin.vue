@@ -1,7 +1,7 @@
 <script lang='ts'>
 import debounce from 'lodash.debounce'
 import { Component, Ref, Watch } from 'vue-property-decorator'
-import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { Division, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { CollectionHoleListRequest, DivisionHoleListRequest, HoleListRequest, HomeHoleListRequest } from '@/api'
 import Loading from '@/components/Loading.vue'
@@ -11,10 +11,12 @@ import UserStore from '@/store/modules/UserStore'
 @Component
 export default class HoleListMixin extends BaseComponentOrView {
   // 帖子列表
-  public holes: Array<WrappedHole> = []
+  public holes: WrappedHole[] = []
+  public pinnedHoles: WrappedHole[] = []
+
   public startTime: Date = new Date()
 
-  public collectionIds: Array<number> = []
+  public collectionIds: number[] = []
 
   public debouncedCalculateLines: Function
   public lineHeight: number = 10
@@ -37,12 +39,25 @@ export default class HoleListMixin extends BaseComponentOrView {
   }
 
   /**
+   * decide if pinned by hole id.
+   */
+  public isPinned (holeId: number) {
+    let ret = false
+    this.pinnedHoles.forEach((v) => {
+      if (v.holeId === holeId) {
+        ret = true
+      }
+    })
+    return ret
+  }
+
+  /**
    * Calculate the number of the total lines of the display (i.e. the first floor) of each hole.
    */
   public calculateLines (): void {
     for (let i = 0; i < this.holes.length; i++) {
       const element = document.getElementById('p' + i)
-      const totalHeight = element ? element.scrollHeight : 0
+      const totalHeight = element?.scrollHeight ?? 0
       this.holes[i].styleData.lines = totalHeight / this.lineHeight
     }
   }
@@ -62,8 +77,8 @@ export default class HoleListMixin extends BaseComponentOrView {
   public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
   }
 
-  @Watch('discussions')
-  discussionsChanged () {
+  @Watch('holes')
+  holesChanged () {
     setTimeout(() => {
       const element = document.getElementById('p1')
       this.lineHeight = (element ? parseInt(
@@ -91,6 +106,29 @@ export default class HoleListMixin extends BaseComponentOrView {
     EventBus.$off('goto-mention-floor', this.onGotoMentionFloor)
   }
 
+  get divisionId () {
+    if (this.route === 'division') return parseInt(this.$route.params.id)
+    else return 1
+  }
+
+  public getDivisionById (divisionId: number): Division | null {
+    let retDivision: Division | null = null
+    UserStore.divisions.forEach((v) => {
+      if (v.divisionId === divisionId) {
+        retDivision = v
+      }
+    })
+    return retDivision
+  }
+
+  onPreloaded () {
+    if (this.request instanceof HomeHoleListRequest || this.request instanceof DivisionHoleListRequest) {
+      this.pinnedHoles = this.request.pinned = this.getDivisionById(this.divisionId)?.pinned.map((v) => {
+        return new WrappedHole(v)
+      }) ?? []
+    }
+  }
+
   created () {
     this.route = this.$route.name as string
     UserStore.collection.getCollections()
@@ -100,7 +138,7 @@ export default class HoleListMixin extends BaseComponentOrView {
     } else if (this.route === 'collections') {
       this.request = new CollectionHoleListRequest()
     } else if (this.route === 'division') {
-      this.request = new DivisionHoleListRequest(parseInt(this.$route.params.id))
+      this.request = new DivisionHoleListRequest(this.divisionId)
     }
     this.holes = this.request.datas
     UserStore.collection.registerUpdateHoleArray(this.route, this.holes)

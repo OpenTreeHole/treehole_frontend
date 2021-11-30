@@ -287,7 +287,6 @@ export default class FloorListMixin extends BaseComponentOrView {
         }
       } else {
         gotoMentionFloor = () => {
-          console.log(1)
           EventBus.$emit('goto-mention-floor', curFloor, mentionFloor)
         }
       }

@@ -10,6 +10,7 @@
         <HoleList
           :activate='openHole'
           :display-hole-id='displayHoleId'
+          :fix-card-height='isActive || !isEnd'
           ref='holeList'
           @refresh='refresh'
         />
