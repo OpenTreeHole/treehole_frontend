@@ -2,7 +2,7 @@
 <template>
   <v-container>
     <v-card
-      v-if='this.$route.name==="hole" && !this.initiating'
+      v-if='this.$route.name === "hole" && !this.initiating'
       class='mx-auto mb-6'
       max-width='700px'
     >

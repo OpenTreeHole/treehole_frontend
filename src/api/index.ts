@@ -5,6 +5,7 @@ import { camelizeKeys } from '@/utils'
 import cloneDeep from 'lodash.clonedeep'
 import Vue from 'vue'
 import UtilStore from '@/store/modules/UtilStore'
+import { remove } from 'lodash-es'
 
 export abstract class ArrayRequest<T> {
   public datas: Array<T> = []
@@ -71,6 +72,7 @@ export abstract class PrefetchedArrayRequest<T> extends ArrayRequest<T> {
 
 export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
   public tag: Tag | null = null
+  public pinCount: number = 0
 
   /**
    * Request the backend for a specific hole and add to the hole list.
@@ -84,6 +86,16 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
     }).catch(error => {
       throw new Error(error)
     })
+  }
+
+  public pushFront (data: WrappedHole) {
+    remove(this.datas, v => v.holeId === data.holeId)
+    this.datas.splice(0, 0, data)
+  }
+
+  public pin (data: WrappedHole) {
+    this.pushFront(data)
+    this.pinCount++
   }
 
   public pushData (data: WrappedHole) {
@@ -100,22 +112,10 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
 
 export class HomeHoleListRequest extends HoleListRequest {
   public startTime: Date = new Date()
-  public pinned: WrappedHole[] = []
 
   public clear (): void {
     super.clear()
     this.startTime = new Date()
-  }
-
-  public pushData (data: WrappedHole) {
-    let flag = false
-    this.pinned.forEach((v) => {
-      if (v.hole.holeId === data.hole.holeId) {
-        flag = true
-      }
-    })
-    if (flag) return
-    super.pushData(data)
   }
 
   public async request (): Promise<boolean> {
@@ -151,7 +151,6 @@ export class HomeHoleListRequest extends HoleListRequest {
 
 export class DivisionHoleListRequest extends HoleListRequest {
   public startTime: Date = new Date()
-  public pinned: WrappedHole[] = []
   public divisionId: number
 
   constructor (divisionId: number) {
@@ -162,17 +161,6 @@ export class DivisionHoleListRequest extends HoleListRequest {
   public clear (): void {
     super.clear()
     this.startTime = new Date()
-  }
-
-  public pushData (data: WrappedHole) {
-    let flag = false
-    this.pinned.forEach((v) => {
-      if (v.hole.holeId === data.hole.holeId) {
-        flag = true
-      }
-    })
-    if (flag) return
-    super.pushData(data)
   }
 
   public async request (): Promise<boolean> {

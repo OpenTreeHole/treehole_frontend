@@ -12,7 +12,6 @@ import UserStore from '@/store/modules/UserStore'
 export default class HoleListMixin extends BaseComponentOrView {
   // 帖子列表
   public holes: WrappedHole[] = []
-  public pinnedHoles: WrappedHole[] = []
 
   public startTime: Date = new Date()
 
@@ -32,23 +31,21 @@ export default class HoleListMixin extends BaseComponentOrView {
   /**
    * Clear the hole list and reload.
    */
-  public refresh (): void {
+  public refresh () {
     this.request.clear()
     this.holes = this.request.datas
     this.loading.continueLoad()
+    this.pin()
   }
 
   /**
-   * decide if pinned by hole id.
+   * Decide if pinned by hole id.
    */
   public isPinned (holeId: number) {
-    let ret = false
-    this.pinnedHoles.forEach((v) => {
-      if (v.holeId === holeId) {
-        ret = true
-      }
-    })
-    return ret
+    for (let i = 0; i < this.request.pinCount; i++) {
+      if (this.holes[i].holeId === holeId) return true
+    }
+    return false
   }
 
   /**
@@ -121,12 +118,17 @@ export default class HoleListMixin extends BaseComponentOrView {
     return retDivision
   }
 
-  onPreloaded () {
-    if (this.request instanceof HomeHoleListRequest || this.request instanceof DivisionHoleListRequest) {
-      this.pinnedHoles = this.request.pinned = this.getDivisionById(this.divisionId)?.pinned.map((v) => {
-        return new WrappedHole(v)
-      }) ?? []
+  pin () {
+    const division = this.getDivisionById(this.divisionId)
+    if (division && (this.request instanceof HomeHoleListRequest || this.request instanceof DivisionHoleListRequest)) {
+      for (let i = division.pinned.length - 1; i >= 0; i--) {
+        this.request.pin(new WrappedHole(division.pinned[i]))
+      }
     }
+  }
+
+  onPreloaded () {
+    this.pin()
   }
 
   created () {
