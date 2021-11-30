@@ -2,10 +2,9 @@
 
 import { MarkedDetailedFloor, MarkedFloor, Tag, WrappedHole } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
-import cloneDeep from 'lodash.clonedeep'
 import Vue from 'vue'
 import UtilStore from '@/store/modules/UtilStore'
-import { remove } from 'lodash-es'
+import { cloneDeep, remove } from 'lodash-es'
 
 export abstract class ArrayRequest<T> {
   public datas: Array<T> = []

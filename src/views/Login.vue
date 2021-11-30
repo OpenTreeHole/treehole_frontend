@@ -67,9 +67,9 @@
 
 <script lang='ts'>
 import { Component, Watch } from 'vue-property-decorator'
-import debounce from 'lodash.debounce'
 import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
+import { debounce } from 'lodash-es'
 
 @Component
 export default class Login extends BaseView {

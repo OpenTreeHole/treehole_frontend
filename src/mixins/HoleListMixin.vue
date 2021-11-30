@@ -1,5 +1,4 @@
 <script lang='ts'>
-import debounce from 'lodash.debounce'
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import { Division, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
@@ -7,6 +6,7 @@ import { CollectionHoleListRequest, DivisionHoleListRequest, HoleListRequest, Ho
 import Loading from '@/components/Loading.vue'
 import { EventBus } from '@/event-bus'
 import UserStore from '@/store/modules/UserStore'
+import { debounce } from 'lodash-es'
 
 @Component
 export default class HoleListMixin extends BaseComponentOrView {
