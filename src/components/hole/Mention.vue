@@ -43,7 +43,7 @@
 import { Component, Prop } from 'vue-property-decorator'
 import { MarkedFloor } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js/lib/core'
 
 @Component
 export default class Mention extends BaseComponentOrView {

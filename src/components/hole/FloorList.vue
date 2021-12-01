@@ -111,7 +111,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
 import Mention from '@/components/hole/Mention.vue'
 import { FloorListRequest } from '@/api'
-import hljs from 'highlight.js'
+import hljs from 'highlight.js/lib/core'
 import { scrollTo } from '@/utils'
 import FloorCard from '@/components/hole/FloorCard.vue'
 
