@@ -11,6 +11,10 @@ class LocalStorageStore extends VuexModule {
     return this._token
   }
 
+  get tokenNoPrefix () {
+    return this._token?.substring(6)
+  }
+
   get email () {
     return this._email
   }

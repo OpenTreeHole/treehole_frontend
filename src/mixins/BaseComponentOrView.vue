@@ -8,6 +8,7 @@ import UtilStore from '@/store/modules/UtilStore'
 import TagStore from '@/store/modules/TagStore'
 import { Tag } from '@/api/hole'
 import { EventBus } from '@/event-bus'
+import { WsMessage } from '@/models/WsMessage'
 
 @Component
 export default class BaseComponentOrView extends Vue {
@@ -32,12 +33,17 @@ export default class BaseComponentOrView extends Vue {
   public onPreloaded () {
   }
 
+  public onWsMessage (msg: WsMessage) {
+  }
+
   created () {
     EventBus.$on('preloaded', this.onPreloaded)
+    EventBus.$on('receive-ws-message', this.onWsMessage)
   }
 
   destroyed () {
     EventBus.$off('preloaded', this.onPreloaded)
+    EventBus.$off('receive-ws-message', this.onWsMessage)
   }
 }
 </script>

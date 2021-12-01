@@ -1,4 +1,4 @@
-var pksjson = require('../package.json')
+const pksjson = require('../package.json')
 
 export default {
   // 基本信息配置
@@ -8,6 +8,7 @@ export default {
   latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/package.json', // 前端最新发布版版本号获取地址
   feVersion: pksjson.version,
   backEndApi: 'https://hole.hath.top/', // 后端 api 地址
+  backEndWebsocketApi: 'wss://hole.hath.top/ws/notification',
 
   // 协议
   licenses: [

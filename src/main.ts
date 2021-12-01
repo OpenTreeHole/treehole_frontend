@@ -11,15 +11,17 @@ import 'viewerjs/dist/viewer.css'
 import Viewer from 'v-viewer'
 
 // 引入项目配置文件
-import FDUHoleFEConfig from './fduhole-fe.config.js'
+import FDUHoleFEConfig from './fduhole-fe.config'
 
 // require styles
 import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
+import ws from '@/api/ws'
 
 Vue.prototype.$feConfig = FDUHoleFEConfig
+Vue.prototype.$ws = ws
 
 Vue.config.productionTip = false
 

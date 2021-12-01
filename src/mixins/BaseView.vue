@@ -11,6 +11,10 @@ export default class BaseView extends BaseComponentOrView {
   public async preload (): Promise<void> {
     if (!LocalStorageStore.token) return
     try {
+      if (!this.$ws.isConnecting() && !this.$ws.isConnected()) {
+        this.$ws.connect()
+      }
+
       const requestDivision = UserStore.requestDivision
       const requestUserProfile = UserStore.requestUserProfile
       const taskList = [requestDivision(), requestUserProfile()]
