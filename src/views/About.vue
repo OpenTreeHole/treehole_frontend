@@ -68,6 +68,15 @@
         </ul>
       </v-card-text>
     </v-card>
+
+    <v-card>
+      <v-card-title>
+        <!--suppress HtmlUnknownTarget -->
+        <a href='/report.html'>
+          查看构建报告
+        </a>
+      </v-card-title>
+    </v-card>
   </v-container>
 </template>
 
