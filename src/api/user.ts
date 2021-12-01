@@ -1,8 +1,8 @@
 // noinspection JSUnusedGlobalSymbols
 
 import { WrappedHole } from '@/api/hole'
-import UtilStore from '@/store/modules/UtilStore'
 import Vue from 'vue'
+import { VueInstance } from '@/instance'
 
 export interface UserProfile {
   userId: number
@@ -44,7 +44,7 @@ export class Collection {
 
   public getCollections (): void {
     // eslint-disable-next-line no-unused-expressions
-    UtilStore.axios?.get('/user/favorites').then((response) => {
+    VueInstance.$axios?.get('/user/favorites').then((response) => {
       this.clearCollection()
       response.data.forEach((holeItem: any) => {
         if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return

@@ -3,7 +3,7 @@ import store from '@/store'
 import { Division } from '@/api/hole'
 import { Collection, UserProfile } from '@/api/user'
 import { camelizeKeys } from '@/utils'
-import UtilStore from '@/store/modules/UtilStore'
+import { VueInstance } from '@/instance'
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {
@@ -29,7 +29,7 @@ class UserStore extends VuexModule {
 
   @Action
   public async requestDivision () {
-    await UtilStore.axios?.get('/divisions').then((response) => {
+    await VueInstance.$axios?.get('/divisions').then((response) => {
       const divisions: Division[] = camelizeKeys(response.data)
       this.setDivisions(divisions)
     })
@@ -37,7 +37,7 @@ class UserStore extends VuexModule {
 
   @Action
   public async requestUserProfile () {
-    await UtilStore.axios?.get('/users').then((response) => {
+    await VueInstance.$axios?.get('/users').then((response) => {
       this.setUserProfile(camelizeKeys(response.data))
     })
   }

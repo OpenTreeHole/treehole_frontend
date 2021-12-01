@@ -35,7 +35,6 @@ import 'highlight.js/styles/github.css'
 
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import UtilStore from '@/store/modules/UtilStore'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component({
@@ -50,8 +49,6 @@ export default class App extends BaseComponentOrView {
   }
 
   created () {
-    UtilStore.setAxios(this.$axios)
-
     document.addEventListener('onlined', (event: any) => {
       this.messageSuccess(event.detail)
     })

@@ -3,8 +3,8 @@
 import { MarkedDetailedFloor, MarkedFloor, Tag, WrappedHole } from '@/api/hole'
 import { camelizeKeys } from '@/utils'
 import Vue from 'vue'
-import UtilStore from '@/store/modules/UtilStore'
 import { cloneDeep, remove } from 'lodash-es'
+import { VueInstance } from '@/instance'
 
 export abstract class ArrayRequest<T> {
   public datas: Array<T> = []
@@ -79,7 +79,7 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
    * @param position - the specific position at which the hole added. 0 if undefined.
    */
   public async requestHole (holeId: number, position: number = 0) {
-    await UtilStore.axios?.get(`/holes/${holeId}`).then((response) => {
+    await VueInstance.$axios?.get(`/holes/${holeId}`).then((response) => {
       const hole = new WrappedHole(camelizeKeys(response.data))
       this.datas.splice(position, 0, hole)
     }).catch(error => {
@@ -131,7 +131,7 @@ export class HomeHoleListRequest extends HoleListRequest {
       params.tag = this.tag.name
     }
 
-    await UtilStore.axios?.get('/holes', {
+    await VueInstance.$axios?.get('/holes', {
       params: params
     }).then((response) => {
       response.data.forEach((holeItem: any) => {
@@ -173,7 +173,7 @@ export class DivisionHoleListRequest extends HoleListRequest {
     if (this.tag) {
       params.tag = this.tag.name
     }
-    await UtilStore.axios?.get('/holes', {
+    await VueInstance.$axios?.get('/holes', {
       params: params
     }).then((response) => {
       response.data.forEach((holeItem: any) => {
@@ -192,7 +192,7 @@ export class DivisionHoleListRequest extends HoleListRequest {
 
 export class CollectionHoleListRequest extends HoleListRequest {
   public async request (): Promise<boolean> {
-    await UtilStore.axios?.get('/user/favorites').then((response) => {
+    await VueInstance.$axios?.get('/user/favorites').then((response) => {
       response.data.forEach((holeItem: any) => {
         if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
         const hole = new WrappedHole(camelizeKeys(holeItem))
@@ -214,7 +214,7 @@ export class SearchFloorListRequest extends ArrayRequest<MarkedFloor> {
   }
 
   public async request (): Promise<boolean> {
-    await UtilStore.axios?.get('/floors', {
+    await VueInstance.$axios?.get('/floors', {
       params: {
         s: this.searchStr
       }
@@ -240,7 +240,7 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
 
   public async request (): Promise<boolean> {
     let hasNext = false
-    await UtilStore.axios?.get('/floors', {
+    await VueInstance.$axios?.get('/floors', {
       params: {
         hole_id: this.holeId,
         start_floor: this.loadedLength,
