@@ -9,24 +9,24 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v2
-      
+
       - uses: actions/setup-node@v2
         with:
           node-version: '15'
-          
+
       - run: git checkout dev
       - run: npm install
-      
+
       - name: Configure git
         run: |
           git config user.name "[bot] gh-action deploy"
           git config user.email "1296845690@qq.com"
-          
-      - name: Build
+
+      - name: Build (With Report)
         run: |
           set -e
-          npm run build
-          
+          npm run build-report
+
       - name: Deploy
         env:
           GHP_REPO: github.com/fduhole/fduhole.github.io
