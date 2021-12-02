@@ -7,13 +7,12 @@
         icon
         @click.stop='showSidebar = !showSidebar'
       ></v-app-bar-nav-icon>
-      <v-app-bar-nav-icon v-if='inAllowBackRoutes' icon @click.stop='back'
-      >
+      <v-app-bar-nav-icon v-if='inAllowBackRoutes' icon @click.stop='back'>
         <v-icon>mdi-arrow-left</v-icon>
-      </v-app-bar-nav-icon
-      >
+      </v-app-bar-nav-icon>
       <v-app-bar-title>FDU Hole</v-app-bar-title>
-      <!-- <v-spacer></v-spacer> -->
+      <v-spacer></v-spacer>
+      <notifications-menu/>
     </v-app-bar>
 
     <!-- 侧栏抽屉 -->
@@ -142,9 +141,10 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { EventBus } from '@/event-bus'
 import TagChip from '@/components/hole/TagChip.vue'
 import UserStore from '@/store/modules/UserStore'
+import NotificationsMenu from '@/components/menu/NotificationsMenu.vue'
 
 @Component({
-  components: { TagChip }
+  components: { NotificationsMenu, TagChip }
 })
 export default class Navbar extends BaseComponentOrView {
   public isDarkTheme = false

@@ -1,5 +1,5 @@
 <template>
-  <v-container v-click-outside='clickOutside' style='overflow: visible'>
+  <v-container id='hole-panel' v-click-outside='clickOutside' style='overflow: visible'>
     <v-row justify='center' class='ma-0'>
       <v-col class='mb-5 holelist'
              :class='isActive ? "holelist-left" : "holelist-right"'
@@ -124,8 +124,23 @@ export default class HolePanel extends BaseComponentOrView {
   }
 
   public wheelListener (e: WheelEvent) {
+    console.log(2132)
     if (!this.isActive && this.isEnd) {
+      // let flag = !(e.target instanceof HTMLElement)
+      // if (e.target instanceof HTMLElement) {
+      //   let el: HTMLElement = e.target
+      //   while (el) {
+      //     if (el.id && el.id === 'hole-panel') {
+      //       flag = true
+      //       break
+      //     }
+      //     if (el.parentElement) el = el.parentElement
+      //     else break
+      //   }
+      // }
+      // if (flag) {
       this.scrollHoleList(e)
+      // }
     }
   }
 
@@ -155,15 +170,17 @@ export default class HolePanel extends BaseComponentOrView {
   }
 
   mounted () {
+    const mainElement = document.getElementsByClassName('v-main__wrap').item(0)
+    if (mainElement instanceof HTMLElement) mainElement.addEventListener('wheel', this.wheelListener)
     this.viewport = window.innerHeight
-    window.addEventListener('wheel', this.wheelListener)
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight
     })
   }
 
   destroyed () {
-    window.removeEventListener('wheel', this.wheelListener)
+    const mainElement = document.getElementsByClassName('v-main__wrap').item(0)
+    if (mainElement instanceof HTMLElement) mainElement.removeEventListener('wheel', this.wheelListener)
   }
 
   @Watch('showFloorList')

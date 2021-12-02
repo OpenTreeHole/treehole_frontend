@@ -26,7 +26,6 @@
                 :rules='passwordRules'
                 @keydown.enter='login'
               />
-              <!-- @keyup.enter="login" -->
             </div>
             <div class='px-10'>
               <v-btn
@@ -35,28 +34,25 @@
                 block
                 :disabled='!valid'
                 @click='login'
-              >登录
-              </v-btn
               >
+                登录
+              </v-btn>
             </div>
 
             <div>
-              <v-btn text color='primary' href='#/license'
-              >登录意味着你同意这些协议
-              </v-btn
-              >
+              <v-btn text color='primary' href='#/license'>
+                登录意味着你同意这些协议
+              </v-btn>
             </div>
             <div>
-              <v-btn text color='primary' href='#/register'
-              >没有账号？点此注册
-              </v-btn
-              >
+              <v-btn text color='primary' href='#/register'>
+                没有账号？点此注册
+              </v-btn>
             </div>
             <div>
-              <v-btn text color='primary' onclick="alert('活该')"
-              >忘记密码
-              </v-btn
-              >
+              <v-btn text color='primary' href='#/forgetpassword'>
+                忘记密码
+              </v-btn>
             </div>
           </v-form>
         </v-card>

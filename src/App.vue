@@ -4,13 +4,7 @@
     <Navbar></Navbar>
 
     <v-main>
-      <keep-alive v-if='hasToken' include='Home'>
-        <router-view
-          :key="$route.fullPath + ($route.params.id || '') + $route.query"
-        ></router-view>
-      </keep-alive>
       <router-view
-        v-else
         :key="$route.fullPath + ($route.params.id || '') + $route.query"
       ></router-view>
     </v-main>
@@ -25,7 +19,7 @@
 </template>
 
 <script lang='ts'>
-import Navbar from '@/components/Navbar.vue'
+import Navbar from '@/layout/Navbar.vue'
 import Message from '@/components/Message.vue'
 
 import '@/style/global.scss'

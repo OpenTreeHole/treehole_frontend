@@ -40,12 +40,11 @@ export default class Me extends BaseView {
   public logout (): void {
     LocalStorageStore.clear()
     UserStore.clear()
-    console.log(1)
     this.$router.push('/login')
   }
 
   public changePassWd (): void {
-    alert('还没写完')
+    this.$router.push('/changepassword')
   }
 
   public onPreloaded () {

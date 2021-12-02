@@ -1,12 +1,12 @@
 import { VueInstance } from '@/instance'
 import { camelizeKeys } from '@/utils'
-import { WsMessage } from '@/models/WsMessage'
 import { EventBus } from '@/event-bus'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
+import WsMessage, { parseMessage } from '@/models/websocket/WsMessage'
 
 export class WsClient {
-  private ws: WebSocket | null = null
-  private unhandledMessages: string[] = []
+  public ws: WebSocket | null = null
+  public unhandledMessages: string[] = []
 
   public isConnecting (): boolean {
     if (!this.ws) return false
@@ -36,13 +36,17 @@ export class WsClient {
     else this.ws.send(msg)
   }
 
-  public onOpen () {
-    if (this.unhandledMessages.length > 0) {
-      this.unhandledMessages.forEach(m => {
+  public sendAction (action: any) {
+    this.send(JSON.stringify(action))
+  }
+
+  public onOpen (this: WebSocket) {
+    if (VueInstance.$ws.unhandledMessages.length > 0) {
+      VueInstance.$ws.unhandledMessages.forEach(m => {
         // eslint-disable-next-line no-unused-expressions
-        this.ws?.send(m)
+        VueInstance.$ws.ws?.send(m)
       })
-      this.unhandledMessages = []
+      VueInstance.$ws.unhandledMessages = []
     }
   }
 
@@ -50,13 +54,16 @@ export class WsClient {
 
   }
 
-  public onClose () {
-    this.ws = null
+  public onClose (this: WebSocket) {
+    VueInstance.$ws.ws = null
   }
 
-  public onMessage (e: MessageEvent) {
-    const msg: WsMessage = camelizeKeys(e.data)
-    EventBus.$emit('receive-ws-message', msg)
+  public onMessage (this: WebSocket, e: MessageEvent) {
+    const raw = (typeof e.data) === 'string' ? JSON.parse(e.data) : e.data
+    const msg: WsMessage | null = parseMessage(camelizeKeys(raw))
+    if (msg) {
+      EventBus.$emit('receive-ws-message', msg)
+    }
   }
 }
 

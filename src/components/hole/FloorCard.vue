@@ -100,6 +100,7 @@
         </v-btn>
       </span>
     </v-card-text>
+
   </v-card>
 </template>
 
@@ -215,12 +216,18 @@ export default class FloorCard extends BaseComponentOrView {
     const data: any = {}
     if (msg) data.delete_reason = msg
     this.$axios.delete(`/floors/${this.floor.floorId}`, data).then((response) => {
-      if (response.status === 204) {
+      if (response.status === 200) {
         this.messageSuccess('删除成功')
-      } else if (response.status === 403) {
-        this.messageError('没有权限删除')
       } else {
         this.messageError(response.data.msg)
+      }
+    }).catch(e => {
+      if ('response' in e) {
+        if (e.response.status === 403) {
+          this.messageError('没有权限删除')
+        }
+      } else {
+        this.messageError(e)
       }
     })
   }

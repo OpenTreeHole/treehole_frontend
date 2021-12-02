@@ -3,7 +3,7 @@
     <v-row align='center' justify='center'>
       <v-col cols='12' sm='8' md='6' lg='4' class='text-center'>
         <v-card class='py-8' elevation='4'>
-          <div class='text-h4 pb-2'>欢迎注册</div>
+          <div class='text-h4 pb-2'>重置密码</div>
           <v-form ref='form' v-model='valid' lazy-validation>
             <v-alert
               class='my-4'
@@ -71,15 +71,6 @@
                 :counter='32'
                 :rules='passwordRules'
               />
-              <v-row
-                align='center'
-                justify='center'
-                style='margin-bottom: -12px'
-              >
-                <v-checkbox v-model='agreelicenses' label='同意'></v-checkbox>
-                <!--suppress HtmlUnknownAnchorTarget -->
-                <a href='/#/license' target='_blank'>相关协议</a>
-              </v-row>
             </div>
 
             <div class='px-10'>
@@ -87,9 +78,10 @@
                 class='my-4'
                 color='success'
                 block
-                :disabled='!(agreelicenses && valid)'
-                @click='register'
-              >注册
+                :disabled='!valid'
+                @click='changepassword'
+              >
+                修改
               </v-btn>
             </div>
           </v-form>
@@ -102,13 +94,10 @@
 <script lang='ts'>
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
-import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 
 @Component
 export default class Register extends BaseView {
-  // 同意协议
-  public agreelicenses: boolean = false
   // 表单信息
   public password: string = ''
   public password2: string = ''
@@ -202,21 +191,18 @@ export default class Register extends BaseView {
     }
   }
 
-  public register (): void {
+  public changepassword (): void {
     if (this.form.validate()) {
       this.$axios
-        .post('/register', {
+        .put('/register', {
           email: this.email,
           password: this.password,
           verification: parseInt(this.code)
         })
-        .then((response) => {
-          // 注册成功后直接跳转到主页面
-          this.messageSuccess('注册成功！')
-          LocalStorageStore.setNewcomer('true')
-          LocalStorageStore.setToken('token ' + response.data.token)
+        .then(() => {
+          this.messageSuccess('重置密码成功！')
           setTimeout(() => {
-            this.$router.replace('/home')
+            this.$router.replace('/login')
           }, 1000)
         })
         .catch((e) => {

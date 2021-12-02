@@ -58,7 +58,7 @@ export default class HoleList extends HoleListMixin {
 
   public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
     if (this.isPinned(curFloor.holeId)) {
-      this.openNewOrExistHole(mentionFloor.holeId, this.request.pinCount, mentionFloor.floorId)
+      this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId)
       return
     }
     let curHole: WrappedHole | undefined, curIndex: number | undefined
@@ -72,10 +72,10 @@ export default class HoleList extends HoleListMixin {
       console.error('Current Hole Not Found!')
       return
     }
-    this.openNewOrExistHole(mentionFloor.holeId, curIndex, mentionFloor.floorId)
+    this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId, curIndex)
   }
 
-  public openNewOrExistHole (holeId: number, toIndex = this.request.pinCount, floorId?: number) {
+  public openNewOrExistHole (holeId: number, floorId?: number, toIndex = this.request.pinCount) {
     let hole: WrappedHole | undefined, index: number | undefined
     this.holes.forEach((h, i) => {
       if (h.hole.holeId === holeId) {

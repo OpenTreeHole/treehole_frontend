@@ -139,7 +139,6 @@ export default class FloorList extends FloorListMixin {
   public tryScrollTo (currentIndex:number, toIndex:number, retryTimes: number, interval: number) {
     setTimeout(() => {
       if (document.getElementById(currentIndex.toString()) && document.getElementById(toIndex.toString())) {
-        console.log(retryTimes)
         scrollTo(currentIndex, toIndex)
       } else {
         this.tryScrollTo(currentIndex, toIndex, retryTimes - 1, interval)
@@ -153,14 +152,13 @@ export default class FloorList extends FloorListMixin {
       if (waitingFloorId !== -1) {
         for (let i = 0; i < this.request.loadedLength; i++) {
           if (this.floors[i].floorId === waitingFloorId) {
-            console.log(i)
             this.tryScrollTo(0, i, 5, 350)
             found = true
             break
           }
         }
       }
-      if (this.loading.hasNext && this.request.datas.length > this.request.loadedLength) {
+      if (this.loading.hasNext) {
         if (waitingFloorId !== -1 && !found) this.getFloorsRecursive(waitingFloorId)
         else this.getFloorsRecursive()
       }

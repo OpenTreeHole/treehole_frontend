@@ -3,7 +3,7 @@
     <v-row align='center' justify='center'>
       <v-col cols='12' sm='8' md='6' lg='4' class='text-center'>
         <v-card class='py-8' elevation='4'>
-          <div class='text-h4 pb-2'>欢迎注册</div>
+          <div class='text-h4 pb-2'>重置密码</div>
           <v-form ref='form' v-model='valid' lazy-validation>
             <v-alert
               class='my-4'
@@ -14,15 +14,6 @@
               {{ alertMsg }}
             </v-alert>
             <div class='pl-7 pr-10'>
-              <v-text-field
-                v-model='email'
-                label='edu邮箱'
-                prepend-icon='mdi-email'
-                :error-messages="errorMsg['email']"
-                :clearable='!valid'
-                :counter='32'
-                :rules='notEmptyRules'
-              />
               <v-row
                 align='center'
                 justify='center'
@@ -71,15 +62,6 @@
                 :counter='32'
                 :rules='passwordRules'
               />
-              <v-row
-                align='center'
-                justify='center'
-                style='margin-bottom: -12px'
-              >
-                <v-checkbox v-model='agreelicenses' label='同意'></v-checkbox>
-                <!--suppress HtmlUnknownAnchorTarget -->
-                <a href='/#/license' target='_blank'>相关协议</a>
-              </v-row>
             </div>
 
             <div class='px-10'>
@@ -87,9 +69,10 @@
                 class='my-4'
                 color='success'
                 block
-                :disabled='!(agreelicenses && valid)'
-                @click='register'
-              >注册
+                :disabled='!valid'
+                @click='changepassword'
+              >
+                修改
               </v-btn>
             </div>
           </v-form>
@@ -106,13 +89,10 @@ import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 
 @Component
-export default class Register extends BaseView {
-  // 同意协议
-  public agreelicenses: boolean = false
+export default class ChangePassword extends BaseView {
   // 表单信息
   public password: string = ''
   public password2: string = ''
-  public email: string = ''
   // 发送验证码信息
   public code: string = ''
   public sendButton: string = '发送验证码'
@@ -122,18 +102,11 @@ export default class Register extends BaseView {
   public isAlert: boolean = false
   public alertMsg: string = ''
   public alertType: string = 'info'
-  public errorMsg: {
-    email: string
-    password: string
-  } = {
+  public errorMsg = {
     email: '',
     password: ''
   }
 
-  public notEmptyRules: Array<Function> = [(v: string) => !!v || '内容不能为空']
-  // emailRules: [
-  //   v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || '@fudan.edu.cn'
-  // ],
   public codeRules: Array<Function> = [
     (v: string) => !!v || '内容不能为空',
     (v: string) => /^[0-9]{6}$/.test(v) || '验证码格式不对'
@@ -146,18 +119,9 @@ export default class Register extends BaseView {
   ]
 
   public debouncedCheckUsername: Function
-  public debouncedCheckEmail: Function
   public debouncedCheckPassword: Function
 
   @Ref() readonly form: HTMLFormElement
-
-  public checkEmail (): void {
-    if (!/^[0-9]{11}@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
-      this.errorMsg.email = '@fudan.edu.cn'
-    } else {
-      this.errorMsg.email = ''
-    }
-  }
 
   public checkPassword (): void {
     if (this.password !== this.password2) {
@@ -168,16 +132,12 @@ export default class Register extends BaseView {
   }
 
   public sendCode (): void {
-    if (!this.email) {
-      this.messageError('用户名与邮箱不能为空')
-      return
-    }
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
     this.$axios
       .get('/verify/email', {
         params: {
-          email: this.email
+          email: LocalStorageStore.email
         }
       })
       .then((response) => {
@@ -202,19 +162,16 @@ export default class Register extends BaseView {
     }
   }
 
-  public register (): void {
+  public changepassword (): void {
     if (this.form.validate()) {
       this.$axios
-        .post('/register', {
-          email: this.email,
+        .put('/register', {
+          email: LocalStorageStore.email,
           password: this.password,
           verification: parseInt(this.code)
         })
-        .then((response) => {
-          // 注册成功后直接跳转到主页面
-          this.messageSuccess('注册成功！')
-          LocalStorageStore.setNewcomer('true')
-          LocalStorageStore.setToken('token ' + response.data.token)
+        .then(() => {
+          this.messageSuccess('修改密码成功！')
           setTimeout(() => {
             this.$router.replace('/home')
           }, 1000)
@@ -225,18 +182,12 @@ export default class Register extends BaseView {
     }
   }
 
-  @Watch('email')
-  emailChanged () {
-    this.debouncedCheckEmail()
-  }
-
   @Watch('password2')
   password2Changed () {
     this.debouncedCheckPassword()
   }
 
   created () {
-    this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }
 }

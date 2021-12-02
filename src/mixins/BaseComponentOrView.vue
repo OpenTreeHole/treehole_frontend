@@ -8,7 +8,7 @@ import UtilStore from '@/store/modules/UtilStore'
 import TagStore from '@/store/modules/TagStore'
 import { Tag } from '@/api/hole'
 import { EventBus } from '@/event-bus'
-import { WsMessage } from '@/models/WsMessage'
+import WsMessage from '@/models/websocket/WsMessage'
 
 @Component
 export default class BaseComponentOrView extends Vue {

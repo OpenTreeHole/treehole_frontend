@@ -19,6 +19,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
 import ws from '@/api/ws'
+import { timeDifference } from '@/utils'
 
 Vue.prototype.$feConfig = FDUHoleFEConfig
 Vue.prototype.$ws = ws
@@ -48,29 +49,7 @@ Vue.filter('wordLimit', function (html: string) {
   return html.length > maxlength ? html.substring(0, maxlength - 4) + ' ...' : html
 })
 
-Vue.filter('timeDifference', function (datestr: string) {
-  const date = new Date(datestr)
-  const now = new Date()
-
-  let seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
-
-  if (seconds < 0) {
-    seconds = 0
-  }
-  if (seconds < 60) {
-    return seconds + '秒前'
-  } else if (seconds < 3600) {
-    return Math.floor(seconds / 60) + '分钟前'
-  } else if (seconds < 86400) {
-    return Math.floor(seconds / 3600) + '小时前'
-  } else if (seconds < 604800) {
-    return Math.floor(seconds / 86400) + '天前'
-  } else if (date.getFullYear() === now.getFullYear()) {
-    return datestr.substring(5, 10)
-  } else {
-    return datestr.substring(0, 10)
-  }
-})
+Vue.filter('timeDifference', timeDifference)
 
 new Vue({
   router,

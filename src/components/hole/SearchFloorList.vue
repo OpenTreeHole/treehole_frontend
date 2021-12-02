@@ -96,7 +96,7 @@ export default class SearchFloorList extends BaseComponentOrView {
 
   gotoHole (holeId: number, floorId?: number) {
     this.$router.push('/home').then(() => {
-      if (floorId) EventBus.$emit('goto-hole', holeId, 0, floorId)
+      if (floorId) EventBus.$emit('goto-hole', holeId, floorId)
       else EventBus.$emit('goto-hole', holeId)
     })
   }

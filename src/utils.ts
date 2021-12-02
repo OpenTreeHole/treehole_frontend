@@ -29,6 +29,30 @@ export const convertDate = (v: any): string => {
   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
 }
 
+export const timeDifference = (v: string): string => {
+  const date = new Date(v)
+  const now = new Date()
+
+  let seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
+
+  if (seconds < 0) {
+    seconds = 0
+  }
+  if (seconds < 60) {
+    return seconds + '秒前'
+  } else if (seconds < 3600) {
+    return Math.floor(seconds / 60) + '分钟前'
+  } else if (seconds < 86400) {
+    return Math.floor(seconds / 3600) + '小时前'
+  } else if (seconds < 604800) {
+    return Math.floor(seconds / 86400) + '天前'
+  } else if (date.getFullYear() === now.getFullYear()) {
+    return v.substring(5, 10)
+  } else {
+    return v.substring(0, 10)
+  }
+}
+
 export const camelizeKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
     return obj.map(v => camelizeKeys(v))
@@ -92,4 +116,11 @@ export const parseTagColor = (tagName: string): string => {
 export const delay = async (ms: number) => {
   // return await for better async stack trace support in case of errors.
   return await new Promise(resolve => setTimeout(resolve, ms))
+}
+
+export const checkType = (object: any, keysOfType: string[]): boolean => {
+  for (const key of keysOfType) {
+    if (!(key in object)) return false
+  }
+  return true
 }

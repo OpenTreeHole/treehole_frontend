@@ -9,6 +9,8 @@ import About from '@/views/About.vue'
 import Search from '@/views/Search.vue'
 import license from '@/views/License.vue'
 import Me from '@/views/Me.vue'
+import ChangePassword from '@/views/ChangePassword.vue'
+import ForgetPassword from '@/views/ForgetPassword.vue'
 import Collections from '@/views/Collections.vue'
 import LocalStorageStore from '../store/modules/LocalStorageStore'
 
@@ -24,6 +26,8 @@ const routes = [
   { path: '/', redirect: '/home' },
   { path: '/about', meta: { title: '关于' }, component: About, name: 'about' },
   { path: '/register', meta: { title: '注册' }, component: Register, name: 'register' },
+  { path: '/changepassword', meta: { title: '修改密码' }, component: ChangePassword, name: 'changepassword' },
+  { path: '/forgetpassword', meta: { title: '重置密码' }, component: ForgetPassword, name: 'forgetpassword' },
   { path: '/hole/:id', meta: { title: '树洞' }, component: Hole, name: 'hole' },
   { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' }
 ]
