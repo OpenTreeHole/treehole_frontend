@@ -10,7 +10,7 @@
   >
     <template #activator='{ attrs, on }'>
       <app-tooltip-btn
-        text='notifications'
+        text='通知'
         v-bind='attrs'
         v-on='on'
       >
@@ -63,6 +63,7 @@
 
     <v-responsive
       class='overflow-y-scroll'
+      ref='responsive'
       max-height='320'
     >
       <div
@@ -86,7 +87,22 @@
           :ripple='false'
           @click='select(msg)'
         >
-          <v-list-item-content>
+          <notification-floor-card-menu v-if='msg.marked' :floor='msg.marked'>
+            <template #activator='{ attrs, on }'>
+              <v-list-item-content v-bind='attrs' v-on='on'>
+                <div
+                  class='grey--text text--darken-1 text-caption font-weight-light text-uppercase'
+                  v-text='msg.timeCreatedDifference'
+                />
+
+                <v-list-item-title
+                  class='text-subtitle-1'
+                  v-text='msg.message'
+                />
+              </v-list-item-content>
+            </template>
+          </notification-floor-card-menu>
+          <v-list-item-content v-else>
             <div
               class='grey--text text--darken-1 text-caption font-weight-light text-uppercase'
               v-text='msg.timeCreatedDifference'
@@ -114,7 +130,7 @@
 </template>
 
 <script lang='ts'>
-import { Component } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 import AppMenu from '@/components/app/AppMenu.vue'
 import AppTooltipBtn from '@/components/app/AppTooltipBtn.vue'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
@@ -122,9 +138,14 @@ import WsMessage from '@/models/websocket/WsMessage'
 import WsNotificationMessage from '@/models/websocket/WsNotificationMessage'
 import { timeDifference } from '@/utils'
 import { EventBus } from '@/event-bus'
+import NotificationFloorCardMenu from '@/components/menu/NotificationFloorCardMenu.vue'
+import { MarkedDetailedFloor } from '@/api/hole'
+import { renderFloor } from '@/utils/floor'
+import Vue from 'vue'
 
 @Component({
   components: {
+    NotificationFloorCardMenu,
     AppMenu,
     AppTooltipBtn
   }
@@ -141,15 +162,23 @@ export default class NotificationsMenu extends BaseComponentOrView {
   public readRaw: WsNotificationMessage[] = []
   public unreadRaw: WsNotificationMessage[] = []
 
+  @Ref() responsive: Vue
+
   get read () {
     return this.readRaw.map(v => {
-      return { ...v, timeCreatedDifference: timeDifference(v.timeCreated) }
+      if (!('floorId' in v.data)) return { ...v, timeCreatedDifference: timeDifference(v.timeCreated) }
+      const marked = new MarkedDetailedFloor(v.data)
+      renderFloor(marked)
+      return { ...v, timeCreatedDifference: timeDifference(v.timeCreated), marked }
     })
   }
 
   get unread () {
     return this.unreadRaw.map(v => {
-      return { ...v, timeCreatedDifference: timeDifference(v.timeCreated) }
+      if (!('floorId' in v.data)) return { ...v, timeCreatedDifference: timeDifference(v.timeCreated) }
+      const marked = new MarkedDetailedFloor(v.data)
+      renderFloor(marked)
+      return { ...v, timeCreatedDifference: timeDifference(v.timeCreated), marked }
     })
   }
 
@@ -188,7 +217,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
   public toggle (msgId: number) {
     this.$ws.sendAction({ action: this.archived ? 'unread' : 'read', id: msgId })
 
-    const all = [...this.readRaw, ...this.unreadRaw].sort((a, b) => b.messageId - a.messageId)
+    const all = this.readRaw.concat(this.unreadRaw).sort((a, b) => b.messageId - a.messageId)
     all.forEach(v => {
       if (v.messageId === msgId) v.hasRead = !v.hasRead
     })
@@ -203,7 +232,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
       })
     } else this.$ws.sendAction({ action: 'clear' })
 
-    const all = [...this.readRaw, ...this.unreadRaw].sort((a, b) => b.messageId - a.messageId)
+    const all = this.readRaw.concat(this.unreadRaw).sort((a, b) => b.messageId - a.messageId)
     this.readRaw = this.unreadRaw = []
     if (this.archived) this.unreadRaw = all
     else this.readRaw = all
@@ -211,7 +240,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
 
   public onWsMessage (msg: WsMessage) {
     if (msg instanceof WsNotificationMessage) {
-      let all = [...this.readRaw, ...this.unreadRaw]
+      let all = this.readRaw.concat(this.unreadRaw)
       let flag = false
       for (let i = 0; i < all.length; i++) {
         if (all[i].messageId === msg.messageId) {
@@ -224,6 +253,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
       all = all.sort((a, b) => b.messageId - a.messageId)
       this.readRaw = all.filter(v => v.hasRead)
       this.unreadRaw = all.filter(v => !v.hasRead)
+      console.log(this.unread)
     }
   }
 }

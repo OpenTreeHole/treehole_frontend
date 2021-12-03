@@ -8,55 +8,57 @@
         {{ floor.timeCreated | timeDifference }}
       </span>
       <span class='flex-right'>
-        <v-btn
-          v-if='operations.length === 1'
-          small
-          text
-          @click='report'
-          class='grey--text'
-          style='padding-bottom: -10px'
-        >
-          <v-icon>mdi-alert-outline</v-icon>
-          <br />
-          <span>举报</span>
-        </v-btn>
-        <v-menu
-          v-else
-          offset-y
-        >
-          <template #activator='{on, attrs}'>
-            <v-btn
-              small
-              text
-              class='grey--text'
-              style='padding-bottom: -10px'
-              v-bind='attrs'
-              v-on='on'
-            >
-              <v-icon>mdi-dots-horizontal</v-icon>
+        <template v-if='!noAction'>
+           <v-btn
+             v-if='operations.length === 1'
+             small
+             text
+             @click='report'
+             class='grey--text'
+             style='padding-bottom: -10px'
+           >
+              <v-icon>mdi-alert-outline</v-icon>
               <br />
-              <span>更多</span>
+              <span>举报</span>
             </v-btn>
-          </template>
-          <v-list>
-            <v-list-item
-              v-for='op in operations'
-              :key='"operation-" + index + "-" + op.text'
+            <v-menu
+              v-else
+              offset-y
             >
-              <v-btn
-                small
-                text
-                class='grey--text'
-                style='padding-bottom: -10px'
-                @click='op.operation'
-              >
-                <v-icon>mdi-{{ op.icon }}</v-icon>
-                <br />
-                <span>{{ op.text }}</span>
-              </v-btn>
-            </v-list-item>
-          </v-list>
-        </v-menu>
+              <template #activator='{on, attrs}'>
+                <v-btn
+                  small
+                  text
+                  class='grey--text'
+                  style='padding-bottom: -10px'
+                  v-bind='attrs'
+                  v-on='on'
+                >
+                  <v-icon>mdi-dots-horizontal</v-icon>
+                  <br />
+                  <span>更多</span>
+                </v-btn>
+              </template>
+              <v-list>
+                <v-list-item
+                  v-for='op in operations'
+                  :key='"operation-" + op.text'
+                >
+                  <v-btn
+                    small
+                    text
+                    class='grey--text'
+                    style='padding-bottom: -10px'
+                    @click='op.operation'
+                  >
+                    <v-icon>mdi-{{ op.icon }}</v-icon>
+                    <br />
+                    <span>{{ op.text }}</span>
+                  </v-btn>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+        </template>
       </span>
     </v-card-text>
 
@@ -71,9 +73,10 @@
 
     <!-- 脚标 -->
     <v-card-text class='d-flex text-body-2 pb-2'>
-      <span class='flex-left'><b>{{ index }}L</b>(#{{ floor.floorId }})</span>
+      <span class='flex-left' v-html='idInfo'></span>
       <span class='flex-center'>
         <v-btn
+          v-if='!noAction'
           small
           text
           @click='$emit("reply")'
@@ -120,7 +123,12 @@ interface Operation {
 @Component
 export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: true, type: Object }) floor: MarkedFloor
-  @Prop({ required: true, type: Number }) index: number
+  @Prop({ required: false, type: Number, default: -1 }) index: number
+  @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
+
+  get idInfo () {
+    return this.index === -1 ? `<b>#${this.floor.floorId}</b>` : `<b>${this.index}L</b>(#${this.floor.floorId})`
+  }
 
   /**
    * Any other operation except reply.

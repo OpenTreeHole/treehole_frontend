@@ -1,4 +1,4 @@
-import { Floor } from '@/api/hole'
+import { DetailedFloor } from '@/api/hole'
 import WsMessage, { IWsMessage } from '@/models/websocket/WsMessage'
 import { checkType } from '@/utils'
 
@@ -13,7 +13,7 @@ import { checkType } from '@/utils'
 export interface IWsNotificationMessage extends IWsMessage {
   messageId: number
   code: string
-  data: Floor
+  data: DetailedFloor
   hasRead: boolean
   timeCreated: string
 }
@@ -25,7 +25,7 @@ export function checkIWsNotificationMessage (message: any): boolean {
 
 export default class WsNotificationMessage extends WsMessage implements IWsNotificationMessage {
   code: string
-  data: Floor
+  data: DetailedFloor
   hasRead: boolean
   messageId: number
   timeCreated: string
