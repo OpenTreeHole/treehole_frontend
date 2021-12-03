@@ -62,7 +62,7 @@ import Mention from '@/components/hole/Mention.vue'
 import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { SearchFloorListRequest } from '@/api'
-import { EventBus } from '@/event-bus'
+import { gotoHole } from '@/utils/floor'
 
 @Component({
   components: {
@@ -96,8 +96,7 @@ export default class SearchFloorList extends BaseComponentOrView {
 
   gotoHole (holeId: number, floorId?: number) {
     this.$router.push('/home').then(() => {
-      if (floorId) EventBus.$emit('goto-hole', holeId, floorId)
-      else EventBus.$emit('goto-hole', holeId)
+      gotoHole(holeId, floorId)
     })
   }
 }

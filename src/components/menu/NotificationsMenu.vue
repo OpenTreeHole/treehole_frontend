@@ -87,7 +87,7 @@
           :ripple='false'
           @click='select(msg)'
         >
-          <notification-floor-card-menu v-if='msg.marked' :floor='msg.marked'>
+          <notification-floor-card-menu v-if='msg.marked && !isMobile' :floor='msg.marked'>
             <template #activator='{ attrs, on }'>
               <v-list-item-content v-bind='attrs' v-on='on'>
                 <div
@@ -137,10 +137,9 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import WsMessage from '@/models/websocket/WsMessage'
 import WsNotificationMessage from '@/models/websocket/WsNotificationMessage'
 import { timeDifference } from '@/utils'
-import { EventBus } from '@/event-bus'
 import NotificationFloorCardMenu from '@/components/menu/NotificationFloorCardMenu.vue'
 import { MarkedDetailedFloor } from '@/api/hole'
-import { renderFloor } from '@/utils/floor'
+import { gotoHole, renderFloor } from '@/utils/floor'
 import Vue from 'vue'
 
 @Component({
@@ -208,7 +207,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
   }
 
   public select (msg: WsNotificationMessage) {
-    EventBus.$emit('goto-hole', msg.data.holeId, msg.data.floorId)
+    gotoHole(msg.data.holeId, msg.data.floorId)
     this.toggle(msg.messageId)
 
     this.menu = false
@@ -253,7 +252,6 @@ export default class NotificationsMenu extends BaseComponentOrView {
       all = all.sort((a, b) => b.messageId - a.messageId)
       this.readRaw = all.filter(v => v.hasRead)
       this.unreadRaw = all.filter(v => !v.hasRead)
-      console.log(this.unread)
     }
   }
 }

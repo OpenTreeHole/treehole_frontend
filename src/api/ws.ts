@@ -1,8 +1,10 @@
-import { VueInstance } from '@/instance'
+
 import { camelizeKeys } from '@/utils'
 import { EventBus } from '@/event-bus'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import WsMessage, { parseMessage } from '@/models/websocket/WsMessage'
+import { Main } from '@/main'
+import { VueInstance } from '@/instance'
 
 export class WsClient {
   public ws: WebSocket | null = null

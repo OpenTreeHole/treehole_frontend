@@ -1,5 +1,5 @@
 <template>
-  <v-card class='reply' :class='additionalClass'>
+  <v-card class='reply mx-0 mb-2' :class='additionalClass'>
     <!-- 回复框顶栏 -->
     <v-card-actions class='pb-0 pl-4 pr-4 pt-2 text-body-2'>
       <span style='color: rgba(85,93,86,0.48); '>

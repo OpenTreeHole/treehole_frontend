@@ -142,6 +142,7 @@ import { EventBus } from '@/event-bus'
 import TagChip from '@/components/hole/TagChip.vue'
 import UserStore from '@/store/modules/UserStore'
 import NotificationsMenu from '@/components/menu/NotificationsMenu.vue'
+import { gotoHole } from '@/utils/floor'
 
 @Component({
   components: { NotificationsMenu, TagChip }
@@ -158,7 +159,6 @@ export default class Navbar extends BaseComponentOrView {
   public currentPage = 0
   public inAllowBackRoutes = false
   public inBanMenuRoutes = true
-  public showSearchBox = false
   public holeToGo = ''
   public groupNavItem = new Map()
 
@@ -183,10 +183,10 @@ export default class Navbar extends BaseComponentOrView {
   public gotoHole (): void {
     const holeId = this.holeToGo.charAt(0) === '#' ? parseInt(this.holeToGo.substring(1)) : parseInt(this.holeToGo)
     if (this.$route.path === '/home' || this.$route.path === '/division') {
-      EventBus.$emit('goto-hole', holeId)
+      gotoHole(holeId)
     } else {
       this.$router.push('/home').then(() => {
-        EventBus.$emit('goto-hole', holeId)
+        gotoHole(holeId)
       })
     }
     this.holeToGo = ''

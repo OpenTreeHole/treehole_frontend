@@ -3,7 +3,7 @@
   <v-container>
     <v-card
       v-if='this.$route.name === "hole" && !this.initiating'
-      class='mx-auto mb-6'
+      class='mt-n2 mx-n2 mb-3'
       max-width='700px'
     >
       <v-card-text class='text--primary pb-2 pt-2 font-weight-medium'>
@@ -40,7 +40,7 @@
         justify='center'
         v-viewer
       >
-        <v-col class='py-2'>
+        <v-col :class='colClass'>
           <FloorCard :floor='floor' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)'/>
         </v-col>
       </v-row>
@@ -128,12 +128,17 @@ export default class FloorList extends FloorListMixin {
 
   public initiating = true
 
-  public get computedDiscussionId (): number {
+  get computedDiscussionId (): number {
     if (this.wrappedHoleOrId instanceof WrappedHole) {
       return this.wrappedHoleOrId.hole.holeId
     } else {
       return this.wrappedHoleOrId
     }
+  }
+
+  get colClass () {
+    if (this.isMobile) return 'px-1 py-1'
+    else return 'px-1 py-2'
   }
 
   public tryScrollTo (currentIndex:number, toIndex:number, retryTimes: number, interval: number) {

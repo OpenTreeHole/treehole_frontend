@@ -5,6 +5,8 @@ import Mention from '@/components/hole/Mention.vue'
 import vuetify from '@/plugins/vuetify'
 import Vue from 'vue'
 import FloorListMixin from '@/mixins/FloorListMixin.vue'
+import UtilStore from '@/store/modules/UtilStore'
+import { Main } from '@/main'
 
 export async function renderFloor (curFloor: MarkedDetailedFloor, floorList?: FloorListMixin): Promise<void> {
   if (('mention' in curFloor) && curFloor.mention.length !== 0) {
@@ -34,19 +36,19 @@ export function renderMention (curFloor: MarkedDetailedFloor, floorList?: FloorL
     })
     if (!mentionFloorOrNull) continue
     const mentionFloor: MarkedFloor = new MarkedFloor(mentionFloorOrNull)
-    let gotoMentionFloor: Function | undefined
+    let gotoMentionFloorF: Function | undefined
     const mentionIndex = floorList?.getIndex(mentionId) ?? -1
     if (mentionIndex !== -1) {
-      gotoMentionFloor = () => {
+      gotoMentionFloorF = () => {
         scrollTo(curIndex, mentionIndex)
       }
     } else if (curIndex !== -1) {
-      gotoMentionFloor = () => {
-        EventBus.$emit('goto-mention-floor', curFloor, mentionFloor)
+      gotoMentionFloorF = () => {
+        gotoMentionFloor(curFloor, mentionFloor)
       }
     } else {
-      gotoMentionFloor = () => {
-        EventBus.$emit('goto-hole', curFloor.holeId, curFloor.floorId)
+      gotoMentionFloorF = () => {
+        gotoHole(curFloor.holeId, curFloor.floorId)
       }
     }
     let additionalClass = ''
@@ -60,12 +62,36 @@ export function renderMention (curFloor: MarkedDetailedFloor, floorList?: FloorL
     new Mention({
       propsData: {
         mentionFloor: mentionFloor,
-        gotoMentionFloor: gotoMentionFloor,
+        gotoMentionFloor: gotoMentionFloorF,
         gotoMentionFloorIcon: 'mdi-arrow-collapse-up',
         mentionFloorInfo: (mentionIndex === -1 ? ('#' + mentionFloor.floorId) : (mentionIndex.toString() + 'L')),
         additionalClass: additionalClass
       },
       vuetify
     }).$mount(elements[i])
+  }
+}
+
+export function gotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
+  if (!UtilStore.isMobile) EventBus.$emit('goto-mention-floor', curFloor, mentionFloor)
+  else gotoHole(mentionFloor.holeId, mentionFloor.floorId)
+}
+
+export function gotoHole (holeId: number, floorId?: number, toIndex?: number) {
+  if (UtilStore.isMobile) {
+    if (floorId !== undefined) {
+      Main.$router.push({
+        path: `/hole/${holeId}`,
+        query: { mention: floorId.toString() }
+      })
+    } else {
+      Main.$router.push({
+        path: `/hole/${holeId}`
+      })
+    }
+  } else {
+    if (floorId === undefined) EventBus.$emit('goto-hole', holeId)
+    else if (toIndex === undefined) EventBus.$emit('goto-hole', holeId, floorId)
+    else EventBus.$emit('goto-hole', holeId, floorId, toIndex)
   }
 }
