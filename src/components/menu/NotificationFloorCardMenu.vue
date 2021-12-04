@@ -33,7 +33,3 @@ export default class NotificationFloorCardMenu extends Vue {
   public menu = false
 }
 </script>
-
-<style scoped>
-
-</style>

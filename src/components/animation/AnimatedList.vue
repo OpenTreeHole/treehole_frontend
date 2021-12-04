@@ -190,9 +190,3 @@ export default class AnimatedList extends BaseComponentOrView {
   }
 }
 </script>
-
-<style scoped>
-.invisible {
-  opacity: 0
-}
-</style>

@@ -24,6 +24,10 @@ const colorList = [
   'grey'
 ]
 
+export const sleep = async (ms: number) => {
+  return new Promise(resolve => setTimeout(resolve, ms))
+}
+
 export const convertDate = (v: any): string => {
   const date = new Date(v)
   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
@@ -87,9 +91,10 @@ export const convertKatex = (str: string) => {
 }
 
 export const scrollTo = (currentIndex: number, toIndex: number): void => {
-  const currentOffsetTop = document.getElementById(currentIndex.toString())?.offsetTop
+  // const currentOffsetTop = document.getElementById(currentIndex.toString())?.offsetTop
+  const start = document.getElementById('0')?.offsetTop
   const toOffsetTop = document.getElementById(toIndex.toString())?.offsetTop
-  const scrollDistance = currentOffsetTop && toOffsetTop ? toOffsetTop - currentOffsetTop : 0
+  const scrollDistance = start && toOffsetTop ? toOffsetTop - start + window.scrollY : 0
   window.scrollBy({
     top: scrollDistance,
     left: 0,

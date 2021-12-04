@@ -1,7 +1,7 @@
 <template>
   <v-container id='hole-panel' v-click-outside='clickOutside' style='overflow: visible'>
     <v-row justify='center' class='ma-0'>
-      <v-col class='mb-5 holelist'
+      <v-col class='holelist'
              :class='isActive ? "holelist-left" : "holelist-right"'
              :style="{marginTop: '-'+posY.toString()+'px'}"
              @transitionend='onActivationEnd'
@@ -17,7 +17,7 @@
       </v-col>
       <v-col v-if='displayHoleId!==-1 && showFloorList' class='mb-5' cols='5' />
 
-      <v-col class='mb-5' cols='6'>
+      <v-col cols='6'>
         <FloorList
           v-if='displayHoleId!==-1 && showFloorList'
           :key='displayHoleId'

@@ -19,8 +19,8 @@ jobs:
 
       - name: Configure git
         run: |
-          git config user.name "[bot] gh-action deploy"
-          git config user.email "1296845690@qq.com"
+          git config user.name "dest1n1s"
+          git config user.email "648377563@qq.com"
 
       - name: Build (With Report)
         run: |
@@ -28,12 +28,9 @@ jobs:
           npm run build-report
 
       - name: Deploy
-        env:
-          GHP_REPO: github.com/fduhole/fduhole.github.io
-          GPA_TOKEN:  ${{ secrets.GPA_TOKEN }}
         run: |
           cd dist
           git init
           git add -A
           git commit -m 'gh-action deploy'
-          git push -f "https://${GPA_TOKEN}@${GHP_REPO}" HEAD:main
+          git push -f https://${{ secrets.TOKEN }}@github.com/OpenTreeHole/vue.git gh-action
