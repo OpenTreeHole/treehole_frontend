@@ -28,9 +28,11 @@ jobs:
           npm run build-report
 
       - name: Deploy
+        env:
+          TOKEN: ${{ secrets.TOKEN }}
         run: |
           cd dist
           git init
           git add -A
           git commit -m 'gh-action deploy'
-          git push -f https://${{ secrets.TOKEN }}@github.com/OpenTreeHole/vue.git gh-page
+          git push -f "https://${TOKEN}@github.com/OpenTreeHole/vue.git" HEAD:gh-page
