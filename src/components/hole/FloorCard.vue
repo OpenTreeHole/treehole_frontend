@@ -1,5 +1,5 @@
 <template>
-  <v-card :id='index'>
+  <v-card class='rounded' :id='index'>
     <v-card-text class='d-flex pb-4 pt-2 text-body-2'>
       <span class='flex-left'>
         {{ floor.anonyname }}

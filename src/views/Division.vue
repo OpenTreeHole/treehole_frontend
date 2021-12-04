@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class='pa-0'>
     <!-- 帖子列表 -->
     <HolePanel v-if='!isMobile' ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged' />
     <HoleListMobile v-else ref='holeComp' />

@@ -51,7 +51,7 @@ Vue.filter('wordLimit', function (html: string) {
 
 Vue.filter('timeDifference', timeDifference)
 
-new Vue({
+export const Main = new Vue({
   router,
   vuetify,
   store,

@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container class='pa-0'>
     <!-- 新用户欢迎信息 -->
     <newcomer />
 

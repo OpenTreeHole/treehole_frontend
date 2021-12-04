@@ -124,23 +124,8 @@ export default class HolePanel extends BaseComponentOrView {
   }
 
   public wheelListener (e: WheelEvent) {
-    console.log(2132)
     if (!this.isActive && this.isEnd) {
-      // let flag = !(e.target instanceof HTMLElement)
-      // if (e.target instanceof HTMLElement) {
-      //   let el: HTMLElement = e.target
-      //   while (el) {
-      //     if (el.id && el.id === 'hole-panel') {
-      //       flag = true
-      //       break
-      //     }
-      //     if (el.parentElement) el = el.parentElement
-      //     else break
-      //   }
-      // }
-      // if (flag) {
       this.scrollHoleList(e)
-      // }
     }
   }
 

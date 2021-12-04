@@ -1,5 +1,5 @@
 <template>
-  <v-card :class='isActive ? "hole-card--active" : "hole-card"'>
+  <v-card class='rounded' :class='isActive ? "hole-card--active" : "hole-card"'>
     <!-- 标签栏 -->
     <v-card-actions class='pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
       <span>
