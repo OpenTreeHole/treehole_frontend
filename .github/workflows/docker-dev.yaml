@@ -1,9 +1,6 @@
 name: dev build
 
-on:
-  push:
-    tags:
-      - v[0-9]+.[0-9]+.[0-9]+-*
+on: push
 
 env:
   APP_NAME: open_tree_hole_frontend
@@ -30,5 +27,4 @@ jobs:
         with:
           push: true
           tags: |
-            ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.APP_NAME }}:${{ steps.tag.outputs.tag }}
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.APP_NAME }}:dev
