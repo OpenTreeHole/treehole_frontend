@@ -33,4 +33,4 @@ jobs:
           git init
           git add -A
           git commit -m 'gh-action deploy'
-          git push -f https://${{ secrets.TOKEN }}@github.com/OpenTreeHole/vue.git gh-action
+          git push -f https://${{ secrets.TOKEN }}@github.com/OpenTreeHole/vue.git gh-page
