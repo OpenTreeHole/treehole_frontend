@@ -83,7 +83,7 @@ export const convertKatex = (str: string) => {
       displayMode: true,
       macros
     })
-  }).replace(/\$\s([\s\S]+)\s\$/g, (ignore, k) => {
+  }).replace(/\$([\s\S]+)\$/g, (ignore, k) => {
     return katex.renderToString(k, {
       displayMode: false
     })
