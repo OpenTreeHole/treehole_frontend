@@ -1,9 +1,10 @@
 const pksjson = require('../package.json')
+const baseUrl = process.env.BASE_URL
 
 export default {
   // 基本信息配置
-  feRepository: 'https://www.github.com/fduhole/vue',
-  teamHomepage: 'https://www.github.com/fduhole',
+  feRepository: 'https://www.github.com/OpenTreeHole/vue',
+  teamHomepage: 'https://www.github.com/OpenTreeHole',
   teamMail: 'fduhole@gmail.com',
   latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/package.json', // 前端最新发布版版本号获取地址
   feVersion: pksjson.version,
@@ -14,19 +15,23 @@ export default {
   licenses: [
     {
       name: '社区公约',
-      link: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/community-agreement.md'
+      type: 'pdf',
+      link: `${baseUrl}licenses/fduhole-norms.pdf`
     },
     {
       name: '使用条款',
-      link: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/terms-of-use.md'
+      type: 'markdown',
+      link: `${baseUrl}licenses/terms-of-use.md`
     },
     {
       name: '隐私政策',
-      link: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/privacy-policy.md'
+      type: 'markdown',
+      link: `${baseUrl}licenses/privacy-policy.md`
     },
     {
       name: '开源协议',
-      link: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/open-source-licenses.md'
+      type: 'markdown',
+      link: `${baseUrl}licenses/open-source-licenses.md`
     }
   ],
 

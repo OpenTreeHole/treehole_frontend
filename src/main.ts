@@ -11,7 +11,7 @@ import 'viewerjs/dist/viewer.css'
 import Viewer from 'v-viewer'
 
 // 引入项目配置文件
-import FDUHoleFEConfig from './fduhole-fe.config'
+import FDUHoleFEConfig from './opentreehole-fe.config'
 
 // require styles
 import 'quill/dist/quill.core.css'

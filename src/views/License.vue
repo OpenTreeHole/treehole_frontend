@@ -10,10 +10,18 @@
     <v-expansion-panels>
       <v-expansion-panel v-for='(license, i) in licenses' :key='i'>
         <v-expansion-panel-header>
-          {{ license.title }}
+          {{ license.name }}
         </v-expansion-panel-header>
         <v-expansion-panel-content style='overflow: auto'>
-          <div class='license-view' v-html='license.content'></div>
+          <div v-if='license.type==="pdf"'>
+            <pdf
+              v-for='i in license.numPages'
+              :key='i'
+              :src='license.loadingTask'
+              :page='i'
+            ></pdf>
+          </div>
+          <div v-else class='license-view' v-html='license.content'></div>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-expansion-panels>
@@ -25,37 +33,29 @@ import { Component } from 'vue-property-decorator'
 import { convertKatex } from '@/utils'
 import marked from 'marked'
 import BaseView from '@/mixins/BaseView.vue'
+import pdf from 'vue-pdf'
 
-@Component
+@Component({
+  components: {
+    pdf
+  }
+})
 export default class License extends BaseView {
-  public licenses:Array<any> = []
+  public licenses: Array<any> = []
 
-  created () {
+  async created () {
     for (const license of this.$feConfig.licenses) {
-      ((license) => {
-        this.$axios
-          .request({
-            url: license.link,
-            transformRequest: [
-              (data: any, headers: { Authorization: any }) => {
-                delete headers.Authorization
-                return data
-              }
-            ]
-          })
-          .then((response: { data: any }) => {
-            this.licenses.push({
-              title: license.name,
-              content: marked(convertKatex(response.data))
-            })
-          })
-          .catch((error: { message: string }) => {
-            this.licenses.push({
-              title: license.name,
-              content: '获取失败：' + error.message
-            })
-          })
-      })(license)
+      if (license.type === 'pdf') {
+        const loadingTask = pdf.createLoadingTask(license.link)
+        loadingTask.promise.then((v: any) => {
+          const numPages = v.numPages
+          this.licenses.push({ ...license, loadingTask, numPages })
+        })
+      } else {
+        fetch(license.link).then(r => r.text()).then(text => {
+          this.licenses.push({ ...license, content: marked(convertKatex(text)) })
+        })
+      }
     }
   }
 }
