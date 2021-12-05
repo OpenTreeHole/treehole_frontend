@@ -1,55 +1,49 @@
 <template>
   <v-container>
-    <v-row justify='center'>
-      <v-col cols='12' md='8' lg='6'>
-        <v-container>
-          <transition-group name='slide-fade'>
-            <v-row
-              v-for='(floor, index) in floors'
-              :key='`${index}`'
-              justify='center'
-              align='start'
-              v-viewer
-            >
-              <v-col>
-                <v-card :id='index'>
-                  <v-card-text class='pb-1 pt-2 text-body-2'>
-                    <p>
-                      {{ floor.anonyname }}
-                      <span style='float: right'>
+    <transition-group name='slide-fade'>
+      <v-row
+        v-for='(floor, index) in floors'
+        :key='`${index}`'
+        justify='center'
+        align='start'
+        v-viewer
+      >
+        <v-col :class='colClass' lg='6' md='8' cols='12'>
+          <v-card :id='index'>
+            <v-card-text class='pb-1 pt-2 text-body-2'>
+              <p>
+                {{ floor.anonyname }}
+                <span style='float: right'>
                         {{ floor.timeUpdated | timeDifference }}
                       </span>
-                    </p>
-                  </v-card-text>
+              </p>
+            </v-card-text>
 
-                  <v-card-text
-                    class='py-0 clickable'
-                    v-ripple
-                    @click='gotoHole(floor.holeId,floor.floorId)'
-                  >
-                    <!-- 正文部分 -->
-                    <div
-                      :index='index'
-                      class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
-                      v-html='floor.html'
-                    ></div>
-                  </v-card-text>
+            <v-card-text
+              class='py-0 clickable'
+              v-ripple
+              @click='gotoHole(floor.holeId,floor.floorId)'
+            >
+              <!-- 正文部分 -->
+              <div
+                :index='index'
+                class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
+                v-html='floor.html'
+              ></div>
+            </v-card-text>
 
-                  <v-card-text class='d-flex text-body-2 pb-2'>
-                    <span class='clickable' @click='gotoHole(floor.holeId,floor.floorId)'>#{{ floor.floorId }}</span>
-                    <v-spacer />
-                    <span class='clickable' @click='gotoHole(floor.holeId)'>From #{{ floor.holeId }}</span>
-                  </v-card-text>
-                </v-card>
-              </v-col>
-            </v-row>
-          </transition-group>
+            <v-card-text class='d-flex text-body-2 pb-2'>
+              <span class='clickable' @click='gotoHole(floor.holeId,floor.floorId)'>#{{ floor.floorId }}</span>
+              <v-spacer />
+              <span class='clickable' @click='gotoHole(floor.holeId)'>From #{{ floor.holeId }}</span>
+            </v-card-text>
+          </v-card>
+        </v-col>
+      </v-row>
+    </transition-group>
 
-          <!-- 载入中信息 -->
-          <loading :request='[]' ref='loading' :pause-loading='initiating' />
-        </v-container>
-      </v-col>
-    </v-row>
+    <!-- 载入中信息 -->
+    <loading :request='[]' ref='loading' :pause-loading='initiating' />
   </v-container>
 </template>
 
@@ -63,6 +57,7 @@ import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { SearchFloorListRequest } from '@/api'
 import { gotoHole } from '@/utils/floor'
+import { sleep } from '@/utils'
 
 @Component({
   components: {
@@ -78,6 +73,11 @@ export default class SearchFloorList extends BaseComponentOrView {
   public request: SearchFloorListRequest
 
   public initiating = true
+
+  get colClass () {
+    if (this.isMobile) return 'px-1 py-1'
+    else return 'px-1 py-2'
+  }
 
   mounted () {
     this.request = new SearchFloorListRequest(this.searchStr)
@@ -95,7 +95,8 @@ export default class SearchFloorList extends BaseComponentOrView {
   }
 
   gotoHole (holeId: number, floorId?: number) {
-    this.$router.push('/division/1').then(() => {
+    this.$router.push('/division/1').then(async () => {
+      await sleep(1000)
       gotoHole(holeId, floorId)
     })
   }

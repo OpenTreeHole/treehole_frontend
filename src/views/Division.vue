@@ -1,7 +1,7 @@
 <template>
   <v-container class='pa-0'>
     <!-- 帖子列表 -->
-    <HolePanel v-if='!isMobile' ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged' />
+    <HolePanel v-if='!isMobile' :key='this.$route.params.id' ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged' />
     <HoleListMobile v-else ref='holeComp' />
 
     <!-- 新帖编辑器及浮动按钮 -->

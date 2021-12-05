@@ -3,7 +3,7 @@
     class='py-4'
     v-intersect='{
       handler: onIntersect,
-      options: { threshold: [0,0.2] },
+      options: { threshold: [0,0.2] }
     }'
   >
     <v-col class='text-center'>
@@ -27,6 +27,7 @@
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { sleep } from '@/utils'
 
 @Component
 export default class Loading extends BaseComponentOrView {
@@ -69,14 +70,19 @@ export default class Loading extends BaseComponentOrView {
   }
 
   public async loadCustomRequestOnce (customRequest: () => Promise<void>) {
-    if (this.pauseLoading) {
-      console.error('Try to load when loading is paused.')
-      return
-    }
+    await this.waitForUnpause(8)
 
     this.isLoading = true
     await customRequest()
     this.isLoading = false
+  }
+
+  public async waitForUnpause (times: number) {
+    if (this.pauseLoading && times > 0) {
+      await sleep(500)
+      await this.waitForUnpause(times - 1)
+    }
+    if (this.pauseLoading) console.error('Try to load when loading is paused.')
   }
 
   public continueLoad (index: number = 0) {

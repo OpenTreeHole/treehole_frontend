@@ -4,7 +4,13 @@
     <Navbar></Navbar>
 
     <v-main>
+      <keep-alive v-if='hasToken' include='Division'>
+        <router-view
+          :key="$route.fullPath + ($route.params.id || '') + $route.query"
+        ></router-view>
+      </keep-alive>
       <router-view
+        v-else
         :key="$route.fullPath + ($route.params.id || '') + $route.query"
       ></router-view>
     </v-main>

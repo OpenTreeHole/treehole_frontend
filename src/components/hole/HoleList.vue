@@ -76,6 +76,8 @@ export default class HoleList extends HoleListMixin {
   }
 
   public openNewOrExistHole (holeId: number, floorId?: number, toIndex = this.request.pinCount) {
+    this.loading.waitForUnpause(8)
+
     let hole: WrappedHole | undefined, index: number | undefined
     this.holes.forEach((h, i) => {
       if (h.hole.holeId === holeId) {
