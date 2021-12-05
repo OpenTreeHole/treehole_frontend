@@ -173,7 +173,7 @@ export default class ChangePassword extends BaseView {
         .then(() => {
           this.messageSuccess('修改密码成功！')
           setTimeout(() => {
-            this.$router.replace('/home')
+            this.$router.replace('/division/1')
           }, 1000)
         })
         .catch((e) => {

@@ -109,7 +109,7 @@ export default class Login extends BaseView {
           this.messageSuccess(response.data.message)
           LocalStorageStore.setToken('token ' + response.data.token)
           LocalStorageStore.setEmail(this.email)
-          this.$router.replace('/home')
+          this.$router.replace('/division/1')
           this.preload()
         } else {
           this.valid = false

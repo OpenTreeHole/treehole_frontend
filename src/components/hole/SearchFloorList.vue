@@ -95,7 +95,7 @@ export default class SearchFloorList extends BaseComponentOrView {
   }
 
   gotoHole (holeId: number, floorId?: number) {
-    this.$router.push('/home').then(() => {
+    this.$router.push('/division/1').then(() => {
       gotoHole(holeId, floorId)
     })
   }

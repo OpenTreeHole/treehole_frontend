@@ -216,7 +216,7 @@ export default class Register extends BaseView {
           LocalStorageStore.setNewcomer('true')
           LocalStorageStore.setToken('token ' + response.data.token)
           setTimeout(() => {
-            this.$router.replace('/home')
+            this.$router.replace('/division/1')
           }, 1000)
         })
         .catch((e) => {

@@ -46,11 +46,10 @@
                 <v-list-item-title v-text='item.title' />
               </v-list-item-content>
             </v-list-item>
-            <v-list-group
+            <app-navbar-list-group
+              :route='item.route'
               :key='item.route'
               v-else
-              no-action
-              :color="`primary ${$vuetify.theme.dark ? 'lighten-1' : 'darken-2'}`"
             >
               <template #activator>
                 <v-list-item-icon>
@@ -69,7 +68,7 @@
                   <v-list-item-title v-text='childItem.name' />
                 </v-list-item-content>
               </v-list-item>
-            </v-list-group>
+            </app-navbar-list-group>
           </template>
 
         </v-list-item-group>
@@ -143,9 +142,10 @@ import TagChip from '@/components/hole/TagChip.vue'
 import UserStore from '@/store/modules/UserStore'
 import NotificationsMenu from '@/components/menu/NotificationsMenu.vue'
 import { gotoHole } from '@/utils/floor'
+import AppNavbarListGroup from '@/components/app/AppNavbarListGroup.vue'
 
 @Component({
-  components: { NotificationsMenu, TagChip }
+  components: { AppNavbarListGroup, NotificationsMenu, TagChip }
 })
 export default class Navbar extends BaseComponentOrView {
   public isDarkTheme = false

@@ -38,12 +38,7 @@ export default {
   // 页面元素显示配置
   allowBackRoutes: ['discussion', 'license', 'search'], // 允许显示“返回”按钮的路由名称
   banMenuRoutes: ['login', 'register', 'license', 'discussion', 'search'], // 禁止显示“菜单”按钮的路由名称
-  navItems: [ // 抽屉导航菜单
-    {
-      title: '首页',
-      icon: 'mdi-home',
-      route: '/home'
-    },
+  navItems: [
     {
       title: '分区',
       icon: 'mdi-home',
