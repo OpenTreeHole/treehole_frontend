@@ -42,7 +42,7 @@ export default class Editor extends BaseComponentOrView {
   mounted () {
     const storageToken = LocalStorageStore.token
     this.editor = new Vditor(this.contentName, {
-      height: 360,
+      height: 600,
       placeholder: '说些什么......',
       toolbarConfig: {
         pin: false

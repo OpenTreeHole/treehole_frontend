@@ -1,8 +1,10 @@
 <template>
   <v-container class='pa-0'>
     <!-- 帖子列表 -->
-    <HolePanel v-if='!isMobile' :key='this.$route.params.id' ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged' />
-    <HoleListMobile v-else ref='holeComp' />
+    <keep-alive>
+      <HolePanel v-if='!isMobile' :key='this.$route.params.id' ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged' />
+      <HoleListMobile v-else ref='holeComp' />
+    </keep-alive>
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div class='float-btn' v-show='showFloatBtn'>
@@ -11,7 +13,7 @@
       </v-btn>
       <br />
 
-      <v-dialog v-model='dialog' persistent max-width='600px'>
+      <v-dialog content-class='my-n4 mx-3' v-model='dialog' persistent max-width='1080px'>
         <template v-slot:activator='{ on, attrs }'>
           <v-btn
             fab
