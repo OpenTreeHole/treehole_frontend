@@ -6,12 +6,13 @@
                :class='firstColClass'
                :style="{marginTop: '-'+cposY.toString()+'px'}"
                @transitionend='onActivationEnd'
-               @wheel='scrollFirstColWhenActive'>
+               @wheel='scrollFirstColWhenActive'
+               @scroll='scrollListener'
+               @touchmove='touchmoveListener'
+        >
           <slot name='first' />
         </v-col>
-        <v-col v-if='showSecondCol' cols='5' />
-
-        <v-col cols='6'>
+        <v-col class='col-second' cols='6'>
           <slot name='second' />
         </v-col>
       </v-row>
@@ -85,9 +86,21 @@ export default class DoubleColumnPanel extends Vue {
   }
 
   public wheelListener (e: WheelEvent) {
+    console.log('wheel: ')
+    console.log(e)
     if (!this.isActive && this.isEnd) {
       this.scrollFirstCol(e)
     }
+  }
+
+  public touchmoveListener (e: any) {
+    console.log('touchmove: ')
+    console.log(e)
+  }
+
+  public scrollListener (e: any) {
+    console.log('scroll: ')
+    console.log(e)
   }
 
   public scrollFirstColWhenActive (e: any): void {
@@ -135,6 +148,10 @@ export default class DoubleColumnPanel extends Vue {
   position: fixed;
 }
 
+.col-second {
+  transform: translateX(17vw);
+}
+
 .col-first--inactive {
   transition: transform 0.5s, flex 0.5s, max-width 0.5s;
   transform: translateX(0);
@@ -144,8 +161,8 @@ export default class DoubleColumnPanel extends Vue {
 
 .col-first--active {
   transition: transform 0.5s, flex 0.5s, max-width 0.5s;
-  transform: translateX(-18vw);
-  flex: 28vw;
-  max-width: 28vw;
+  transform: translateX(-22vw);
+  flex: 32vw;
+  max-width: 32vw;
 }
 </style>
