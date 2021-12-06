@@ -34,6 +34,8 @@ export default class DoubleColumnPanel extends Vue {
   public isActive = false
   public isEnd = true
 
+  public canWheel = false
+
   public posY = 0
   public cposY = 0
 
@@ -87,21 +89,24 @@ export default class DoubleColumnPanel extends Vue {
   }
 
   public scrollFirstCol (e: WheelEvent): void {
+    this.canWheel = true
+
     const ratio = 0.7
     this.posY = (this.posY > -e.deltaY * ratio ? this.posY + e.deltaY * ratio : 0)
     this.limitPosY()
   }
 
   public touchmoveFirstCol (e: any): void {
-    if (this.touchY !== -1) {
+    if (this.touchY !== -1 && !this.canWheel) {
       const delta = e.pageY - this.touchY
       this.touchY = e.pageY
-      this.posY += delta
+      this.posY -= delta
+      this.cposY = this.posY
       this.limitPosY()
     }
   }
 
-  public touchendFirstCol (e: any) {
+  public touchendFirstCol () {
     this.touchY = -1
   }
 
