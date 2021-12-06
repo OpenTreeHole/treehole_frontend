@@ -122,6 +122,7 @@ export default class HoleListMixin extends BaseComponentOrView {
   }
 
   async onPreloaded () {
+    console.log(`onPreloaded: ${this.divisionId}`)
     this.pin()
     this.pauseLoading = false
     await this.$nextTick()

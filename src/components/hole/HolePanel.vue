@@ -1,65 +1,54 @@
 <template>
-  <v-container id='hole-panel' v-click-outside='clickOutside' style='overflow: visible'>
-    <v-row justify='center' class='ma-0'>
-      <v-col class='holelist'
-             :class='isActive ? "holelist-left" : "holelist-right"'
-             :style="{marginTop: '-'+posY.toString()+'px'}"
-             @transitionend='onActivationEnd'
-             @wheel='scrollHoleListWhenActive'
-      >
-        <HoleList
-          :activate='openHole'
-          :display-hole-id='displayHoleId'
-          :fix-card-height='isActive || !isEnd'
-          ref='holeList'
-          @refresh='refresh'
-        />
-      </v-col>
-      <v-col v-if='displayHoleId!==-1 && showFloorList' class='mb-5' cols='5' />
-
-      <v-col cols='6'>
-        <FloorList
-          v-if='displayHoleId!==-1 && showFloorList'
-          :key='displayHoleId'
-          :display-floor-id='displayFloorId'
-          :wrapped-hole-or-id='displayHole'
-          ref='floorList'
-          class='pa-0'
-        />
-      </v-col>
-    </v-row>
-  </v-container>
+  <double-column-panel ref='doubleColumnPanel' @show-second-col-changed='showFloorListChanged'>
+    <template #first>
+      <HoleList
+        :activate='openHole'
+        :display-hole-id='displayHoleId'
+        :fix-card-height='showFloorList'
+        ref='holeList'
+        @refresh='refresh'
+      />
+    </template>
+    <template #second>
+      <FloorList
+        v-if='displayHoleId!==-1 && showFloorList'
+        :key='displayHoleId'
+        :display-floor-id='displayFloorId'
+        :wrapped-hole-or-id='displayHole'
+        ref='floorList'
+        class='pa-0'
+      />
+    </template>
+  </double-column-panel>
 </template>
 
 <script lang='ts'>
 import HoleList from '@/components/hole/HoleList.vue'
 import FloorList from '@/components/hole/FloorList.vue'
 
-import { gsap } from 'gsap'
-import { Component, Emit, Ref, Watch } from 'vue-property-decorator'
+import { Component, Emit, Ref } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
 
 @Component({
   components: {
+    DoubleColumnPanel,
     FloorList,
     HoleList
   }
 })
 export default class HolePanel extends BaseComponentOrView {
-  public isActive = false
-  public isEnd = true
-  public showFloorList = false
   public displayHoleId = -1
-  public posY = 0
-  public marginTopY = 0
-  public viewport = 0
   public isLoadingVisible = false
   public displayHole: WrappedHole | null = null
   public displayFloorId = -1
 
+  public showFloorList = false
+
   @Ref() readonly holeList: HoleList
   @Ref() readonly floorList: FloorList
+  @Ref() readonly doubleColumnPanel: DoubleColumnPanel
 
   public refresh (): void {
     this.deactivate()
@@ -69,7 +58,7 @@ export default class HolePanel extends BaseComponentOrView {
 
   public openHole (wrappedHole: WrappedHole, displayFloorId?: number, preventClose: boolean = false): void {
     this.displayHole = wrappedHole
-    if (!this.isActive || !preventClose || this.displayHoleId !== wrappedHole.hole.holeId) {
+    if (!preventClose || this.displayHoleId !== wrappedHole.hole.holeId) {
       this.activate(wrappedHole.hole.holeId)
     }
     if (displayFloorId) {
@@ -83,103 +72,40 @@ export default class HolePanel extends BaseComponentOrView {
   }
 
   public activate (id: number): void {
-    if (!this.isActive) {
-      this.isActive = true
-      this.isEnd = false
-    }
-    if (this.displayHoleId !== id) {
+    if (id === this.displayHoleId) {
+      this.doubleColumnPanel.deactivate()
+      this.displayHoleId = -1
+    } else {
+      this.doubleColumnPanel.activate()
       this.displayHoleId = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
-    } else {
-      this.displayHoleId = -1
-      this.showFloorList = false
-      this.isActive = false
-      this.isEnd = false
-    }
-  }
-
-  public onActivationEnd (e: TransitionEvent): void {
-    if (e.propertyName === 'transform') {
-      this.isEnd = true
-      if (this.isActive) {
-        document.body.scrollTop = document.documentElement.scrollTop = 0
-        this.showFloorList = true
-      }
     }
   }
 
   public resetScrollTop () {
-    this.marginTopY = this.posY = 0
-  }
-
-  public scrollHoleList (e: WheelEvent): void {
-    const ratio = 0.7
-    this.marginTopY = (this.marginTopY > -e.deltaY * ratio ? this.marginTopY + e.deltaY * ratio : 0)
-
-    const height = this.holeList.getHeight()
-
-    if (this.marginTopY + this.viewport > height + 200) {
-      this.marginTopY = height - this.viewport + 200
-    }
-  }
-
-  public wheelListener (e: WheelEvent) {
-    if (!this.isActive && this.isEnd) {
-      this.scrollHoleList(e)
-    }
-  }
-
-  public scrollHoleListWhenActive (e: any): void {
-    if (this.isActive || !this.isEnd) {
-      e.preventDefault()
-      this.scrollHoleList(e)
-    }
+    this.doubleColumnPanel.resetScrollTop()
   }
 
   public deactivate (): void {
-    if (this.displayHoleId !== -1) {
-      this.activate(this.displayHoleId)
-    }
+    this.doubleColumnPanel.deactivate()
   }
 
-  public clickOutside (e: { path: HTMLElement[] }) {
-    // The length of e.path will be 5 only when dragging cursor from the dialog to the overlay.
-    // The floor list should not be closed in this situation.
-    if (!e.path || e.path.length === 5 || !e.path[0].className.includes('main')) return
-    let flag = true
-    for (let i = 0; i < e.path.length; i++) {
-      if (e.path[i].className && e.path[i].className.includes && (e.path[i].className.includes('navbar') ||
-        e.path[i].className.includes('dialog') || e.path[i].className.includes('overlay'))) flag = false
-    }
-    if (flag) this.deactivate()
-  }
-
-  mounted () {
-    const mainElement = document.getElementsByClassName('v-main__wrap').item(0)
-    if (mainElement instanceof HTMLElement) mainElement.addEventListener('wheel', this.wheelListener)
-    this.viewport = window.innerHeight
-    window.addEventListener('resize', () => {
-      this.viewport = window.innerHeight
-    })
-  }
-
-  destroyed () {
-    const mainElement = document.getElementsByClassName('v-main__wrap').item(0)
-    if (mainElement instanceof HTMLElement) mainElement.removeEventListener('wheel', this.wheelListener)
-  }
-
-  @Watch('showFloorList')
   @Emit()
-  showFloorListChanged (_val: boolean) {
+  public showFloorListChanged (show: boolean) {
+    this.showFloorList = show
   }
 
-  @Watch('marginTopY')
-  marginTopYChanged (newVal: number) {
-    gsap.to(this.$data, {
-      duration: 0.2,
-      posY: newVal
-    })
-  }
+  // public clickOutside (e: { path: HTMLElement[] }) {
+  //   // The length of e.path will be 5 only when dragging cursor from the dialog to the overlay.
+  //   // The floor list should not be closed in this situation.
+  //   if (!e.path || e.path.length === 5 || !e.path[0].className.includes('main')) return
+  //   let flag = true
+  //   for (let i = 0; i < e.path.length; i++) {
+  //     if (e.path[i].className && e.path[i].className.includes && (e.path[i].className.includes('navbar') ||
+  //       e.path[i].className.includes('dialog') || e.path[i].className.includes('overlay'))) flag = false
+  //   }
+  //   if (flag) this.deactivate()
+  // }
 }
 </script>
 
