@@ -7,8 +7,9 @@
                :style="{marginTop: '-'+cposY.toString()+'px'}"
                @transitionend='onActivationEnd'
                @wheel='scrollFirstColWhenActive'
-               @scroll='scrollListener'
                @touchmove='touchmoveListener'
+               @touchstart='touchstartListener'
+               @touchend='touchendListener'
         >
           <slot name='first' />
         </v-col>
@@ -35,6 +36,8 @@ export default class DoubleColumnPanel extends Vue {
 
   public posY = 0
   public cposY = 0
+
+  public touchY = -1
 
   public viewport = 0
 
@@ -72,9 +75,7 @@ export default class DoubleColumnPanel extends Vue {
     this.cposY = this.posY = 0
   }
 
-  public scrollFirstCol (e: WheelEvent): void {
-    const ratio = 0.7
-    this.posY = (this.posY > -e.deltaY * ratio ? this.posY + e.deltaY * ratio : 0)
+  public limitPosY () {
     const els = document.getElementsByClassName('.col-first')
     if (!els || els.length === 0) return
     const firstCol = els[0] as HTMLElement
@@ -85,22 +86,56 @@ export default class DoubleColumnPanel extends Vue {
     }
   }
 
+  public scrollFirstCol (e: WheelEvent): void {
+    const ratio = 0.7
+    this.posY = (this.posY > -e.deltaY * ratio ? this.posY + e.deltaY * ratio : 0)
+    this.limitPosY()
+  }
+
+  public touchmoveFirstCol (e: any): void {
+    if (this.touchY !== -1) {
+      const delta = e.pageY - this.touchY
+      this.touchY = e.pageY
+      this.posY += delta
+      this.limitPosY()
+    }
+  }
+
+  public touchendFirstCol (e: any) {
+    this.touchY = -1
+  }
+
+  public touchstartFirstCol (e: any): void {
+    if (e.touches.length === 1) {
+      this.touchY = e.pageY
+    }
+  }
+
   public wheelListener (e: WheelEvent) {
-    console.log('wheel: ')
-    console.log(e)
     if (!this.isActive && this.isEnd) {
       this.scrollFirstCol(e)
     }
   }
 
-  public touchmoveListener (e: any) {
+  public touchmoveListener (e: TouchEvent) {
     console.log('touchmove: ')
     console.log(e)
+
+    this.touchmoveFirstCol(e)
   }
 
-  public scrollListener (e: any) {
-    console.log('scroll: ')
+  public touchstartListener (e: TouchEvent) {
+    console.log('touchstart: ')
     console.log(e)
+
+    this.touchstartFirstCol(e)
+  }
+
+  public touchendListener (e: TouchEvent) {
+    console.log('touchend: ')
+    console.log(e)
+
+    this.touchstartFirstCol(e)
   }
 
   public scrollFirstColWhenActive (e: any): void {
