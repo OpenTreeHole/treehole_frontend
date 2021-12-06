@@ -1,5 +1,5 @@
-import { Floor, MarkedDetailedFloor, MarkedFloor } from '@/api/hole'
-import { scrollTo } from '@/utils'
+import { Floor, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { camelizeKeys, scrollTo, sleep } from '@/utils'
 import { EventBus } from '@/event-bus'
 import Mention from '@/components/hole/Mention.vue'
 import vuetify from '@/plugins/vuetify'
@@ -7,6 +7,7 @@ import Vue from 'vue'
 import FloorListMixin from '@/mixins/FloorListMixin.vue'
 import UtilStore from '@/store/modules/UtilStore'
 import { Main } from '@/main'
+import { VueInstance } from '@/instance'
 
 export async function renderFloor (curFloor: MarkedDetailedFloor, floorList?: FloorListMixin): Promise<void> {
   if (('mention' in curFloor) && curFloor.mention.length !== 0) {
@@ -77,7 +78,8 @@ export function gotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: M
   else gotoHole(mentionFloor.holeId, mentionFloor.floorId)
 }
 
-export function gotoHole (holeId: number, floorId?: number, toIndex?: number) {
+export function gotoHole (holeIdOrHole: number | WrappedHole, floorId?: number, toIndex?: number) {
+  const holeId = (typeof holeIdOrHole === 'number') ? holeIdOrHole : holeIdOrHole.holeId
   if (UtilStore.isMobile) {
     if (floorId !== undefined) {
       Main.$router.push({
@@ -90,8 +92,20 @@ export function gotoHole (holeId: number, floorId?: number, toIndex?: number) {
       })
     }
   } else {
-    if (floorId === undefined) EventBus.$emit('goto-hole', holeId)
-    else if (toIndex === undefined) EventBus.$emit('goto-hole', holeId, floorId)
-    else EventBus.$emit('goto-hole', holeId, floorId, toIndex)
+    if (floorId === undefined) EventBus.$emit('goto-hole', holeIdOrHole)
+    else if (toIndex === undefined) EventBus.$emit('goto-hole', holeIdOrHole, floorId)
+    else EventBus.$emit('goto-hole', holeIdOrHole, floorId, toIndex)
+  }
+}
+
+export async function openDivisionAndGotoHole (holeId: number, floorId?: number, toIndex?: number) {
+  if (UtilStore.isMobile) gotoHole(holeId, floorId, toIndex)
+  else {
+    const response = await VueInstance.$axios?.get(`/holes/${holeId}`)
+    const hole = new WrappedHole(camelizeKeys(response.data))
+    const path = `/division/${hole.hole.divisionId}`
+    if (Main.$route.path !== path) await Main.$router.push(path)
+    await sleep(500)
+    gotoHole(hole, floorId, toIndex)
   }
 }

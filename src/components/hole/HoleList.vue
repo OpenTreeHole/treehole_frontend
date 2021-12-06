@@ -75,8 +75,10 @@ export default class HoleList extends HoleListMixin {
     this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId, curIndex)
   }
 
-  public openNewOrExistHole (holeId: number, floorId?: number, toIndex = this.request.pinCount) {
-    this.loading.waitForUnpause(8)
+  public async openNewOrExistHole (holeIdOrHole: number | WrappedHole, floorId?: number, toIndex = this.request.pinCount) {
+    await this.loading.waitForUnpause(8)
+
+    const holeId = (typeof holeIdOrHole === 'number') ? holeIdOrHole : holeIdOrHole.holeId
 
     let hole: WrappedHole | undefined, index: number | undefined
     this.holes.forEach((h, i) => {
@@ -87,11 +89,15 @@ export default class HoleList extends HoleListMixin {
     })
 
     if (hole === undefined || index === undefined) {
-      this.loading.loadCustomRequestOnce(async () => this.request.requestHole(holeId, toIndex)).then(() => {
+      if (typeof holeIdOrHole !== 'number') {
+        hole = holeIdOrHole
+        this.holes.splice(toIndex, 0, hole)
+      } else {
+        await this.loading.loadCustomRequestOnce(async () => this.request.requestHole(holeId, toIndex))
         hole = this.holes[toIndex]
-        if (floorId) this.activate(hole, floorId, true)
-        else this.activate(hole)
-      })
+      }
+      if (floorId) this.activate(hole, floorId, true)
+      else this.activate(hole)
     } else {
       if (!this.isPinned(holeId) && index !== toIndex) {
         this.holes.splice(index, 1)

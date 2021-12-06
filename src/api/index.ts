@@ -81,7 +81,6 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
   public async requestHole (holeId: number, position: number = 0) {
     await VueInstance.$axios?.get(`/holes/${holeId}`).then((response) => {
       const hole = new WrappedHole(camelizeKeys(response.data))
-      console.log(1231)
       this.datas.splice(position, 0, hole)
     }).catch(error => {
       throw new Error(error)

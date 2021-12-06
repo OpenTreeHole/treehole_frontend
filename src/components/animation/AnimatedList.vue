@@ -55,7 +55,6 @@ export default class AnimatedList extends BaseComponentOrView {
     let top = 0
     this.currentTop = new Map()
     this.computedDatas.forEach(computedData => {
-      console.log(computedData)
       this.currentTop.set(computedData.data[this.vkey], top)
       const height = this.computedHeight.get(computedData.data[this.vkey])
       if (!height) throw new Error('Computed Height Not Found!')

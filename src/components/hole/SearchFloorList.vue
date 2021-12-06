@@ -56,8 +56,7 @@ import Mention from '@/components/hole/Mention.vue'
 import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { SearchFloorListRequest } from '@/api'
-import { gotoHole } from '@/utils/floor'
-import { sleep } from '@/utils'
+import { openDivisionAndGotoHole } from '@/utils/floor'
 
 @Component({
   components: {
@@ -95,10 +94,7 @@ export default class SearchFloorList extends BaseComponentOrView {
   }
 
   gotoHole (holeId: number, floorId?: number) {
-    this.$router.push('/division/1').then(async () => {
-      await sleep(1000)
-      gotoHole(holeId, floorId)
-    })
+    openDivisionAndGotoHole(holeId, floorId)
   }
 }
 </script>
