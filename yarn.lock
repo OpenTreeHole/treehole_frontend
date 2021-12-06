@@ -911,6 +911,18 @@
     "@babel/helper-validator-identifier" "^7.15.7"
     "to-fast-properties" "^2.0.0"
 
+"@fortawesome/fontawesome-common-types@^0.2.36":
+  "integrity" "sha512-a/7BiSgobHAgBWeN7N0w+lAhInrGxksn13uK7231n2m8EDPE3BMCl9NZLTGrj9ZXfCmC6LM0QLqXidIizVQ6yg=="
+  "resolved" "https://registry.npmjs.org/@fortawesome/fontawesome-common-types/-/fontawesome-common-types-0.2.36.tgz"
+  "version" "0.2.36"
+
+"@fortawesome/free-solid-svg-icons@^5.15.3":
+  "integrity" "sha512-JLmQfz6tdtwxoihXLg6lT78BorrFyCf59SAwBM6qV/0zXyVeDygJVb3fk+j5Qat+Yvcxp1buLTY5iDh1ZSAQ8w=="
+  "resolved" "https://registry.npmjs.org/@fortawesome/free-solid-svg-icons/-/free-solid-svg-icons-5.15.4.tgz"
+  "version" "5.15.4"
+  dependencies:
+    "@fortawesome/fontawesome-common-types" "^0.2.36"
+
 "@hapi/address@2.x.x":
   "integrity" "sha512-QD1PhQk+s31P1ixsX0H0Suoupp3VMXzIVMSwobR3F3MSUO2YCV0B7xqLcUw/Bh8yuvd3LhpyqLQWTNcRmp6IdQ=="
   "resolved" "https://registry.npmjs.org/@hapi/address/-/address-2.1.4.tgz"
@@ -3001,6 +3013,11 @@
   "resolved" "https://registry.npmjs.org/cookie-signature/-/cookie-signature-1.0.6.tgz"
   "version" "1.0.6"
 
+"cookie-storage@^6.1.0":
+  "integrity" "sha512-HeVqbVy8BjXhAAuFtL6MTG+witHoLbxfky2jgVh9FmxmyL6IKa9gSSyPNjevXCCCxPu6Tzd9J8+eXTRQzYU/cg=="
+  "resolved" "https://registry.npmjs.org/cookie-storage/-/cookie-storage-6.1.0.tgz"
+  "version" "6.1.0"
+
 "cookie@0.4.0":
   "integrity" "sha512-+Hp8fLp57wnUSt0tY0tHEXh4voZRDnoIrZPqlo3DPiI4y9lwg/jqx+1Om94/W6ZaPDOUbnjOt/99w66zk+l1Xg=="
   "resolved" "https://registry.npmjs.org/cookie/-/cookie-0.4.0.tgz"
@@ -3022,6 +3039,11 @@
   "integrity" "sha1-Z29us8OZl8LuGsOpJP1hJHSPV40="
   "resolved" "https://registry.npmjs.org/copy-descriptor/-/copy-descriptor-0.1.1.tgz"
   "version" "0.1.1"
+
+"copy-text-to-clipboard@^3.0.1":
+  "integrity" "sha512-rvVsHrpFcL4F2P8ihsoLdFHmd404+CMg71S756oRSeQgqk51U3kicGdnvfkrxva0xXH92SjGS62B0XIJsbh+9Q=="
+  "resolved" "https://registry.npmjs.org/copy-text-to-clipboard/-/copy-text-to-clipboard-3.0.1.tgz"
+  "version" "3.0.1"
 
 "copy-webpack-plugin@^5.1.1":
   "integrity" "sha512-Uh7crJAco3AjBvgAy9Z75CjK8IG+gxaErro71THQ+vv/bl4HaQcpkexAY8KVW/T6D2W2IRr+couF/knIRkZMIQ=="
@@ -3054,7 +3076,7 @@
   "resolved" "https://registry.npmjs.org/core-js/-/core-js-2.6.12.tgz"
   "version" "2.6.12"
 
-"core-js@^3.6.5":
+"core-js@^3.11.0", "core-js@^3.6.5":
   "integrity" "sha512-tReEhtMReZaPFVw7dajMx0vlsz3oOb8ajgPoHVYGxr8ErnZ6PcYEvvmjGmXlfpnxpkYSdOQttjB+MvVbCGfvLw=="
   "resolved" "https://registry.npmjs.org/core-js/-/core-js-3.18.3.tgz"
   "version" "3.18.3"
@@ -6423,6 +6445,11 @@
     "dns-packet" "^1.3.1"
     "thunky" "^1.0.2"
 
+"mutation-observer@^1.0.3":
+  "integrity" "sha512-M/O/4rF2h776hV7qGMZUH3utZLO/jK7p8rnNgGkjKUw8zCGjRQPxB8z6+5l8+VjRUQ3dNYu4vjqXYLr+U8ZVNA=="
+  "resolved" "https://registry.npmjs.org/mutation-observer/-/mutation-observer-1.0.3.tgz"
+  "version" "1.0.3"
+
 "mute-stream@0.0.8":
   "integrity" "sha512-nnbWWOkoWyUsTjKrhgD0dcz22mdkSnpYqbEjIm2nhwhuxlSkpywJmBo8h0ZqJdkp73mb90SssHkN4rsRaBAfAA=="
   "resolved" "https://registry.npmjs.org/mute-stream/-/mute-stream-0.0.8.tgz"
@@ -8835,6 +8862,11 @@
   dependencies:
     "has-flag" "^4.0.0"
 
+"svelte-fa@^2.2.1":
+  "integrity" "sha512-0bnbMGbsE1LUnlioDcf27tl2O8kjuXlTXMXzIxC7LoIOWmqn0D+zd539HfLiQbdLuOHGTaynwN9V+4ehhEu1Jw=="
+  "resolved" "https://registry.npmjs.org/svelte-fa/-/svelte-fa-2.4.0.tgz"
+  "version" "2.4.0"
+
 "svg-tags@^1.0.0":
   "integrity" "sha1-WPcc7jvVGbWdSyqEO2x95krAR2Q="
   "resolved" "https://registry.nlark.com/svg-tags/download/svg-tags-1.0.0.tgz"
@@ -9386,6 +9418,18 @@
   "integrity" "sha1-IpnwLG3tMNSllhsLn3RSShj2NPw="
   "resolved" "https://registry.npmjs.org/vary/-/vary-1.1.2.tgz"
   "version" "1.1.2"
+
+"vconsole@^3.9.5":
+  "integrity" "sha512-myecIEw9dvszjLPsodHc1W+zgGyP8939iO7JrcboF88gHTgRijdH3gMKT3QtWS1r/5EhtDOsGG7paRC9TX9hBQ=="
+  "resolved" "https://registry.npmjs.org/vconsole/-/vconsole-3.9.5.tgz"
+  "version" "3.9.5"
+  dependencies:
+    "@fortawesome/free-solid-svg-icons" "^5.15.3"
+    "cookie-storage" "^6.1.0"
+    "copy-text-to-clipboard" "^3.0.1"
+    "core-js" "^3.11.0"
+    "mutation-observer" "^1.0.3"
+    "svelte-fa" "^2.2.1"
 
 "vditor@^3.8.4":
   "integrity" "sha512-7loYmcj1TCkJV86qwstxzAy33GweFKdJnpiSzGGPqUzDaOcUAiaiFAjIQjxwJ3/sx7pNZf1NWLhXKabXEN7xzQ=="

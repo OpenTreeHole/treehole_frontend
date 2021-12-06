@@ -35,6 +35,9 @@ import 'highlight.js/styles/github.css'
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
+import VConsole from 'vconsole'
+
+const vConsole = new VConsole()
 
 @Component({
   components: {
@@ -54,6 +57,10 @@ export default class App extends BaseComponentOrView {
     document.addEventListener('offlined', (event: any) => {
       this.messageWarning(event.detail)
     })
+  }
+
+  destroyed () {
+    vConsole.destroy()
   }
 }
 </script>
