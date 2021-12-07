@@ -181,12 +181,14 @@ export default class DoubleColumnPanel extends Vue {
 
 .col-first {
   position: relative;
-  height: 100%
+  height: 100%;
+  z-index: 2;
 }
 
 .col-second {
   position: relative;
-  height: 100%
+  height: 100%;
+  z-index: 1;
 }
 
 .col-first--inactive {
