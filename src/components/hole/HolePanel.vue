@@ -82,6 +82,7 @@ export default class HolePanel extends BaseComponentOrView {
   }
 
   public deactivate (): void {
+    this.displayHoleId = -1
     this.doubleColumnPanel.deactivate()
   }
 
