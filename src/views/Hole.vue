@@ -1,5 +1,11 @@
 <template>
-  <FloorList :wrapped-hole-or-id='computedDiscussionId' :display-floor-id='mentionFloorId'/>
+  <v-container>
+    <v-row justify='center'>
+      <v-col cols='12' md='9'>
+        <FloorList :wrapped-hole-or-id='computedDiscussionId' :display-floor-id='mentionFloorId'/>
+      </v-col>
+    </v-row>
+  </v-container>
 </template>
 
 <script lang='ts'>

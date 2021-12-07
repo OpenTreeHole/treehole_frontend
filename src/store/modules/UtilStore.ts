@@ -6,7 +6,7 @@ class UtilStore extends VuexModule {
   public isMobile: boolean = false
 
   @Mutation
-  public setIsMobile (val: boolean): void{
+  public setIsMobile (val: boolean): void {
     this.isMobile = val
   }
 
@@ -15,7 +15,7 @@ class UtilStore extends VuexModule {
    */
   @Action
   public checkDevice (): void {
-    this.setIsMobile(document.body.clientWidth <= 768)
+    this.setIsMobile(document.body.clientWidth <= 768 && /^((?!chrome|android).)*safari/i.test(navigator.userAgent))
   }
 }
 

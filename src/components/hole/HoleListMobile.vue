@@ -6,7 +6,7 @@
       justify='center'
       class='ma-0'
     >
-      <v-col class='py-1 px-1' cols='12'>
+      <v-col class='py-1 px-1' cols='12' md='9'>
         <HoleCard
           :hole='hole'
           :index='index'
