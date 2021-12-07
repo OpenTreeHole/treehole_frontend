@@ -21,6 +21,11 @@ import store from './store'
 import ws from '@/api/ws'
 import { timeDifference } from '@/utils'
 
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+
+// global registration
+Vue.component('overlay-scrollbars', OverlayScrollbarsComponent)
+
 Vue.prototype.$feConfig = FDUHoleFEConfig
 Vue.prototype.$ws = ws
 

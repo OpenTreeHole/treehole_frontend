@@ -144,7 +144,7 @@ export default class FloorList extends FloorListMixin {
   public tryScrollTo (currentIndex:number, toIndex:number, retryTimes: number, interval: number) {
     setTimeout(() => {
       if (document.getElementById(currentIndex.toString()) && document.getElementById(toIndex.toString())) {
-        scrollTo(currentIndex, toIndex)
+        scrollTo(toIndex)
       } else {
         this.tryScrollTo(currentIndex, toIndex, retryTimes - 1, interval)
       }

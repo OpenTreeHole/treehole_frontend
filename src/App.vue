@@ -31,13 +31,15 @@ import '@/style/global.scss'
 import 'github-markdown-css/github-markdown.css'
 import 'katex/dist/katex.min.css'
 import 'highlight.js/styles/github.css'
+import 'overlayscrollbars/css/OverlayScrollbars.css'
 
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import VConsole from 'vconsole'
 
-const vConsole = new VConsole()
+// eslint-disable-next-line no-new
+if (process.env.NODE_ENV !== 'production') new VConsole()
 
 @Component({
   components: {
@@ -57,10 +59,6 @@ export default class App extends BaseComponentOrView {
     document.addEventListener('offlined', (event: any) => {
       this.messageWarning(event.detail)
     })
-  }
-
-  destroyed () {
-    vConsole.destroy()
   }
 }
 </script>

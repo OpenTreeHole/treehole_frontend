@@ -3,7 +3,7 @@ import { Component, Prop, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
-import { camelizeKeys, scrollTo } from '@/utils'
+import { camelizeKeys } from '@/utils'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { FloorListRequest } from '@/api'
 import Vue from 'vue'
@@ -251,12 +251,6 @@ export default class FloorListMixin extends BaseComponentOrView {
 
   async renderFloor (curFloor: MarkedDetailedFloor) {
     await renderFloor(curFloor, this)
-  }
-
-  mounted () {
-    if (this.displayFloorId !== -1) {
-      scrollTo(0, this.getIndex(this.displayFloorId))
-    }
   }
 
   get contentName (): string {

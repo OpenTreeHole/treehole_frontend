@@ -1,5 +1,6 @@
 import { assign, camelCase, keys, pick } from 'lodash'
 import katex from 'katex'
+import { EventBus } from '@/event-bus'
 
 const macros: any = []
 
@@ -90,16 +91,8 @@ export const convertKatex = (str: string) => {
   })
 }
 
-export const scrollTo = (currentIndex: number, toIndex: number): void => {
-  // const currentOffsetTop = document.getElementById(currentIndex.toString())?.offsetTop
-  const start = document.getElementById('0')?.offsetTop
-  const toOffsetTop = document.getElementById(toIndex.toString())?.offsetTop
-  const scrollDistance = start && toOffsetTop ? toOffsetTop - start + window.scrollY : 0
-  window.scrollBy({
-    top: scrollDistance,
-    left: 0,
-    behavior: 'smooth'
-  })
+export const scrollTo = (toIndex: number): void => {
+  EventBus.$emit('scroll-to', toIndex)
 }
 
 /**

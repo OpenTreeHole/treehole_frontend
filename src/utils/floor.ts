@@ -41,7 +41,7 @@ export function renderMention (curFloor: MarkedDetailedFloor, floorList?: FloorL
     const mentionIndex = floorList?.getIndex(mentionId) ?? -1
     if (mentionIndex !== -1) {
       gotoMentionFloorF = () => {
-        scrollTo(curIndex, mentionIndex)
+        scrollTo(mentionIndex)
       }
     } else if (curIndex !== -1) {
       gotoMentionFloorF = () => {

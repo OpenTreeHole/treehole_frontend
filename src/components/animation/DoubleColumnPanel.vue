@@ -1,20 +1,25 @@
 <template>
   <v-sheet>
-    <v-container class='double-column-panel'>
+    <v-container class='pa-0 double-column-panel'>
       <v-row class='ma-0' justify='center'>
+
         <v-col class='col-first'
                :class='firstColClass'
-               :style="{marginTop: '-'+cposY.toString()+'px'}"
                @transitionend='onActivationEnd'
-               @wheel='scrollFirstColWhenActive'
-               @touchmove='touchmoveListener'
-               @touchstart='touchstartListener'
-               @touchend='touchendListener'
         >
-          <slot name='first' />
+          <overlay-scrollbars ref='osColFirst' :options='osOptions' style='display: block; height: 100%; width: 100%;'>
+            <div style='padding: 12px 20px'>
+              <slot name='first' />
+            </div>
+          </overlay-scrollbars>
         </v-col>
+
         <v-col class='col-second' cols='6'>
-          <slot name='second' />
+          <overlay-scrollbars ref='osColSecond' :options='osOptions' style='display: block; height: 100%; width: 100%;'>
+            <div style='padding: 12px 20px'>
+              <slot name='second' />
+            </div>
+          </overlay-scrollbars>
         </v-col>
       </v-row>
     </v-container>
@@ -22,9 +27,10 @@
 </template>
 
 <script lang='ts'>
-import { Component, Emit, Watch } from 'vue-property-decorator'
+import { Component, Emit, Ref, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
-import { gsap } from 'gsap'
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+import { EventBus } from '@/event-bus'
 
 @Component
 export default class DoubleColumnPanel extends Vue {
@@ -34,14 +40,58 @@ export default class DoubleColumnPanel extends Vue {
   public isActive = false
   public isEnd = true
 
-  public canWheel = false
-
-  public posY = 0
-  public cposY = 0
-
-  public touchY = -1
-
   public viewport = 0
+
+  public osOptions = {
+    className: 'os-theme-dark',
+    resize: 'none',
+    sizeAutoCapable: true,
+    clipAlways: true,
+    normalizeRTL: true,
+    paddingAbsolute: false,
+    autoUpdate: null,
+    autoUpdateInterval: 33,
+    updateOnLoad: ['img'],
+    nativeScrollbarsOverlaid: {
+      showNativeScrollbars: false,
+      initialize: true
+    },
+    overflowBehavior: {
+      x: 'v-h',
+      y: 'scroll'
+    },
+    scrollbars: {
+      visibility: 'auto',
+      autoHide: 'leave',
+      autoHideDelay: 400,
+      dragScrolling: true,
+      clickScrolling: false,
+      touchSupport: true,
+      snapHandle: false
+    },
+    textarea: {
+      dynWidth: false,
+      dynHeight: false,
+      inheritedAttrs: ['style', 'class']
+    },
+    callbacks: {
+      onInitialized: null,
+      onInitializationWithdrawn: null,
+      onDestroyed: null,
+      onScrollStart: null,
+      onScroll: null,
+      onScrollStop: null,
+      onOverflowChanged: null,
+      onOverflowAmountChanged: null,
+      onDirectionChanged: null,
+      onContentSizeChanged: null,
+      onHostSizeChanged: null,
+      onUpdated: null
+    }
+  }
+
+  @Ref() osColFirst: OverlayScrollbarsComponent
+  @Ref() osColSecond: OverlayScrollbarsComponent
 
   get firstColClass () {
     return this.isActive ? this.firstColActiveClass : this.firstColInactiveClass
@@ -73,135 +123,65 @@ export default class DoubleColumnPanel extends Vue {
     }
   }
 
-  public resetScrollTop () {
-    this.cposY = this.posY = 0
-  }
-
-  public limitPosY () {
-    const els = document.getElementsByClassName('.col-first')
-    if (!els || els.length === 0) return
-    const firstCol = els[0] as HTMLElement
-    const height = parseInt(window.getComputedStyle(firstCol).height)
-
-    if (this.posY + this.viewport > height + 200) {
-      this.posY = height - this.viewport + 200
+  public scrollToEl (toIndex: number) {
+    const el = document.getElementById(toIndex.toString())
+    if (!el) {
+      console.error(`Not Found Element with Id: ${toIndex}!`)
+      return
     }
-  }
-
-  public scrollFirstCol (e: WheelEvent): void {
-    this.canWheel = true
-
-    const ratio = 0.7
-    this.posY = (this.posY > -e.deltaY * ratio ? this.posY + e.deltaY * ratio : 0)
-    this.limitPosY()
-  }
-
-  public touchmoveFirstCol (e: any): void {
-    if (this.touchY !== -1 && !this.canWheel) {
-      const delta = e.pageY - this.touchY
-      this.touchY = e.pageY
-      this.posY -= delta
-      this.cposY = this.posY
-      this.limitPosY()
+    const instance = this.osColSecond.osInstance()
+    if (!instance) {
+      console.error('OverlayScrollbar has no instance!')
+      return
     }
-  }
-
-  public touchendFirstCol () {
-    this.touchY = -1
-  }
-
-  public touchstartFirstCol (e: any): void {
-    if (e.touches.length === 1) {
-      this.touchY = e.pageY
-    }
-  }
-
-  public wheelListener (e: WheelEvent) {
-    if (!this.isActive && this.isEnd) {
-      this.scrollFirstCol(e)
-    }
-  }
-
-  public touchmoveListener (e: TouchEvent) {
-    console.log('touchmove: ')
-    console.log(e)
-
-    this.touchmoveFirstCol(e)
-  }
-
-  public touchstartListener (e: TouchEvent) {
-    console.log('touchstart: ')
-    console.log(e)
-
-    this.touchstartFirstCol(e)
-  }
-
-  public touchendListener (e: TouchEvent) {
-    console.log('touchend: ')
-    console.log(e)
-
-    this.touchstartFirstCol(e)
-  }
-
-  public scrollFirstColWhenActive (e: any): void {
-    if (this.isActive || !this.isEnd) {
-      e.preventDefault()
-      this.scrollFirstCol(e)
-    }
+    instance.scroll(el, 1300)
   }
 
   mounted () {
-    const mainElement = document.getElementsByClassName('v-main__wrap').item(0)
-    if (mainElement instanceof HTMLElement) mainElement.addEventListener('wheel', this.wheelListener)
     this.viewport = window.innerHeight
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight
     })
+
+    EventBus.$on('scroll-to', this.scrollToEl)
   }
 
   destroyed () {
-    const mainElement = document.getElementsByClassName('v-main__wrap').item(0)
-    if (mainElement instanceof HTMLElement) mainElement.removeEventListener('wheel', this.wheelListener)
+    EventBus.$off('scroll-to', this.scrollToEl)
   }
 
   @Watch('showSecondCol')
   @Emit()
-  showSecondColChanged (_val: boolean) {
-  }
-
-  @Watch('posY')
-  posYChanged (newVal: number) {
-    gsap.to(this.$data, {
-      duration: 0.2,
-      cposY: newVal
-    })
+  async showSecondColChanged (_val: boolean) {
   }
 }
 </script>
 
 <style scoped>
 .double-column-panel {
-  overflow: visible
+  overflow: hidden
 }
 
 .col-first {
-  position: fixed;
+  position: relative;
+  height: 92vh;
 }
 
 .col-second {
-  transform: translateX(17vw);
+  position: relative;
+  height: 92vh;
 }
 
 .col-first--inactive {
   transition: transform 0.5s, flex 0.5s, max-width 0.5s;
-  transform: translateX(0);
+  transform: translateX(22vw);
   flex: 40vw;
   max-width: 40vw;
 }
 
 .col-first--active {
   transition: transform 0.5s, flex 0.5s, max-width 0.5s;
-  transform: translateX(-22vw);
+  transform: translateX(0);
   flex: 32vw;
   max-width: 32vw;
 }

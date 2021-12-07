@@ -1142,6 +1142,11 @@
   "resolved" "https://registry.npmjs.org/@types/normalize-package-data/-/normalize-package-data-2.4.1.tgz"
   "version" "2.4.1"
 
+"@types/overlayscrollbars@^1.12.1":
+  "integrity" "sha512-V25YHbSoKQN35UasHf0EKD9U2vcmexRSp78qa8UglxFH8H3D+adEa9zGZwrqpH4TdvqeMrgMqVqsLB4woAryrQ=="
+  "resolved" "https://registry.npmjs.org/@types/overlayscrollbars/-/overlayscrollbars-1.12.1.tgz"
+  "version" "1.12.1"
+
 "@types/parse-json@^4.0.0":
   "integrity" "sha1-L4u0QUNNFjs1+4/9zNcTiSf/uMA="
   "resolved" "https://registry.nlark.com/@types/parse-json/download/@types/parse-json-4.0.0.tgz"
@@ -6826,6 +6831,16 @@
   "resolved" "https://registry.npmjs.org/os-tmpdir/-/os-tmpdir-1.0.2.tgz"
   "version" "1.0.2"
 
+"overlayscrollbars-vue@^0.2.2":
+  "integrity" "sha512-JpDkM+fkNp7YbZxZNf9cbSWCa1tylaSUkmdhux+qtVFekH4zpZpM8+GRtOgs7YDDWyVNPkUBQ8FnMRMoBNfoJw=="
+  "resolved" "https://registry.npmjs.org/overlayscrollbars-vue/-/overlayscrollbars-vue-0.2.2.tgz"
+  "version" "0.2.2"
+
+"overlayscrollbars@^1.10.0", "overlayscrollbars@^1.13.1":
+  "integrity" "sha512-gIQfzgGgu1wy80EB4/6DaJGHMEGmizq27xHIESrzXq0Y/J0Ay1P3DWk6tuVmEPIZH15zaBlxeEJOqdJKmowHCQ=="
+  "resolved" "https://registry.npmjs.org/overlayscrollbars/-/overlayscrollbars-1.13.1.tgz"
+  "version" "1.13.1"
+
 "p-finally@^1.0.0":
   "integrity" "sha1-P7z7FbiZpEEjs0ttzBi3JDNqLK4="
   "resolved" "https://registry.npmjs.org/p-finally/-/p-finally-1.0.0.tgz"
@@ -9567,7 +9582,7 @@
   "resolved" "https://registry.npmjs.org/vue-template-es2015-compiler/-/vue-template-es2015-compiler-1.9.1.tgz"
   "version" "1.9.1"
 
-"vue@*", "vue@^2 || ^3.0.0-0", "vue@^2.0.0", "vue@^2.6.11", "vue@^2.6.4", "vue@>=2":
+"vue@*", "vue@^2 || ^3.0.0-0", "vue@^2.0.0", "vue@^2.6.0", "vue@^2.6.11", "vue@^2.6.4", "vue@>=2":
   "integrity" "sha512-x2284lgYvjOMj3Za7kqzRcUSxBboHqtgRE2zlos1qWaOye5yUmHn42LB1250NJBLRwEcdrB0JRwyPTEPhfQjiQ=="
   "resolved" "https://registry.npmjs.org/vue/-/vue-2.6.14.tgz"
   "version" "2.6.14"
