@@ -1,5 +1,5 @@
 <template>
-  <v-container class='pa-0'>
+  <v-container class='pa-0 max-height'>
     <!-- 帖子列表 -->
     <HolePanel v-if='!isMobile'/>
     <HoleListMobile v-else />

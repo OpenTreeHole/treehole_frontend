@@ -1,5 +1,5 @@
 <template>
-  <v-container>
+  <v-container  >
     <v-card>
       <v-card-title>FDU Hole</v-card-title>
 

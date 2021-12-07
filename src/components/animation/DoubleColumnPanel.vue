@@ -1,7 +1,7 @@
 <template>
-  <v-sheet>
+  <v-sheet style='height: 100%'>
     <v-container class='pa-0 double-column-panel'>
-      <v-row class='ma-0' justify='center'>
+      <v-row class='ma-0 max-height' justify='center'>
 
         <v-col class='col-first'
                :class='firstColClass'
@@ -137,17 +137,31 @@ export default class DoubleColumnPanel extends Vue {
     instance.scroll(el, 1300)
   }
 
+  public preventDefault (e: TouchEvent) {
+    e.preventDefault()
+  }
+
+  public disableScroll () {
+    document.body.addEventListener('touchmove', this.preventDefault, { passive: false })
+  }
+
+  public enableScroll () {
+    document.body.removeEventListener('touchmove', this.preventDefault)
+  }
+
   mounted () {
     this.viewport = window.innerHeight
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight
     })
 
+    this.disableScroll()
     EventBus.$on('scroll-to', this.scrollToEl)
   }
 
   destroyed () {
     EventBus.$off('scroll-to', this.scrollToEl)
+    this.enableScroll()
   }
 
   @Watch('showSecondCol')
@@ -158,31 +172,34 @@ export default class DoubleColumnPanel extends Vue {
 </script>
 
 <style scoped>
+@import "../../style/fix-height.scss";
+
 .double-column-panel {
-  overflow: hidden
+  overflow: hidden;
+  height: 100%
 }
 
 .col-first {
   position: relative;
-  height: 92vh;
+  height: 100%
 }
 
 .col-second {
   position: relative;
-  height: 92vh;
+  height: 100%
 }
 
 .col-first--inactive {
   transition: transform 0.5s, flex 0.5s, max-width 0.5s;
-  transform: translateX(22vw);
-  flex: 40vw;
-  max-width: 40vw;
+  transform: translateX(50%);
+  flex: 50%;
+  max-width: 50%;
 }
 
 .col-first--active {
   transition: transform 0.5s, flex 0.5s, max-width 0.5s;
   transform: translateX(0);
-  flex: 32vw;
-  max-width: 32vw;
+  flex: 37%;
+  max-width: 37%;
 }
 </style>

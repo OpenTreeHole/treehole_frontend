@@ -1,3 +1,13 @@
+html,
+body {
+  overscroll-behavior-y: contain;
+  position: fixed;
+}
+
+.max-height {
+  height: 100%;
+}
+
 .fold {
   overflow: hidden;
   max-height: 4.5em;
