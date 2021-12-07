@@ -53,7 +53,6 @@ export default class HolePanel extends BaseComponentOrView {
   public refresh (): void {
     this.deactivate()
     this.holeList.refresh()
-    this.resetScrollTop()
   }
 
   public openHole (wrappedHole: WrappedHole, displayFloorId?: number, preventClose: boolean = false): void {
@@ -80,10 +79,6 @@ export default class HolePanel extends BaseComponentOrView {
       this.displayHoleId = id
       document.body.scrollTop = document.documentElement.scrollTop = 0
     }
-  }
-
-  public resetScrollTop () {
-    this.doubleColumnPanel.resetScrollTop()
   }
 
   public deactivate (): void {
