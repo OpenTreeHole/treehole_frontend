@@ -110,7 +110,7 @@ export default class DoubleColumnPanel extends Vue {
     },
     scrollbars: {
       visibility: 'auto',
-      autoHide: 'never',
+      autoHide: 'leave',
       autoHideDelay: 400,
       dragScrolling: true,
       clickScrolling: false,
