@@ -41,6 +41,18 @@ export default class BaseComponentOrView extends Vue {
     EventBus.$on('receive-ws-message', this.onWsMessage)
   }
 
+  activated () {
+    EventBus.$off('preloaded', this.onPreloaded)
+    EventBus.$off('receive-ws-message', this.onWsMessage)
+    EventBus.$on('preloaded', this.onPreloaded)
+    EventBus.$on('receive-ws-message', this.onWsMessage)
+  }
+
+  deactivated () {
+    EventBus.$off('preloaded', this.onPreloaded)
+    EventBus.$off('receive-ws-message', this.onWsMessage)
+  }
+
   destroyed () {
     EventBus.$off('preloaded', this.onPreloaded)
     EventBus.$off('receive-ws-message', this.onWsMessage)

@@ -139,7 +139,7 @@ import WsNotificationMessage from '@/models/websocket/WsNotificationMessage'
 import { timeDifference } from '@/utils'
 import NotificationFloorCardMenu from '@/components/menu/NotificationFloorCardMenu.vue'
 import { MarkedDetailedFloor } from '@/api/hole'
-import { gotoHole, renderFloor } from '@/utils/floor'
+import { openDivisionAndGotoHole, renderFloor } from '@/utils/floor'
 import Vue from 'vue'
 
 @Component({
@@ -207,7 +207,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
   }
 
   public select (msg: WsNotificationMessage) {
-    gotoHole(msg.data.holeId, msg.data.floorId)
+    openDivisionAndGotoHole(msg.data.holeId, msg.data.floorId)
     this.toggle(msg.messageId)
 
     this.menu = false

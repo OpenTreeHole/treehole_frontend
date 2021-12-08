@@ -98,7 +98,7 @@ export default class HoleListMixin extends BaseComponentOrView {
   }
 
   get divisionId () {
-    if (this.route === 'division') return parseInt(this.$route.params.id)
+    if (this.route.includes('division')) return parseInt(this.$route.params.id)
     else return 1
   }
 
@@ -122,7 +122,6 @@ export default class HoleListMixin extends BaseComponentOrView {
   }
 
   async onPreloaded () {
-    console.log(`onPreloaded: ${this.divisionId}`)
     this.pin()
     this.pauseLoading = false
     await this.$nextTick()
@@ -130,14 +129,14 @@ export default class HoleListMixin extends BaseComponentOrView {
   }
 
   created () {
-    this.route = this.$route.name as string
+    this.route = this.$route.path
     UserStore.collection.getCollections()
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
-    if (this.route === 'home') {
+    if (this.route.includes('home')) {
       this.request = new HomeHoleListRequest()
-    } else if (this.route === 'collections') {
+    } else if (this.route.includes('collections')) {
       this.request = new CollectionHoleListRequest()
-    } else if (this.route === 'division') {
+    } else if (this.route.includes('division')) {
       this.request = new DivisionHoleListRequest(this.divisionId)
     }
     this.holes = this.request.datas
