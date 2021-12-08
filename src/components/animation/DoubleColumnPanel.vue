@@ -7,19 +7,19 @@
                :class='firstColClass'
                @transitionend='onActivationEnd'
         >
-          <overlay-scrollbars ref='osColFirst' :options='osOptions' style='display: block; height: 100%; width: 100%;'>
+          <div id='divColFirst' style='display: block; height: 100%; width: 100%;'>
             <div style='padding: 12px 20px'>
               <slot name='first' />
             </div>
-          </overlay-scrollbars>
+          </div>
         </v-col>
 
         <v-col class='col-second' cols='6'>
-          <overlay-scrollbars ref='osColSecond' :options='osOptions' style='display: block; height: 100%; width: 100%;'>
+          <div id='divColSecond' style='display: block; height: 100%; width: 100%;'>
             <div style='padding: 12px 20px'>
               <slot name='second' />
             </div>
-          </overlay-scrollbars>
+          </div>
         </v-col>
       </v-row>
     </v-container>
@@ -27,10 +27,58 @@
 </template>
 
 <script lang='ts'>
-import { Component, Emit, Ref, Watch } from 'vue-property-decorator'
+import { Component, Emit, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
-import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import { EventBus } from '@/event-bus'
+import OverlayScrollbars, { AutoHideBehavior, BasicEventCallback, DirectionChangedCallback, OverflowAmountChangedCallback, OverflowBehavior, OverflowChangedCallback, ResizeBehavior, ScrollEventCallback, SizeChangedCallback, UpdatedCallback, VisibilityBehavior } from 'overlayscrollbars'
+
+interface Options {
+  className?: string | null | undefined;
+  resize?: ResizeBehavior | undefined;
+  sizeAutoCapable?: boolean | undefined;
+  clipAlways?: boolean | undefined;
+  normalizeRTL?: boolean | undefined;
+  paddingAbsolute?: boolean | undefined;
+  autoUpdate?: boolean | null | undefined;
+  autoUpdateInterval?: number | undefined;
+  updateOnLoad?: string | ReadonlyArray<string> | null | undefined;
+  nativeScrollbarsOverlaid?: {
+    showNativeScrollbars?: boolean | undefined;
+    initialize?: boolean | undefined;
+  } | undefined;
+  overflowBehavior?: {
+    x?: OverflowBehavior | undefined;
+    y?: OverflowBehavior | undefined;
+  } | undefined;
+  scrollbars?: {
+    visibility?: VisibilityBehavior | undefined;
+    autoHide?: AutoHideBehavior | undefined;
+    autoHideDelay?: number | undefined;
+    dragScrolling?: boolean | undefined;
+    clickScrolling?: boolean | undefined;
+    touchSupport?: boolean | undefined;
+    snapHandle?: boolean | undefined;
+  } | undefined;
+  textarea?: {
+    dynWidth?: boolean | undefined;
+    dynHeight?: boolean | undefined;
+    inheritedAttrs?: string | ReadonlyArray<string> | null | undefined;
+  } | undefined;
+  callbacks?: {
+    onInitialized?: BasicEventCallback | null | undefined;
+    onInitializationWithdrawn?: BasicEventCallback | null | undefined;
+    onDestroyed?: BasicEventCallback | null | undefined;
+    onScrollStart?: ScrollEventCallback | null | undefined;
+    onScroll?: ScrollEventCallback | null | undefined;
+    onScrollStop?: ScrollEventCallback | null | undefined;
+    onOverflowChanged?: OverflowChangedCallback | null | undefined;
+    onOverflowAmountChanged?: OverflowAmountChangedCallback | null | undefined;
+    onDirectionChanged?: DirectionChangedCallback | null | undefined;
+    onContentSizeChanged?: SizeChangedCallback | null | undefined;
+    onHostSizeChanged?: SizeChangedCallback | null | undefined;
+    onUpdated?: UpdatedCallback | null | undefined;
+  } | undefined;
+}
 
 @Component
 export default class DoubleColumnPanel extends Vue {
@@ -42,7 +90,7 @@ export default class DoubleColumnPanel extends Vue {
 
   public viewport = 0
 
-  public osOptions = {
+  public osOptions: Options = {
     className: 'os-theme-dark',
     resize: 'none',
     sizeAutoCapable: true,
@@ -62,7 +110,7 @@ export default class DoubleColumnPanel extends Vue {
     },
     scrollbars: {
       visibility: 'auto',
-      autoHide: 'leave',
+      autoHide: 'never',
       autoHideDelay: 400,
       dragScrolling: true,
       clickScrolling: false,
@@ -90,8 +138,8 @@ export default class DoubleColumnPanel extends Vue {
     }
   }
 
-  @Ref() osColFirst: OverlayScrollbarsComponent
-  @Ref() osColSecond: OverlayScrollbarsComponent
+  public osColFirst: OverlayScrollbars
+  public osColSecond: OverlayScrollbars
 
   get firstColClass () {
     return this.isActive ? this.firstColActiveClass : this.firstColInactiveClass
@@ -129,7 +177,7 @@ export default class DoubleColumnPanel extends Vue {
       console.error(`Not Found Element with Id: ${toIndex}!`)
       return
     }
-    const instance = this.osColSecond.osInstance()
+    const instance = this.osColSecond
     if (!instance) {
       console.error('OverlayScrollbar has no instance!')
       return
@@ -155,13 +203,16 @@ export default class DoubleColumnPanel extends Vue {
       this.viewport = window.innerHeight
     })
 
-    this.disableScroll()
+    const divColFirst = document.getElementById('divColFirst') as HTMLElement
+    const divColSecond = document.getElementById('divColSecond') as HTMLElement
+
+    this.osColFirst = OverlayScrollbars(divColFirst, this.osOptions)
+    this.osColSecond = OverlayScrollbars(divColSecond, this.osOptions)
     EventBus.$on('scroll-to', this.scrollToEl)
   }
 
   destroyed () {
     EventBus.$off('scroll-to', this.scrollToEl)
-    this.enableScroll()
   }
 
   @Watch('showSecondCol')
