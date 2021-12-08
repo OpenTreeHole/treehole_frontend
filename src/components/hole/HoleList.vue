@@ -96,16 +96,16 @@ export default class HoleList extends HoleListMixin {
         await this.loading.loadCustomRequestOnce(async () => this.request.requestHole(holeId, toIndex))
         hole = this.holes[toIndex]
       }
-      if (floorId) this.activate(hole, floorId, true)
-      else this.activate(hole)
     } else {
       if (!this.isPinned(holeId) && index !== toIndex) {
         this.holes.splice(index, 1)
         this.holes.splice(index > toIndex ? toIndex : (toIndex - 1), 0, hole)
       }
-      if (floorId) this.activate(hole, floorId, true)
-      else this.activate(hole)
     }
+    if (floorId) this.activate(hole, floorId, true)
+    else this.activate(hole)
+    await this.animatedHoleList.waitForAnimatingFinish(8)
+    EventBus.$emit('scroll-to-hole', holeId)
   }
 
   mounted () {

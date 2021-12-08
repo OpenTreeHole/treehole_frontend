@@ -41,7 +41,7 @@
         v-viewer
       >
         <v-col :class='colClass'>
-          <FloorCard :floor='floor' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)'/>
+          <FloorCard :floor='floor' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)' />
         </v-col>
       </v-row>
     </transition-group>
@@ -63,7 +63,7 @@
 
           <v-card-text>
             <!-- 回复内容 -->
-            <Mention v-if='replyFloor' :mention-floor='replyFloor' :cancel='removeReplyFloor'/>
+            <Mention v-if='replyFloor' :mention-floor='replyFloor' :cancel='removeReplyFloor' />
 
             <v-form ref='form' v-model='valid' lazy-validation>
               <!-- 回贴表单 -->
@@ -112,8 +112,8 @@ import { WrappedHole } from '@/api/hole'
 import Mention from '@/components/hole/Mention.vue'
 import { FloorListRequest } from '@/api'
 import hljs from 'highlight.js/lib/core'
-import { scrollTo } from '@/utils'
 import FloorCard from '@/components/hole/FloorCard.vue'
+import { scrollToFloor } from '@/utils/floor'
 
 @Component({
   components: {
@@ -141,51 +141,50 @@ export default class FloorList extends FloorListMixin {
     else return 'px-1 py-2'
   }
 
-  public tryScrollTo (currentIndex:number, toIndex:number, retryTimes: number, interval: number) {
-    setTimeout(() => {
-      if (document.getElementById(currentIndex.toString()) && document.getElementById(toIndex.toString())) {
-        scrollTo(toIndex)
-      } else {
-        this.tryScrollTo(currentIndex, toIndex, retryTimes - 1, interval)
-      }
-    }, interval)
-  }
+  // public tryScrollTo (currentIndex: number, toIndex: number, retryTimes: number, interval: number) {
+  //   setTimeout(() => {
+  //     if (document.getElementById(currentIndex.toString()) && document.getElementById(toIndex.toString())) {
+  //       console.log(retryTimes)
+  //       scrollToFloor(toIndex)
+  //     } else {
+  //       this.tryScrollTo(currentIndex, toIndex, retryTimes - 1, interval)
+  //     }
+  //   }, interval)
+  // }
 
-  public getFloorsRecursive (waitingFloorId: number = -1) {
-    this.loading.load().then(() => {
-      let found = false
-      if (waitingFloorId !== -1) {
-        for (let i = 0; i < this.request.loadedLength; i++) {
-          if (this.floors[i].floorId === waitingFloorId) {
-            this.tryScrollTo(0, i, 5, 350)
-            found = true
-            break
-          }
+  public async getFloorsRecursive (waitingFloorId: number = -1) {
+    await this.loading.load()
+
+    let found = waitingFloorId === -1
+    if (waitingFloorId !== -1) {
+      for (let i = 0; i < this.request.loadedLength; i++) {
+        if (this.floors[i].floorId === waitingFloorId) {
+          scrollToFloor(i)
+          found = true
+          break
         }
       }
-      if (this.loading.hasNext) {
-        if (waitingFloorId !== -1 && !found) this.getFloorsRecursive(waitingFloorId)
-        else this.getFloorsRecursive()
-      }
-    })
+    }
+    if (this.loading.hasNext && !found) {
+      await this.getFloorsRecursive(waitingFloorId)
+    }
   }
 
-  public init (displayFloorId: number) {
+  public async init (displayFloorId: number) {
     this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId, this.renderFloor)
     this.floors = this.request.datas
     this.initiating = false
-    this.$nextTick(() => this.getFloorsRecursive(displayFloorId))
+    await this.$nextTick()
+    await this.getFloorsRecursive(displayFloorId)
   }
 
-  mounted () {
+  async mounted () {
     if (this.wrappedHoleOrId instanceof WrappedHole) {
       this.hole = this.wrappedHoleOrId
-      this.init(this.displayFloorId)
     } else {
-      this.getDiscussion(this.wrappedHoleOrId).then(() => {
-        this.init(this.displayFloorId)
-      })
+      await this.getHole(this.wrappedHoleOrId)
     }
+    await this.init(this.displayFloorId)
   }
 
   updated () {

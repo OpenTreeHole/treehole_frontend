@@ -15,7 +15,7 @@
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Prop } from 'vue-property-decorator'
 import { Tag } from '@/api/hole'
-import { parseTagColor } from '@/utils'
+import { parseTagColor } from '@/utils/utils'
 
 @Component
 export default class TagChip extends BaseComponentOrView {

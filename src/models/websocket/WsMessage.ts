@@ -11,7 +11,7 @@
  *    "time_created": "2021-10-04T19:34:03.356480+08:00"
  * }
  */
-import { checkType } from '@/utils'
+import { checkType } from '@/utils/utils'
 import WsNotificationMessage, { checkIWsNotificationMessage } from '@/models/websocket/WsNotificationMessage'
 
 export interface IWsMessage {

@@ -1,4 +1,4 @@
-import { convertKatex } from '@/utils'
+import { convertKatex } from '@/utils/utils'
 import marked from 'marked'
 import UserStore from '@/store/modules/UserStore'
 
@@ -63,7 +63,7 @@ export class MarkedDetailedFloor extends MarkedFloor implements DetailedFloor {
    * @param str - the original string
    */
   public signMention (str: string): string {
-    str = str.replace(/(^|\s)(#\w+)\b/g, (ignore1, ignore2, v) => '\n\n<p mention="' + v + '"></p>\n\n')
+    str = str.replace(/(^|\s)(#\d+)\b/g, (ignore1, ignore2, v) => '\n\n<p mention="' + v + '"></p>\n\n')
     str = marked(convertKatex(str))
     str = str.replace(/<p mention="#\w+"><\/p>/g, (str) => {
       return str.replace('<p', '<div class="replyDiv"').replace('/p>', '/div>')

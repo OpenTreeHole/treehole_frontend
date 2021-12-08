@@ -1,5 +1,5 @@
 import { Floor, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
-import { camelizeKeys, scrollTo, sleep } from '@/utils'
+import { camelizeKeys, sleep } from '@/utils/utils'
 import { EventBus } from '@/event-bus'
 import Mention from '@/components/hole/Mention.vue'
 import vuetify from '@/plugins/vuetify'
@@ -14,6 +14,10 @@ export async function renderFloor (curFloor: MarkedDetailedFloor, floorList?: Fl
     await Vue.nextTick()
     renderMention(curFloor, floorList)
   }
+}
+
+export const scrollToFloor = (toIndex: number): void => {
+  EventBus.$emit('scroll-to-floor', toIndex)
 }
 
 /**
@@ -41,7 +45,7 @@ export function renderMention (curFloor: MarkedDetailedFloor, floorList?: FloorL
     const mentionIndex = floorList?.getIndex(mentionId) ?? -1
     if (mentionIndex !== -1) {
       gotoMentionFloorF = () => {
-        scrollTo(mentionIndex)
+        scrollToFloor(mentionIndex)
       }
     } else if (curIndex !== -1) {
       gotoMentionFloorF = () => {
@@ -104,8 +108,10 @@ export async function openDivisionAndGotoHole (holeId: number, floorId?: number,
     const response = await VueInstance.$axios?.get(`/holes/${holeId}`)
     const hole = new WrappedHole(camelizeKeys(response.data))
     const path = `/division/${hole.hole.divisionId}`
-    if (Main.$route.path !== path) await Main.$router.push(path)
-    await sleep(500)
+    if (Main.$route.path !== path) {
+      await Main.$router.push(path)
+      await sleep(500)
+    }
     gotoHole(hole, floorId, toIndex)
   }
 }

@@ -30,7 +30,7 @@
 
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
-import { convertKatex } from '@/utils'
+import { convertKatex } from '@/utils/utils'
 import marked from 'marked'
 import BaseView from '@/mixins/BaseView.vue'
 import pdf from 'vue-pdf'

@@ -27,7 +27,7 @@
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { sleep } from '@/utils'
+import { sleep } from '@/utils/utils'
 
 @Component
 export default class Loading extends BaseComponentOrView {

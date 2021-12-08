@@ -12,6 +12,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import anime from 'animejs'
+import { sleep } from '@/utils/utils'
 
 interface ComputedData {
   data: any
@@ -81,6 +82,14 @@ export default class AnimatedList extends BaseComponentOrView {
       }
     })
     return ret
+  }
+
+  public async waitForAnimatingFinish (times: number) {
+    if (this.animating && times > 0) {
+      await sleep(500)
+      await this.waitForAnimatingFinish(times - 1)
+    }
+    if (this.animating) console.error('Animating Not Finished!')
   }
 
   public finishAnimation () {

@@ -1,6 +1,5 @@
 import { assign, camelCase, keys, pick } from 'lodash'
 import katex from 'katex'
-import { EventBus } from '@/event-bus'
 
 const macros: any = []
 
@@ -89,10 +88,6 @@ export const convertKatex = (str: string) => {
       displayMode: false
     })
   })
-}
-
-export const scrollTo = (toIndex: number): void => {
-  EventBus.$emit('scroll-to', toIndex)
 }
 
 /**

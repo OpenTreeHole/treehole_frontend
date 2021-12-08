@@ -19,7 +19,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
 import ws from '@/api/ws'
-import { timeDifference } from '@/utils'
+import { timeDifference } from '@/utils/utils'
 
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 

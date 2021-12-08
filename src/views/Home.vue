@@ -133,7 +133,7 @@ import { Component, Ref, Watch } from 'vue-property-decorator'
 import { Division, Tag } from '@/api/hole'
 import UserStore from '@/store/modules/UserStore'
 import BaseView from '@/mixins/BaseView.vue'
-import { delay } from '@/utils'
+import { delay } from '@/utils/utils'
 
 @Component({
   components: {

@@ -3,7 +3,7 @@ import { Component, Prop, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
-import { camelizeKeys } from '@/utils'
+import { camelizeKeys } from '@/utils/utils'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { FloorListRequest } from '@/api'
 import Vue from 'vue'
@@ -109,7 +109,7 @@ export default class FloorListMixin extends BaseComponentOrView {
    *
    * @param holeId - the hole id
    */
-  public async getDiscussion (holeId: number) {
+  public async getHole (holeId: number) {
     try {
       const response = await this.$axios.get('/holes/' + holeId)
       if (response.data) {

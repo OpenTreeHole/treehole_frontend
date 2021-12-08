@@ -1,7 +1,7 @@
 // noinspection DuplicatedCode
 
 import { MarkedDetailedFloor, MarkedFloor, Tag, WrappedHole } from '@/api/hole'
-import { camelizeKeys } from '@/utils'
+import { camelizeKeys } from '@/utils/utils'
 import Vue from 'vue'
 import { cloneDeep, remove } from 'lodash-es'
 import { VueInstance } from '@/instance'

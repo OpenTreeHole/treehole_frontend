@@ -30,56 +30,7 @@
 import { Component, Emit, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
 import { EventBus } from '@/event-bus'
-import OverlayScrollbars, { AutoHideBehavior, BasicEventCallback, DirectionChangedCallback, OverflowAmountChangedCallback, OverflowBehavior, OverflowChangedCallback, ResizeBehavior, ScrollEventCallback, SizeChangedCallback, UpdatedCallback, VisibilityBehavior } from 'overlayscrollbars'
-
-interface Options {
-  className?: string | null | undefined;
-  resize?: ResizeBehavior | undefined;
-  sizeAutoCapable?: boolean | undefined;
-  clipAlways?: boolean | undefined;
-  normalizeRTL?: boolean | undefined;
-  paddingAbsolute?: boolean | undefined;
-  autoUpdate?: boolean | null | undefined;
-  autoUpdateInterval?: number | undefined;
-  updateOnLoad?: string | ReadonlyArray<string> | null | undefined;
-  nativeScrollbarsOverlaid?: {
-    showNativeScrollbars?: boolean | undefined;
-    initialize?: boolean | undefined;
-  } | undefined;
-  overflowBehavior?: {
-    x?: OverflowBehavior | undefined;
-    y?: OverflowBehavior | undefined;
-  } | undefined;
-  scrollbars?: {
-    visibility?: VisibilityBehavior | undefined;
-    autoHide?: AutoHideBehavior | undefined;
-    autoHideDelay?: number | undefined;
-    dragScrolling?: boolean | undefined;
-    clickScrolling?: boolean | undefined;
-    touchSupport?: boolean | undefined;
-    snapHandle?: boolean | undefined;
-  } | undefined;
-  textarea?: {
-    dynWidth?: boolean | undefined;
-    dynHeight?: boolean | undefined;
-    inheritedAttrs?: string | ReadonlyArray<string> | null | undefined;
-  } | undefined;
-  callbacks?: {
-    onInitialized?: BasicEventCallback | null | undefined;
-    onInitializationWithdrawn?: BasicEventCallback | null | undefined;
-    onDestroyed?: BasicEventCallback | null | undefined;
-    onScrollStart?: ScrollEventCallback | null | undefined;
-    onScroll?: ScrollEventCallback | null | undefined;
-    onScrollStop?: ScrollEventCallback | null | undefined;
-    onOverflowChanged?: OverflowChangedCallback | null | undefined;
-    onOverflowAmountChanged?: OverflowAmountChangedCallback | null | undefined;
-    onDirectionChanged?: DirectionChangedCallback | null | undefined;
-    onContentSizeChanged?: SizeChangedCallback | null | undefined;
-    onHostSizeChanged?: SizeChangedCallback | null | undefined;
-    onUpdated?: UpdatedCallback | null | undefined;
-  } | undefined;
-}
-
+import OverlayScrollbars, { Options } from 'overlayscrollbars'
 @Component
 export default class DoubleColumnPanel extends Vue {
   public firstColActiveClass = 'col-first--active'
@@ -171,30 +122,30 @@ export default class DoubleColumnPanel extends Vue {
     }
   }
 
-  public scrollToEl (toIndex: number) {
+  public scrollToHole (holeId: number) {
+    const el = document.getElementById(`#${holeId}`)
+    if (!el) {
+      console.error(`Not Found Element with Id: #${holeId}!`)
+      return
+    }
+    if (!this.osColFirst) {
+      console.error('OverlayScrollbar has no instance!')
+      return
+    }
+    this.osColFirst.scroll(el, 1000)
+  }
+
+  public scrollToFloor (toIndex: number) {
     const el = document.getElementById(toIndex.toString())
     if (!el) {
       console.error(`Not Found Element with Id: ${toIndex}!`)
       return
     }
-    const instance = this.osColSecond
-    if (!instance) {
+    if (!this.osColSecond) {
       console.error('OverlayScrollbar has no instance!')
       return
     }
-    instance.scroll(el, 1300)
-  }
-
-  public preventDefault (e: TouchEvent) {
-    e.preventDefault()
-  }
-
-  public disableScroll () {
-    document.body.addEventListener('touchmove', this.preventDefault, { passive: false })
-  }
-
-  public enableScroll () {
-    document.body.removeEventListener('touchmove', this.preventDefault)
+    this.osColSecond.scroll(el, 1300)
   }
 
   mounted () {
@@ -208,11 +159,13 @@ export default class DoubleColumnPanel extends Vue {
 
     this.osColFirst = OverlayScrollbars(divColFirst, this.osOptions)
     this.osColSecond = OverlayScrollbars(divColSecond, this.osOptions)
-    EventBus.$on('scroll-to', this.scrollToEl)
+    EventBus.$on('scroll-to-floor', this.scrollToFloor)
+    EventBus.$on('scroll-to-hole', this.scrollToHole)
   }
 
   destroyed () {
-    EventBus.$off('scroll-to', this.scrollToEl)
+    EventBus.$off('scroll-to-floor', this.scrollToFloor)
+    EventBus.$off('scroll-to-hole', this.scrollToHole)
   }
 
   @Watch('showSecondCol')

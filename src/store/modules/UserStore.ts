@@ -2,7 +2,7 @@ import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-dec
 import store from '@/store'
 import { Division } from '@/api/hole'
 import { Collection, UserProfile } from '@/api/user'
-import { camelizeKeys } from '@/utils'
+import { camelizeKeys } from '@/utils/utils'
 import { VueInstance } from '@/instance'
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })

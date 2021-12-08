@@ -18,7 +18,7 @@
 import HoleCard from '@/components/hole/HoleCard.vue'
 import { Component } from 'vue-property-decorator'
 import { UserProfile } from '@/api/user'
-import { convertDate } from '@/utils'
+import { convertDate } from '@/utils/utils'
 import UserStore from '@/store/modules/UserStore'
 import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
