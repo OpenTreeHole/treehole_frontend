@@ -15,7 +15,7 @@ jobs:
           node-version: '15'
 
       - run: git checkout dev
-      - run: npm install
+      - run: npm ci
 
       - name: Configure git
         run: |
