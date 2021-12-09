@@ -127,7 +127,7 @@ export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
 
   get idInfo () {
-    return this.index === -1 ? `<b>#${this.floor.floorId}</b>` : `<b>${this.index}L</b>(#${this.floor.floorId})`
+    return this.index === -1 ? `<b>##${this.floor.floorId}</b>` : `<b>${this.index}L</b>(##${this.floor.floorId})`
   }
 
   /**

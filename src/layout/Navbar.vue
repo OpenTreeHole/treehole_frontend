@@ -126,7 +126,7 @@
 
       <!-- 侧栏底部工具按钮 -->
       <div class='drawer-bottom-container'>
-        <v-btn fab fixed bottom color='primary' @mousedown.prevent>
+        <v-btn fab fixed bottom color='primary' @mousedown.prevent @click='reload'>
           重载
         </v-btn>
       </div>
@@ -178,6 +178,10 @@ export default class Navbar extends BaseComponentOrView {
     }
     EventBus.$emit('search', this.searchText)
     this.searchText = ''
+  }
+
+  public reload (): void {
+    location.reload()
   }
 
   public gotoHole (): void {
