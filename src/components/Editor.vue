@@ -41,21 +41,64 @@ export default class Editor extends BaseComponentOrView {
 
   mounted () {
     const storageToken = LocalStorageStore.token
+    const toolbar = this.isMobile ? [
+      'headings', 'bold', 'italic', 'strike', '|',
+      'line', 'quote', 'list', 'code', '|',
+      'emoji', 'link', 'upload',
+      {
+        name: 'more',
+        toolbar: ['export', 'outline', 'preview', 'devtools', 'info', 'help']
+      }
+    ]
+      : [
+        'emoji',
+        'headings',
+        'bold',
+        'italic',
+        'strike',
+        'link',
+        '|',
+        'list',
+        'ordered-list',
+        'check',
+        'outdent',
+        'indent',
+        '|',
+        'quote',
+        'line',
+        'code',
+        'inline-code',
+        'insert-before',
+        'insert-after',
+        '|',
+        'upload',
+        'record',
+        'table',
+        '|',
+        'undo',
+        'redo',
+        '|',
+        'edit-mode',
+        'content-theme',
+        'code-theme',
+        'export',
+        {
+          name: 'more',
+          toolbar: [
+            'fullscreen',
+            'both',
+            'preview',
+            'info',
+            'help'
+          ]
+        }]
     this.editor = new Vditor(this.contentName, {
-      height: 600,
+      height: window.innerHeight - 220,
       placeholder: '说些什么......',
       toolbarConfig: {
         pin: false
       },
-      toolbar: [
-        'headings', 'bold', 'italic', 'strike', '|',
-        'line', 'quote', 'list', 'code', '|',
-        'emoji', 'link', 'upload',
-        {
-          name: 'more',
-          toolbar: ['export', 'outline', 'preview', 'devtools', 'info', 'help']
-        }
-      ],
+      toolbar: toolbar,
       icon: 'material',
       cache: {
         enable: true

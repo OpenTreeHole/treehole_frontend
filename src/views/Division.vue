@@ -11,7 +11,7 @@
       </v-btn>
       <br />
 
-      <v-dialog content-class='my-n4 mx-3' v-model='dialog' persistent max-width='1080px'>
+      <v-dialog content-class='my-n4 mx-3' v-model='dialog' persistent :max-width='editorWidth'>
         <template v-slot:activator='{ on, attrs }'>
           <v-btn
             fab
@@ -166,6 +166,10 @@ export default class Division extends BaseView {
 
   get divisions () {
     return UserStore.divisions
+  }
+
+  get editorWidth () {
+    return this.isMobile ? '98vw' : '70vw'
   }
 
   @Ref() readonly holeComp!: HolePanel | HoleListMobile

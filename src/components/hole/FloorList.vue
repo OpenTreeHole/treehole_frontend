@@ -48,7 +48,7 @@
 
     <!-- 弹出式表单及浮动按钮 -->
     <div class='float-btn' v-if='!initiating'>
-      <v-dialog v-model='dialog' persistent max-width='600px'>
+      <v-dialog v-model='dialog' persistent :max-width='editorWidth'>
         <!-- 浮动按钮 -->
         <template v-slot:activator='{ on, attrs }'>
           <v-btn fab color='secondary' @mousedown.prevent v-bind='attrs' v-on='on'>
@@ -127,6 +127,10 @@ export default class FloorList extends FloorListMixin {
   @Prop({ required: true }) private wrappedHoleOrId: WrappedHole | number
 
   public initiating = true
+
+  get editorWidth () {
+    return this.isMobile ? '98vw' : '70vw'
+  }
 
   get computedDiscussionId (): number {
     if (this.wrappedHoleOrId instanceof WrappedHole) {
