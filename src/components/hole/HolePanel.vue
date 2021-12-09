@@ -30,7 +30,6 @@ import { Component, Emit, Ref } from 'vue-property-decorator'
 import { WrappedHole } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
-import { scrollToFloor } from '@/utils/floor'
 
 @Component({
   components: {
@@ -61,7 +60,7 @@ export default class HolePanel extends BaseComponentOrView {
     if (displayFloorId) {
       this.displayFloorId = displayFloorId
       if (this.showFloorList && preventClose && this.displayHoleId === wrappedHole.hole.holeId) {
-        scrollToFloor(this.floorList.getIndex(displayFloorId))
+        this.floorList.getAndScrollToFloor(displayFloorId)
       }
     } else {
       this.displayFloorId = -1

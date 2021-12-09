@@ -20,6 +20,25 @@ export const scrollToFloor = (toIndex: number): void => {
   EventBus.$emit('scroll-to-floor', toIndex)
 }
 
+function mapMention (mentionAttrs: string[], mention: Floor[]): Map<string, MarkedFloor> {
+  const map = new Map<string, MarkedFloor>()
+  const sortedMentionAttrs = mentionAttrs.sort(a => (a[1] === '#' ? 1 : 0))
+  const mentionC = Array.from(mention)
+  for (const mentionAttr of sortedMentionAttrs) {
+    let mentionFloor: Floor | undefined
+    if (mentionAttr[1] === '#') { // Means it's a floor mention. e.g. ##88258
+      mentionFloor = mentionC.find(v => v.floorId === parseInt(mentionAttr.substring(2)))
+    } else { // It's a hole mention. e.g. #10000
+      mentionFloor = mentionC.find(v => v.holeId === parseInt(mentionAttr.substring(1)))
+    }
+    if (!mentionFloor) continue
+    const index = mentionC.indexOf(mentionFloor)
+    mentionC.splice(index, 1)
+    map.set(mentionAttr, new MarkedFloor(mentionFloor))
+  }
+  return map
+}
+
 /**
  * Render the empty divs with 'replyDiv' class and 'mention' attr with the specific floor.
  * <p> This method should be called after the original divs being rendered. </p>
@@ -30,19 +49,27 @@ export const scrollToFloor = (toIndex: number): void => {
 export function renderMention (curFloor: MarkedDetailedFloor, floorList?: FloorListMixin): void {
   const curIndex = floorList?.getIndex(curFloor.floorId) ?? -1
   const elements = document.querySelectorAll('div[index="' + curIndex + '"] > div.replyDiv')
+
+  const mentionAttrs: string[] = []
+  elements.forEach(el => {
+    if (el.innerHTML) return
+    const mentionAttr = el.getAttribute('mention')
+    if (!mentionAttr) return
+    mentionAttrs.push(mentionAttr)
+  })
+
+  const mentionMap = mapMention(mentionAttrs, curFloor.mention)
+
   for (let i = 0; i < elements.length; i++) {
     if (elements[i].innerHTML) continue
     const mentionAttr = elements[i].getAttribute('mention')
     if (!mentionAttr) continue
-    const mentionId = parseInt(mentionAttr.substring(1))
-    let mentionFloorOrNull: Floor | null = null
-    curFloor.mention.forEach((mFloor) => {
-      if (mFloor.floorId === mentionId) mentionFloorOrNull = mFloor
-    })
-    if (!mentionFloorOrNull) continue
-    const mentionFloor: MarkedFloor = new MarkedFloor(mentionFloorOrNull)
+
+    const mentionFloor: MarkedFloor | undefined = mentionMap.get(mentionAttr)
+    if (!mentionFloor) continue
+
     let gotoMentionFloorF: Function | undefined
-    const mentionIndex = floorList?.getIndex(mentionId) ?? -1
+    const mentionIndex = floorList?.getIndex(mentionFloor.floorId) ?? -1
     if (mentionIndex !== -1) {
       gotoMentionFloorF = () => {
         scrollToFloor(mentionIndex)

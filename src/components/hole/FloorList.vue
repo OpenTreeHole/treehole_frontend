@@ -152,21 +152,29 @@ export default class FloorList extends FloorListMixin {
   //   }, interval)
   // }
 
-  public async getFloorsRecursive (waitingFloorId: number = -1) {
-    await this.loading.load()
-
-    let found = waitingFloorId === -1
-    if (waitingFloorId !== -1) {
-      for (let i = 0; i < this.request.loadedLength; i++) {
-        if (this.floors[i].floorId === waitingFloorId) {
-          scrollToFloor(i)
-          found = true
-          break
-        }
+  public async getFloorsUntil (waitingFloorId: number): Promise<number> {
+    for (let i = 0; i < this.request.loadedLength; i++) {
+      if (this.floors[i].floorId === waitingFloorId) {
+        return i
       }
     }
-    if (this.loading.hasNext && !found) {
-      await this.getFloorsRecursive(waitingFloorId)
+    if (this.loading.hasNext) {
+      await this.loading.load()
+      return await this.getFloorsUntil(waitingFloorId)
+    }
+    return -1
+  }
+
+  public async getAndScrollToFloor (floorId: number) {
+    if (floorId !== -1) {
+      const index = await this.getFloorsUntil(floorId)
+      scrollToFloor(index)
+    }
+  }
+
+  public async loadPrefetched () {
+    while (this.request.loadedLength < this.floors.length && this.loading.hasNext) {
+      await this.loading.load()
     }
   }
 
@@ -175,7 +183,8 @@ export default class FloorList extends FloorListMixin {
     this.floors = this.request.datas
     this.initiating = false
     await this.$nextTick()
-    await this.getFloorsRecursive(displayFloorId)
+    await this.getAndScrollToFloor(displayFloorId)
+    await this.loadPrefetched()
   }
 
   async mounted () {

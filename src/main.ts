@@ -46,7 +46,7 @@ Vue.use(Viewer)
 Vue.filter('plainText', function (html: string) {
   return html.replace(/<img.*?>/g, '[图片]')
     .replace(/<.*?>/g, ' ')
-    .replace(/#\w+/g, (v) => '[回复' + v + ']')
+    .replace(/##?\d+/g, (v) => '[回复' + v + ']')
 })
 
 Vue.filter('wordLimit', function (html: string) {

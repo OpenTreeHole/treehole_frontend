@@ -63,9 +63,9 @@ export class MarkedDetailedFloor extends MarkedFloor implements DetailedFloor {
    * @param str - the original string
    */
   public signMention (str: string): string {
-    str = str.replace(/(^|\s)(#\d+)\b/g, (ignore1, ignore2, v) => '\n\n<p mention="' + v + '"></p>\n\n')
+    str = str.replace(/##?\d+/g, v => '\n\n<p mention="' + v + '"></p>\n\n')
     str = marked(convertKatex(str))
-    str = str.replace(/<p mention="#\w+"><\/p>/g, (str) => {
+    str = str.replace(/<p mention="##?\d+"><\/p>/g, (str) => {
       return str.replace('<p', '<div class="replyDiv"').replace('/p>', '/div>')
     })
     return str

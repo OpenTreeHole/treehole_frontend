@@ -15,7 +15,6 @@ export default class FloorListMixin extends BaseComponentOrView {
   // 帖子列表
   public hole: WrappedHole
   public floors: Array<MarkedFloor> = []
-  public loadedLength: number = 0
   // 回复信息（可选回复）
   public replyFloor: MarkedFloor | null = null
   // 发帖表单
@@ -171,17 +170,11 @@ export default class FloorListMixin extends BaseComponentOrView {
       this.dialog = false
       const sLoading = this.loading
       const sEditor = this.editor
-      const content = (this.replyFloor ? '#' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
-      const mention: number[] = []
-      content.replace(/(^|\s)#(\w+)/g, (original, ignore, v) => {
-        mention.push(parseInt(v))
-        return original
-      })
+      const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
       this.$axios
         .post('/floors', {
           content: content,
-          hole_id: this.computedDiscussionId,
-          mention: mention
+          hole_id: this.computedDiscussionId
         })
         .then((response) => {
           this.messageSuccess(response.data.message)
@@ -203,16 +196,10 @@ export default class FloorListMixin extends BaseComponentOrView {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
       const sEditor = this.editor
-      const content = (this.replyFloor ? '#' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
-      const mention: number[] = []
-      content.replace(/(^|\s)#(\w+)/g, (original, ignore, v) => {
-        mention.push(parseInt(v))
-        return original
-      })
+      const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
       this.$axios
         .put(`/floors/${this.editingFloorId}`, {
-          content: content,
-          mention: mention
+          content: content
         })
         .then((response) => {
           this.messageSuccess('修改成功')
