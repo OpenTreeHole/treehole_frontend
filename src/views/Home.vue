@@ -130,10 +130,11 @@ import Newcomer from '@/components/Newcomer.vue'
 import HolePanel from '@/components/hole/HolePanel.vue'
 import HoleListMobile from '@/components/hole/HoleListMobile.vue'
 import { Component, Ref, Watch } from 'vue-property-decorator'
-import { Division, Tag } from '@/api/hole'
 import UserStore from '@/store/modules/UserStore'
 import BaseView from '@/mixins/BaseView.vue'
 import { delay } from '@/utils/utils'
+import { Division } from '@/models/division'
+import { Tag } from '@/models/tag'
 
 @Component({
   components: {
@@ -225,7 +226,7 @@ export default class Home extends BaseView {
         })
         .catch((error) => {
           console.log(error.response)
-          this.messageError(error.response.data.msg)
+          this.messageError(error.response.data.message)
         })
     }
   }
@@ -241,7 +242,7 @@ export default class Home extends BaseView {
       })
       .catch((response) => {
         console.log(response.data)
-        this.messageError(response.data.msg)
+        this.messageError(response.data.message)
       })
   }
 

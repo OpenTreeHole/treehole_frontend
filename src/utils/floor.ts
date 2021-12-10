@@ -1,4 +1,4 @@
-import { Floor, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
 import { camelizeKeys, sleep } from '@/utils/utils'
 import { EventBus } from '@/event-bus'
 import Mention from '@/components/hole/Mention.vue'
@@ -8,6 +8,7 @@ import FloorListMixin from '@/mixins/FloorListMixin.vue'
 import UtilStore from '@/store/modules/UtilStore'
 import { Main } from '@/main'
 import { VueInstance } from '@/instance'
+import { Floor, MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
 
 export async function renderFloor (curFloor: MarkedDetailedFloor, floorList?: FloorListMixin): Promise<void> {
   if (('mention' in curFloor) && curFloor.mention.length !== 0) {
@@ -134,7 +135,7 @@ export async function openDivisionAndGotoHole (holeId: number, floorId?: number,
   else {
     const response = await VueInstance.$axios?.get(`/holes/${holeId}`)
     const hole = new WrappedHole(camelizeKeys(response.data))
-    const path = `/division/${hole.hole.divisionId}`
+    const path = `/division/${hole.divisionId}`
     if (Main.$route.path !== path) {
       await Main.$router.push(path)
       await sleep(500)

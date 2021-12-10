@@ -17,7 +17,7 @@
 <script lang='ts'>
 import HoleCard from '@/components/hole/HoleCard.vue'
 import { Component } from 'vue-property-decorator'
-import { UserProfile } from '@/api/user'
+import { UserProfile } from '@/models/user'
 import { convertDate } from '@/utils/utils'
 import UserStore from '@/store/modules/UserStore'
 import BaseView from '@/mixins/BaseView.vue'

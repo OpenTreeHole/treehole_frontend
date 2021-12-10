@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
 import Vue from 'vue'
 import { VueInstance } from '@/instance'
 
@@ -35,8 +35,8 @@ export class Collection {
   public update () {
     for (const value of this.updateHoleMap.values()) {
       for (let i = 0; i < value.length; i++) {
-        if (value[i].isStarred !== this.isStarred(value[i].hole.holeId)) {
-          Vue.set(value, i, new WrappedHole(value[i].hole))
+        if (value[i].isStarred !== this.isStarred(value[i].holeId)) {
+          Vue.set(value, i, new WrappedHole(value[i]))
         }
       }
     }

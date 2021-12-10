@@ -21,8 +21,8 @@
 import { Component, Prop } from 'vue-property-decorator'
 import Vue from 'vue'
 import FloorCard from '@/components/hole/FloorCard.vue'
-import { MarkedDetailedFloor } from '@/api/hole'
 import AppSheet from '@/components/app/AppSheet.vue'
+import { MarkedDetailedFloor } from '@/models/floor'
 
 @Component({
   components: { FloorCard, AppSheet }

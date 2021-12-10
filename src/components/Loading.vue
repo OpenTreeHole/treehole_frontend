@@ -43,7 +43,7 @@ export default class Loading extends BaseComponentOrView {
       this.load().catch((error) => {
         console.log(error)
         if (error.response === undefined) this.messageError(JSON.stringify(error))
-        else this.messageError(error.response.data.msg)
+        else this.messageError(error.response.data.message)
       })
     }
   }

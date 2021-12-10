@@ -1,9 +1,9 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
-import { Division } from '@/api/hole'
-import { Collection, UserProfile } from '@/api/user'
+import { Collection, UserProfile } from '@/models/user'
 import { camelizeKeys } from '@/utils/utils'
 import { VueInstance } from '@/instance'
+import { Division } from '@/models/division'
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {

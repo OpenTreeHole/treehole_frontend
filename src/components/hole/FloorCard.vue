@@ -110,9 +110,9 @@
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Prop, Watch } from 'vue-property-decorator'
-import { MarkedDetailedFloor, MarkedFloor } from '@/api/hole'
 import Vue from 'vue'
 import UserStore from '@/store/modules/UserStore'
+import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
 
 interface Operation {
   icon: string
@@ -227,7 +227,7 @@ export default class FloorCard extends BaseComponentOrView {
       if (response.status === 200) {
         this.messageSuccess('删除成功')
       } else {
-        this.messageError(response.data.msg)
+        this.messageError(response.data.message)
       }
     }).catch(e => {
       if ('response' in e) {
@@ -255,7 +255,7 @@ export default class FloorCard extends BaseComponentOrView {
       if (response.status === 200) {
         this.messageSuccess('举报成功')
       } else {
-        this.messageError(response.data.msg)
+        this.messageError(response.data.message)
       }
     })
   }

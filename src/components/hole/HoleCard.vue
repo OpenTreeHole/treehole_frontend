@@ -4,7 +4,7 @@
     <v-card-actions class='pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
       <span>
         <tag-chip
-          v-for='(tag, tindex) in hole.hole.tags'
+          v-for='(tag, tindex) in hole.tags'
           :key='tindex'
           :tag='tag'
         >
@@ -77,7 +77,7 @@
         v-if='hole.firstFloor.floorId !== hole.lastFloor.floorId'
         v-ripple
         class='clickable'
-        @click='activate(hole,hole.lastFloor.floorId,true)'
+        @click='activate(hole, hole.lastFloor.floorId,true)'
       >
         <v-row class='mx-0'>
           <span
@@ -96,13 +96,13 @@
 
       <!-- 脚标 -->
       <v-card-actions class='pt-0 pb-0 caption'>
-        <span>#{{ hole.hole.holeId }}</span>
+        <span>#{{ hole.holeId }}</span>
         <v-spacer />
-        <span>{{ hole.hole.timeUpdated | timeDifference }}</span>
+        <span>{{ hole.timeUpdated | timeDifference }}</span>
         <v-spacer />
         <span>
           <v-icon small>mdi-message-processing-outline</v-icon>
-          {{ hole.hole.reply }}
+          {{ hole.reply }}
         </span>
       </v-card-actions>
     </div>
@@ -112,7 +112,7 @@
 <!--suppress JSUnusedLocalSymbols -->
 <script lang='ts'>
 import { Component, Prop, Watch } from 'vue-property-decorator'
-import { WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import TagChip from '@/components/hole/TagChip.vue'
 

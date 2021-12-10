@@ -41,9 +41,9 @@
 
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator'
-import { MarkedFloor } from '@/api/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import hljs from 'highlight.js/lib/core'
+import { MarkedFloor } from '@/models/floor'
 
 @Component
 export default class Mention extends BaseComponentOrView {

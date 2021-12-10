@@ -6,9 +6,9 @@ import { Component } from 'vue-property-decorator'
 import MessageStore from '@/store/modules/MessageStore'
 import UtilStore from '@/store/modules/UtilStore'
 import TagStore from '@/store/modules/TagStore'
-import { Tag } from '@/api/hole'
 import { EventBus } from '@/event-bus'
 import WsMessage from '@/models/websocket/WsMessage'
+import { Tag } from '@/models/tag'
 
 @Component
 export default class BaseComponentOrView extends Vue {

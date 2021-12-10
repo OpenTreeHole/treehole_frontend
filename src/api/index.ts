@@ -1,10 +1,12 @@
 // noinspection DuplicatedCode
 
-import { MarkedDetailedFloor, MarkedFloor, Tag, WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
 import { camelizeKeys } from '@/utils/utils'
 import Vue from 'vue'
 import { cloneDeep, remove } from 'lodash-es'
 import { VueInstance } from '@/instance'
+import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import { Tag } from '@/models/tag'
 
 export abstract class ArrayRequest<T> {
   public datas: Array<T> = []
@@ -100,7 +102,7 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
   public pushData (data: WrappedHole) {
     let flag = false
     this.datas.forEach((v) => {
-      if (v.hole.holeId === data.hole.holeId) {
+      if (v.holeId === data.holeId) {
         flag = true
       }
     })
@@ -140,7 +142,7 @@ export class HomeHoleListRequest extends HoleListRequest {
         this.pushData(hole)
         hasNext = true
       })
-      if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].hole.timeUpdated)
+      if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].timeUpdated)
     }).catch((error) => {
       throw new Error(error)
     })
@@ -182,7 +184,7 @@ export class DivisionHoleListRequest extends HoleListRequest {
         this.pushData(hole)
         hasNext = true
       })
-      if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].hole.timeUpdated)
+      if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].timeUpdated)
     }).catch((error) => {
       throw new Error(error)
     })

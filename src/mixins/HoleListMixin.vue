@@ -1,12 +1,14 @@
 <script lang='ts'>
 import { Component, Ref, Watch } from 'vue-property-decorator'
-import { Division, MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { CollectionHoleListRequest, DivisionHoleListRequest, HoleListRequest, HomeHoleListRequest } from '@/api'
 import Loading from '@/components/Loading.vue'
 import { EventBus } from '@/event-bus'
 import UserStore from '@/store/modules/UserStore'
 import { debounce } from 'lodash-es'
+import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import { Division } from '@/models/division'
 
 @Component
 export default class HoleListMixin extends BaseComponentOrView {
@@ -66,7 +68,7 @@ export default class HoleListMixin extends BaseComponentOrView {
     }).catch((error) => {
       console.log(error)
       if (error.response === undefined) this.messageError(JSON.stringify(error))
-      else this.messageError(error.response.data.msg)
+      else this.messageError(error.response.data.message)
     })
     return hasNext
   }

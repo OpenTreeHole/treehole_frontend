@@ -1,7 +1,7 @@
 import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
-import { Tag } from '@/api/hole'
 import Vue from 'vue'
+import { Tag } from '@/models/tag'
 
 @Module({ store: store, dynamic: true, name: 'TagStore', namespaced: true })
 class TagStore extends VuexModule {

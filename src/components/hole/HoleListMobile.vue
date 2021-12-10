@@ -25,7 +25,8 @@ import HoleListMixin from '@/mixins/HoleListMixin.vue'
 import Loading from '@/components/Loading.vue'
 import HoleCard from '@/components/hole/HoleCard.vue'
 import { Component } from 'vue-property-decorator'
-import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
+import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
 
 @Component({
   components: {
@@ -44,11 +45,11 @@ export default class HoleListMobile extends HoleListMixin {
     setTimeout(() => {
       if (!displayFloorId) {
         this.$router.push({
-          path: `/hole/${wrappedHole.hole.holeId}`
+          path: `/hole/${wrappedHole.holeId}`
         })
       } else {
         this.$router.push({
-          path: `/hole/${wrappedHole.hole.holeId}`,
+          path: `/hole/${wrappedHole.holeId}`,
           query: { mention: displayFloorId.toString() }
         })
       }

@@ -2,13 +2,14 @@
 import { Component, Prop, Ref } from 'vue-property-decorator'
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
-import { MarkedDetailedFloor, MarkedFloor, WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
 import { camelizeKeys } from '@/utils/utils'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { FloorListRequest } from '@/api'
 import Vue from 'vue'
 import UserStore from '@/store/modules/UserStore'
 import { renderFloor } from '@/utils/floor'
+import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
 
 @Component
 export default class FloorListMixin extends BaseComponentOrView {
@@ -116,35 +117,31 @@ export default class FloorListMixin extends BaseComponentOrView {
       }
     } catch (error) {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
-      else this.messageError(error.response.data.msg)
+      else this.messageError(error.response.data.message)
     }
   }
 
-  public changeCollectionStatus (): void {
-    if (this.hole.isStarred) {
-      this.$axios.delete('/user/favorites', {
-        data: {
-          hole_id: this.hole.hole.holeId
-        }
-      }).then((response) => {
-        this.messageSuccess(response.data.message)
-        UserStore.collection.setCollection(response.data.data)
-      }).catch((error) => {
-        this.messageError(error.response.data.msg)
-        this.hole.isStarred = !this.hole.isStarred
-      })
-    } else {
-      this.$axios.post('/user/favorites', {
-        hole_id: this.hole.hole.holeId
-      }).then((response) => {
-        this.messageSuccess(response.data.message)
-        UserStore.collection.setCollection(response.data.data)
-      }).catch((error) => {
-        this.messageError(error.response.data.msg)
-        this.hole.isStarred = !this.hole.isStarred
-      })
-    }
+  public async changeCollectionStatus () {
     this.hole.isStarred = !this.hole.isStarred
+    try {
+      let response
+      if (this.hole.isStarred) {
+        response = await this.$axios.delete('/user/favorites', {
+          data: {
+            hole_id: this.hole.holeId
+          }
+        })
+      } else {
+        response = await this.$axios.post('/user/favorites', {
+          hole_id: this.hole.holeId
+        })
+      }
+      this.messageSuccess(response.data.message)
+      UserStore.collection.setCollection(response.data.data)
+    } catch (error) {
+      this.messageError(error.response.data.message)
+      this.hole.isStarred = !this.hole.isStarred
+    }
   }
 
   /**
@@ -157,7 +154,7 @@ export default class FloorListMixin extends BaseComponentOrView {
       hasNext = v
     }).catch((error) => {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
-      else this.messageError(error.response.data.msg)
+      else this.messageError(error.response.data.message)
     })
     return hasNext
   }

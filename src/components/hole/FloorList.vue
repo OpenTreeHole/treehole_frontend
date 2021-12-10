@@ -8,7 +8,7 @@
     >
       <v-card-text class='text--primary pb-2 pt-2 font-weight-medium'>
         <v-chip
-          v-for='(tag, tindex) in hole.hole.tags'
+          v-for='(tag, tindex) in hole.tags'
           :key='tindex'
           color='red'
           outlined
@@ -22,12 +22,12 @@
       <v-divider></v-divider>
 
       <v-card-text class='text--primary pt-2 pb-2 text-center'>
-        <span style='float: left'>#{{ hole.hole.holeId }}</span>
+        <span style='float: left'>#{{ hole.holeId }}</span>
         <span style='float: inherit'>{{
-            hole.hole.timeUpdated | timeDifference
+            hole.timeUpdated | timeDifference
           }}</span>
         <span style='float: right'>
-          {{ hole.hole.reply }}
+          {{ hole.reply }}
           <v-icon small>mdi-message-processing-outline</v-icon>
         </span>
       </v-card-text>
@@ -108,7 +108,7 @@ import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import FloorListMixin from '@/mixins/FloorListMixin.vue'
 import { Component, Prop } from 'vue-property-decorator'
-import { WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
 import Mention from '@/components/hole/Mention.vue'
 import { FloorListRequest } from '@/api'
 import hljs from 'highlight.js/lib/core'
@@ -134,7 +134,7 @@ export default class FloorList extends FloorListMixin {
 
   get computedDiscussionId (): number {
     if (this.wrappedHoleOrId instanceof WrappedHole) {
-      return this.wrappedHoleOrId.hole.holeId
+      return this.wrappedHoleOrId.holeId
     } else {
       return this.wrappedHoleOrId
     }
@@ -172,7 +172,7 @@ export default class FloorList extends FloorListMixin {
   }
 
   public async init (displayFloorId: number) {
-    this.request = new FloorListRequest(this.hole.floors, this.computedDiscussionId, this.renderFloor)
+    this.request = new FloorListRequest(this.hole.markedFloors, this.computedDiscussionId, this.renderFloor)
     this.floors = this.request.datas
     this.initiating = false
     await this.$nextTick()

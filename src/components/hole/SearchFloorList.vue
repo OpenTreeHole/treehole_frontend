@@ -51,12 +51,12 @@
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import { Component, Prop } from 'vue-property-decorator'
-import { MarkedFloor } from '@/api/hole'
 import Mention from '@/components/hole/Mention.vue'
 import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { SearchFloorListRequest } from '@/api'
 import { openDivisionAndGotoHole } from '@/utils/floor'
+import { MarkedFloor } from '@/models/floor'
 
 @Component({
   components: {
@@ -85,7 +85,7 @@ export default class SearchFloorList extends BaseComponentOrView {
       this.initiating = false
     }).catch((error) => {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
-      else this.messageError(error.response.data.msg)
+      else this.messageError(error.response.data.message)
     })
   }
 

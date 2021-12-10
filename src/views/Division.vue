@@ -126,10 +126,11 @@
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import HolePanel from '@/components/hole/HolePanel.vue'
 import HoleListMobile from '@/components/hole/HoleListMobile.vue'
-import { Division as IDivision, Tag } from '@/api/hole'
 import Editor from '@/components/Editor.vue'
 import UserStore from '@/store/modules/UserStore'
 import BaseView from '@/mixins/BaseView.vue'
+import { Division as IDivision } from '@/models/division'
+import { Tag } from '@/models/tag'
 
 @Component({
   components: {
@@ -229,7 +230,7 @@ export default class Division extends BaseView {
         })
         .catch((error) => {
           console.log(error.response)
-          this.messageError(error.response.data.msg)
+          this.messageError(error.response.data.message)
         })
     }
   }
@@ -245,7 +246,7 @@ export default class Division extends BaseView {
       })
       .catch((response) => {
         console.log(response.data)
-        this.messageError(response.data.msg)
+        this.messageError(response.data.message)
       })
   }
 

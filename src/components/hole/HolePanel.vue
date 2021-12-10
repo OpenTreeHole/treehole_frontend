@@ -27,7 +27,7 @@ import HoleList from '@/components/hole/HoleList.vue'
 import FloorList from '@/components/hole/FloorList.vue'
 
 import { Component, Emit, Ref } from 'vue-property-decorator'
-import { WrappedHole } from '@/api/hole'
+import { WrappedHole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
 
@@ -59,14 +59,14 @@ export default class HolePanel extends BaseComponentOrView {
     this.displayHole = wrappedHole
     if (displayFloorId) {
       this.displayFloorId = displayFloorId
-      if (this.showFloorList && preventClose && this.displayHoleId === wrappedHole.hole.holeId) {
+      if (this.showFloorList && preventClose && this.displayHoleId === wrappedHole.holeId) {
         this.floorList.getAndScrollToFloor(displayFloorId)
       }
     } else {
       this.displayFloorId = -1
     }
-    if (!preventClose || this.displayHoleId !== wrappedHole.hole.holeId) {
-      this.activate(wrappedHole.hole.holeId)
+    if (!preventClose || this.displayHoleId !== wrappedHole.holeId) {
+      this.activate(wrappedHole.holeId)
     }
   }
 

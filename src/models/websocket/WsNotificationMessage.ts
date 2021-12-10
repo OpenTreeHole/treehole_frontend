@@ -1,6 +1,6 @@
-import { DetailedFloor } from '@/api/hole'
 import WsMessage, { IWsMessage } from '@/models/websocket/WsMessage'
 import { checkType } from '@/utils/utils'
+import { DetailedFloor } from '@/models/floor'
 
 /**
  * The model for notification message sent via WebSocket.
