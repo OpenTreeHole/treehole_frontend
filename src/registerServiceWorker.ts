@@ -1,5 +1,3 @@
-/* eslint-disable no-console */
-
 import { register } from 'register-service-worker'
 
 // eslint-disable-next-line no-unused-vars

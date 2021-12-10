@@ -95,6 +95,7 @@
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import { debounce } from 'lodash-es'
+import { sleep } from '@/utils/utils'
 
 @Component
 export default class Register extends BaseView {
@@ -156,26 +157,28 @@ export default class Register extends BaseView {
     }
   }
 
-  public sendCode (): void {
+  public async sendCode () {
     if (!this.email) {
       this.messageError('用户名与邮箱不能为空')
       return
     }
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
-    this.$axios
-      .get('/verify/email', {
-        params: {
-          email: this.email
-        }
-      })
-      .then((response) => {
-        if (response.data.message === '邮箱不在白名单内！') {
-          this.messageError(response.data.message)
-        } else {
-          this.messageSuccess(response.data.message)
-        }
-      })
+    try {
+      const response = await this.$axios
+        .get('/verify/email', {
+          params: {
+            email: this.email
+          }
+        })
+      if (response.data.message === '邮箱不在白名单内！') {
+        this.messageError(response.data.message)
+      } else {
+        this.messageSuccess(response.data.message)
+      }
+    } catch (e) {
+      this.messageError(e.response.data.message)
+    }
   }
 
   public sendButtonChangeStatus (): void {
@@ -191,23 +194,21 @@ export default class Register extends BaseView {
     }
   }
 
-  public changepassword (): void {
+  public async changepassword () {
     if (this.form.validate()) {
-      this.$axios
-        .put('/register', {
-          email: this.email,
-          password: this.password,
-          verification: parseInt(this.code)
-        })
-        .then(() => {
-          this.messageSuccess('重置密码成功！')
-          setTimeout(() => {
-            this.$router.replace('/login')
-          }, 1000)
-        })
-        .catch((e) => {
-          this.messageError(e.response.data.message)
-        })
+      try {
+        await this.$axios
+          .put('/register', {
+            email: this.email,
+            password: this.password,
+            verification: parseInt(this.code)
+          })
+        this.messageSuccess('重置密码成功！')
+        await sleep(1000)
+        await this.$router.replace('/login')
+      } catch (e) {
+        this.messageError(e.response.data.message)
+      }
     }
   }
 

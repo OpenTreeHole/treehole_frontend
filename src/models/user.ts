@@ -42,18 +42,18 @@ export class Collection {
     }
   }
 
-  public getCollections (): void {
-    // eslint-disable-next-line no-unused-expressions
-    VueInstance.$axios?.get('/user/favorites').then((response) => {
+  public async getCollections () {
+    try {
+      const response = await VueInstance.$axios?.get('/user/favorites')
       this.clearCollection()
       response.data.forEach((holeItem: any) => {
         if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
         this.collectionIds.push(holeItem.hole_id)
       })
       this.update()
-    }).catch((error) => {
+    } catch (error) {
       throw new Error(error)
-    })
+    }
   }
 
   public isStarred (holeId: number): boolean {

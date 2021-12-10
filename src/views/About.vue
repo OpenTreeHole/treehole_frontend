@@ -118,24 +118,23 @@ export default class About extends BaseView {
     }
   }
 
-  public getLatestVersion (): void {
-    this.$axios
-      .request({
-        url: this.$feConfig.latestReleasePkgJSON,
-        transformRequest: [
-          (data, headers) => {
-            delete headers.Authorization
-            return data
-          }
-        ]
-      })
-      .then((response) => {
-        this.latestVersion = response.data.version
-        this.updateMsgIndex = this.updateUpdateMsgIndex()
-      })
-      .catch((error) => {
-        this.latestVersion = '获取失败 ' + error.message
-      })
+  public async getLatestVersion () {
+    try {
+      const response = await this.$axios
+        .request({
+          url: this.$feConfig.latestReleasePkgJSON,
+          transformRequest: [
+            (data, headers) => {
+              delete headers.Authorization
+              return data
+            }
+          ]
+        })
+      this.latestVersion = response.data.version
+      this.updateMsgIndex = this.updateUpdateMsgIndex()
+    } catch (error) {
+      this.latestVersion = '获取失败 ' + error.message
+    }
   }
 
   mounted (): void {
@@ -145,6 +144,7 @@ export default class About extends BaseView {
 </script>
 
 <style scoped>
+/*noinspection CssUnusedSymbol*/
 .v-card {
   margin: 20px;
   padding: 15px;

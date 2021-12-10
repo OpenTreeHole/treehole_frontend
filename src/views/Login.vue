@@ -97,29 +97,28 @@ export default class Login extends BaseView {
     form: HTMLFormElement
   }
 
-  public login (): void {
+  public async login () {
     this.$refs.form.validate()
-    this.$axios
-      .post('login', {
-        email: this.email,
-        password: this.password
-      })
-      .then((response) => {
-        if (response.data.message === '登录成功！') {
-          this.messageSuccess(response.data.message)
-          LocalStorageStore.setToken('token ' + response.data.token)
-          LocalStorageStore.setEmail(this.email)
-          this.$router.replace('/division/1')
-          this.preload()
-        } else {
-          this.valid = false
-          this.messageError(response.data.message)
-        }
-      })
-      .catch(() => {
+    try {
+      const response = await this.$axios
+        .post('login', {
+          email: this.email,
+          password: this.password
+        })
+      if (response.data.message === '登录成功！') {
+        this.messageSuccess(response.data.message)
+        LocalStorageStore.setToken('token ' + response.data.token)
+        LocalStorageStore.setEmail(this.email)
+        await this.$router.replace('/division/1')
+        // await this.preload()
+      } else {
         this.valid = false
-        this.messageError('用户名或密码错误')
-      })
+        this.messageError(response.data.message)
+      }
+    } catch (e) {
+      this.valid = false
+      this.messageError('用户名或密码错误')
+    }
   }
 
   public checkEmail (): void {

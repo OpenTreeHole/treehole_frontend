@@ -47,14 +47,13 @@ export default class License extends BaseView {
     for (const license of this.$feConfig.licenses) {
       if (license.type === 'pdf') {
         const loadingTask = pdf.createLoadingTask(license.link)
-        loadingTask.promise.then((v: any) => {
-          const numPages = v.numPages
-          this.licenses.push({ ...license, loadingTask, numPages })
-        })
+        const v = await loadingTask.promise
+        const numPages = v.numPages
+        this.licenses.push({ ...license, loadingTask, numPages })
       } else {
-        fetch(license.link).then(r => r.text()).then(text => {
-          this.licenses.push({ ...license, content: marked(convertKatex(text)) })
-        })
+        const r = await fetch(license.link)
+        const text = await r.text()
+        this.licenses.push({ ...license, content: marked(convertKatex(text)) })
       }
     }
   }

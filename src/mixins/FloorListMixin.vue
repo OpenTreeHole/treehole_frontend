@@ -150,67 +150,66 @@ export default class FloorListMixin extends BaseComponentOrView {
   public async getFloors (): Promise<boolean> {
     if (!this.request) return false
     let hasNext = false
-    await this.request.request().then((v) => {
-      hasNext = v
-    }).catch((error) => {
+    try {
+      hasNext = await this.request.request()
+    } catch (error) {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
       else this.messageError(error.response.data.message)
-    })
+    }
     return hasNext
   }
 
   /**
    * Create a new floor.
    */
-  public addFloor (): void {
+  public async addFloor () {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
       const sLoading = this.loading
       const sEditor = this.editor
       const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
-      this.$axios
-        .post('/floors', {
-          content: content,
-          hole_id: this.computedDiscussionId
-        })
-        .then((response) => {
-          this.messageSuccess(response.data.message)
-          sLoading.continueLoad()
-          this.replyFloor = null // Clear the reply info.
-          sEditor.setContent('') // Clear the reply editor.
-        })
-        .catch((error) => {
-          console.log(error)
-          this.messageError(error)
-        })
+      try {
+        const response = await this.$axios
+          .post('/floors', {
+            content: content,
+            hole_id: this.computedDiscussionId
+          })
+        this.messageSuccess(response.data.message)
+        sLoading.continueLoad()
+        this.replyFloor = null // Clear the reply info.
+        sEditor.setContent('') // Clear the reply editor.
+      } catch (error) {
+        console.log(error)
+        this.messageError(error)
+      }
     }
   }
 
   /**
    * Edit a floor.
    */
-  public editFloor (): void {
+  public async editFloor () {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
       const sEditor = this.editor
       const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
-      this.$axios
-        .put(`/floors/${this.editingFloorId}`, {
-          content: content
-        })
-        .then((response) => {
-          this.messageSuccess('修改成功')
-          const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(response.data))
-          this.renderFloor(floor)
-          this.checkAndRerenderFloors(floor)
-          Vue.set(this.floors, this.getIndex(floor.floorId), floor)
-          this.replyFloor = null // Clear the reply info.
-          sEditor.setContent('') // Clear the reply editor.
-        })
-        .catch((error) => {
-          console.log(error)
-          this.messageError(error)
-        })
+
+      try {
+        const response = await this.$axios
+          .put(`/floors/${this.editingFloorId}`, {
+            content: content
+          })
+        this.messageSuccess('修改成功')
+        const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(response.data))
+        this.renderFloor(floor).then()
+        this.checkAndRerenderFloors(floor)
+        Vue.set(this.floors, this.getIndex(floor.floorId), floor)
+        this.replyFloor = null // Clear the reply info.
+        sEditor.setContent('') // Clear the reply editor.
+      } catch (error) {
+        console.log(error)
+        this.messageError(error)
+      }
     }
   }
 

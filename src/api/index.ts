@@ -81,12 +81,9 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
    * @param position - the specific position at which the hole added. 0 if undefined.
    */
   public async requestHole (holeId: number, position: number = 0) {
-    await VueInstance.$axios?.get(`/holes/${holeId}`).then((response) => {
-      const hole = new WrappedHole(camelizeKeys(response.data))
-      this.datas.splice(position, 0, hole)
-    }).catch(error => {
-      throw new Error(error)
-    })
+    const response = await VueInstance.$axios?.get(`/holes/${holeId}`)
+    const hole = new WrappedHole(camelizeKeys(response.data))
+    this.datas.splice(position, 0, hole)
   }
 
   public pushFront (data: WrappedHole) {
@@ -120,32 +117,28 @@ export class HomeHoleListRequest extends HoleListRequest {
   }
 
   public async request (): Promise<boolean> {
-    let hasNext = false
-
     const params: any = {
       start_time: this.startTime.toISOString(),
       length: 10,
       prefetch_length: 10,
       division_id: 1
     }
-
     if (this.tag) {
       params.tag = this.tag.name
     }
 
-    await VueInstance.$axios?.get('/holes', {
+    const response = await VueInstance.$axios?.get('/holes', {
       params: params
-    }).then((response) => {
-      response.data.forEach((holeItem: any) => {
-        if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
-        const hole = new WrappedHole(camelizeKeys(holeItem))
-        this.pushData(hole)
-        hasNext = true
-      })
-      if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].timeUpdated)
-    }).catch((error) => {
-      throw new Error(error)
     })
+
+    let hasNext = false
+    response.data.forEach((holeItem: any) => {
+      if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
+      const hole = new WrappedHole(camelizeKeys(holeItem))
+      this.pushData(hole)
+      hasNext = true
+    })
+    if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].timeUpdated)
     return hasNext
   }
 }
@@ -172,36 +165,33 @@ export class DivisionHoleListRequest extends HoleListRequest {
       prefetch_length: 10,
       division_id: this.divisionId
     }
+    console.error(this.tag)
     if (this.tag) {
       params.tag = this.tag.name
     }
-    await VueInstance.$axios?.get('/holes', {
+    const response = await VueInstance.$axios?.get('/holes', {
       params: params
-    }).then((response) => {
-      response.data.forEach((holeItem: any) => {
-        if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
-        const hole = new WrappedHole(camelizeKeys(holeItem))
-        this.pushData(hole)
-        hasNext = true
-      })
-      if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].timeUpdated)
-    }).catch((error) => {
-      throw new Error(error)
     })
+
+    response.data.forEach((holeItem: any) => {
+      if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
+      const hole = new WrappedHole(camelizeKeys(holeItem))
+      this.pushData(hole)
+      hasNext = true
+    })
+    if (this.datas.length > 0) this.startTime = new Date(this.datas[this.datas.length - 1].timeUpdated)
     return hasNext
   }
 }
 
 export class CollectionHoleListRequest extends HoleListRequest {
   public async request (): Promise<boolean> {
-    await VueInstance.$axios?.get('/user/favorites').then((response) => {
-      response.data.forEach((holeItem: any) => {
-        if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
-        const hole = new WrappedHole(camelizeKeys(holeItem))
-        this.pushData(hole)
-      })
-    }).catch((error) => {
-      throw new Error(error)
+    const response = await VueInstance.$axios?.get('/user/favorites')
+
+    response.data.forEach((holeItem: any) => {
+      if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
+      const hole = new WrappedHole(camelizeKeys(holeItem))
+      this.pushData(hole)
     })
     return false
   }
@@ -216,15 +206,14 @@ export class SearchFloorListRequest extends ArrayRequest<MarkedFloor> {
   }
 
   public async request (): Promise<boolean> {
-    await VueInstance.$axios?.get('/floors', {
+    const response = await VueInstance.$axios?.get('/floors', {
       params: {
         s: this.searchStr
       }
-    }).then(response => {
-      response.data.forEach((floorItem: any) => {
-        const floor: MarkedFloor = new MarkedFloor(camelizeKeys(floorItem))
-        this.pushData(floor)
-      })
+    })
+    response.data.forEach((floorItem: any) => {
+      const floor: MarkedFloor = new MarkedFloor(camelizeKeys(floorItem))
+      this.pushData(floor)
     })
     return false
   }
@@ -241,24 +230,23 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
   }
 
   public async request (): Promise<boolean> {
-    let hasNext = false
-    await VueInstance.$axios?.get('/floors', {
+    const response = await VueInstance.$axios?.get('/floors', {
       params: {
         hole_id: this.holeId,
         start_floor: this.loadedLength,
         length: 10
       }
-    }).then((response) => {
-      let index = response.config.params.start_floor
-      response.data.forEach((floorItem: any) => {
-        const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(floorItem))
-        this.renderFloor(floor)
-        this.pushData(floor, index++, () => {
-          return true
-        })
-
-        hasNext = true
+    })
+    let index = response.config.params.start_floor
+    let hasNext = false
+    response.data.forEach((floorItem: any) => {
+      const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(floorItem))
+      this.renderFloor(floor)
+      this.pushData(floor, index++, () => {
+        return true
       })
+
+      hasNext = true
     })
     return hasNext
   }

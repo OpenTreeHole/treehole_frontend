@@ -29,17 +29,15 @@ class UserStore extends VuexModule {
 
   @Action
   public async requestDivision () {
-    await VueInstance.$axios?.get('/divisions').then((response) => {
-      const divisions: Division[] = camelizeKeys(response.data)
-      this.setDivisions(divisions)
-    })
+    const response = await VueInstance.$axios?.get('/divisions')
+    const divisions: Division[] = camelizeKeys(response.data)
+    this.setDivisions(divisions)
   }
 
   @Action
   public async requestUserProfile () {
-    await VueInstance.$axios?.get('/users').then((response) => {
-      this.setUserProfile(camelizeKeys(response.data))
-    })
+    const response = await VueInstance.$axios?.get('/users')
+    this.setUserProfile(camelizeKeys(response.data))
   }
 }
 

@@ -25,11 +25,11 @@ export default class TagChip extends BaseComponentOrView {
   public color: string = 'red'
 
   public onClick () {
-    if (this.prevent || !this.$route.name) return
+    if (this.prevent || !this.$route.path) return
     if (this.remove) {
-      this.clearTag(this.$route.name)
+      this.clearTag(this.$route.path)
     } else {
-      this.addTag(this.$route.name, this.tag)
+      this.addTag(this.$route.path, this.tag)
     }
   }
 

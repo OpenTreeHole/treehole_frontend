@@ -78,15 +78,16 @@ export default class SearchFloorList extends BaseComponentOrView {
     else return 'px-1 py-2'
   }
 
-  mounted () {
+  async mounted () {
     this.request = new SearchFloorListRequest(this.searchStr)
     this.floors = this.request.datas
-    this.request.request().then(() => {
+    try {
+      await this.request.request()
       this.initiating = false
-    }).catch((error) => {
+    } catch (error) {
       if (error.response === undefined) this.messageError(JSON.stringify(error))
       else this.messageError(error.response.data.message)
-    })
+    }
   }
 
   updated () {

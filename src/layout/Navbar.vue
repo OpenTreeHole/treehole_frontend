@@ -76,8 +76,8 @@
 
       <v-divider />
       <v-list style='padding: 5px'>
-        <v-list-item v-if='filtedTagMap && filtedTagMap[$route.name]'>
-          <TagChip :tag='filtedTagMap[$route.name]' :key='"filtedTag-"+filtedTagMap[$route.name].tagId' :remove='true'></TagChip>
+        <v-list-item v-if='filtedTagMap && filtedTagMap[$route.path]'>
+          <TagChip :tag='filtedTagMap[$route.path]' :key='"filtedTag-"+filtedTagMap[$route.path].tagId' :remove='true'></TagChip>
         </v-list-item>
         <!-- 搜索 -->
         <v-list-item>
@@ -152,7 +152,7 @@ export default class Navbar extends BaseComponentOrView {
   public searchText = ''
 
   /**
-   * The display status of side bar.
+   * The display status of sidebar.
    * <p> show by default on wide screen device, and hide by default on narrow screen device. </p>
    */
   public showSidebar = !this.isMobile

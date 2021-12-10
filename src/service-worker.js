@@ -4,8 +4,9 @@
 //     self.skipWaiting()
 //   }
 // })
+// noinspection JSUnresolvedVariable,JSUnresolvedFunction
 
-self.addEventListener('install', async event => {
+self.addEventListener('install', async () => {
   await self.skipWaiting()
   console.log('skip waiting')
 })
@@ -17,40 +18,37 @@ self.addEventListener('active', async event => {
 })
 
 let online = true
-setInterval(() => {
-  fetch('online').then(() => {
+setInterval(async () => {
+  try {
+    await fetch('online')
     if (!online) {
-      this.clients.matchAll()
-        .then(function (clients) {
-          console.log(clients)
-          if (clients && clients.length) {
-            clients.forEach((client) => {
-              client.postMessage({
-                msg: '网络连接已恢复, 请刷新以获取最新内容',
-                status: 'success'
-              })
-            })
-          }
+      online = true
+      const clients = await this.clients.matchAll()
+      console.log(clients)
+      if (clients && clients.length) {
+        clients.forEach((client) => {
+          client.postMessage({
+            msg: '网络连接已恢复, 请刷新以获取最新内容',
+            status: 'success'
+          })
         })
+      }
     }
-    online = true
-  }).catch(() => {
+  } catch (e) {
     if (online) {
-      this.clients.matchAll()
-        .then(function (clients) {
-          console.log(clients)
-          if (clients && clients.length) {
-            clients.forEach((client) => {
-              client.postMessage({
-                msg: '网络已断开, 正在以离线模式浏览',
-                status: 'warning'
-              })
-            })
-          }
+      online = false
+      const clients = await this.clients.matchAll()
+      console.log(clients)
+      if (clients && clients.length) {
+        clients.forEach((client) => {
+          client.postMessage({
+            msg: '网络已断开, 正在以离线模式浏览',
+            status: 'warning'
+          })
         })
+      }
     }
-    online = false
-  })
+  }
 }, 10000)
 
 // eslint-disable-next-line no-undef

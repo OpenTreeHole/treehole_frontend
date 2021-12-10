@@ -104,6 +104,7 @@ import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
+import { sleep } from '@/utils/utils'
 
 @Component
 export default class Register extends BaseView {
@@ -167,61 +168,53 @@ export default class Register extends BaseView {
     }
   }
 
-  public sendCode (): void {
+  public async sendCode () {
     if (!this.email) {
       this.messageError('用户名与邮箱不能为空')
       return
     }
-    this.sendButtonChangeStatus()
+    this.sendButtonChangeStatus().then()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
-    this.$axios
-      .get('/verify/email', {
-        params: {
-          email: this.email
-        }
-      })
-      .then((response) => {
-        if (response.data.message === '邮箱不在白名单内！') {
-          this.messageError(response.data.message)
-        } else {
-          this.messageSuccess(response.data.message)
-        }
-      })
-  }
-
-  public sendButtonChangeStatus (): void {
-    this.sendValid = false
-    for (let i = 60; i >= 0; i--) {
-      setTimeout(() => {
-        this.sendButton = i.toString()
-        if (this.sendButton === '0') {
-          this.sendButton = '发送验证码'
-          this.sendValid = true
-        }
-      }, 1000 * (60 - i))
+    const response = await this.$axios.get('/verify/email', {
+      params: {
+        email: this.email
+      }
+    })
+    if (response.data.message === '邮箱不在白名单内！') {
+      this.messageError(response.data.message)
+    } else {
+      this.messageSuccess(response.data.message)
     }
   }
 
-  public register (): void {
+  public async sendButtonChangeStatus () {
+    this.sendValid = false
+    for (let i = 60; i >= 0; i--) {
+      this.sendButton = i.toString()
+      await sleep(1000)
+    }
+    this.sendButton = '发送验证码'
+    this.sendValid = true
+  }
+
+  public async register () {
     if (this.form.validate()) {
-      this.$axios
-        .post('/register', {
-          email: this.email,
-          password: this.password,
-          verification: parseInt(this.code)
-        })
-        .then((response) => {
-          // 注册成功后直接跳转到主页面
-          this.messageSuccess('注册成功！')
-          LocalStorageStore.setNewcomer('true')
-          LocalStorageStore.setToken('token ' + response.data.token)
-          setTimeout(() => {
-            this.$router.replace('/division/1')
-          }, 1000)
-        })
-        .catch((e) => {
-          this.messageError(e.response.data.message)
-        })
+      try {
+        const response = await this.$axios
+          .post('/register', {
+            email: this.email,
+            password: this.password,
+            verification: parseInt(this.code)
+          })
+        // 注册成功后直接跳转到主页面
+        this.messageSuccess('注册成功！')
+        LocalStorageStore.setNewcomer('true')
+        LocalStorageStore.setToken('token ' + response.data.token)
+        await sleep(1000)
+        await this.$router.replace('/division/1')
+      } catch (e) {
+        this.messageError(e.response.data.message)
+      }
     }
   }
 

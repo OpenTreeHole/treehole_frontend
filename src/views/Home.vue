@@ -145,8 +145,6 @@ import { Tag } from '@/models/tag'
   }
 })
 export default class Home extends BaseView {
-  public lineHeight = 0
-  public scrollTop = 0
   // 发帖表单
   public content = ''
   public tags: Array<Tag> = []
@@ -164,6 +162,7 @@ export default class Home extends BaseView {
     (v: string | any[]) => v.length >= 1 || '请至少选择1个标签'
   ]
 
+  // noinspection JSUnusedGlobalSymbols
   public contentRules = [(v: string) => !!v.trim() || '内容不能为空']
   public errorMsg: any = {}
   public valid = true
@@ -206,44 +205,41 @@ export default class Home extends BaseView {
   /**
    * Send request to add a new hole.
    */
-  public addHole () {
+  public async addHole () {
     if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
-      this.$axios
-        .post('/holes', {
-          content: this.editor.getContent(),
-          division_id: this.selectedDivision.divisionId,
-          tags: this.selectedTags.map(v => {
-            return { name: v.name }
+      try {
+        await this.$axios
+          .post('/holes', {
+            content: this.editor.getContent(),
+            division_id: this.selectedDivision.divisionId,
+            tags: this.selectedTags.map(v => {
+              return { name: v.name }
+            })
           })
-        })
-        .then(async () => {
-          this.messageSuccess('发送成功')
-          await delay(1000)
-          this.holeComp.refresh() // reload the hole list
-          this.editor.setContent('')
-          this.selectedTags = []
-        })
-        .catch((error) => {
-          console.log(error.response)
-          this.messageError(error.response.data.message)
-        })
+        this.messageSuccess('发送成功')
+        await delay(1000)
+        this.holeComp.refresh() // reload the hole list
+        this.editor.setContent('')
+        this.selectedTags = []
+      } catch (error) {
+        console.log(error.response)
+        this.messageError(error.response.data.message)
+      }
     }
   }
 
   /**
    * Get the tag list from the backend.
    */
-  public getTags (): void {
-    this.$axios
-      .get('/tags')
-      .then((response) => {
-        this.tags = response.data
-      })
-      .catch((response) => {
-        console.log(response.data)
-        this.messageError(response.data.message)
-      })
+  public async getTags () {
+    try {
+      const response = await this.$axios.get('/tags')
+      this.tags = response.data
+    } catch (e) {
+      console.log(e)
+      this.messageError(e.response.data.message)
+    }
   }
 
   public mounted () {

@@ -185,7 +185,7 @@ export default class FloorCard extends BaseComponentOrView {
     this.$axios.post(`/penalty/${this.floor.floorId}`)
   }
 
-  public like () {
+  public async like () {
     if (!(this.floor instanceof MarkedDetailedFloor)) return
     if (this.floor.liked) {
       Vue.set(this.floor, 'like', this.floor.like - 1)
@@ -196,68 +196,71 @@ export default class FloorCard extends BaseComponentOrView {
       like: this.floor.liked ? 'cancel' : 'add'
     }
     Vue.set(this.floor, 'liked', !this.floor.liked)
-    this.$axios
-      .put(`/floors/${this.floor.floorId}`, data)
-      .then((response) => {
-        if (response.data.liked) {
-          this.messageSuccess('点赞成功')
-        } else {
-          this.messageSuccess('取消点赞成功')
-        }
-      })
-      .catch((error) => {
-        console.log(error)
-        if (error.response && error.response.data.message) {
-          this.messageError(error.response.data.message)
-        } else if (error.status) {
-          this.messageError('未知错误，状态码：' + error.status)
-        } else this.messageError(error)
-      })
+    try {
+      const response = await this.$axios
+        .put(`/floors/${this.floor.floorId}`, data)
+      if (response.data.liked) {
+        this.messageSuccess('点赞成功')
+      } else {
+        this.messageSuccess('取消点赞成功')
+      }
+    } catch (error) {
+      console.log(error)
+      if (error.response && error.response.data.message) {
+        this.messageError(error.response.data.message)
+      } else if (error.status) {
+        this.messageError('未知错误，状态码：' + error.status)
+      } else this.messageError(error)
+    }
   }
 
-  public removeFloor (needReason?: boolean): void {
+  public async removeFloor (needReason?: boolean) {
     let msg: string | null = ''
     if (needReason) {
       msg = prompt('输入删除理由')
-      if (msg === null) return
+      if (!msg) return
     }
     const data: any = {}
     if (msg) data.delete_reason = msg
-    this.$axios.delete(`/floors/${this.floor.floorId}`, data).then((response) => {
+    try {
+      const response = await this.$axios.delete(`/floors/${this.floor.floorId}`, data)
       if (response.status === 200) {
         this.messageSuccess('删除成功')
       } else {
         this.messageError(response.data.message)
       }
-    }).catch(e => {
-      if ('response' in e) {
+    } catch (e) {
+      if (e.response) {
         if (e.response.status === 403) {
           this.messageError('没有权限删除')
+        } else {
+          this.messageError(e.response.data.message)
         }
       } else {
         this.messageError(e)
       }
-    })
+    }
   }
 
   /**
    * Send a report.
    */
-  public report (): void {
+  public async report () {
     const msg = prompt('输入举报理由')
     if (msg === '') {
       this.messageError('举报理由不能为空！')
     }
-    this.$axios.post('/reports', {
-      floor_id: this.floor.floorId,
-      reason: msg
-    }).then((response) => {
+    try {
+      const response = await this.$axios.post('/reports', {
+        floor_id: this.floor.floorId,
+        reason: msg
+      })
       if (response.status === 200) {
         this.messageSuccess('举报成功')
-      } else {
-        this.messageError(response.data.message)
       }
-    })
+    } catch (e) {
+      this.messageError(e.response.data.message)
+    }
   }
 }
 </script>
