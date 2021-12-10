@@ -46,6 +46,7 @@ Vue.use(Viewer)
 Vue.filter('plainText', function (html: string) {
   return html.replace(/<img.*?>/g, '[图片]')
     .replace(/<.*?>/g, ' ')
+    .replace(/\$+[\s\S]*?\$+/g, '[数学公式]')
     .replace(/##?\d+/g, (v) => '[回复' + v + ']')
 })
 

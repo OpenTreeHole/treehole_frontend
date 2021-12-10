@@ -145,17 +145,6 @@ export default class FloorList extends FloorListMixin {
     else return 'px-1 py-2'
   }
 
-  // public tryScrollTo (currentIndex: number, toIndex: number, retryTimes: number, interval: number) {
-  //   setTimeout(() => {
-  //     if (document.getElementById(currentIndex.toString()) && document.getElementById(toIndex.toString())) {
-  //       console.log(retryTimes)
-  //       scrollToFloor(toIndex)
-  //     } else {
-  //       this.tryScrollTo(currentIndex, toIndex, retryTimes - 1, interval)
-  //     }
-  //   }, interval)
-  // }
-
   public async getFloorsUntil (waitingFloorId: number): Promise<number> {
     for (let i = 0; i < this.request.loadedLength; i++) {
       if (this.floors[i].floorId === waitingFloorId) {
