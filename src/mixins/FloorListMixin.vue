@@ -125,7 +125,7 @@ export default class FloorListMixin extends BaseComponentOrView {
     this.hole.isStarred = !this.hole.isStarred
     try {
       let response
-      if (this.hole.isStarred) {
+      if (!this.hole.isStarred) {
         response = await this.$axios.delete('/user/favorites', {
           data: {
             hole_id: this.hole.holeId

@@ -22,7 +22,3 @@ import BaseView from '@/mixins/BaseView.vue'
 export default class Collections extends BaseView {
 }
 </script>
-
-<style scoped>
-
-</style>
