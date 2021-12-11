@@ -35,4 +35,4 @@ jobs:
           git init
           git add -A
           git commit -m 'gh-action deploy'
-          git push -f "https://${TOKEN}@github.com/OpenTreeHole/vue.git" HEAD:gh-page
+          git push -f "https://${TOKEN}@github.com/OpenTreeHole/opentreehole.github.io.git" HEAD:master
