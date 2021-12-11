@@ -255,7 +255,7 @@ export default class FloorCard extends BaseComponentOrView {
         floor_id: this.floor.floorId,
         reason: msg
       })
-      if (response.status === 200) {
+      if (response.status === 201) {
         this.messageSuccess('举报成功')
       }
     } catch (e) {
