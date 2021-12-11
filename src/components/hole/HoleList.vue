@@ -30,6 +30,7 @@ import { WrappedHole } from '@/models/hole'
 import { EventBus } from '@/event-bus'
 import AnimatedList from '@/components/animation/AnimatedList.vue'
 import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import { sleep } from '@/utils/utils'
 
 @Component({
   components: {
@@ -106,6 +107,7 @@ export default class HoleList extends HoleListMixin {
     }
     if (floorId) this.activate(hole, floorId, true)
     else this.activate(hole)
+    await sleep(50) // wait for animation start.
     await this.animatedHoleList.waitForAnimatingFinish(8)
     EventBus.$emit('scroll-to-hole', holeId)
   }
