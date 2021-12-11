@@ -1,8 +1,8 @@
 <template>
   <v-card :id='`#${hole.holeId}`' class='rounded' :class='isActive ? "hole-card--active" : "hole-card"'>
     <!-- 标签栏 -->
-    <v-card-actions class='pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
-      <span>
+    <v-card-text class='d-flex pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
+      <span class='flex-left'>
         <tag-chip
           v-for='(tag, tindex) in hole.tags'
           :key='tindex'
@@ -10,7 +10,10 @@
         >
         </tag-chip>
       </span>
-    </v-card-actions>
+      <span class='flex-right' v-if='pinned'>
+        <v-icon>mdi-pin</v-icon>
+      </span>
+    </v-card-text>
     <v-card-text class='folded-hint' v-if='hole.isFolded' color='grey'>
       该内容已折叠：
       <span class='clickable' @click='hole.styleData.displayIt = !hole.styleData.displayIt'>

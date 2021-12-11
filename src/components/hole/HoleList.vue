@@ -8,6 +8,7 @@
           :activate='activate'
           :is-active='data.holeId === displayHoleId'
           :fix-height='fixCardHeight'
+          :pinned='index < request.pinCount'
         />
       </v-col>
     </animated-list>
