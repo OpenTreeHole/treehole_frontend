@@ -153,7 +153,8 @@ export default class Division extends BaseView {
 
   public dialog = false
   public tagRules = [
-    (v: string | any[]) => v.length <= 5 || '标签不能多于5个'
+    (v: string | any[]) => v.length <= 5 || '标签不能多于5个',
+    (v: string | any[]) => v.length >= 1 || '请至少选择1个标签'
   ]
 
   // noinspection JSUnusedGlobalSymbols
@@ -266,7 +267,7 @@ export default class Division extends BaseView {
   selectedTagsChanged () {
     for (let i = 0; i < this.selectedTags.length; i++) {
       if (typeof this.selectedTags[i] !== 'object') {
-        const tagStr = this.selectedTags[i].name.trim()
+        const tagStr = (this.selectedTags[i] as unknown as string).trim()
         // 校验新增的 tag
         if (tagStr.length > 8) {
           this.errorMsg.tags = '标签不能超过8个字符'

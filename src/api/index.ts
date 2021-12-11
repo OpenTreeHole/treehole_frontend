@@ -165,7 +165,6 @@ export class DivisionHoleListRequest extends HoleListRequest {
       prefetch_length: 10,
       division_id: this.divisionId
     }
-    console.error(this.tag)
     if (this.tag) {
       params.tag = this.tag.name
     }
