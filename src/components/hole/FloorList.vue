@@ -38,7 +38,6 @@
         v-for='(floor, index) in floors'
         :key='`${index}`'
         justify='center'
-        v-viewer
       >
         <v-col :class='colClass'>
           <FloorCard :floor='floor' ref='floorCards' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)' @scroll-to-floor='getAndScrollToFloor' />
