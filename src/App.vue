@@ -37,10 +37,12 @@ import 'overlayscrollbars/css/OverlayScrollbars.css'
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
-import VConsole from 'vconsole'
 
-// eslint-disable-next-line no-new
-if (process.env.NODE_ENV !== 'production') new VConsole()
+if (process.env.NODE_ENV !== 'production') {
+  const VConsole = require('vconsole')
+  // eslint-disable-next-line no-new
+  new VConsole()
+}
 
 @Component({
   components: {
