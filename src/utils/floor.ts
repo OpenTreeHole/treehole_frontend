@@ -81,7 +81,7 @@ export function renderMention (curFloor: MarkedDetailedFloor, toMention: (mentio
         mentionFloor: mentionFloor,
         gotoMentionFloor: () => { toMention(mentionFloor) },
         gotoMentionFloorIcon: 'mdi-arrow-collapse-up',
-        mentionFloorInfo: '#' + mentionFloor.floorId,
+        mentionFloorInfo: mentionAttr,
         additionalClass: additionalClass
       },
       vuetify
