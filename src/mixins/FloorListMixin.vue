@@ -8,8 +8,9 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { FloorListRequest } from '@/api'
 import Vue from 'vue'
 import UserStore from '@/store/modules/UserStore'
-import { renderFloor } from '@/utils/floor'
+import { scrollToFloor } from '@/utils/floor'
 import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import FloorCard from '@/components/hole/FloorCard.vue'
 
 @Component
 export default class FloorListMixin extends BaseComponentOrView {
@@ -35,10 +36,14 @@ export default class FloorListMixin extends BaseComponentOrView {
   public request: FloorListRequest
 
   @Prop({ type: Number, default: -1 }) displayFloorId: number
+  @Prop({ required: true }) wrappedHoleOrId: WrappedHole | number
 
   @Ref() readonly form!: HTMLFormElement
   @Ref() readonly editor!: Editor
   @Ref() readonly loading!: Loading
+  @Ref() readonly floorCards!: FloorCard[]
+
+  public initiating = true
 
   get computedDiscussionId (): number {
     return -1
@@ -201,7 +206,6 @@ export default class FloorListMixin extends BaseComponentOrView {
           })
         this.messageSuccess('修改成功')
         const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(response.data))
-        this.renderFloor(floor).then()
         this.checkAndRerenderFloors(floor)
         Vue.set(this.floors, this.getIndex(floor.floorId), floor)
         this.replyFloor = null // Clear the reply info.
@@ -214,30 +218,57 @@ export default class FloorListMixin extends BaseComponentOrView {
   }
 
   public checkAndRerenderFloors (mentionFloor: MarkedFloor) {
-    this.floors.forEach((floor, index) => {
-      if (floor instanceof MarkedDetailedFloor && floor.mention.length !== 0) {
-        let flag = false
-        for (let i = 0; i < floor.mention.length; i++) {
-          if (floor.mention[i].floorId === mentionFloor.floorId) {
-            floor.mention[i] = mentionFloor
-            flag = true
-          }
-        }
-        if (flag) {
-          floor.html += ' '
-          this.renderFloor(floor)
-          Vue.set(this.floors, index, floor)
-        }
-      }
-    })
-  }
-
-  async renderFloor (curFloor: MarkedDetailedFloor) {
-    await renderFloor(curFloor, this)
+    for (const floorCard of this.floorCards) {
+      floorCard.rerenderSpecificMention(mentionFloor)
+    }
   }
 
   get contentName (): string {
     return 'discussion-' + this.computedDiscussionId + '-content'
+  }
+
+  public async getFloorsUntil (waitingFloorId: number): Promise<number> {
+    for (let i = 0; i < this.request.loadedLength; i++) {
+      if (this.floors[i].floorId === waitingFloorId) {
+        return i
+      }
+    }
+    if (this.loading.hasNext) {
+      await this.loading.load()
+      return await this.getFloorsUntil(waitingFloorId)
+    }
+    return -1
+  }
+
+  public async getAndScrollToFloor (floorId: number) {
+    if (floorId !== -1) {
+      const index = await this.getFloorsUntil(floorId)
+      scrollToFloor(index)
+    }
+  }
+
+  public async loadPrefetched () {
+    while (this.request.loadedLength < this.floors.length && this.loading.hasNext) {
+      await this.loading.load()
+    }
+  }
+
+  public async init (displayFloorId: number) {
+    this.request = new FloorListRequest(this.hole.markedFloors, this.computedDiscussionId)
+    this.floors = this.request.datas
+    this.initiating = false
+    await this.$nextTick()
+    await this.getAndScrollToFloor(displayFloorId)
+    await this.loadPrefetched()
+  }
+
+  async mounted () {
+    if (this.wrappedHoleOrId instanceof WrappedHole) {
+      this.hole = this.wrappedHoleOrId
+    } else {
+      await this.getHole(this.wrappedHoleOrId)
+    }
+    await this.init(this.displayFloorId)
   }
 }
 </script>

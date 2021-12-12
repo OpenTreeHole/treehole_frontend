@@ -138,7 +138,7 @@ import WsMessage from '@/models/websocket/WsMessage'
 import WsNotificationMessage from '@/models/websocket/WsNotificationMessage'
 import { timeDifference } from '@/utils/utils'
 import NotificationFloorCardMenu from '@/components/menu/NotificationFloorCardMenu.vue'
-import { openDivisionAndGotoHole, renderFloor } from '@/utils/floor'
+import { openDivisionAndGotoHole } from '@/utils/floor'
 import Vue from 'vue'
 import { MarkedDetailedFloor } from '@/models/floor'
 
@@ -167,7 +167,6 @@ export default class NotificationsMenu extends BaseComponentOrView {
     return this.readRaw.map(v => {
       if (!('floorId' in v.data)) return { ...v, timeCreatedDifference: timeDifference(v.timeCreated) }
       const marked = new MarkedDetailedFloor(v.data)
-      renderFloor(marked)
       return { ...v, timeCreatedDifference: timeDifference(v.timeCreated), marked }
     })
   }
@@ -176,7 +175,6 @@ export default class NotificationsMenu extends BaseComponentOrView {
     return this.unreadRaw.map(v => {
       if (!('floorId' in v.data)) return { ...v, timeCreatedDifference: timeDifference(v.timeCreated) }
       const marked = new MarkedDetailedFloor(v.data)
-      renderFloor(marked)
       return { ...v, timeCreatedDifference: timeDifference(v.timeCreated), marked }
     })
   }

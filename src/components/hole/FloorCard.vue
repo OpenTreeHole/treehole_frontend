@@ -65,7 +65,7 @@
     <v-card-text class='py-0'>
       <!-- 正文部分 -->
       <div
-        :index='index'
+        :id='id'
         class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
         v-html='floor.html'
       ></div>
@@ -113,6 +113,7 @@ import { Component, Prop, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
 import UserStore from '@/store/modules/UserStore'
 import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import { gotoHole, renderFloor } from '@/utils/floor'
 
 interface Operation {
   icon: string
@@ -125,9 +126,53 @@ export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: true, type: Object }) floor: MarkedFloor
   @Prop({ required: false, type: Number, default: -1 }) index: number
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
+  @Prop({ type: String, default: 'fl' }) idPrefix: string
 
   get idInfo () {
     return this.index === -1 ? `<b>##${this.floor.floorId}</b>` : `<b>${this.index}L</b>(##${this.floor.floorId})`
+  }
+
+  get id () {
+    return `${this.idPrefix}-${this.floor.floorId}`
+  }
+
+  public toMention (mentionFloor: MarkedFloor) {
+    if (this.floor.holeId === mentionFloor.holeId) {
+      this.$emit('scroll-to-floor', mentionFloor.holeId)
+    } else {
+      gotoHole(mentionFloor.holeId, mentionFloor.floorId)
+    }
+  }
+
+  public renderMentions () {
+    if (this.floor instanceof MarkedDetailedFloor) {
+      renderFloor(this.floor, this.toMention)
+    }
+  }
+
+  public rerenderSpecificMention (mentionFloor: MarkedFloor) {
+    if (this.floor instanceof MarkedDetailedFloor && this.floor.mention.length !== 0) {
+      let flag = false
+      for (let i = 0; i < this.floor.mention.length; i++) {
+        if (this.floor.mention[i].floorId === mentionFloor.floorId) {
+          this.floor.mention[i] = mentionFloor
+          flag = true
+        }
+      }
+      if (flag) {
+        this.floor.html += ' '
+        renderFloor(this.floor, this.toMention)
+      }
+    }
+  }
+
+  mounted () {
+    this.renderMentions()
+  }
+
+  @Watch('floor', { deep: true })
+  floorUpdated () {
+    this.renderMentions()
   }
 
   /**

@@ -41,7 +41,7 @@
         v-viewer
       >
         <v-col :class='colClass'>
-          <FloorCard :floor='floor' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)' />
+          <FloorCard :floor='floor' ref='floorCards' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)' @scroll-to-floor='getAndScrollToFloor' />
         </v-col>
       </v-row>
     </transition-group>
@@ -80,7 +80,7 @@
           <!-- 下方按钮 -->
           <v-card-actions>
             <v-spacer></v-spacer>
-            <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
+            <v-btn color='primary' text @click='closeDialog'>关闭</v-btn>
             <v-btn v-if='operation === "reply" || operation === "add"' color='primary' text :disabled='!valid' @click='addFloor'>
               发送
             </v-btn>
@@ -107,13 +107,11 @@
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import FloorListMixin from '@/mixins/FloorListMixin.vue'
-import { Component, Prop } from 'vue-property-decorator'
+import { Component } from 'vue-property-decorator'
 import { WrappedHole } from '@/models/hole'
 import Mention from '@/components/hole/Mention.vue'
-import { FloorListRequest } from '@/api'
-import hljs from 'highlight.js/lib/core'
+import hljs from 'highlight.js'
 import FloorCard from '@/components/hole/FloorCard.vue'
-import { scrollToFloor } from '@/utils/floor'
 
 @Component({
   components: {
@@ -124,10 +122,6 @@ import { scrollToFloor } from '@/utils/floor'
   }
 })
 export default class FloorList extends FloorListMixin {
-  @Prop({ required: true }) private wrappedHoleOrId: WrappedHole | number
-
-  public initiating = true
-
   get editorWidth () {
     return this.isMobile ? '98vw' : '70vw'
   }
@@ -143,50 +137,6 @@ export default class FloorList extends FloorListMixin {
   get colClass () {
     if (this.isMobile) return 'px-1 py-1'
     else return 'px-1 py-2'
-  }
-
-  public async getFloorsUntil (waitingFloorId: number): Promise<number> {
-    for (let i = 0; i < this.request.loadedLength; i++) {
-      if (this.floors[i].floorId === waitingFloorId) {
-        return i
-      }
-    }
-    if (this.loading.hasNext) {
-      await this.loading.load()
-      return await this.getFloorsUntil(waitingFloorId)
-    }
-    return -1
-  }
-
-  public async getAndScrollToFloor (floorId: number) {
-    if (floorId !== -1) {
-      const index = await this.getFloorsUntil(floorId)
-      scrollToFloor(index)
-    }
-  }
-
-  public async loadPrefetched () {
-    while (this.request.loadedLength < this.floors.length && this.loading.hasNext) {
-      await this.loading.load()
-    }
-  }
-
-  public async init (displayFloorId: number) {
-    this.request = new FloorListRequest(this.hole.markedFloors, this.computedDiscussionId, this.renderFloor)
-    this.floors = this.request.datas
-    this.initiating = false
-    await this.$nextTick()
-    await this.getAndScrollToFloor(displayFloorId)
-    await this.loadPrefetched()
-  }
-
-  async mounted () {
-    if (this.wrappedHoleOrId instanceof WrappedHole) {
-      this.hole = this.wrappedHoleOrId
-    } else {
-      await this.getHole(this.wrappedHoleOrId)
-    }
-    await this.init(this.displayFloorId)
   }
 
   updated () {

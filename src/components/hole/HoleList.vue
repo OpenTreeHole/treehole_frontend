@@ -106,7 +106,7 @@ export default class HoleList extends HoleListMixin {
       }
     }
     if (floorId) this.activate(hole, floorId, true)
-    else this.activate(hole)
+    else this.activate(hole, undefined, true)
     await sleep(50) // wait for animation start.
     await this.animatedHoleList.waitForAnimatingFinish(8)
     EventBus.$emit('scroll-to-hole', holeId)

@@ -4,16 +4,15 @@ import { EventBus } from '@/event-bus'
 import Mention from '@/components/hole/Mention.vue'
 import vuetify from '@/plugins/vuetify'
 import Vue from 'vue'
-import FloorListMixin from '@/mixins/FloorListMixin.vue'
 import UtilStore from '@/store/modules/UtilStore'
 import { Main } from '@/main'
 import { VueInstance } from '@/instance'
 import { Floor, MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
 
-export async function renderFloor (curFloor: MarkedDetailedFloor, floorList?: FloorListMixin): Promise<void> {
+export async function renderFloor (curFloor: MarkedDetailedFloor, toMention: (mentionFloor: MarkedFloor) => void, idPrefix: string = 'fl'): Promise<void> {
   if (('mention' in curFloor) && curFloor.mention.length !== 0) {
     await Vue.nextTick()
-    renderMention(curFloor, floorList)
+    renderMention(curFloor, toMention, idPrefix)
   }
 }
 
@@ -45,11 +44,11 @@ function mapMention (mentionAttrs: string[], mention: Floor[]): Map<string, Mark
  * <p> This method should be called after the original divs being rendered. </p>
  *
  * @param curFloor - the current floor (waiting the mention part in it to be re-rendered).
- * @param floorList -
+ * @param toMention
+ * @param idPrefix
  */
-export function renderMention (curFloor: MarkedDetailedFloor, floorList?: FloorListMixin): void {
-  const curIndex = floorList?.getIndex(curFloor.floorId) ?? -1
-  const elements = document.querySelectorAll('div[index="' + curIndex + '"] > div.replyDiv')
+export function renderMention (curFloor: MarkedDetailedFloor, toMention: (mentionFloor: MarkedFloor) => void, idPrefix: string): void {
+  const elements = document.querySelectorAll(`div#${idPrefix}-${curFloor.floorId} > div.replyDiv`)
 
   const mentionAttrs: string[] = []
   elements.forEach(el => {
@@ -69,21 +68,6 @@ export function renderMention (curFloor: MarkedDetailedFloor, floorList?: FloorL
     const mentionFloor: MarkedFloor | undefined = mentionMap.get(mentionAttr)
     if (!mentionFloor) continue
 
-    let gotoMentionFloorF: Function | undefined
-    const mentionIndex = floorList?.getIndex(mentionFloor.floorId) ?? -1
-    if (mentionIndex !== -1) {
-      gotoMentionFloorF = () => {
-        scrollToFloor(mentionIndex)
-      }
-    } else if (curIndex !== -1) {
-      gotoMentionFloorF = () => {
-        gotoMentionFloor(curFloor, mentionFloor)
-      }
-    } else {
-      gotoMentionFloorF = () => {
-        gotoHole(curFloor.holeId, curFloor.floorId)
-      }
-    }
     let additionalClass = ''
     if (elements[i].parentElement && (elements[i].parentElement as HTMLElement).firstChild !== elements[i]) {
       additionalClass += 'mt-3 '
@@ -95,9 +79,9 @@ export function renderMention (curFloor: MarkedDetailedFloor, floorList?: FloorL
     new Mention({
       propsData: {
         mentionFloor: mentionFloor,
-        gotoMentionFloor: gotoMentionFloorF,
+        gotoMentionFloor: () => { toMention(mentionFloor) },
         gotoMentionFloorIcon: 'mdi-arrow-collapse-up',
-        mentionFloorInfo: (mentionIndex === -1 ? ('#' + mentionFloor.floorId) : (mentionIndex.toString() + 'L')),
+        mentionFloorInfo: '#' + mentionFloor.floorId,
         additionalClass: additionalClass
       },
       vuetify

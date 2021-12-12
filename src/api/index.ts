@@ -220,12 +220,10 @@ export class SearchFloorListRequest extends ArrayRequest<MarkedFloor> {
 
 export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
   public holeId: number
-  public renderFloor: (curFloor: MarkedDetailedFloor) => void
 
-  public constructor (prefetchedDataSet: Array<MarkedFloor>, holeId: number, renderFloor: (curFloor: MarkedDetailedFloor) => void) {
+  public constructor (prefetchedDataSet: Array<MarkedFloor>, holeId: number) {
     super(prefetchedDataSet)
     this.holeId = holeId
-    this.renderFloor = renderFloor
   }
 
   public async request (): Promise<boolean> {
@@ -240,7 +238,6 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
     let hasNext = false
     response.data.forEach((floorItem: any) => {
       const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(floorItem))
-      this.renderFloor(floor)
       this.pushData(floor, index++, () => {
         return true
       })
