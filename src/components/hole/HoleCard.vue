@@ -23,7 +23,7 @@
     <div class='post-content' v-if='hole.styleData.displayIt'>
       <!-- 内容主体 -->
       <v-card-text
-        @click='activate(hole)'
+        @click='openHole(hole)'
         class='text--primary py-2 text-body-1 clickable'
         v-ripple
       >
@@ -80,7 +80,7 @@
         v-if='hole.firstFloor.floorId !== hole.lastFloor.floorId'
         v-ripple
         class='clickable'
-        @click='activate(hole, hole.lastFloor.floorId,true)'
+        @click='openHole(hole, hole.lastFloor.floorId,true)'
       >
         <v-row class='mx-0'>
           <span
@@ -114,7 +114,7 @@
 
 <!--suppress JSUnusedLocalSymbols -->
 <script lang='ts'>
-import { Component, Prop, Watch } from 'vue-property-decorator'
+import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import TagChip from '@/components/hole/TagChip.vue'
@@ -127,12 +127,15 @@ import TagChip from '@/components/hole/TagChip.vue'
 export default class HoleCard extends BaseComponentOrView {
   @Prop({ required: true }) readonly hole: WrappedHole
   @Prop({ required: true, type: Number }) index: number
-  @Prop({ required: true, type: Function }) activate: Function
   @Prop({ required: false, type: Boolean, default: false }) isActive: boolean
   @Prop({ type: Boolean, default: false }) fixHeight: boolean
   @Prop({ type: Boolean, default: false }) pinned: boolean
 
   public fixedHeight: string = '4.5rem'
+
+  @Emit()
+  openHole (_hole: WrappedHole, _floorId?: number, _preventClose?: boolean) {
+  }
 
   calculateFixHeight () {
     const element = document.getElementById('p' + this.index)

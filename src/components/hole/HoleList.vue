@@ -5,10 +5,10 @@
         <HoleCard
           :hole='data'
           :index='index'
-          :activate='activate'
           :is-active='data.holeId === displayHoleId'
           :fix-height='fixCardHeight'
           :pinned='index < request.pinCount'
+          @open-hole='openHole'
         />
       </v-col>
     </animated-list>
@@ -25,7 +25,7 @@
 import HoleCard from '@/components/hole/HoleCard.vue'
 import HoleListMixin from '@/mixins/HoleListMixin.vue'
 import Loading from '@/components/Loading.vue'
-import { Component, Prop, Ref } from 'vue-property-decorator'
+import { Component, Emit, Prop, Ref } from 'vue-property-decorator'
 import { WrappedHole } from '@/models/hole'
 import { EventBus } from '@/event-bus'
 import AnimatedList from '@/components/animation/AnimatedList.vue'
@@ -40,11 +40,6 @@ import { sleep } from '@/utils/utils'
   }
 })
 export default class HoleList extends HoleListMixin {
-  @Prop({
-    required: true,
-    type: Function
-  }) readonly activate: Function
-
   @Prop({ required: false, type: Number, default: -1 }) displayHoleId: number
   @Prop({ type: Boolean, default: false }) fixCardHeight: boolean
 
@@ -105,11 +100,15 @@ export default class HoleList extends HoleListMixin {
         this.holes.splice(index > toIndex ? toIndex : (toIndex - 1), 0, hole)
       }
     }
-    if (floorId) this.activate(hole, floorId, true)
-    else this.activate(hole, undefined, true)
+    if (floorId) this.openHole(hole, floorId, true)
+    else this.openHole(hole, undefined, true)
     await sleep(50) // wait for animation start.
     await this.animatedHoleList.waitForAnimatingFinish(8)
     EventBus.$emit('scroll-to-hole', holeId)
+  }
+
+  @Emit()
+  public openHole (_hole: WrappedHole, _floorId?: number, _preventClose?: boolean) {
   }
 
   mounted () {

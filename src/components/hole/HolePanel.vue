@@ -2,11 +2,11 @@
   <double-column-panel ref='doubleColumnPanel' @show-second-col-changed='showFloorListChanged'>
     <template #first>
       <HoleList
-        :activate='openHole'
         :display-hole-id='displayHoleId'
         :fix-card-height='true'
         ref='holeList'
         @refresh='refresh'
+        @open-hole='openHole'
       />
     </template>
     <template #second>
