@@ -62,9 +62,7 @@
     <v-divider />
 
     <v-responsive
-      class='overflow-y-scroll'
       ref='responsive'
-      max-height='320'
     >
       <div
         v-if='done'
@@ -80,7 +78,7 @@
         </v-icon>
       </div>
 
-      <template v-else>
+      <overlay-scrollbars v-else style='height: 320px'>
         <v-list-item
           v-for='msg in filtered'
           :key='msg.messageId'
@@ -124,7 +122,7 @@
             </v-btn>
           </v-list-item-action>
         </v-list-item>
-      </template>
+      </overlay-scrollbars>
     </v-responsive>
   </app-menu>
 </template>
