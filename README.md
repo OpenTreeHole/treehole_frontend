@@ -1,30 +1,64 @@
-# 复旦树洞前端 FDU Hole Front End
+# Open Tree Hole Front End
 
-本项目依赖于[复旦树洞后端 FDU Hole Back End](https://github.com/fduhole/fduhole)
+Frontend of OpenTreeHole ---- Anonymous BBS for college students
 
-[![deploy to server](https://github.com/fduhole/vue/actions/workflows/main.yml/badge.svg)](https://github.com/fduhole/vue/actions/workflows/main.yml)
+## Features
 
-立即前往  
-[master](https://fduhole.com)  
-[dev](https://fduhole.github.io)
+- White-listed registration ---- for certain community like college students
+- Anonymous: RSA encrypted personal information(email) and random identity
+- Compliance: report, mute, ban, fold NSFW contents
+- Push notifications: web(websocket), iOS and Android
+- Balance between performance and development efficiency: stress test 300~400 qps
 
-## 开发
-请不要直接修改 master 分支，开发过程中，临时更改提交到 dev 分支
+## Install
+
+This installation is just for frontend program. If you want to deploy the whole OpenTreeHole project, please visit [Deploy Repo](https://github.com/OpenTreeHole/deploy).
+
+This project continuously integrates with docker. Go check it out if you don't have docker locally installed.
+
 ```shell
-# 克隆本仓库
-git clone https://www.github.com/fduhole/vue.git
-cd vue
-# 安装依赖
-npm install
-# 运行开发服务器
-npm run serve
+docker run -d -p 80:80 shi2002/open_tree_hole_frontend
 ```
 
-## 发布
-发布新版本请遵循以下流程
-1. 将 dev 分支合并入 master 分支，并 push 至 GitHub
-2. 新建 Release
-3. 修改 dev 分支 package.json 中的版本号
+## Badge
 
-## 反馈
-欢迎通过提交 Issue 或 Pull Request 的方式参与到本项目的开发与维护当中！
+[![dev build](https://github.com/OpenTreeHole/vue/actions/workflows/dev.yml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/dev.yml)
+
+[![docker](https://github.com/OpenTreeHole/vue/actions/workflows/docker-master.yaml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/docker-master.yaml)
+
+[![dev docker](https://github.com/OpenTreeHole/vue/actions/workflows/docker-dev.yaml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/docker-dev.yml)
+
+## Contributing
+
+Feel free to dive in! [Open an issue](https://github.com/OpenTreeHole/vue/issues/new) or submit PRs.
+
+### Development
+
+```shell
+# Clone the repository
+git clone https://www.github.com/OpenTreeHole/vue.git
+cd vue
+# Install Dependencies
+npm install # (Or yarn)
+# Run The Dev Server
+npm run serve # (Or yarn run serve)
+```
+
+To build the project, run
+```shell
+npm run build # (Or yarn run build)
+# 'npm run build-report' can build the project with a report.html in the root directory.
+```
+
+### Contributors
+
+This project exists thanks to all the people who contribute.
+
+<a href="https://github.com/OpenTreeHole/vue/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=OpenTreeHole/vue" />
+</a>
+
+## Licence
+
+[![license](https://img.shields.io/github/license/OpenTreeHole/vue)](https://github.com/OpenTreeHole/vue/blob/dev/LICENSE)
+© OpenTreeHole
