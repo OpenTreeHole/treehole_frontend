@@ -38,6 +38,9 @@ export default class Loading extends BaseComponentOrView {
   public hasNext = true
   public isLoading = false
 
+  /**
+   * Try to load when the loading intersected with the view component (i.e. comes into view).
+   */
   public onIntersect (entries: IntersectionObserverEntry[]): void {
     if (entries[0].isIntersecting) {
       this.load().catch((error) => {
@@ -69,6 +72,10 @@ export default class Loading extends BaseComponentOrView {
     this.isLoading = false
   }
 
+  /**
+   * Manually set the request and load it.
+   * @param customRequest
+   */
   public async loadCustomRequestOnce (customRequest: () => Promise<void>) {
     await this.waitForUnpause(8)
 
@@ -77,6 +84,10 @@ export default class Loading extends BaseComponentOrView {
     this.isLoading = false
   }
 
+  /**
+   * Block until the pause loading ends.
+   * @param times - The max trial times. (Planned to be replaced with a timeout)
+   */
   public async waitForUnpause (times: number) {
     if (this.pauseLoading && times > 0) {
       await sleep(500)
@@ -85,6 +96,10 @@ export default class Loading extends BaseComponentOrView {
     if (this.pauseLoading) console.error('Try to load when loading is paused.')
   }
 
+  /**
+   * Set hasNext to true and continue load.
+   * @param index - The request index.
+   */
   public continueLoad (index: number = 0) {
     if (!this.isLoading) {
       this.hasNext = true

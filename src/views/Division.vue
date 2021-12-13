@@ -300,7 +300,6 @@ export default class Division extends BaseView {
 </script>
 
 <style lang='scss' scoped>
-/* 浮动按钮 固定在右下角 */
 .float-btn {
   position: fixed;
   right: 8px;

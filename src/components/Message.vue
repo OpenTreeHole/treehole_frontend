@@ -25,6 +25,9 @@ export default class Message extends BaseComponentOrView {
     this.setMessageComponent(this)
   }
 
+  /**
+   * (Re)set the Message Component visible.
+   */
   public alert () {
     if (this.isAlert) {
       this.isAlert = false

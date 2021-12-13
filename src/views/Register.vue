@@ -173,7 +173,7 @@ export default class Register extends BaseView {
       this.messageError('用户名与邮箱不能为空')
       return
     }
-    this.sendButtonChangeStatus().then()
+    this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
     const response = await this.$axios.get('/verify/email', {
       params: {

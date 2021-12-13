@@ -84,6 +84,10 @@ export default class AnimatedList extends BaseComponentOrView {
     return ret
   }
 
+  /**
+   * Block until all animation is finished.
+   * @param times - The max retry times. (Planned to be replaced with a timeout)
+   */
   public async waitForAnimatingFinish (times: number) {
     if (this.animating && times > 0) {
       await sleep(500)
@@ -97,6 +101,10 @@ export default class AnimatedList extends BaseComponentOrView {
     this.updateData()
   }
 
+  /**
+   * Called when each animation completed.
+   * <p>Calculate how many animation is still running. When all animation is finished, it updates the datas to the intermediateDatas.</p>
+   */
   public complete () {
     this.completeCount++
     if (this.completeCount === this.animatingCount) {
@@ -123,6 +131,12 @@ export default class AnimatedList extends BaseComponentOrView {
     if (!this.animating) this.updateData()
   }
 
+  /**
+   * Run animation when intermediateDatas changed.
+   * <p>This method first added new datas with the style 'opacity: 0' to the DOM in order to get the computed style of the new element,
+   * and then execute animation functions depended on the computed style in the next tick.</p>
+   * <p>It runs when intermediateDatas changed instead of the data to ensure that every animation is finished with a complete lifecycle.</p>
+   */
   @Watch('intermediateDatas', { immediate: true })
   async intermediateDatasChanged () {
     if (!this.intermediateDatas || this.intermediateDatas.length === 0) {
