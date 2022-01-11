@@ -75,6 +75,11 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
   public tag: Tag | null = null
   public pinCount: number = 0
 
+  public clear () {
+    super.clear()
+    this.pinCount = 0
+  }
+
   /**
    * Request the backend for a specific hole and add to the hole list.
    * @param holeId - the id of the specific hole.

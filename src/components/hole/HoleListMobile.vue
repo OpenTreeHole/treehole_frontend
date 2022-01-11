@@ -10,7 +10,7 @@
         <HoleCard
           :hole='hole'
           :index='index'
-          @refresh='refresh'
+          :pinned='index < request.pinCount'
           :activate='toDiscussion'
         />
       </v-col>

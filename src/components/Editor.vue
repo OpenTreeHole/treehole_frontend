@@ -21,9 +21,8 @@ export default class Editor extends BaseComponentOrView {
   public editor: Vditor
 
   public validate (): boolean {
-    // if (!this.content || !this.content.replace(/<.?((p)|(br))>|\s+/g, '')) {
     if (!this.getContent()) {
-      this.$emit('error', '内容不能为空')
+      this.messageError('内容不能为空')
       return false
     } else {
       return true

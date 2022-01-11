@@ -23,6 +23,7 @@
         </v-col>
       </v-row>
     </v-container>
+    <slot/>
   </v-sheet>
 </template>
 

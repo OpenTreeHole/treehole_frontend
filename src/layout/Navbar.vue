@@ -162,6 +162,11 @@ export default class Navbar extends BaseComponentOrView {
   public holeToGo = ''
   public groupNavItem = new Map()
 
+  @Watch('isMobile')
+  isMobileChanged () {
+    this.showSidebar = !this.isMobile
+  }
+
   get activeClass () {
     return {
       'v-list-item--active': true,
