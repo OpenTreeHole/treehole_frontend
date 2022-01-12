@@ -1,5 +1,5 @@
 <template>
-  <v-card :id='`#${hole.holeId}`' class='rounded' :class='isActive ? "hole-card--active" : "hole-card"'>
+  <v-card :id='`#${hole.holeId}`' class='rounded' :class='isActive ? "hole-card--active" : "hole-card"' elevation='1'>
     <!-- 标签栏 -->
     <v-card-text class='d-flex pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
       <span class='flex-left'>

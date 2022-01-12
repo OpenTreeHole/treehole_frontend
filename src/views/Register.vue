@@ -153,8 +153,8 @@ export default class Register extends BaseView {
   @Ref() readonly form: HTMLFormElement
 
   public checkEmail (): void {
-    if (!/^[0-9]{11}@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
-      this.errorMsg.email = '@fudan.edu.cn'
+    if (!/^[0-9]+@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
+      this.errorMsg.email = '复旦学邮'
     } else {
       this.errorMsg.email = ''
     }
