@@ -11,7 +11,7 @@
           :hole='hole'
           :index='index'
           :pinned='index < request.pinCount'
-          :activate='toDiscussion'
+          @open-hole='toDiscussion'
         />
       </v-col>
     </v-row>
