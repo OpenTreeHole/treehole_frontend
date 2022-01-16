@@ -15,7 +15,7 @@ class UtilStore extends VuexModule {
    */
   @Action
   public checkDevice (): void {
-    this.setIsMobile(document.body.clientWidth <= 768 || /^((?!chrome|android).)*safari/i.test(navigator.userAgent))
+    this.setIsMobile(document.body.clientWidth <= 768)
   }
 }
 
