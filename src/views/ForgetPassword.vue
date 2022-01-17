@@ -226,5 +226,11 @@ export default class Register extends BaseView {
     this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }
+
+  mounted () {
+    if (this.$route.query.email) {
+      this.email = this.$route.query.email as string
+    }
+  }
 }
 </script>
