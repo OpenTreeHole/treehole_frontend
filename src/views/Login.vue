@@ -98,26 +98,28 @@ export default class Login extends BaseView {
   }
 
   public async login () {
-    this.$refs.form.validate()
-    try {
-      const response = await this.$axios
-        .post('login', {
-          email: this.email,
-          password: this.password
-        })
-      if (response.data.message === '登录成功！') {
-        this.messageSuccess(response.data.message)
-        LocalStorageStore.setToken('token ' + response.data.token)
-        LocalStorageStore.setEmail(this.email)
-        await this.$router.replace('/division/1')
-        // await this.preload()
-      } else {
+    if (this.valid === true) {
+      this.$refs.form.validate()
+      try {
+        const response = await this.$axios
+          .post('login', {
+            email: this.email,
+            password: this.password
+          })
+        if (response.data.message === '登录成功！') {
+          this.messageSuccess(response.data.message)
+          LocalStorageStore.setToken('token ' + response.data.token)
+          LocalStorageStore.setEmail(this.email)
+          await this.$router.replace('/division/1')
+          // await this.preload()
+        } else {
+          this.valid = false
+          this.messageError(response.data.message)
+        }
+      } catch (e) {
         this.valid = false
-        this.messageError(response.data.message)
+        this.messageError('用户名或密码错误')
       }
-    } catch (e) {
-      this.valid = false
-      this.messageError('用户名或密码错误')
     }
   }
 
