@@ -15,6 +15,7 @@ const colorList = [
   'teal',
   'green',
   'light-green',
+  'lime',
   'yellow',
   'amber',
   'orange',

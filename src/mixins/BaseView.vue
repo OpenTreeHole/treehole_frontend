@@ -9,7 +9,7 @@ import LocalStorageStore from '@/store/modules/LocalStorageStore'
 @Component
 export default class BaseView extends BaseComponentOrView {
   /**
-   * Check
+   * Conduct Preloading.
    */
   public async preload (): Promise<void> {
     if (!LocalStorageStore.token) return
