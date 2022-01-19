@@ -37,6 +37,18 @@ axios.interceptors.request.use(config => {
   config.headers.Authorization = localStorage.getItem('token')
   return config
 })
+axios.interceptors.response.use(response => response, async (error) => {
+  if (error.response) {
+    if (error.response.status === 401) {
+      localStorage.removeItem('token')
+      await router.replace({
+        name: 'login'
+      })
+      return '会话已过期，请重新登录'
+    }
+  }
+  return error
+})
 Vue.prototype.$axios = axios
 
 Vue.use(VueCookies)
