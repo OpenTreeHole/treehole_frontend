@@ -6,10 +6,10 @@ export default {
   feRepository: 'https://www.github.com/OpenTreeHole/vue',
   teamHomepage: 'https://www.github.com/OpenTreeHole',
   teamMail: 'fduhole@gmail.com',
-  latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/fduhole/vue@master/package.json', // 前端最新发布版版本号获取地址
+  latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/OpenTreeHole/vue@master/package.json', // 前端最新发布版版本号获取地址
   feVersion: pksjson.version,
-  backEndApi: 'https://hole.hath.top/', // 后端 api 地址
-  backEndWebsocketApi: 'wss://hole.hath.top/ws/notification',
+  backEndApi: 'https://www.fduhole.com/api/', // 后端 api 地址
+  backEndWebsocketApi: 'wss://www.fduhole.com/ws/notification',
 
   // 协议
   licenses: [
