@@ -17,6 +17,7 @@ Vue.use(VueRouter)
 
 const routes = [
   { path: '/license', meta: { title: '协议' }, component: license, name: 'license' },
+  { path: '/licence', redirect: '/license' },
   { path: '/home', redirect: '/division/1' },
   { path: '/login', meta: { title: '登录' }, component: Login, name: 'login' },
   { path: '/division/:id', meta: { title: '分区' }, component: Division, name: 'division' },
@@ -37,7 +38,7 @@ const router = new VueRouter({
 
 router.beforeEach((to, from, next) => {
   if (to.meta?.title) { document.title = to.meta.title }
-  if (to.path === '/login' || to.path === '/forgetpassword' || to.path === '/register' || to.path === '/license') return next()
+  if (to.path === '/login' || to.path === '/forgetpassword' || to.path === '/register' || to.path === '/license' || to.path === '/licence') return next()
   if (!LocalStorageStore.token) return next('/login')
   next()
 })
