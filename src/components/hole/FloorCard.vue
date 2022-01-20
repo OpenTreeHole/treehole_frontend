@@ -1,5 +1,5 @@
 <template>
-  <v-card class='rounded' :id='index' elevation='1' >
+  <v-card class='rounded' :id='index' elevation='1'>
     <v-card-text class='d-flex pb-4 pt-2 text-body-2'>
       <span class='flex-left'>
         {{ floor.anonyname }}
@@ -124,6 +124,7 @@ interface Operation {
 @Component
 export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: true, type: Object }) floor: MarkedFloor
+  @Prop({ required: false, type: String, default: -1 }) divisionId: number
   @Prop({ required: false, type: Number, default: -1 }) index: number
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
   @Prop({ type: String, default: 'fl' }) idPrefix: string
@@ -227,7 +228,10 @@ export default class FloorCard extends BaseComponentOrView {
     if (msg == null) return
     const level = parseInt(msg)
     if (isNaN(level) || level < 0 || level > 3) this.messageError('非有效惩罚等级！（惩罚应为0,1,2或3）')
-    this.$axios.post(`/penalty/${this.floor.floorId}`)
+    this.$axios.post(`/penalty/${this.floor.floorId}`, {
+      penalty_level: level,
+      division_id: this.divisionId
+    })
   }
 
   public async like () {

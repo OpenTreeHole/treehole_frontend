@@ -40,7 +40,7 @@
         justify='center'
       >
         <v-col :class='colClass'>
-          <FloorCard :floor='floor' ref='floorCards' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)' @scroll-to-floor='getAndScrollToFloor' />
+          <FloorCard :floor='floor' ref='floorCards' :division-id='hole.divisionId' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)' @scroll-to-floor='getAndScrollToFloor' />
         </v-col>
       </v-row>
     </transition-group>
