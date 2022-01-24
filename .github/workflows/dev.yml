@@ -25,7 +25,7 @@ jobs:
       - name: Build (With Report)
         run: |
           set -e
-          npm run build-report
+          npm run dev-report
 
       - name: Deploy
         env:
