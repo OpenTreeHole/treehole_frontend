@@ -12,7 +12,6 @@ import Vditor from 'vditor'
 import 'vditor/dist/index.css'
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component
 export default class Editor extends BaseComponentOrView {
@@ -39,7 +38,6 @@ export default class Editor extends BaseComponentOrView {
   }
 
   mounted () {
-    const storageToken = LocalStorageStore.token
     const toolbar = this.isMobile ? [
       'headings', 'bold', 'italic', 'strike', '|',
       'line', 'quote', 'list', 'code', '|',
@@ -110,22 +108,19 @@ export default class Editor extends BaseComponentOrView {
       },
       upload: {
         accept: 'image/*',
-        url: this.$feConfig.backEndApi + 'images',
-        headers: { Authorization: storageToken || '' },
+        handler: (files: File[]) => {
+          for (const file of files) {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+              console.log(e)
+              if (e.target) this.$wsImage.send(e.target.result as string)
+            }
+            reader.readAsBinaryString(file)
+          }
+          return null
+        },
         multiple: false,
-        fieldName: 'image',
-        linkToImgCallback () {
-          console.log('api处理')
-        },
-        success: (editor, response) => {
-          const url = JSON.parse(response).url
-          this.editor.insertValue(`![](${url})`)
-          return true
-        },
-        error: (response) => {
-          console.log(response)
-          this.$emit('error', response)
-        }
+        fieldName: 'image'
       },
       after: () => {
         // this.editor.setValue("hello,Vditor+Vue!")

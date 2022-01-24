@@ -1,11 +1,11 @@
 {
   "name": "open-tree-hole",
-  "version": "0.8.1",
+  "version": "1.0.1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --mode production",
-    "build-report": "vue-cli-service build --mode production --report",
+    "dev-report": "vue-cli-service build --mode development --report",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {

@@ -1,13 +1,17 @@
-
 import { camelizeKeys } from '@/utils/utils'
 import { EventBus } from '@/event-bus'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import WsMessage, { parseMessage } from '@/models/websocket/WsMessage'
-import { VueInstance } from '@/instance'
+import FDUHoleFEConfig from '@/opentreehole-fe.config'
 
 export class WsClient {
   public ws: WebSocket | null = null
   public unhandledMessages: string[] = []
+  public api: string
+
+  constructor (api: string) {
+    this.api = api
+  }
 
   public isConnecting (): boolean {
     if (!this.ws) return false
@@ -25,29 +29,33 @@ export class WsClient {
       throw new Error('No Token!')
     }
 
-    this.ws = new WebSocket(`${VueInstance.$feConfig.backEndWebsocketApi}?token=${token}`)
-    this.ws.onmessage = this.onMessage
-    this.ws.onopen = this.onOpen
-    this.ws.onerror = this.onError
-    this.ws.onclose = this.onClose
+    this.ws = new WebSocket(`${this.api}?token=${token}`)
+    this.ws.onmessage = (e: MessageEvent) => this.onMessage(e)
+    this.ws.onopen = () => this.onOpen()
+    this.ws.onerror = () => this.onError()
+    this.ws.onclose = () => this.onClose()
   }
 
   public send (msg: string) {
     if (!this.ws) this.unhandledMessages.push(msg)
-    else this.ws.send(msg)
+    else {
+      if (msg.length > 1000) {
+        console.log(msg)
+      }
+      this.ws.send(msg)
+    }
   }
 
   public sendAction (action: any) {
     this.send(JSON.stringify(action))
   }
 
-  public onOpen (this: WebSocket) {
-    if (VueInstance.$ws.unhandledMessages.length > 0) {
-      VueInstance.$ws.unhandledMessages.forEach(m => {
-        // eslint-disable-next-line no-unused-expressions
-        VueInstance.$ws.ws?.send(m)
+  public onOpen () {
+    if (this.unhandledMessages.length > 0) {
+      this.unhandledMessages.forEach(m => {
+        this.ws!.send(m)
       })
-      VueInstance.$ws.unhandledMessages = []
+      this.unhandledMessages = []
     }
   }
 
@@ -55,11 +63,11 @@ export class WsClient {
 
   }
 
-  public onClose (this: WebSocket) {
-    VueInstance.$ws.ws = null
+  public onClose () {
+    this.ws = null
   }
 
-  public onMessage (this: WebSocket, e: MessageEvent) {
+  public onMessage (e: MessageEvent) {
     const raw = (typeof e.data) === 'string' ? JSON.parse(e.data) : e.data
     const msg: WsMessage | null = parseMessage(camelizeKeys(raw))
     if (msg) {
@@ -68,4 +76,5 @@ export class WsClient {
   }
 }
 
-export default new WsClient()
+export default new WsClient(FDUHoleFEConfig.backEndWebsocketNotificationApi)
+export const wsImage = new WsClient(FDUHoleFEConfig.backEndWebsocketImageApi)

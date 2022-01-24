@@ -18,6 +18,10 @@ export default class BaseView extends BaseComponentOrView {
         this.$ws.connect()
       }
 
+      if (!this.$wsImage.isConnecting() && !this.$wsImage.isConnected()) {
+        this.$wsImage.connect()
+      }
+
       const requestDivision = UserStore.requestDivision
       const requestUserProfile = UserStore.requestUserProfile
       const taskList = [requestDivision(), requestUserProfile()]

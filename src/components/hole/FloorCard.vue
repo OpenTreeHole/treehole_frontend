@@ -124,7 +124,7 @@ interface Operation {
 @Component
 export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: true, type: Object }) floor: MarkedFloor
-  @Prop({ required: false, type: String, default: -1 }) divisionId: number
+  @Prop({ required: false, type: Number, default: -1 }) divisionId: number
   @Prop({ required: false, type: Number, default: -1 }) index: number
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
   @Prop({ type: String, default: 'fl' }) idPrefix: string
