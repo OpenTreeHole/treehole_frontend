@@ -108,22 +108,23 @@ export default class Editor extends BaseComponentOrView {
       },
       upload: {
         accept: 'image/*',
-        handler: (files: File[]) => {
+        handler: (files: File[]) => new Promise<null>(resolve => {
           for (const file of files) {
             const reader = new FileReader()
-            reader.onload = (e) => {
-              console.log(e)
-              if (e.target) this.$wsImage.send(e.target.result as string)
+            reader.onload = async (e) => {
+              if (e.target) {
+                const response = await this.$axios.post('/images', {
+                  image: (e.target.result as string).split(',')[1]
+                })
+                this.editor.insertValue(`![](${response.data.url})`)
+              }
+              resolve(null)
             }
-            reader.readAsBinaryString(file)
+            reader.readAsDataURL(file)
           }
-          return null
-        },
+        }),
         multiple: false,
         fieldName: 'image'
-      },
-      after: () => {
-        // this.editor.setValue("hello,Vditor+Vue!")
       }
     })
   }

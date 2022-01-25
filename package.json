@@ -31,7 +31,7 @@
     "register-service-worker": "^1.7.1",
     "v-viewer": "^1.5.1",
     "vconsole": "^3.9.5",
-    "vditor": "^3.8.4",
+    "vditor": "^3.8.11",
     "vue": "^2.6.11",
     "vue-cookies": "^1.7.4",
     "vue-router": "^3.2.0",
