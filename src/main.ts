@@ -22,6 +22,7 @@ import ws, { wsImage } from '@/api/ws'
 import { timeDifference } from '@/utils/utils'
 
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
+import MessageStore from '@/store/modules/MessageStore'
 
 // global registration
 Vue.component('overlay-scrollbars', OverlayScrollbarsComponent)
@@ -45,8 +46,16 @@ axios.interceptors.response.use(response => response, async (error) => {
       await router.replace({
         name: 'login'
       })
-      return '会话已过期，请重新登录'
+      MessageStore.messageError('会话已过期，请重新登录')
+    } else if (error.response.message) {
+      MessageStore.messageError(`${error.response.status}: ${error.response.message}`)
+    } else {
+      MessageStore.messageError(`${error.response.status}: 未知错误，请按F12查看控制台以获得错误信息并发至站务分区`)
+      console.log(error)
     }
+  } else {
+    MessageStore.messageError('未知axios错误，请按F12查看控制台以获得错误信息并发至站务分区，')
+    console.log(error)
   }
   return error
 })

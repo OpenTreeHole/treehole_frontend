@@ -141,11 +141,8 @@ export default class ChangePassword extends BaseView {
           email: LocalStorageStore.email
         }
       })
-    if (response.data.message === '邮箱不在白名单内！') {
-      this.messageError(response.data.message)
-    } else {
-      this.messageSuccess(response.data.message)
-    }
+
+    this.messageSuccess(response.data.message)
   }
 
   public sendButtonChangeStatus (): void {
@@ -163,19 +160,15 @@ export default class ChangePassword extends BaseView {
 
   public async changepassword () {
     if (this.form.validate()) {
-      try {
-        await this.$axios
-          .put('/register', {
-            email: LocalStorageStore.email,
-            password: this.password,
-            verification: parseInt(this.code)
-          })
-        this.messageSuccess('修改密码成功！')
-        await sleep(1000)
-        await this.$router.replace('/division/1')
-      } catch (e) {
-        this.messageError(e.response.data.message)
-      }
+      await this.$axios
+        .put('/register', {
+          email: LocalStorageStore.email,
+          password: this.password,
+          verification: parseInt(this.code)
+        })
+      this.messageSuccess('修改密码成功！')
+      await sleep(1000)
+      await this.$router.replace('/division/1')
     }
   }
 

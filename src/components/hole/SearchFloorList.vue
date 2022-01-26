@@ -81,13 +81,8 @@ export default class SearchFloorList extends BaseComponentOrView {
   async mounted () {
     this.request = new SearchFloorListRequest(this.searchStr)
     this.floors = this.request.datas
-    try {
-      await this.request.request()
-      this.initiating = false
-    } catch (error) {
-      if (error.response === undefined) this.messageError(JSON.stringify(error))
-      else this.messageError(error.response.data.message)
-    }
+    await this.request.request()
+    this.initiating = false
   }
 
   updated () {

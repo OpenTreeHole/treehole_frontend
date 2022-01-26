@@ -164,21 +164,15 @@ export default class Register extends BaseView {
     }
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
-    try {
-      const response = await this.$axios
-        .get('/verify/email', {
-          params: {
-            email: this.email
-          }
-        })
-      if (response.data.message === '邮箱不在白名单内！') {
-        this.messageError(response.data.message)
-      } else {
-        this.messageSuccess(response.data.message)
-      }
-    } catch (e) {
-      this.messageError(e.response.data.message)
-    }
+
+    const response = await this.$axios
+      .get('/verify/email', {
+        params: {
+          email: this.email
+        }
+      })
+
+    this.messageSuccess(response.data.message)
   }
 
   public sendButtonChangeStatus (): void {
@@ -196,19 +190,15 @@ export default class Register extends BaseView {
 
   public async changepassword () {
     if (this.form.validate()) {
-      try {
-        await this.$axios
-          .put('/register', {
-            email: this.email,
-            password: this.password,
-            verification: parseInt(this.code)
-          })
-        this.messageSuccess('重置密码成功！')
-        await sleep(1000)
-        await this.$router.replace('/login')
-      } catch (e) {
-        this.messageError(e.response.data.message)
-      }
+      await this.$axios
+        .put('/register', {
+          email: this.email,
+          password: this.password,
+          verification: parseInt(this.code)
+        })
+      this.messageSuccess('重置密码成功！')
+      await sleep(1000)
+      await this.$router.replace('/login')
     }
   }
 

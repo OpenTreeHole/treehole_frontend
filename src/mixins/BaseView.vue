@@ -13,24 +13,20 @@ export default class BaseView extends BaseComponentOrView {
    */
   public async preload (): Promise<void> {
     if (!LocalStorageStore.token) return
-    try {
-      if (!this.$ws.isConnecting() && !this.$ws.isConnected()) {
-        this.$ws.connect()
-      }
 
-      if (!this.$wsImage.isConnecting() && !this.$wsImage.isConnected()) {
-        this.$wsImage.connect()
-      }
-
-      const requestDivision = UserStore.requestDivision
-      const requestUserProfile = UserStore.requestUserProfile
-      const taskList = [requestDivision(), requestUserProfile()]
-      await Promise.all(taskList)
-      EventBus.$emit('preloaded')
-    } catch (e) {
-      console.log(e)
-      this.messageError(e)
+    if (!this.$ws.isConnecting() && !this.$ws.isConnected()) {
+      this.$ws.connect()
     }
+
+    if (!this.$wsImage.isConnecting() && !this.$wsImage.isConnected()) {
+      this.$wsImage.connect()
+    }
+
+    const requestDivision = UserStore.requestDivision
+    const requestUserProfile = UserStore.requestUserProfile
+    const taskList = [requestDivision(), requestUserProfile()]
+    await Promise.all(taskList)
+    EventBus.$emit('preloaded')
   }
 
   public created () {

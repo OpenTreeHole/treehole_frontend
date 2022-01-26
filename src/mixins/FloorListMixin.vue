@@ -115,14 +115,9 @@ export default class FloorListMixin extends BaseComponentOrView {
    * @param holeId - the hole id
    */
   public async getHole (holeId: number) {
-    try {
-      const response = await this.$axios.get('/holes/' + holeId)
-      if (response.data) {
-        this.hole = new WrappedHole(camelizeKeys(response.data))
-      }
-    } catch (error) {
-      if (error.response === undefined) this.messageError(JSON.stringify(error))
-      else this.messageError(error.response.data.message)
+    const response = await this.$axios.get('/holes/' + holeId)
+    if (response.data) {
+      this.hole = new WrappedHole(camelizeKeys(response.data))
     }
   }
 
@@ -144,7 +139,6 @@ export default class FloorListMixin extends BaseComponentOrView {
       this.messageSuccess(response.data.message)
       UserStore.collection.setCollection(response.data.data)
     } catch (error) {
-      this.messageError(error.response.data.message)
       this.hole.isStarred = !this.hole.isStarred
     }
   }
@@ -154,14 +148,7 @@ export default class FloorListMixin extends BaseComponentOrView {
    */
   public async getFloors (): Promise<boolean> {
     if (!this.request) return false
-    let hasNext = false
-    try {
-      hasNext = await this.request.request()
-    } catch (error) {
-      if (error.response === undefined) this.messageError(JSON.stringify(error))
-      else this.messageError(error.response.data.message)
-    }
-    return hasNext
+    return await this.request.request()
   }
 
   /**
@@ -173,20 +160,16 @@ export default class FloorListMixin extends BaseComponentOrView {
       const sLoading = this.loading
       const sEditor = this.editor
       const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
-      try {
-        const response = await this.$axios
-          .post('/floors', {
-            content: content,
-            hole_id: this.computedDiscussionId
-          })
-        this.messageSuccess(response.data.message)
-        sLoading.continueLoad()
-        this.replyFloor = null // Clear the reply info.
-        sEditor.setContent('') // Clear the reply editor.
-      } catch (error) {
-        console.log(error)
-        this.messageError(error)
-      }
+
+      const response = await this.$axios
+        .post('/floors', {
+          content: content,
+          hole_id: this.computedDiscussionId
+        })
+      this.messageSuccess(response.data.message)
+      sLoading.continueLoad()
+      this.replyFloor = null // Clear the reply info.
+      sEditor.setContent('') // Clear the reply editor.
     }
   }
 
@@ -199,21 +182,16 @@ export default class FloorListMixin extends BaseComponentOrView {
       const sEditor = this.editor
       const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
 
-      try {
-        const response = await this.$axios
-          .put(`/floors/${this.editingFloorId}`, {
-            content: content
-          })
-        this.messageSuccess('修改成功')
-        const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(response.data))
-        this.checkAndRerenderFloors(floor)
-        Vue.set(this.floors, this.getIndex(floor.floorId), floor)
-        this.replyFloor = null // Clear the reply info.
-        sEditor.setContent('') // Clear the reply editor.
-      } catch (error) {
-        console.log(error)
-        this.messageError(error)
-      }
+      const response = await this.$axios
+        .put(`/floors/${this.editingFloorId}`, {
+          content: content
+        })
+      this.messageSuccess('修改成功')
+      const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(response.data))
+      this.checkAndRerenderFloors(floor)
+      Vue.set(this.floors, this.getIndex(floor.floorId), floor)
+      this.replyFloor = null // Clear the reply info.
+      sEditor.setContent('') // Clear the reply editor.
     }
   }
 

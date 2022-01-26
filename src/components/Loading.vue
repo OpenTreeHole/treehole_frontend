@@ -43,11 +43,7 @@ export default class Loading extends BaseComponentOrView {
    */
   public onIntersect (entries: IntersectionObserverEntry[]): void {
     if (entries[0].isIntersecting) {
-      this.load().catch((error) => {
-        console.log(error)
-        if (error.response === undefined) this.messageError(JSON.stringify(error))
-        else this.messageError(error.response.data.message)
-      })
+      this.load()
     }
   }
 

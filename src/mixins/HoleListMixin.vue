@@ -62,15 +62,7 @@ export default class HoleListMixin extends BaseComponentOrView {
   }
 
   public async getHoles (): Promise<boolean> {
-    let hasNext = false
-    try {
-      hasNext = await this.request.request()
-    } catch (error) {
-      console.log(error)
-      if (error.response === undefined) this.messageError(JSON.stringify(error))
-      else this.messageError(error.response.data.message)
-    }
-    return hasNext
+    return await this.request.request()
   }
 
   public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {

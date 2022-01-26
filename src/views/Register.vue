@@ -180,11 +180,7 @@ export default class Register extends BaseView {
         email: this.email
       }
     })
-    if (response.data.message === '邮箱不在白名单内！') {
-      this.messageError(response.data.message)
-    } else {
-      this.messageSuccess(response.data.message)
-    }
+    this.messageSuccess(response.data.message)
   }
 
   public async sendButtonChangeStatus () {
@@ -199,22 +195,18 @@ export default class Register extends BaseView {
 
   public async register () {
     if (this.form.validate()) {
-      try {
-        const response = await this.$axios
-          .post('/register', {
-            email: this.email,
-            password: this.password,
-            verification: parseInt(this.code)
-          })
+      const response = await this.$axios
+        .post('/register', {
+          email: this.email,
+          password: this.password,
+          verification: parseInt(this.code)
+        })
         // 注册成功后直接跳转到主页面
-        this.messageSuccess('注册成功！')
-        LocalStorageStore.setNewcomer('true')
-        LocalStorageStore.setToken('token ' + response.data.token)
-        await sleep(1000)
-        await this.$router.replace('/division/1')
-      } catch (e) {
-        this.messageError(e.response.data.message)
-      }
+      this.messageSuccess('注册成功！')
+      LocalStorageStore.setNewcomer('true')
+      LocalStorageStore.setToken('token ' + response.data.token)
+      await sleep(1000)
+      await this.$router.replace('/division/1')
     }
   }
 

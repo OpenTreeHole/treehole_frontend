@@ -178,23 +178,18 @@ export default class AddHoleBtn extends BaseComponentOrView {
   public async addHole () {
     if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
-      try {
-        await this.$axios
-          .post('/holes', {
-            content: this.editor.getContent(),
-            division_id: this.selectedDivision.divisionId,
-            tags: this.selectedTags.map(v => {
-              return { name: v.name }
-            })
+      await this.$axios
+        .post('/holes', {
+          content: this.editor.getContent(),
+          division_id: this.selectedDivision.divisionId,
+          tags: this.selectedTags.map(v => {
+            return { name: v.name }
           })
-        this.messageSuccess('发送成功')
-        this.editor.setContent('')
-        this.selectedTags = []
-        this.$emit('refresh')
-      } catch (error) {
-        console.log(error.response)
-        this.messageError(error.response.data.message)
-      }
+        })
+      this.messageSuccess('发送成功')
+      this.editor.setContent('')
+      this.selectedTags = []
+      this.$emit('refresh')
     }
   }
 
@@ -202,14 +197,9 @@ export default class AddHoleBtn extends BaseComponentOrView {
    * Get the tag list from the backend.
    */
   public async getTags () {
-    try {
-      const response = await this.$axios
-        .get('/tags')
-      this.tags = response.data
-    } catch (e) {
-      console.log(e)
-      this.messageError(e.response.data.message)
-    }
+    const response = await this.$axios
+      .get('/tags')
+    this.tags = response.data
   }
 
   @Watch('selectedTags')

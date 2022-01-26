@@ -103,9 +103,6 @@ export default class Editor extends BaseComponentOrView {
       counter: {
         enable: true
       },
-      hint: {
-        // emoji: {}
-      },
       upload: {
         accept: 'image/*',
         handler: (files: File[]) => new Promise<null>(resolve => {
