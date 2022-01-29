@@ -11,6 +11,7 @@ export interface Floor {
   like: number
   timeCreated: string
   timeUpdated: string
+  specialTag: string
 }
 
 export class MarkedFloor implements Floor {
@@ -24,6 +25,7 @@ export class MarkedFloor implements Floor {
   timeCreated: string
   timeUpdated: string
   html: string
+  specialTag: string
 
   constructor (floor: Floor) {
     Object.assign(this, floor)

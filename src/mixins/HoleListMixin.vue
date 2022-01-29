@@ -96,14 +96,10 @@ export default class HoleListMixin extends BaseComponentOrView {
     else return 1
   }
 
-  public getDivisionById (divisionId: number): Division | null {
-    let retDivision: Division | null = null
-    UserStore.divisions.forEach((v) => {
-      if (v.divisionId === divisionId) {
-        retDivision = v
-      }
+  public getDivisionById (divisionId: number): Division | undefined {
+    return UserStore.divisions.find(v => {
+      return v.divisionId === divisionId
     })
-    return retDivision
   }
 
   pin () {

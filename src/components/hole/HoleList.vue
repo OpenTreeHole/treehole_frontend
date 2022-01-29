@@ -9,6 +9,7 @@
           :fix-height='fixCardHeight'
           :pinned='index < request.pinCount'
           @open-hole='openHole'
+          @update-pin-info='refresh'
         />
       </v-col>
     </animated-list>

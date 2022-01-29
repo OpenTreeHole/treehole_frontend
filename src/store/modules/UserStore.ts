@@ -4,6 +4,7 @@ import { Collection, UserProfile } from '@/models/user'
 import { camelizeKeys } from '@/utils/utils'
 import { VueInstance } from '@/instance'
 import { Division } from '@/models/division'
+import Vue from 'vue'
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {
@@ -20,6 +21,12 @@ class UserStore extends VuexModule {
   @Mutation
   public setDivisions (divisions: Division[]) {
     this.divisions = divisions
+  }
+
+  @Mutation
+  public setDivision (payload: {divisionId: number, division: Division}) {
+    const index = this.divisions.findIndex(v => v.divisionId === payload.divisionId)
+    Vue.set(this.divisions, index, payload.division)
   }
 
   @Mutation

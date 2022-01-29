@@ -3,6 +3,10 @@
     <!-- 标签栏 -->
     <v-card-text class='d-flex pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
       <span class='flex-left'>
+        <label-chip
+          v-if='hole.firstFloor.specialTag'
+          :label='hole.firstFloor.specialTag'
+        ></label-chip>
         <tag-chip
           v-for='(tag, tindex) in hole.tags'
           :key='tindex'
@@ -10,8 +14,12 @@
         >
         </tag-chip>
       </span>
-      <span class='flex-right' v-if='pinned'>
-        <v-icon>mdi-pin</v-icon>
+      <span class='flex-right' v-if='isAdmin'>
+        <v-icon v-if='pinned' color='blue' v-ripple @click='unpin'>mdi-pin</v-icon>
+        <v-icon v-else color='blue' v-ripple @click='pin'>mdi-pin-outline</v-icon>
+      </span>
+      <span class='flex-right' v-else-if='pinned'>
+        <v-icon color='blue'>mdi-pin</v-icon>
       </span>
     </v-card-text>
     <v-card-text class='folded-hint' v-if='hole.isFolded' color='grey'>
@@ -118,9 +126,15 @@ import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
 import { WrappedHole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import TagChip from '@/components/hole/TagChip.vue'
+import LabelChip from '@/components/hole/LabelChip.vue'
+import UserStore from '@/store/modules/UserStore'
+import { remove } from 'lodash-es'
+import { Division } from '@/models/division'
+import { camelizeKeys } from '@/utils/utils'
 
 @Component({
   components: {
+    LabelChip,
     TagChip
   }
 })
@@ -132,6 +146,10 @@ export default class HoleCard extends BaseComponentOrView {
   @Prop({ type: Boolean, default: false }) pinned: boolean
 
   public fixedHeight: string = '4.5rem'
+
+  get isAdmin () {
+    return UserStore.userProfile?.isAdmin
+  }
 
   @Emit()
   openHole (_hole: WrappedHole, _floorId?: number, _preventClose?: boolean) {
@@ -159,6 +177,28 @@ export default class HoleCard extends BaseComponentOrView {
 
   public fold (): void {
     this.hole.styleData.fold = true
+  }
+
+  @Emit('update-pin-info')
+  async unpin () {
+    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId) as Division
+    const pinnedIdList = division!.pinned.map(v => v.holeId)
+    remove(pinnedIdList, v => v === this.hole.holeId)
+    const response = await this.$axios.put(`/divisions/${this.hole.divisionId}`, {
+      pinned: pinnedIdList
+    })
+    UserStore.setDivision({ divisionId: this.hole.divisionId, division: camelizeKeys(response.data) })
+  }
+
+  @Emit('update-pin-info')
+  async pin () {
+    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId) as Division
+    const pinnedIdList = division!.pinned.map(v => v.holeId)
+    pinnedIdList.push(this.hole.holeId)
+    const response = await this.$axios.put(`/divisions/${this.hole.divisionId}`, {
+      pinned: pinnedIdList
+    })
+    UserStore.setDivision({ divisionId: this.hole.divisionId, division: camelizeKeys(response.data) })
   }
 }
 </script>

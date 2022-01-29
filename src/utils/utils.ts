@@ -79,12 +79,12 @@ export const reduceKeys = (reduced: any, before: any): any => {
 }
 
 export const convertKatex = (str: string) => {
-  return str.replace(/\$\$([\s\S]+)\$\$/g, (ignore, k) => {
+  return str.replace(/\$\$([^$]+)\$\$/g, (ignore, k) => {
     return katex.renderToString(k, {
       displayMode: true,
       macros
     })
-  }).replace(/\$([\s\S]+)\$/g, (ignore, k) => {
+  }).replace(/\$([^$]+)\$/g, (ignore, k) => {
     return katex.renderToString(k, {
       displayMode: false
     })
