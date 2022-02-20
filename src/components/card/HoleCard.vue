@@ -11,6 +11,7 @@
           v-for='(tag, tindex) in hole.tags'
           :key='tindex'
           :tag='tag'
+          @click='addTag($route.path, tag)'
         >
         </tag-chip>
       </span>

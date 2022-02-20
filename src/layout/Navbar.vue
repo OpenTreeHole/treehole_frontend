@@ -77,7 +77,11 @@
       <v-divider />
       <v-list style='padding: 5px'>
         <v-list-item v-if='filtedTagMap && filtedTagMap[$route.path]'>
-          <TagChip :tag='filtedTagMap[$route.path]' :key='"filtedTag-"+filtedTagMap[$route.path].tagId' :remove='true'></TagChip>
+          <TagChip
+            :tag='filtedTagMap[$route.path]'
+            :key='"filtedTag-"+filtedTagMap[$route.path].tagId'
+            @click='clearTag($route.path)'
+          />
         </v-list-item>
         <!-- 搜索 -->
         <v-list-item>

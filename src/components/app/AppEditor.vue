@@ -14,7 +14,7 @@ import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
-export default class Editor extends BaseComponentOrView {
+export default class AppEditor extends BaseComponentOrView {
   @Prop({ type: String }) contentName: string
 
   public editor: Vditor

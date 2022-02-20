@@ -6,7 +6,6 @@
         :key='`${index}`'
         justify='center'
         align='start'
-        v-viewer
       >
         <v-col :class='colClass' lg='6' md='8' cols='12'>
           <v-card :id='index'>
@@ -14,8 +13,8 @@
               <p>
                 {{ floor.anonyname }}
                 <span style='float: right'>
-                        {{ floor.timeUpdated | timeDifference }}
-                      </span>
+                  {{ floor.timeUpdated | timeDifference }}
+                </span>
               </p>
             </v-card-text>
 
@@ -49,9 +48,7 @@
 
 <script lang='ts'>
 import Loading from '@/components/Loading.vue'
-import Editor from '@/components/Editor.vue'
 import { Component, Prop } from 'vue-property-decorator'
-import MentionCard from '@/components/card/MentionCard.vue'
 import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { SearchFloorListRequest } from '@/api'
@@ -60,9 +57,7 @@ import { Floor } from '@/models/floor'
 
 @Component({
   components: {
-    Mention: MentionCard,
-    Loading,
-    Editor
+    Loading
   }
 })
 export default class SearchFloorList extends BaseComponentOrView {

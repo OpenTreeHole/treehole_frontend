@@ -24,7 +24,7 @@ export default class DynamicExpansionPanel extends BaseComponentOrView {
 }
 </script>
 
-<style lang='scss'>
+<style lang='scss' scoped>
 .v-expansion-panel-content__wrap{
   padding: 0 !important;
 }

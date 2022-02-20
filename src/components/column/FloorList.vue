@@ -69,11 +69,11 @@
               <!-- 回贴表单 -->
 
               <!-- 富文本输入框 -->
-              <editor
+              <app-editor
                 ref='editor'
                 :contentName='contentName'
                 @error='editorError'
-              ></editor>
+              />
             </v-form>
           </v-card-text>
 
@@ -105,7 +105,7 @@
 
 <script lang='ts'>
 import Loading from '@/components/Loading.vue'
-import Editor from '@/components/Editor.vue'
+import AppEditor from '@/components/app/AppEditor.vue'
 import { Component, Prop, Ref } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
 import MentionCard from '@/components/card/MentionCard.vue'
@@ -123,7 +123,7 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
   components: {
     MentionCard,
     Loading,
-    Editor,
+    AppEditor,
     FloorCard
   }
 })
@@ -153,7 +153,7 @@ export default class FloorList extends BaseComponentOrView {
   @Prop({ required: true }) wrappedHoleOrId: Hole | number
 
   @Ref() readonly form!: HTMLFormElement
-  @Ref() readonly editor!: Editor
+  @Ref() readonly editor!: AppEditor
   @Ref() readonly loading!: Loading
   @Ref() readonly floorCards!: FloorCard[]
 

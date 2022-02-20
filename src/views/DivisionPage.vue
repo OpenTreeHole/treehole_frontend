@@ -32,14 +32,12 @@
 import { Component, Ref } from 'vue-property-decorator'
 import HolePanel from '@/components/panel/HolePanel.vue'
 import HoleListMobile from '@/components/column/HoleListMobile.vue'
-import Editor from '@/components/Editor.vue'
 import BaseView from '@/mixins/BaseView.vue'
 import CreateHoleDialog from '@/components/dialog/CreateHoleDialog.vue'
 
 @Component({
   components: {
     CreateHoleDialog,
-    Editor,
     HolePanel,
     HoleListMobile
   }

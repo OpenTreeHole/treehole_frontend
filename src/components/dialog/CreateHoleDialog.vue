@@ -25,7 +25,7 @@
           <!-- 标签输入框 -->
           <v-combobox
             v-model='selectedTags'
-            :items='coloredTags'
+            :items='tags'
             item-text='name'
             item-value='name'
             label='标签'
@@ -39,43 +39,37 @@
           >
             <!-- 自定义标签样式 -->
             <template v-slot:selection='data'>
-              <v-chip
-                v-bind='data.attrs'
-                :input-value='data.selected'
-                :disabled='data.disabled'
-                @click:close='data.parent.selectItem(data.item)'
-                outlined
-                :color='data.item.color'
-                small
+              <tag-chip
+                :tag='data.item'
+                @click='selectedTags=selectedTags.filter(v=>v!==data.item)'
               >
-                {{ data.item.name }}
                 <span class='tag-icon'>
-                      <v-icon x-small>mdi-fire</v-icon>
-                    </span>
-                <span>
-                      {{ data.item.temperature }}
-                    </span>
-              </v-chip>
+                  <v-icon x-small color='red'>mdi-fire</v-icon>
+                </span>
+                <span class='red--text'>
+                  {{ data.item.temperature }}
+                </span>
+              </tag-chip>
             </template>
 
             <!-- 自定义下拉框样式 -->
             <template v-slot:item='data'>
               <v-list-item-content>
-                    <span :class="'red' + '--text'">
-                      {{ data.item.name }}
-                      <v-icon color='red' class='tag-icon' small>
-                        mdi-fire
-                      </v-icon>
-                      <span class='tag-count'>
-                        {{ data.item.temperature }}
-                      </span>
-                    </span>
+                <span :class="parseTagColor(data.item.name) + '--text'">
+                  {{ data.item.name }}
+                  <v-icon color='red' class='tag-icon' small>
+                    mdi-fire
+                  </v-icon>
+                  <span class='tag-count red--text'>
+                    {{ data.item.temperature }}
+                  </span>
+                </span>
               </v-list-item-content>
             </template>
           </v-combobox>
 
           <!-- 富文本输入框 -->
-          <editor
+          <app-editor
             ref='editor'
             :contentName='contentName'
           />
@@ -103,15 +97,17 @@
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UserStore from '@/store/modules/UserStore'
 import { Component, Prop, Ref, Watch } from 'vue-property-decorator'
-import Editor from '@/components/Editor.vue'
+import AppEditor from '@/components/app/AppEditor.vue'
 import { Tag } from '@/models/tag'
 import { Division } from '@/models/division'
 import { parseTagColor } from '@/utils/utils'
 import { dialogWidth } from '@/utils/style'
+import TagChip from '@/components/chip/TagChip.vue'
 
 @Component({
   components: {
-    Editor
+    TagChip,
+    AppEditor
   }
 })
 export default class CreateHoleDialog extends BaseComponentOrView {
@@ -136,7 +132,7 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   public errorMsg: any = {}
   public valid = true
 
-  @Ref() readonly editor!: Editor
+  @Ref() readonly editor!: AppEditor
   @Ref() readonly form!: HTMLFormElement
 
   get coloredTags (): Array<any> {
@@ -156,6 +152,8 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   get dialogWidth () {
     return dialogWidth()
   }
+
+  public parseTagColor = parseTagColor
 
   public openDialog (): void {
     this.getTags()
