@@ -1,16 +1,10 @@
 <template>
-  <v-dialog content-class='my-n4 mx-3' v-model='dialog' persistent :max-width='editorWidth'>
-    <template v-slot:activator='{ on, attrs }'>
-      <v-btn
-        fab
-        color='secondary'
-        v-bind='attrs'
-        v-on='on'
-        @mousedown.prevent
-        @click='openDialog'
-      >
-        <v-icon>mdi-message-plus</v-icon>
-      </v-btn>
+  <v-dialog content-class='my-n4 mx-3' v-model='dialog' persistent :max-width='dialogWidth'>
+    <template #activator='{ on, attrs }'>
+      <slot
+        name='activator'
+        v-bind='{ on: {...on, click: e=>{on.click(e);openDialog()}}, attrs }'
+      />
     </template>
 
     <v-card>
@@ -113,13 +107,14 @@ import Editor from '@/components/Editor.vue'
 import { Tag } from '@/models/tag'
 import { Division } from '@/models/division'
 import { parseTagColor } from '@/utils/utils'
+import { dialogWidth } from '@/utils/style'
 
 @Component({
   components: {
     Editor
   }
 })
-export default class AddHoleBtn extends BaseComponentOrView {
+export default class CreateHoleDialog extends BaseComponentOrView {
   @Prop({ type: Number, default: 1 }) divisionId: number
 
   public content = ''
@@ -158,8 +153,8 @@ export default class AddHoleBtn extends BaseComponentOrView {
     return UserStore.divisions
   }
 
-  get editorWidth () {
-    return this.isMobile ? '98vw' : '70vw'
+  get dialogWidth () {
+    return dialogWidth()
   }
 
   public openDialog (): void {

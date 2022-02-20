@@ -10,7 +10,19 @@
         <v-icon>mdi-autorenew</v-icon>
       </v-btn>
       <br />
-      <add-hole-btn @refresh='reload'/>
+      <create-hole-dialog @refresh='reload'>
+        <template #activator='{ on, attrs }'>
+          <v-btn
+            fab
+            color='secondary'
+            v-bind='attrs'
+            v-on='on'
+            @mousedown.prevent
+          >
+            <v-icon>mdi-message-plus</v-icon>
+          </v-btn>
+        </template>
+      </create-hole-dialog>
     </div>
 
   </v-container>
@@ -22,11 +34,11 @@ import HolePanel from '@/components/panel/HolePanel.vue'
 import HoleListMobile from '@/components/column/HoleListMobile.vue'
 import Editor from '@/components/Editor.vue'
 import BaseView from '@/mixins/BaseView.vue'
-import AddHoleBtn from '@/components/button/AddHoleBtn.vue'
+import CreateHoleDialog from '@/components/dialog/CreateHoleDialog.vue'
 
 @Component({
   components: {
-    AddHoleBtn,
+    CreateHoleDialog,
     Editor,
     HolePanel,
     HoleListMobile
