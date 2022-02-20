@@ -1,109 +1,116 @@
 <template>
   <v-card class='rounded' :id='index' elevation='1'>
-    <v-card-text class='d-flex pb-4 pt-2 text-body-2'>
-      <span class='flex-left'>
-        {{ floor.anonyname }}
-      </span>
-      <span class='flex-center'>
-        {{ floor.timeCreated | timeDifference }}
-      </span>
-      <span class='flex-right'>
-        <template v-if='!noAction'>
-           <v-btn
-             v-if='operations.length === 1'
-             small
-             text
-             @click='report'
-             class='grey--text'
-             style='padding-bottom: -10px'
-           >
-              <v-icon>mdi-alert-outline</v-icon>
-              <br />
-              <span>举报</span>
-            </v-btn>
-            <v-menu
-              v-else
-              offset-y
-            >
-              <template #activator='{on, attrs}'>
-                <v-btn
-                  small
-                  text
-                  class='grey--text'
-                  style='padding-bottom: -10px'
-                  v-bind='attrs'
-                  v-on='on'
-                >
-                  <v-icon>mdi-dots-horizontal</v-icon>
-                  <br />
-                  <span>更多</span>
-                </v-btn>
-              </template>
-              <v-list>
-                <v-list-item
-                  v-for='op in operations'
-                  :key='"operation-" + op.text'
-                >
+
+    <dynamic-expansion-panel :on='floor.fold.length>0'>
+      <template #header>
+        {{ floor.fold[0] }}
+      </template>
+      <template #content>
+        <v-card-text class='d-flex pb-4 pt-2 text-body-2'>
+          <span class='flex-left'>
+            {{ floor.anonyname }}
+          </span>
+          <span class='flex-center'>
+            {{ floor.timeCreated | timeDifference }}
+          </span>
+          <span class='flex-right'>
+            <template v-if='!noAction'>
+              <v-btn
+                v-if='operations.length === 1'
+                small
+                text
+                @click='report'
+                class='grey--text'
+                style='padding-bottom: -10px'
+              >
+                <v-icon>mdi-alert-outline</v-icon>
+                <br />
+                <span>举报</span>
+              </v-btn>
+              <v-menu
+                v-else
+                offset-y
+              >
+                <template #activator='{on, attrs}'>
                   <v-btn
                     small
                     text
                     class='grey--text'
                     style='padding-bottom: -10px'
-                    @click='op.operation'
+                    v-bind='attrs'
+                    v-on='on'
                   >
-                    <v-icon>mdi-{{ op.icon }}</v-icon>
+                    <v-icon>mdi-dots-horizontal</v-icon>
                     <br />
-                    <span>{{ op.text }}</span>
+                    <span>更多</span>
                   </v-btn>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-        </template>
-      </span>
-    </v-card-text>
+                </template>
+                <v-list>
+                  <v-list-item
+                    v-for='op in operations'
+                    :key='"operation-" + op.text'
+                  >
+                    <v-btn
+                      small
+                      text
+                      class='grey--text'
+                      style='padding-bottom: -10px'
+                      @click='op.operation'
+                    >
+                      <v-icon>mdi-{{ op.icon }}</v-icon>
+                      <br />
+                      <span>{{ op.text }}</span>
+                    </v-btn>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </template>
+          </span>
+        </v-card-text>
 
-    <v-card-text class='py-0'>
-      <!-- 正文部分 -->
-      <div
-        :id='id'
-        class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
-        v-html='floor.html'
-      ></div>
-    </v-card-text>
+        <v-card-text class='py-0'>
+          <!-- 正文部分 -->
+          <div
+            :id='id'
+            class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
+            v-html='floor.html'
+          ></div>
+        </v-card-text>
 
-    <!-- 脚标 -->
-    <v-card-text class='d-flex text-body-2 pb-2'>
-      <span class='flex-left' v-html='idInfo'></span>
-      <span class='flex-center'>
-        <v-btn
-          v-if='!noAction'
-          small
-          text
-          @click='$emit("reply")'
-          class='grey--text'
-          style='padding-bottom: -10px'
-        >
-          <v-icon>mdi-reply-outline</v-icon>
-          <br />
-          <span>回复</span>
-        </v-btn>
-      </span>
-      <span class='flex-right'>
-        <v-btn
-          small
-          text
-          @click='like'
-          class='grey--text'
-          style='padding-bottom: -10px'
-        >
-          <v-icon v-if='floor.liked'>mdi-thumb-up</v-icon>
-          <v-icon v-else>mdi-thumb-up-outline</v-icon>
-          <br />
-          <span>{{ floor.like }}</span>
-        </v-btn>
-      </span>
-    </v-card-text>
-
+        <!-- 脚标 -->
+        <v-card-text class='d-flex text-body-2 pb-2'>
+          <span class='flex-left' v-html='idInfo'></span>
+          <span class='flex-center'>
+            <v-btn
+              v-if='!noAction'
+              small
+              text
+              @click='$emit("reply")'
+              class='grey--text'
+              style='padding-bottom: -10px'
+            >
+              <v-icon>mdi-reply-outline</v-icon>
+              <br />
+              <span>回复</span>
+            </v-btn>
+          </span>
+          <span class='flex-right'>
+            <v-btn
+              small
+              text
+              @click='like'
+              class='grey--text'
+              style='padding-bottom: -10px'
+            >
+              <v-icon v-if='floor.liked'>mdi-thumb-up</v-icon>
+              <v-icon v-else>mdi-thumb-up-outline</v-icon>
+              <br />
+              <span>{{ floor.like }}</span>
+            </v-btn>
+          </span>
+        </v-card-text>
+      </template>
+    </dynamic-expansion-panel>
   </v-card>
 </template>
 
@@ -114,6 +121,7 @@ import Vue from 'vue'
 import UserStore from '@/store/modules/UserStore'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { gotoHole, renderFloor } from '@/utils/floor'
+import DynamicExpansionPanel from '@/components/animation/DynamicExpansionPanel.vue'
 
 interface Operation {
   icon: string
@@ -121,13 +129,17 @@ interface Operation {
   operation: Function
 }
 
-@Component
+@Component({
+  components: { DynamicExpansionPanel }
+})
 export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: true, type: Object }) floor: Floor
   @Prop({ required: false, type: Number, default: -1 }) divisionId: number
   @Prop({ required: false, type: Number, default: -1 }) index: number
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
   @Prop({ type: String, default: 'fl' }) idPrefix: string
+
+  public display: boolean = false
 
   get idInfo () {
     return this.index === -1 ? `<b>##${this.floor.floorId}</b>` : `<b>${this.index}L</b>(##${this.floor.floorId})`
@@ -169,6 +181,10 @@ export default class FloorCard extends BaseComponentOrView {
 
   mounted () {
     this.renderMentions()
+  }
+
+  created () {
+    this.display = this.floor.fold.length === 0
   }
 
   @Watch('floor', { deep: true })
