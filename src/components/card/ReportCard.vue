@@ -63,17 +63,6 @@ export default class ReportCard extends BaseComponentOrView {
   @Emit()
   openReport (_report: Report) {
   }
-
-  public deal () {
-    const msg = prompt('输入惩罚等级')
-    if (msg == null) return
-    const level = parseInt(msg)
-    if (isNaN(level) || level < 0 || level > 3) this.messageError('非有效惩罚等级！（惩罚应为0,1,2或3）')
-    this.$axios.post(`/penalty/${this.report.floor.floorId}`, {
-      penalty_level: level,
-      division_id: 1
-    })
-  }
 }
 </script>
 

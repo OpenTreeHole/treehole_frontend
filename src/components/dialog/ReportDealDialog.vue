@@ -73,7 +73,7 @@ export default class ReportDealDialog extends BaseComponentOrView {
       this.dialog = false
       const params: any = {}
       if (this.dealType) {
-        params[this.dealType] = this.reason[this.dealType] ?? this.reasonDefault[this.dealType]
+        params[this.dealType] = this.reason[this.dealType] || this.reasonDefault[this.dealType]
         params.silent = this.silent
       }
       const response = await this.$axios.delete(`/reports/${this.report.reportId}`, {
