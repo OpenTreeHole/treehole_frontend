@@ -20,15 +20,15 @@
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator'
 import Vue from 'vue'
-import FloorCard from '@/components/hole/FloorCard.vue'
+import FloorCard from '@/components/card/FloorCard.vue'
 import AppSheet from '@/components/app/AppSheet.vue'
-import { MarkedDetailedFloor } from '@/models/floor'
+import { DetailedFloor } from '@/models/floor'
 
 @Component({
   components: { FloorCard, AppSheet }
 })
 export default class NotificationFloorCardMenu extends Vue {
-  @Prop({ required: true }) floor: MarkedDetailedFloor
+  @Prop({ required: true }) floor: DetailedFloor
 
   public menu = false
 }

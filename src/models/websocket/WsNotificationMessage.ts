@@ -1,6 +1,6 @@
 import WsMessage, { IWsMessage } from '@/models/websocket/WsMessage'
 import { checkType } from '@/utils/utils'
-import { DetailedFloor } from '@/models/floor'
+import { IDetailedFloor } from '@/models/floor'
 
 /**
  * The model for notification message sent via WebSocket.
@@ -13,7 +13,7 @@ import { DetailedFloor } from '@/models/floor'
 export interface IWsNotificationMessage extends IWsMessage {
   messageId: number
   code: string
-  data: DetailedFloor
+  data: IDetailedFloor
   hasRead: boolean
   timeCreated: string
 }
@@ -25,7 +25,7 @@ export function checkIWsNotificationMessage (message: any): boolean {
 
 export default class WsNotificationMessage extends WsMessage implements IWsNotificationMessage {
   code: string
-  data: DetailedFloor
+  data: IDetailedFloor
   hasRead: boolean
   messageId: number
   timeCreated: string

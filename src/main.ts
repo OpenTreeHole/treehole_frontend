@@ -57,7 +57,7 @@ axios.interceptors.response.use(response => response, async (error) => {
     MessageStore.messageError('未知axios错误，请按F12查看控制台以获得错误信息并发至站务分区，')
     console.log(error)
   }
-  return error
+  return Promise.reject(error)
 })
 Vue.prototype.$axios = axios
 

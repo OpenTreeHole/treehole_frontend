@@ -62,6 +62,13 @@ const config = {
       route: '/about'
     }
   ],
+  adminNavItems: [
+    {
+      title: '举报',
+      icon: 'mdi-alert-box-outline',
+      route: '/report'
+    }
+  ],
   friendLinks: [ // 友链
     {
       siteName: '旦夕 App',

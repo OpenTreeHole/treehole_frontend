@@ -85,7 +85,7 @@ import { Component } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 
 @Component
-export default class About extends BaseView {
+export default class AboutPage extends BaseView {
   public latestVersion = '正在获取'
   public installed =
     window.matchMedia('(display-mode: standalone)').matches

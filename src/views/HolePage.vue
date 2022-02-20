@@ -10,7 +10,7 @@
 
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
-import FloorList from '@/components/hole/FloorList.vue'
+import FloorList from '@/components/column/FloorList.vue'
 import BaseView from '@/mixins/BaseView.vue'
 
 @Component({
@@ -18,7 +18,7 @@ import BaseView from '@/mixins/BaseView.vue'
     FloorList
   }
 })
-export default class Hole extends BaseView {
+export default class HolePage extends BaseView {
   public get computedDiscussionId (): number {
     return parseInt(this.$route.params.id)
   }

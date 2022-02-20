@@ -5,7 +5,7 @@
 <script lang='ts'>
 import Component from 'vue-class-component'
 import { EventBus } from '@/event-bus'
-import SearchFloorList from '@/components/hole/SearchFloorList.vue'
+import SearchFloorList from '@/components/column/SearchFloorList.vue'
 import BaseView from '@/mixins/BaseView.vue'
 
 @Component({
@@ -13,7 +13,7 @@ import BaseView from '@/mixins/BaseView.vue'
     SearchFloorList
   }
 })
-export default class Search extends BaseView {
+export default class SearchPage extends BaseView {
   public searchStr: string = ''
 
   public search (searchStr: string) {

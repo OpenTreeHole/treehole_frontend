@@ -1,6 +1,6 @@
 // noinspection JSUnusedGlobalSymbols
 
-import { WrappedHole } from '@/models/hole'
+import { Hole } from '@/models/hole'
 import Vue from 'vue'
 import { VueInstance } from '@/instance'
 
@@ -21,7 +21,7 @@ export interface UserProfile {
 
 export class Collection {
   public collectionIds: Array<number> = []
-  public updateHoleMap = new Map<string, Array<WrappedHole>>()
+  public updateHoleMap = new Map<string, Array<Hole>>()
 
   public clearCollection () {
     this.collectionIds = []
@@ -36,7 +36,7 @@ export class Collection {
     for (const value of this.updateHoleMap.values()) {
       for (let i = 0; i < value.length; i++) {
         if (value[i].isStarred !== this.isStarred(value[i].holeId)) {
-          Vue.set(value, i, new WrappedHole(value[i]))
+          Vue.set(value, i, new Hole(value[i]))
         }
       }
     }
@@ -60,7 +60,7 @@ export class Collection {
     return this.collectionIds.includes(holeId)
   }
 
-  public registerUpdateHoleArray (name: string, holeArray: Array<WrappedHole>) {
+  public registerUpdateHoleArray (name: string, holeArray: Array<Hole>) {
     this.updateHoleMap.set(name, holeArray)
   }
 

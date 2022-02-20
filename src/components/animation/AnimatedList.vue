@@ -1,6 +1,6 @@
 <template>
   <v-container class='pa-0 mb-3'>
-    <v-row v-for='(computedData, index) in computedDatas' :key='computedData.data[vkey]' :class='computedData.class'
+    <v-row class='ma-0' v-for='(computedData, index) in computedDatas' :key='computedData.data[vkey]' :class='computedData.class'
            :id='"animated-"+computedData.data[vkey]'>
       <slot :data='computedData.data' :index='index' />
     </v-row>

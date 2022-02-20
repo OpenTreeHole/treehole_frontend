@@ -8,7 +8,7 @@
                @transitionend='onActivationEnd'
         >
           <div id='divColFirst' style='display: block; height: 100%; width: 100%;'>
-            <div style='padding: 12px 20px'>
+            <div style='padding: 0 20px'>
               <slot name='first' />
             </div>
           </div>
@@ -16,7 +16,7 @@
 
         <v-col class='col-second' cols='6'>
           <div id='divColSecond' style='display: block; height: 100%; width: 100%;'>
-            <div style='padding: 12px 20px'>
+            <div style='padding: 0 20px'>
               <slot name='second' />
             </div>
           </div>

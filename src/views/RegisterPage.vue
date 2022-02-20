@@ -107,7 +107,7 @@ import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
 
 @Component
-export default class Register extends BaseView {
+export default class RegisterPage extends BaseView {
   // 同意协议
   public agreelicenses: boolean = false
   // 表单信息

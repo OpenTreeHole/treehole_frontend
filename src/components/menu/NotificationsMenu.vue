@@ -138,7 +138,7 @@ import { timeDifference } from '@/utils/utils'
 import NotificationFloorCardMenu from '@/components/menu/NotificationFloorCardMenu.vue'
 import { openDivisionAndGotoHole } from '@/utils/floor'
 import Vue from 'vue'
-import { MarkedDetailedFloor } from '@/models/floor'
+import { DetailedFloor } from '@/models/floor'
 
 @Component({
   components: {
@@ -164,7 +164,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
   get read () {
     return this.readRaw.map(v => {
       if (!('floorId' in v.data)) return { ...v, timeCreatedDifference: timeDifference(v.timeCreated) }
-      const marked = new MarkedDetailedFloor(v.data)
+      const marked = new DetailedFloor(v.data)
       return { ...v, timeCreatedDifference: timeDifference(v.timeCreated), marked }
     })
   }
@@ -172,7 +172,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
   get unread () {
     return this.unreadRaw.map(v => {
       if (!('floorId' in v.data)) return { ...v, timeCreatedDifference: timeDifference(v.timeCreated) }
-      const marked = new MarkedDetailedFloor(v.data)
+      const marked = new DetailedFloor(v.data)
       return { ...v, timeCreatedDifference: timeDifference(v.timeCreated), marked }
     })
   }

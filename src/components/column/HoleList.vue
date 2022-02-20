@@ -23,14 +23,14 @@
 </template>
 
 <script lang='ts'>
-import HoleCard from '@/components/hole/HoleCard.vue'
+import HoleCard from '@/components/card/HoleCard.vue'
 import HoleListMixin from '@/mixins/HoleListMixin.vue'
 import Loading from '@/components/Loading.vue'
 import { Component, Emit, Prop, Ref } from 'vue-property-decorator'
-import { WrappedHole } from '@/models/hole'
+import { Hole } from '@/models/hole'
 import { EventBus } from '@/event-bus'
 import AnimatedList from '@/components/animation/AnimatedList.vue'
-import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import { DetailedFloor, Floor } from '@/models/floor'
 import { sleep } from '@/utils/utils'
 
 @Component({
@@ -55,12 +55,12 @@ export default class HoleList extends HoleListMixin {
     return parseInt(window.getComputedStyle(holeListElement).height)
   }
 
-  public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
+  public onGotoMentionFloor (curFloor: DetailedFloor, mentionFloor: Floor) {
     if (this.isPinned(curFloor.holeId)) {
       this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId)
       return
     }
-    let curHole: WrappedHole | undefined, curIndex: number | undefined
+    let curHole: Hole | undefined, curIndex: number | undefined
     this.holes.forEach((hole, index) => {
       if (hole.holeId === curFloor.holeId) {
         curHole = hole
@@ -74,12 +74,12 @@ export default class HoleList extends HoleListMixin {
     this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId, curIndex)
   }
 
-  public async openNewOrExistHole (holeIdOrHole: number | WrappedHole, floorId?: number, toIndex = this.request.pinCount) {
+  public async openNewOrExistHole (holeIdOrHole: number | Hole, floorId?: number, toIndex = this.request.pinCount) {
     await this.loading.waitForUnpause(8)
 
     const holeId = (typeof holeIdOrHole === 'number') ? holeIdOrHole : holeIdOrHole.holeId
 
-    let hole: WrappedHole | undefined, index: number | undefined
+    let hole: Hole | undefined, index: number | undefined
     this.holes.forEach((h, i) => {
       if (h.holeId === holeId) {
         hole = h
@@ -109,7 +109,7 @@ export default class HoleList extends HoleListMixin {
   }
 
   @Emit()
-  public openHole (_hole: WrappedHole, _floorId?: number, _preventClose?: boolean) {
+  public openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
   }
 
   mounted () {

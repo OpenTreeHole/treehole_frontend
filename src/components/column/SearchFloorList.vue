@@ -51,23 +51,23 @@
 import Loading from '@/components/Loading.vue'
 import Editor from '@/components/Editor.vue'
 import { Component, Prop } from 'vue-property-decorator'
-import Mention from '@/components/hole/Mention.vue'
+import MentionCard from '@/components/card/MentionCard.vue'
 import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { SearchFloorListRequest } from '@/api'
 import { openDivisionAndGotoHole } from '@/utils/floor'
-import { MarkedFloor } from '@/models/floor'
+import { Floor } from '@/models/floor'
 
 @Component({
   components: {
-    Mention,
+    Mention: MentionCard,
     Loading,
     Editor
   }
 })
 export default class SearchFloorList extends BaseComponentOrView {
   @Prop({ required: true }) private searchStr: string
-  public floors: Array<MarkedFloor> = []
+  public floors: Array<Floor> = []
 
   public request: SearchFloorListRequest
 

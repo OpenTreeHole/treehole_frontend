@@ -112,7 +112,7 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
 import UserStore from '@/store/modules/UserStore'
-import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import { DetailedFloor, Floor } from '@/models/floor'
 import { gotoHole, renderFloor } from '@/utils/floor'
 
 interface Operation {
@@ -123,7 +123,7 @@ interface Operation {
 
 @Component
 export default class FloorCard extends BaseComponentOrView {
-  @Prop({ required: true, type: Object }) floor: MarkedFloor
+  @Prop({ required: true, type: Object }) floor: Floor
   @Prop({ required: false, type: Number, default: -1 }) divisionId: number
   @Prop({ required: false, type: Number, default: -1 }) index: number
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
@@ -137,7 +137,7 @@ export default class FloorCard extends BaseComponentOrView {
     return `${this.idPrefix}-${this.floor.floorId}`
   }
 
-  public toMention (mentionFloor: MarkedFloor) {
+  public toMention (mentionFloor: Floor) {
     if (this.floor.holeId === mentionFloor.holeId) {
       this.$emit('scroll-to-floor', mentionFloor.holeId)
     } else {
@@ -146,13 +146,13 @@ export default class FloorCard extends BaseComponentOrView {
   }
 
   public renderMentions () {
-    if (this.floor instanceof MarkedDetailedFloor) {
+    if (this.floor instanceof DetailedFloor) {
       renderFloor(this.floor, this.toMention)
     }
   }
 
-  public rerenderSpecificMention (mentionFloor: MarkedFloor) {
-    if (this.floor instanceof MarkedDetailedFloor && this.floor.mention.length !== 0) {
+  public rerenderSpecificMention (mentionFloor: Floor) {
+    if (this.floor instanceof DetailedFloor && this.floor.mention.length !== 0) {
       let flag = false
       for (let i = 0; i < this.floor.mention.length; i++) {
         if (this.floor.mention[i].floorId === mentionFloor.floorId) {
@@ -207,7 +207,7 @@ export default class FloorCard extends BaseComponentOrView {
       text: '处罚',
       operation: this.penalty
     }
-    if (this.floor instanceof MarkedDetailedFloor && this.floor.isMe) {
+    if (this.floor instanceof DetailedFloor && this.floor.isMe) {
       this.operations = [opRemoveFloor, opEdit]
     } else if (UserStore.userProfile?.isAdmin) {
       this.operations = [opRemoveFloorWithReason, opEdit, opPenalty]
@@ -235,7 +235,7 @@ export default class FloorCard extends BaseComponentOrView {
   }
 
   public async like () {
-    if (!(this.floor instanceof MarkedDetailedFloor)) return
+    if (!(this.floor instanceof DetailedFloor)) return
     if (this.floor.liked) {
       Vue.set(this.floor, 'like', this.floor.like - 1)
     } else {

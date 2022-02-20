@@ -9,8 +9,8 @@
 
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
-import HolePanel from '@/components/hole/HolePanel.vue'
-import HoleListMobile from '@/components/hole/HoleListMobile.vue'
+import HolePanel from '@/components/panel/HolePanel.vue'
+import HoleListMobile from '@/components/column/HoleListMobile.vue'
 import BaseView from '@/mixins/BaseView.vue'
 
 @Component({
@@ -19,6 +19,6 @@ import BaseView from '@/mixins/BaseView.vue'
     HoleListMobile
   }
 })
-export default class Collections extends BaseView {
+export default class CollectionPage extends BaseView {
 }
 </script>

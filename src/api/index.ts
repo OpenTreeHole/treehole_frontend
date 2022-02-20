@@ -1,11 +1,11 @@
 // noinspection DuplicatedCode
 
-import { WrappedHole } from '@/models/hole'
+import { Hole } from '@/models/hole'
 import { camelizeKeys } from '@/utils/utils'
 import Vue from 'vue'
 import { cloneDeep, remove } from 'lodash-es'
 import { VueInstance } from '@/instance'
-import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import { DetailedFloor, Floor } from '@/models/floor'
 import { Tag } from '@/models/tag'
 
 export abstract class ArrayRequest<T> {
@@ -71,7 +71,7 @@ export abstract class PrefetchedArrayRequest<T> extends ArrayRequest<T> {
   }
 }
 
-export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
+export abstract class HoleListRequest extends ArrayRequest<Hole> {
   public tag: Tag | null = null
   public pinCount: number = 0
 
@@ -87,21 +87,21 @@ export abstract class HoleListRequest extends ArrayRequest<WrappedHole> {
    */
   public async requestHole (holeId: number, position: number = 0) {
     const response = await VueInstance.$axios?.get(`/holes/${holeId}`)
-    const hole = new WrappedHole(camelizeKeys(response.data))
+    const hole = new Hole(camelizeKeys(response.data))
     this.datas.splice(position, 0, hole)
   }
 
-  public pushFront (data: WrappedHole) {
+  public pushFront (data: Hole) {
     remove(this.datas, v => v.holeId === data.holeId)
     this.datas.splice(0, 0, data)
   }
 
-  public pin (data: WrappedHole) {
+  public pin (data: Hole) {
     this.pushFront(data)
     this.pinCount++
   }
 
-  public pushData (data: WrappedHole) {
+  public pushData (data: Hole) {
     let flag = false
     this.datas.forEach((v) => {
       if (v.holeId === data.holeId) {
@@ -139,7 +139,7 @@ export class HomeHoleListRequest extends HoleListRequest {
     let hasNext = false
     response.data.forEach((holeItem: any) => {
       if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
-      const hole = new WrappedHole(camelizeKeys(holeItem))
+      const hole = new Hole(camelizeKeys(holeItem))
       this.pushData(hole)
       hasNext = true
     })
@@ -179,7 +179,7 @@ export class DivisionHoleListRequest extends HoleListRequest {
 
     response.data.forEach((holeItem: any) => {
       if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
-      const hole = new WrappedHole(camelizeKeys(holeItem))
+      const hole = new Hole(camelizeKeys(holeItem))
       this.pushData(hole)
       hasNext = true
     })
@@ -194,14 +194,14 @@ export class CollectionHoleListRequest extends HoleListRequest {
 
     response.data.forEach((holeItem: any) => {
       if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
-      const hole = new WrappedHole(camelizeKeys(holeItem))
+      const hole = new Hole(camelizeKeys(holeItem))
       this.pushData(hole)
     })
     return false
   }
 }
 
-export class SearchFloorListRequest extends ArrayRequest<MarkedFloor> {
+export class SearchFloorListRequest extends ArrayRequest<Floor> {
   public searchStr: string
 
   public constructor (searchStr: string) {
@@ -216,17 +216,17 @@ export class SearchFloorListRequest extends ArrayRequest<MarkedFloor> {
       }
     })
     response.data.forEach((floorItem: any) => {
-      const floor: MarkedFloor = new MarkedFloor(camelizeKeys(floorItem))
+      const floor: Floor = new Floor(camelizeKeys(floorItem))
       this.pushData(floor)
     })
     return false
   }
 }
 
-export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
+export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
   public holeId: number
 
-  public constructor (prefetchedDataSet: Array<MarkedFloor>, holeId: number) {
+  public constructor (prefetchedDataSet: Array<Floor>, holeId: number) {
     super(prefetchedDataSet)
     this.holeId = holeId
   }
@@ -242,7 +242,7 @@ export class FloorListRequest extends PrefetchedArrayRequest<MarkedFloor> {
     let index = response.config.params.start_floor
     let hasNext = false
     response.data.forEach((floorItem: any) => {
-      const floor: MarkedDetailedFloor = new MarkedDetailedFloor(camelizeKeys(floorItem))
+      const floor: DetailedFloor = new DetailedFloor(camelizeKeys(floorItem))
       this.pushData(floor, index++, () => {
         return true
       })

@@ -1,7 +1,7 @@
 import marked from 'marked'
 import { convertKatex } from '@/utils/utils'
 
-export interface Floor {
+export interface IFloor {
   anonyname: string
   content: string
   deleted: boolean
@@ -14,7 +14,7 @@ export interface Floor {
   specialTag: string
 }
 
-export class MarkedFloor implements Floor {
+export class Floor implements IFloor {
   anonyname: string
   content: string
   deleted: boolean
@@ -27,7 +27,7 @@ export class MarkedFloor implements Floor {
   html: string
   specialTag: string
 
-  constructor (floor: Floor) {
+  constructor (floor: IFloor) {
     Object.assign(this, floor)
     this.convertHtml()
   }
@@ -37,16 +37,16 @@ export class MarkedFloor implements Floor {
   }
 }
 
-export interface DetailedFloor extends Floor {
+export interface IDetailedFloor extends IFloor {
   isMe: boolean
   liked: boolean
-  mention: Array<Floor>
+  mention: Array<IFloor>
 }
 
-export class MarkedDetailedFloor extends MarkedFloor implements DetailedFloor {
+export class DetailedFloor extends Floor implements IDetailedFloor {
   isMe: boolean
   liked: boolean
-  mention: Array<Floor>
+  mention: Array<IFloor>
 
   public convertHtml () {
     this.html = this.signMention(convertKatex(this.content))

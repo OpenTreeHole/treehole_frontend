@@ -31,7 +31,7 @@
       <!-- 导航列表 -->
       <v-list nav dense>
         <v-list-item-group color='primary'>
-          <template v-for='item in $feConfig.navItems'>
+          <template v-for='item in navItems'>
             <v-list-item
               :key='item.route'
               v-if='!item.group'
@@ -138,7 +138,7 @@
 import { Component, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { EventBus } from '@/event-bus'
-import TagChip from '@/components/hole/TagChip.vue'
+import TagChip from '@/components/chip/TagChip.vue'
 import UserStore from '@/store/modules/UserStore'
 import NotificationsMenu from '@/components/menu/NotificationsMenu.vue'
 import { openDivisionAndGotoHole } from '@/utils/floor'
@@ -161,6 +161,7 @@ export default class Navbar extends BaseComponentOrView {
   public inBanMenuRoutes = true
   public holeToGo = ''
   public groupNavItem = new Map()
+  public navItems = this.$feConfig.navItems
 
   @Watch('isMobile')
   isMobileChanged () {
@@ -201,6 +202,9 @@ export default class Navbar extends BaseComponentOrView {
       divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
     })
     this.groupNavItem = new Map(this.groupNavItem.set('/division', divisionInfos))
+    if (UserStore.userProfile?.isAdmin) {
+      this.navItems = [...this.$feConfig.navItems, ...this.$feConfig.adminNavItems]
+    }
   }
 
   public back (): void {

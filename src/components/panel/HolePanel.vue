@@ -23,11 +23,11 @@
 </template>
 
 <script lang='ts'>
-import HoleList from '@/components/hole/HoleList.vue'
-import FloorList from '@/components/hole/FloorList.vue'
+import HoleList from '@/components/column/HoleList.vue'
+import FloorList from '@/components/column/FloorList.vue'
 
 import { Component, Emit, Ref } from 'vue-property-decorator'
-import { WrappedHole } from '@/models/hole'
+import { Hole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
 
@@ -41,7 +41,7 @@ import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
 export default class HolePanel extends BaseComponentOrView {
   public displayHoleId = -1
   public isLoadingVisible = false
-  public displayHole: WrappedHole | null = null
+  public displayHole: Hole | null = null
   public displayFloorId = -1
 
   public showFloorList = false
@@ -55,7 +55,7 @@ export default class HolePanel extends BaseComponentOrView {
     this.holeList.refresh()
   }
 
-  public openHole (wrappedHole: WrappedHole, displayFloorId?: number, preventClose: boolean = false): void {
+  public openHole (wrappedHole: Hole, displayFloorId?: number, preventClose: boolean = false): void {
     this.displayHole = wrappedHole
     if (displayFloorId) {
       this.displayFloorId = displayFloorId

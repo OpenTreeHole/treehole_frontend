@@ -40,7 +40,7 @@ import pdf from 'vue-pdf'
     pdf
   }
 })
-export default class License extends BaseView {
+export default class LicensePage extends BaseView {
   public licenses: Array<any> = []
 
   async created () {

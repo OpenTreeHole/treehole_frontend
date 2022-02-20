@@ -14,15 +14,6 @@
               {{ alertMsg }}
             </v-alert>
             <div class='pl-7 pr-10'>
-              <v-text-field
-                v-model='email'
-                label='edu邮箱'
-                prepend-icon='mdi-email'
-                :error-messages="errorMsg['email']"
-                :clearable='!valid'
-                :counter='32'
-                :rules='notEmptyRules'
-              />
               <v-row
                 align='center'
                 justify='center'
@@ -94,15 +85,15 @@
 <script lang='ts'>
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
+import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
 
 @Component
-export default class Register extends BaseView {
+export default class ChangePasswordPage extends BaseView {
   // 表单信息
   public password: string = ''
   public password2: string = ''
-  public email: string = ''
   // 发送验证码信息
   public code: string = ''
   public sendButton: string = '发送验证码'
@@ -112,18 +103,11 @@ export default class Register extends BaseView {
   public isAlert: boolean = false
   public alertMsg: string = ''
   public alertType: string = 'info'
-  public errorMsg: {
-    email: string
-    password: string
-  } = {
+  public errorMsg = {
     email: '',
     password: ''
   }
 
-  public notEmptyRules: Array<Function> = [(v: string) => !!v || '内容不能为空']
-  // emailRules: [
-  //   v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || '@fudan.edu.cn'
-  // ],
   public codeRules: Array<Function> = [
     (v: string) => !!v || '内容不能为空',
     (v: string) => /^[0-9]{6}$/.test(v) || '验证码格式不对'
@@ -136,18 +120,9 @@ export default class Register extends BaseView {
   ]
 
   public debouncedCheckUsername: Function
-  public debouncedCheckEmail: Function
   public debouncedCheckPassword: Function
 
   @Ref() readonly form: HTMLFormElement
-
-  public checkEmail (): void {
-    if (!/^[0-9]+@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
-      this.errorMsg.email = '复旦学邮'
-    } else {
-      this.errorMsg.email = ''
-    }
-  }
 
   public checkPassword (): void {
     if (this.password !== this.password2) {
@@ -158,17 +133,12 @@ export default class Register extends BaseView {
   }
 
   public async sendCode () {
-    if (!this.email) {
-      this.messageError('用户名与邮箱不能为空')
-      return
-    }
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
-
     const response = await this.$axios
       .get('/verify/email', {
         params: {
-          email: this.email
+          email: LocalStorageStore.email
         }
       })
 
@@ -192,19 +162,14 @@ export default class Register extends BaseView {
     if (this.form.validate()) {
       await this.$axios
         .put('/register', {
-          email: this.email,
+          email: LocalStorageStore.email,
           password: this.password,
           verification: parseInt(this.code)
         })
-      this.messageSuccess('重置密码成功！')
+      this.messageSuccess('修改密码成功！')
       await sleep(1000)
-      await this.$router.replace('/login')
+      await this.$router.replace('/division/1')
     }
-  }
-
-  @Watch('email')
-  emailChanged () {
-    this.debouncedCheckEmail()
   }
 
   @Watch('password2')
@@ -213,14 +178,7 @@ export default class Register extends BaseView {
   }
 
   created () {
-    this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
-  }
-
-  mounted () {
-    if (this.$route.query.email) {
-      this.email = this.$route.query.email as string
-    }
   }
 }
 </script>

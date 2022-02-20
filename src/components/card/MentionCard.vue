@@ -43,11 +43,11 @@
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import hljs from 'highlight.js/lib/core'
-import { MarkedFloor } from '@/models/floor'
+import { Floor } from '@/models/floor'
 
 @Component
-export default class Mention extends BaseComponentOrView {
-  @Prop({ required: true }) mentionFloor: MarkedFloor
+export default class MentionCard extends BaseComponentOrView {
+  @Prop({ required: true }) mentionFloor: Floor
   @Prop({ type: Function }) gotoMentionFloor?: Function
   @Prop({ type: String, default: 'mdi-arrow-collapse-up' }) gotoMentionFloorIcon: string
   /**

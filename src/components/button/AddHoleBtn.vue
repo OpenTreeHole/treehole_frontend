@@ -31,7 +31,7 @@
           <!-- 标签输入框 -->
           <v-combobox
             v-model='selectedTags'
-            :items='tags'
+            :items='coloredTags'
             item-text='name'
             item-value='name'
             label='标签'
@@ -51,7 +51,7 @@
                 :disabled='data.disabled'
                 @click:close='data.parent.selectItem(data.item)'
                 outlined
-                color='red'
+                :color='data.item.color'
                 small
               >
                 {{ data.item.name }}
@@ -69,9 +69,9 @@
               <v-list-item-content>
                     <span :class="'red' + '--text'">
                       {{ data.item.name }}
-                      <v-icon color='red' class='tag-icon' small
-                      >mdi-fire</v-icon
-                      >
+                      <v-icon color='red' class='tag-icon' small>
+                        mdi-fire
+                      </v-icon>
                       <span class='tag-count'>
                         {{ data.item.temperature }}
                       </span>
@@ -112,6 +112,7 @@ import { Component, Prop, Ref, Watch } from 'vue-property-decorator'
 import Editor from '@/components/Editor.vue'
 import { Tag } from '@/models/tag'
 import { Division } from '@/models/division'
+import { parseTagColor } from '@/utils/utils'
 
 @Component({
   components: {
@@ -142,6 +143,12 @@ export default class AddHoleBtn extends BaseComponentOrView {
 
   @Ref() readonly editor!: Editor
   @Ref() readonly form!: HTMLFormElement
+
+  get coloredTags (): Array<any> {
+    return this.tags.map(v => {
+      return { ...v, color: parseTagColor(v.name) }
+    })
+  }
 
   get contentName (): string {
     return `division-${this.divisionId}-content`

@@ -1,19 +1,19 @@
 <script lang='ts'>
 import { Component, Ref, Watch } from 'vue-property-decorator'
-import { WrappedHole } from '@/models/hole'
+import { Hole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { CollectionHoleListRequest, DivisionHoleListRequest, HoleListRequest, HomeHoleListRequest } from '@/api'
 import Loading from '@/components/Loading.vue'
 import { EventBus } from '@/event-bus'
 import UserStore from '@/store/modules/UserStore'
 import { debounce } from 'lodash-es'
-import { MarkedDetailedFloor, MarkedFloor } from '@/models/floor'
+import { DetailedFloor, Floor } from '@/models/floor'
 import { Division } from '@/models/division'
 
 @Component
 export default class HoleListMixin extends BaseComponentOrView {
   // 帖子列表
-  public holes: WrappedHole[] = []
+  public holes: Hole[] = []
 
   public startTime: Date = new Date()
 
@@ -65,7 +65,7 @@ export default class HoleListMixin extends BaseComponentOrView {
     return await this.request.request()
   }
 
-  public onGotoMentionFloor (curFloor: MarkedDetailedFloor, mentionFloor: MarkedFloor) {
+  public onGotoMentionFloor (curFloor: DetailedFloor, mentionFloor: Floor) {
   }
 
   @Watch('holes')
@@ -106,7 +106,7 @@ export default class HoleListMixin extends BaseComponentOrView {
     const division = this.getDivisionById(this.divisionId)
     if (division && (this.request instanceof HomeHoleListRequest || this.request instanceof DivisionHoleListRequest)) {
       for (let i = division.pinned.length - 1; i >= 0; i--) {
-        this.request.pin(new WrappedHole(division.pinned[i]))
+        this.request.pin(new Hole(division.pinned[i]))
       }
     }
   }

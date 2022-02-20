@@ -18,8 +18,8 @@
 
 <script lang='ts'>
 import { Component, Ref } from 'vue-property-decorator'
-import HolePanel from '@/components/hole/HolePanel.vue'
-import HoleListMobile from '@/components/hole/HoleListMobile.vue'
+import HolePanel from '@/components/panel/HolePanel.vue'
+import HoleListMobile from '@/components/column/HoleListMobile.vue'
 import Editor from '@/components/Editor.vue'
 import BaseView from '@/mixins/BaseView.vue'
 import AddHoleBtn from '@/components/button/AddHoleBtn.vue'
@@ -32,7 +32,7 @@ import AddHoleBtn from '@/components/button/AddHoleBtn.vue'
     HoleListMobile
   }
 })
-export default class Division extends BaseView {
+export default class DivisionPage extends BaseView {
   public showFloatBtn = true
 
   @Ref() readonly holeComp!: HolePanel | HoleListMobile

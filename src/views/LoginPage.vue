@@ -68,7 +68,7 @@ import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 
 @Component
-export default class Login extends BaseView {
+export default class LoginPage extends BaseView {
   public alert = false
 
   public valid = true

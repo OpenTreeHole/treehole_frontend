@@ -35,21 +35,22 @@
         class='text--primary py-2 text-body-1 clickable'
         v-ripple
       >
-        <div
+        <fix-height-div
           v-if='hole.styleData.fold'
           :id="'p' + index"
           class='fold'
-          :style='fixHeight ? `max-height: ${fixedHeight};` : ""'
+          :fix='fixHeight'
         >
           {{ hole.firstFloor.content | plainText }}
-        </div>
-        <div
+        </fix-height-div>
+        <fix-height-div
           v-else
           :id="'p' + index"
           class='unfold'
-          :style='fixHeight ? `max-height: ${fixedHeight};` : ""'>
+          :fix='fixHeight'
+        >
           <div class='rich-text' v-html='hole.firstFloor.html' />
-        </div>
+        </fix-height-div>
       </v-card-text>
 
       <!-- 展开折叠按钮 -->
@@ -122,53 +123,37 @@
 
 <!--suppress JSUnusedLocalSymbols -->
 <script lang='ts'>
-import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
-import { WrappedHole } from '@/models/hole'
+import { Component, Emit, Prop } from 'vue-property-decorator'
+import { Hole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import TagChip from '@/components/hole/TagChip.vue'
-import LabelChip from '@/components/hole/LabelChip.vue'
+import TagChip from '@/components/chip/TagChip.vue'
+import LabelChip from '@/components/chip/LabelChip.vue'
 import UserStore from '@/store/modules/UserStore'
 import { remove } from 'lodash-es'
 import { Division } from '@/models/division'
 import { camelizeKeys } from '@/utils/utils'
+import FixHeightDiv from '@/components/animation/FixHeightDiv.vue'
 
 @Component({
   components: {
+    FixHeightDiv,
     LabelChip,
     TagChip
   }
 })
 export default class HoleCard extends BaseComponentOrView {
-  @Prop({ required: true }) readonly hole: WrappedHole
+  @Prop({ required: true }) readonly hole: Hole
   @Prop({ required: true, type: Number }) index: number
   @Prop({ required: false, type: Boolean, default: false }) isActive: boolean
   @Prop({ type: Boolean, default: false }) fixHeight: boolean
   @Prop({ type: Boolean, default: false }) pinned: boolean
-
-  public fixedHeight: string = '4.5rem'
 
   get isAdmin () {
     return UserStore.userProfile?.isAdmin
   }
 
   @Emit()
-  openHole (_hole: WrappedHole, _floorId?: number, _preventClose?: boolean) {
-  }
-
-  calculateFixHeight () {
-    const element = document.getElementById('p' + this.index)
-    if (element) {
-      this.fixedHeight = window.getComputedStyle(element).height
-    }
-  }
-
-  @Watch('fixHeight')
-  onFixHeightChanged () {
-    this.calculateFixHeight()
-  }
-
-  mounted () {
-    this.calculateFixHeight()
+  openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
   }
 
   public unfold (): void {

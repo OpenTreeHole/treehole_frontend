@@ -1,14 +1,14 @@
 import UserStore from '@/store/modules/UserStore'
-import { Floor, MarkedFloor } from '@/models/floor'
+import { IFloor, Floor } from '@/models/floor'
 import { Tag } from '@/models/tag'
 
-export interface Hole {
+export interface IHole {
   divisionId: number
   holeId: number
   floors: {
-    firstFloor: Floor
-    lastFloor: Floor
-    prefetch: Array<Floor>
+    firstFloor: IFloor
+    lastFloor: IFloor
+    prefetch: Array<IFloor>
   }
   reply: number
   tags: Array<Tag>
@@ -16,7 +16,7 @@ export interface Hole {
   timeUpdated: string
 }
 
-export class WrappedHole implements Hole {
+export class Hole implements IHole {
   public styleData: {
     fold: boolean
     lines: number
@@ -25,14 +25,14 @@ export class WrappedHole implements Hole {
 
   public divisionId: number
   public floors: {
-    firstFloor: Floor
-    lastFloor: Floor
-    prefetch: Array<Floor>
+    firstFloor: IFloor
+    lastFloor: IFloor
+    prefetch: Array<IFloor>
   }
 
-  public markedFloors: Array<MarkedFloor> = []
-  public firstFloor: MarkedFloor
-  public lastFloor: MarkedFloor
+  public markedFloors: Array<Floor> = []
+  public firstFloor: Floor
+  public lastFloor: Floor
   public isFolded: boolean
   public isStarred: boolean
   public holeId: number
@@ -42,14 +42,14 @@ export class WrappedHole implements Hole {
   public reply: number
   public tags: Array<Tag>
 
-  constructor (hole: Hole) {
-    hole.floors.prefetch.forEach((floor: Floor) => {
-      this.markedFloors.push(new MarkedFloor(floor))
+  constructor (hole: IHole) {
+    hole.floors.prefetch.forEach((floor: IFloor) => {
+      this.markedFloors.push(new Floor(floor))
     })
     this.divisionId = hole.divisionId
     this.floors = hole.floors
-    this.firstFloor = new MarkedFloor(hole.floors.firstFloor)
-    this.lastFloor = new MarkedFloor(hole.floors.lastFloor)
+    this.firstFloor = new Floor(hole.floors.firstFloor)
+    this.lastFloor = new Floor(hole.floors.lastFloor)
     this.isFolded = this.firstFloor.fold.length > 0
     this.isStarred = UserStore.collection.isStarred(hole.holeId)
     this.holeId = hole.holeId

@@ -1,35 +1,37 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Login from '@/views/Login.vue'
-import Register from '@/views/Register.vue'
-import Hole from '@/views/Hole.vue'
-import Division from '@/views/Division.vue'
-import About from '@/views/About.vue'
-import Search from '@/views/Search.vue'
-import license from '@/views/License.vue'
-import Me from '@/views/Me.vue'
-import ChangePassword from '@/views/ChangePassword.vue'
-import ForgetPassword from '@/views/ForgetPassword.vue'
-import Collections from '@/views/Collections.vue'
+import LoginPage from '@/views/LoginPage.vue'
+import RegisterPage from '@/views/RegisterPage.vue'
+import HolePage from '@/views/HolePage.vue'
+import DivisionPage from '@/views/DivisionPage.vue'
+import AboutPage from '@/views/AboutPage.vue'
+import SearchPage from '@/views/SearchPage.vue'
+import LicensePage from '@/views/LicensePage.vue'
+import MePage from '@/views/MePage.vue'
+import ChangePasswordPage from '@/views/ChangePasswordPage.vue'
+import ForgetPasswordPage from '@/views/ForgetPasswordPage.vue'
+import CollectionPage from '@/views/CollectionPage.vue'
 import LocalStorageStore from '../store/modules/LocalStorageStore'
+import ReportPage from '@/views/ReportPage.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
-  { path: '/license', meta: { title: '协议' }, component: license, name: 'license' },
+  { path: '/license', meta: { title: '协议' }, component: LicensePage, name: 'license' },
   { path: '/licence', redirect: '/license' },
   { path: '/home', redirect: '/division/1' },
-  { path: '/login', meta: { title: '登录' }, component: Login, name: 'login' },
-  { path: '/division/:id', meta: { title: '分区' }, component: Division, name: 'division' },
-  { path: '/collections', meta: { title: '收藏' }, component: Collections, name: 'collections' },
-  { path: '/search', meta: { title: '搜索' }, component: Search, name: 'search' },
+  { path: '/login', meta: { title: '登录' }, component: LoginPage, name: 'login' },
+  { path: '/division/:id', meta: { title: '分区' }, component: DivisionPage, name: 'division' },
+  { path: '/collections', meta: { title: '收藏' }, component: CollectionPage, name: 'collections' },
+  { path: '/search', meta: { title: '搜索' }, component: SearchPage, name: 'search' },
   { path: '/', redirect: '/division/1' },
-  { path: '/about', meta: { title: '关于' }, component: About, name: 'about' },
-  { path: '/register', meta: { title: '注册' }, component: Register, name: 'register' },
-  { path: '/changepassword', meta: { title: '修改密码' }, component: ChangePassword, name: 'changepassword' },
-  { path: '/forgetpassword', meta: { title: '重置密码' }, component: ForgetPassword, name: 'forgetpassword' },
-  { path: '/hole/:id', meta: { title: '树洞' }, component: Hole, name: 'hole' },
-  { path: '/me', meta: { title: '我的' }, component: Me, name: 'me' }
+  { path: '/about', meta: { title: '关于' }, component: AboutPage, name: 'about' },
+  { path: '/register', meta: { title: '注册' }, component: RegisterPage, name: 'register' },
+  { path: '/changepassword', meta: { title: '修改密码' }, component: ChangePasswordPage, name: 'changepassword' },
+  { path: '/forgetpassword', meta: { title: '重置密码' }, component: ForgetPasswordPage, name: 'forgetpassword' },
+  { path: '/hole/:id', meta: { title: '树洞' }, component: HolePage, name: 'hole' },
+  { path: '/me', meta: { title: '我的' }, component: MePage, name: 'me' },
+  { path: '/report', meta: { title: '举报' }, component: ReportPage, name: 'report' }
 ]
 
 const router = new VueRouter({
