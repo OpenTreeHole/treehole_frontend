@@ -173,7 +173,7 @@ export default class AnimatedList extends BaseComponentOrView {
           targets: document.getElementById('animated-' + computedData.data[this.vkey]),
           opacity: 0,
           translateX: 100,
-          duration: 550,
+          duration: 300,
           easing: 'cubicBezier(0.385, 0.900, 0.570, 1.010)'
         }).finished.then(() => {
           this.complete()
@@ -187,7 +187,7 @@ export default class AnimatedList extends BaseComponentOrView {
       if (!isPush) {
         animation.add({
           translateY: to - from,
-          duration: 900
+          duration: 500
         })
       }
       if (computedData.class === 'invisible') {
@@ -199,7 +199,7 @@ export default class AnimatedList extends BaseComponentOrView {
       animation.add({
         translateX: 0,
         opacity: 1,
-        duration: 550,
+        duration: 300,
         easing: 'cubicBezier(0.385, 0.900, 0.570, 1.010)'
       }, '+=50')
       animation.finished.then(() => {

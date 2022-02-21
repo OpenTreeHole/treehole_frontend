@@ -7,7 +7,7 @@
 
     <v-card>
       <v-card-title>
-        <span class='headline'>发表回复</span>
+        <span class='headline'>{{ this.operation==='add' ? '发表回复' : '修改回复'}}</span>
       </v-card-title>
 
       <v-card-text>
