@@ -81,18 +81,23 @@
         <v-card-text class='d-flex text-body-2 pb-2'>
           <span class='flex-left' v-html='idInfo'></span>
           <span class='flex-center'>
-            <v-btn
-              v-if='!noAction'
-              small
-              text
-              @click='$emit("reply")'
-              class='grey--text'
-              style='padding-bottom: -10px'
-            >
-              <v-icon>mdi-reply-outline</v-icon>
-              <br />
-              <span>回复</span>
-            </v-btn>
+            <create-floor-dialog v-if='!noAction' :reply-floor='floor' :hole-id='floor.holeId' @continue-load='continueLoad'>
+              <template #activator='{on,attrs}'>
+                <v-btn
+                  small
+                  text
+                  class='grey--text'
+                  style='padding-bottom: -10px'
+                  v-bind='attrs'
+                  v-on='on'
+                >
+                  <v-icon>mdi-reply-outline</v-icon>
+                  <br />
+                  <span>回复</span>
+                </v-btn>
+              </template>
+            </create-floor-dialog>
+
           </span>
           <span class='flex-right'>
             <v-btn
@@ -111,17 +116,19 @@
         </v-card-text>
       </template>
     </dynamic-expansion-panel>
+    <create-floor-dialog ref='editFloorDialog' :reply-floor='replyFloor' operation='edit' :floor-id='floor.floorId' @update-floor='updateFloor'/>
   </v-card>
 </template>
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component, Prop, Watch } from 'vue-property-decorator'
+import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
 import UserStore from '@/store/modules/UserStore'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { gotoHole, renderFloor } from '@/utils/floor'
 import DynamicExpansionPanel from '@/components/animation/DynamicExpansionPanel.vue'
+import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
 
 interface Operation {
   icon: string
@@ -130,7 +137,7 @@ interface Operation {
 }
 
 @Component({
-  components: { DynamicExpansionPanel }
+  components: { CreateFloorDialog, DynamicExpansionPanel }
 })
 export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: true, type: Object }) floor: Floor
@@ -138,6 +145,8 @@ export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: false, type: Number, default: -1 }) index: number
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
   @Prop({ type: String, default: 'fl' }) idPrefix: string
+
+  @Ref() editFloorDialog: CreateFloorDialog
 
   public display: boolean = false
 
@@ -148,6 +157,19 @@ export default class FloorCard extends BaseComponentOrView {
   get id () {
     return `${this.idPrefix}-${this.floor.floorId}`
   }
+
+  get replyFloor () {
+    if (this.floor instanceof DetailedFloor && this.floor.mention[0]) {
+      return new Floor(this.floor.mention[0])
+    }
+    return undefined
+  }
+
+  @Emit('continue-load')
+  public continueLoad () {}
+
+  @Emit('update-floor')
+  public updateFloor () {}
 
   public toMention (mentionFloor: Floor) {
     if (this.floor.holeId === mentionFloor.holeId) {
@@ -216,7 +238,9 @@ export default class FloorCard extends BaseComponentOrView {
     const opEdit = {
       icon: 'pencil-outline',
       text: '编辑',
-      operation: () => this.$emit('edit')
+      operation: () => {
+        this.editFloorDialog.dialog = true
+      }
     }
     const opPenalty = {
       icon: 'close-outline',

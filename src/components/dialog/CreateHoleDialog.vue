@@ -83,7 +83,6 @@
         <v-btn
           color='primary'
           text
-          :disabled='!valid'
           @click='addHole'
         >
           发送

@@ -41,55 +41,29 @@
         justify='center'
       >
         <v-col :class='colClass'>
-          <FloorCard :floor='floor' ref='floorCards' :division-id='hole.divisionId' :index='index' @reply='reply(floor.floorId)' @edit='edit(floor.floorId)' @scroll-to-floor='getAndScrollToFloor' />
+          <FloorCard
+            :floor='floor'
+            ref='floorCards'
+            :division-id='hole.divisionId'
+            :index='index'
+            @continue-load='continueLoad'
+            @update-floor='updateFloor'
+            @scroll-to-floor='getAndScrollToFloor'
+          />
         </v-col>
       </v-row>
     </transition-group>
 
     <!-- 弹出式表单及浮动按钮 -->
     <div class='float-btn' v-if='!initiating'>
-      <v-dialog v-model='dialog' persistent :max-width='editorWidth'>
+      <create-floor-dialog operation='add' :hole-id='holeId' @continue-load='continueLoad'>
         <!-- 浮动按钮 -->
         <template v-slot:activator='{ on, attrs }'>
           <v-btn fab color='secondary' @mousedown.prevent v-bind='attrs' v-on='on'>
             <v-icon>mdi-send</v-icon>
           </v-btn>
         </template>
-
-        <v-card>
-          <v-card-title>
-            <span class='headline'>发表回复</span>
-          </v-card-title>
-
-          <v-card-text>
-            <!-- 回复内容 -->
-            <mention-card v-if='replyFloor' :mention-floor='replyFloor' :cancel='removeReplyFloor' />
-
-            <v-form ref='form' v-model='valid' lazy-validation>
-              <!-- 回贴表单 -->
-
-              <!-- 富文本输入框 -->
-              <app-editor
-                ref='editor'
-                :contentName='contentName'
-                @error='editorError'
-              />
-            </v-form>
-          </v-card-text>
-
-          <!-- 下方按钮 -->
-          <v-card-actions>
-            <v-spacer></v-spacer>
-            <v-btn color='primary' text @click='closeDialog'>关闭</v-btn>
-            <v-btn v-if='operation === "reply" || operation === "add"' color='primary' text :disabled='!valid' @click='addFloor'>
-              发送
-            </v-btn>
-            <v-btn v-else-if='operation === "edit"' color='primary' text :disabled='!valid' @click='editFloor'>
-              修改
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
+      </create-floor-dialog>
 
       <br />
 
@@ -111,16 +85,18 @@ import { Hole } from '@/models/hole'
 import MentionCard from '@/components/card/MentionCard.vue'
 import hljs from 'highlight.js'
 import FloorCard from '@/components/card/FloorCard.vue'
-import { DetailedFloor, Floor } from '@/models/floor'
+import { Floor } from '@/models/floor'
 import { FloorListRequest } from '@/api'
 import { camelizeKeys } from '@/utils/utils'
 import UserStore from '@/store/modules/UserStore'
 import Vue from 'vue'
 import { scrollToFloor } from '@/utils/floor'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
 
 @Component({
   components: {
+    CreateFloorDialog,
     MentionCard,
     Loading,
     AppEditor,
@@ -131,18 +107,8 @@ export default class FloorList extends BaseComponentOrView {
   // 帖子列表
   public hole: Hole
   public floors: Array<Floor> = []
-  // 回复信息（可选回复）
-  public replyFloor: Floor | null = null
   // 发帖表单
   public dialog = false
-  /**
-   * 本次dialog的操作
-   * 'add': 新增回帖
-   * 'reply': 回复某帖
-   * 'edit': 修改回帖
-   */
-  public operation = 'add'
-  public editingFloorId: number = 0
   // content: '',
   public requiredRules = [(v: any) => !!v || '内容不能为空']
   public valid = true
@@ -158,16 +124,6 @@ export default class FloorList extends BaseComponentOrView {
   @Ref() readonly floorCards!: FloorCard[]
 
   public initiating = true
-
-  public editorError (msg: string): void {
-    this.messageError(msg)
-  }
-
-  public closeDialog (): void {
-    this.dialog = false
-    this.replyFloor = null
-    this.operation = 'add'
-  }
 
   /**
    * Clear the floor list and reload.
@@ -193,29 +149,8 @@ export default class FloorList extends BaseComponentOrView {
     return -1
   }
 
-  /**
-   * Set the reply target and open the reply dialog.
-   *
-   * @param floorId - the id of the floor to reply
-   */
-  public reply (floorId: number): void {
-    this.replyFloor = this.floors[this.getIndex(floorId)]
-    this.operation = 'reply'
-    this.dialog = true
-  }
-
-  public edit (floorId: number): void {
-    const curFloor = this.floors[this.getIndex(floorId)]
-    if (curFloor instanceof DetailedFloor && curFloor.mention[0]) {
-      this.replyFloor = new Floor(curFloor.mention[0])
-    }
-    this.operation = 'edit'
-    this.editingFloorId = floorId
-    this.dialog = true
-  }
-
-  public removeReplyFloor () {
-    this.replyFloor = null
+  public continueLoad () {
+    this.loading.continueLoad()
   }
 
   /**
@@ -261,58 +196,15 @@ export default class FloorList extends BaseComponentOrView {
     return await this.request.request()
   }
 
-  /**
-   * Create a new floor.
-   */
-  public async addFloor () {
-    if (this.form.validate() && this.editor.validate()) {
-      this.dialog = false
-      const sLoading = this.loading
-      const sEditor = this.editor
-      const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
-
-      const response = await this.$axios
-        .post('/floors', {
-          content: content,
-          hole_id: this.computedDiscussionId
-        })
-      this.messageSuccess(response.data.message)
-      sLoading.continueLoad()
-      this.replyFloor = null // Clear the reply info.
-      sEditor.setContent('') // Clear the reply editor.
-    }
-  }
-
-  /**
-   * Edit a floor.
-   */
-  public async editFloor () {
-    if (this.form.validate() && this.editor.validate()) {
-      this.dialog = false
-      const sEditor = this.editor
-      const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
-
-      const response = await this.$axios
-        .put(`/floors/${this.editingFloorId}`, {
-          content: content
-        })
-      this.messageSuccess('修改成功')
-      const floor: DetailedFloor = new DetailedFloor(camelizeKeys(response.data))
-      this.checkAndRerenderFloors(floor)
-      Vue.set(this.floors, this.getIndex(floor.floorId), floor)
-      this.replyFloor = null // Clear the reply info.
-      sEditor.setContent('') // Clear the reply editor.
-    }
+  public updateFloor (floor: Floor) {
+    this.checkAndRerenderFloors(floor)
+    Vue.set(this.floors, this.getIndex(floor.floorId), floor)
   }
 
   public checkAndRerenderFloors (mentionFloor: Floor) {
     for (const floorCard of this.floorCards) {
       floorCard.rerenderSpecificMention(mentionFloor)
     }
-  }
-
-  get contentName (): string {
-    return 'discussion-' + this.computedDiscussionId + '-content'
   }
 
   public async getFloorsUntil (waitingFloorId: number): Promise<number> {
@@ -342,7 +234,7 @@ export default class FloorList extends BaseComponentOrView {
   }
 
   public async init (displayFloorId: number) {
-    this.request = new FloorListRequest(this.hole.markedFloors, this.computedDiscussionId)
+    this.request = new FloorListRequest(this.hole.markedFloors, this.holeId)
     this.floors = this.request.datas
     this.initiating = false
     await this.$nextTick()
@@ -363,7 +255,7 @@ export default class FloorList extends BaseComponentOrView {
     return this.isMobile ? '98vw' : '70vw'
   }
 
-  get computedDiscussionId (): number {
+  get holeId (): number {
     if (this.wrappedHoleOrId instanceof Hole) {
       return this.wrappedHoleOrId.holeId
     } else {
