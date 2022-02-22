@@ -133,7 +133,7 @@ export default class DoubleColumnPanel extends Vue {
       console.error('OverlayScrollbar has no instance!')
       return
     }
-    this.osColFirst.scroll(el, 500)
+    this.osColFirst.scroll(el, 1000)
   }
 
   public scrollToFloor (toIndex: number) {
@@ -146,7 +146,7 @@ export default class DoubleColumnPanel extends Vue {
       console.error('OverlayScrollbar has no instance!')
       return
     }
-    this.osColSecond.scroll(el, 700)
+    this.osColSecond.scroll(el, 1300)
   }
 
   mounted () {
