@@ -32,6 +32,7 @@ import { Component, Emit, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
 import { EventBus } from '@/event-bus'
 import OverlayScrollbars, { Options } from 'overlayscrollbars'
+import { gsap } from 'gsap'
 @Component
 export default class DoubleColumnPanel extends Vue {
   public firstColActiveClass = 'col-first--active'
@@ -41,6 +42,7 @@ export default class DoubleColumnPanel extends Vue {
   public isEnd = true
 
   public viewport = 0
+  public tween: gsap.core.Tween
 
   public osOptions: Options = {
     className: 'os-theme-dark',
@@ -162,6 +164,8 @@ export default class DoubleColumnPanel extends Vue {
     this.osColSecond = OverlayScrollbars(divColSecond, this.osOptions)
     EventBus.$on('scroll-to-floor', this.scrollToFloor)
     EventBus.$on('scroll-to-hole', this.scrollToHole)
+
+    this.tween = gsap.fromTo('.col-first', { x: '50%', flex: '50%', maxWidth: '50%' }, { x: 0, flex: '37%', maxWidth: '37%', duration: 0.5, paused: true })
   }
 
   destroyed () {
@@ -193,19 +197,5 @@ export default class DoubleColumnPanel extends Vue {
 .col-second {
   position: relative;
   height: 100%;
-}
-
-.col-first--inactive {
-  transition: transform 0.4s, flex 0.4s, max-width 0.4s;
-  transform: translateX(50%);
-  flex: 50%;
-  max-width: 50%;
-}
-
-.col-first--active {
-  transition: transform 0.4s, flex 0.4s, max-width 0.4s;
-  transform: translateX(0);
-  flex: 37%;
-  max-width: 37%;
 }
 </style>
