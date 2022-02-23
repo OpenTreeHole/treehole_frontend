@@ -11,8 +11,9 @@
 
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import anime from 'animejs'
 import { sleep } from '@/utils/utils'
+import { gsap, CustomEase } from '@/plugins/gsap'
+import { Power4 } from 'gsap/gsap-core'
 
 interface ComputedData {
   data: any
@@ -167,50 +168,54 @@ export default class AnimatedList extends BaseComponentOrView {
     this.computedDatas.forEach(computedData => {
       const from = this.currentTop.get(computedData.data[this.vkey])
       const to = this.updatedTop.get(computedData.data[this.vkey])
+      const target = '#animated-' + computedData.data[this.vkey]
       if (from === undefined) throw new Error('Cannot Get From Data!')
       if (to === undefined) {
-        anime({
-          targets: document.getElementById('animated-' + computedData.data[this.vkey]),
+        gsap.to(target, {
           opacity: 0,
-          translateX: 100,
-          duration: 550,
-          easing: 'cubicBezier(0.385, 0.900, 0.570, 1.010)'
-        }).finished.then(() => {
-          this.complete()
+          x: 100,
+          duration: 0.55,
+          ease: 'animatingListEase',
+          onComplete: () => {
+            this.complete()
+          }
         })
         return
       }
-      const animation = anime.timeline({
-        targets: document.getElementById('animated-' + computedData.data[this.vkey])
+      const timeline = gsap.timeline({
+        onComplete: () => {
+          this.complete()
+          const element = document.getElementById('animated-' + computedData.data[this.vkey])
+          if (!element) return
+          gsap.set(target, { x: 0, y: 0 })
+          timeline.kill()
+          element.removeAttribute('style')
+        }
       })
 
       if (!isPush) {
-        animation.add({
-          translateY: to - from,
-          duration: 900,
-          easing: 'easeInOutExpo'
+        timeline.to(target, {
+          y: to - from,
+          duration: 0.5,
+          ease: Power4.easeOut
         })
       }
       if (computedData.class === 'invisible') {
-        animation.add({
-          translateX: -100,
-          duration: 0
+        timeline.set(target, {
+          x: -100
         })
       }
-      animation.add({
-        translateX: 0,
+      timeline.to(target, {
+        x: 0,
         opacity: 1,
-        duration: 550,
-        easing: 'cubicBezier(0.385, 0.900, 0.570, 1.010)'
-      }, '+=50')
-      animation.finished.then(() => {
-        this.complete()
-        const element = document.getElementById('animated-' + computedData.data[this.vkey])
-        if (!element) return
-        anime.remove(element)
-        element.removeAttribute('style')
-      })
+        duration: 0.55,
+        ease: 'animatingListEase'
+      }, '+=0.05')
     })
+  }
+
+  created () {
+    CustomEase.create('animatedListEase', '0.385, 0.900, 0.570, 1.010')
   }
 }
 </script>

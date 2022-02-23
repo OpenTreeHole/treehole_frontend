@@ -19,10 +19,18 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
 import ws, { wsImage } from '@/api/ws'
-import { timeDifference } from '@/utils/utils'
+import { stopOverscroll, timeDifference } from '@/utils/utils'
 
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import MessageStore from '@/store/modules/MessageStore'
+
+import { gsap } from 'gsap'
+
+gsap.config({
+  force3D: true
+})
+
+stopOverscroll()
 
 // global registration
 Vue.component('overlay-scrollbars', OverlayScrollbarsComponent)

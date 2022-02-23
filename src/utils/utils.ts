@@ -1,5 +1,6 @@
 import { assign, camelCase, keys, pick } from 'lodash'
 import katex from 'katex'
+import { gsap } from 'gsap'
 
 const macros: any = []
 
@@ -117,4 +118,54 @@ export const checkType = (object: any, keysOfType: string[]): boolean => {
     if (!(key in object)) return false
   }
   return true
+}
+
+export function stopOverscroll (element?: any) {
+  element = gsap.utils.toArray(element)[0] || window;
+  (element === document.body || element === document.documentElement) && (element = window)
+  let lastScroll = 0
+  let lastTouch: any
+  let forcing: any
+  let forward = true
+  const isRoot = element === window
+  const scroller = isRoot ? document.scrollingElement : element
+  const ua = window.navigator.userAgent + ''
+  const getMax = isRoot ? () => scroller.scrollHeight - window.innerHeight : () => scroller.scrollHeight - scroller.clientHeight
+  const addListener = (type: any, func: any) => element.addEventListener(type, func, { passive: false })
+  const revert = () => {
+    scroller.style.overflowY = 'auto'
+    forcing = false
+  }
+  const kill = () => {
+    forcing = true
+    scroller.style.overflowY = 'hidden';
+    (!forward && scroller.scrollTop < 1) ? (scroller.scrollTop = 1) : (scroller.scrollTop = getMax() - 1)
+    setTimeout(revert, 1)
+  }
+  const handleTouch = (e: any) => {
+    const evt = e.changedTouches ? e.changedTouches[0] : e
+    const forward = evt.pageY <= lastTouch
+    if (((!forward && scroller.scrollTop <= 1) || (forward && scroller.scrollTop >= getMax() - 1)) && e.type === 'touchmove') {
+      e.preventDefault()
+    } else {
+      lastTouch = evt.pageY
+    }
+  }
+  const handleScroll = (e: any) => {
+    if (!forcing) {
+      const scrollTop = scroller.scrollTop
+      forward = scrollTop > lastScroll
+      if ((!forward && scrollTop < 1) || (forward && scrollTop >= getMax() - 1)) {
+        e.preventDefault()
+        kill()
+      }
+      lastScroll = scrollTop
+    }
+  }
+  if ('ontouchend' in document && !!ua.match(/Version\/[\d.]+.*Safari/)) {
+    addListener('scroll', handleScroll)
+    addListener('touchstart', handleTouch)
+    addListener('touchmove', handleTouch)
+  }
+  scroller.style.overscrollBehavior = 'none'
 }

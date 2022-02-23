@@ -1078,13 +1078,6 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/gsap@^3.0.0":
-  "integrity" "sha512-BbWLi4WRHGze4C8NV7U7yRevuBFiPkPZZyGa0rryanvh/9HPUFXTNBXsGQxJZJq7Ix7j4RXMYodP3s+OsqCErg=="
-  "resolved" "https://registry.npmjs.org/@types/gsap/-/gsap-3.0.0.tgz"
-  "version" "3.0.0"
-  dependencies:
-    "gsap" "*"
-
 "@types/http-proxy@^1.17.5":
   "integrity" "sha512-9hdj6iXH64tHSLTY+Vt2eYOGzSogC+JQ2H7bdPWkuh7KXP5qLllWx++t+K9Wk556c3dkDdPws/SpMRi0sdCT1w=="
   "resolved" "https://registry.npmjs.org/@types/http-proxy/-/http-proxy-1.17.7.tgz"
@@ -1837,11 +1830,6 @@
   "integrity" "sha1-l6ERlkmyEa0zaR2fn0hqjsn74KM="
   "resolved" "https://registry.npmjs.org/alphanum-sort/-/alphanum-sort-1.0.2.tgz"
   "version" "1.0.2"
-
-"animejs@^3.2.1":
-  "integrity" "sha512-sWno3ugFryK5nhiDm/2BKeFCpZv7vzerWUcUPyAZLDhMek3+S/p418ldZJbJXo5ZUOpfm2kP2XRO4NJcULMy9A=="
-  "resolved" "https://registry.npmjs.org/animejs/-/animejs-3.2.1.tgz"
-  "version" "3.2.1"
 
 "ansi-colors@^3.0.0":
   "integrity" "sha512-hHUXGagefjN2iRrID63xckIvotOXOojhQKWIPUZ4mNUZ9nLZW+7FMNoE1lOkEhNWYsx/7ysGIuJYCiMAA9FnrA=="
@@ -4875,10 +4863,10 @@
   "resolved" "https://registry.npmjs.org/graceful-fs/-/graceful-fs-4.2.8.tgz"
   "version" "4.2.8"
 
-"gsap@*", "gsap@^3.8.0":
-  "integrity" "sha512-cvpzKkWFePDZCycwXwJnDSpTR3j+a4QLQF/t0c+pXqzRESgAYx5hieaoshzZFjbwsARqr0+5c3GKE7wI273w/g=="
-  "resolved" "https://registry.npmjs.org/gsap/-/gsap-3.8.0.tgz"
-  "version" "3.8.0"
+"gsap@^3.9.1":
+  "integrity" "sha512-JSGVYoC6da4pIjdF/yxFU6Rz8OojOIDkbooveZlfNg0+JIoFoRruyfWAEi6R/gUeNcuOiTqUIb0gi1nCNrHf8w=="
+  "resolved" "https://registry.npmjs.org/gsap/-/gsap-3.9.1.tgz"
+  "version" "3.9.1"
 
 "gzip-size@^5.0.0":
   "integrity" "sha512-FNHi6mmoHvs1mxZAds4PpdCS6QG8B4C1krxJsMutgxl5t3+GlRTzzI3NEkifXx2pVsOvJdOGSmIgDhQ55FwdPA=="
