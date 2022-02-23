@@ -69,11 +69,11 @@
       </v-card-text>
     </v-card>
 
-    <v-card>
+    <v-card v-if='isProduction'>
       <v-card-title>
         <!--suppress HtmlUnknownTarget -->
         <a href='/report.html'>
-          查看构建报告
+          构建报告
         </a>
       </v-card-title>
     </v-card>
@@ -97,6 +97,8 @@ export default class AboutPage extends BaseView {
   ]
 
   public updateMsgIndex = 2
+
+  public isProduction = process.env.NODE_ENV !== 'production'
 
   public updateUpdateMsgIndex (): number {
     const currentVersion = this.$feConfig.feVersion.split('.')
