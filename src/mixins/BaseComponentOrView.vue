@@ -19,6 +19,8 @@ export default class BaseComponentOrView extends Vue {
   public messageWarning = MessageStore.messageWarning
   public checkDevice = UtilStore.checkDevice
 
+  public preloaded = false
+
   public addTag = (route: string, tag: Tag) => TagStore.addTag({ route: route, tag: tag })
   public clearTag = TagStore.clearTag
 
@@ -31,6 +33,7 @@ export default class BaseComponentOrView extends Vue {
   }
 
   public onPreloaded () {
+    this.preloaded = true
   }
 
   public onWsMessage (msg: WsMessage) {

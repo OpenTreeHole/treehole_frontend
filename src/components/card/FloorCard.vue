@@ -173,7 +173,7 @@ export default class FloorCard extends BaseComponentOrView {
 
   public toMention (mentionFloor: Floor) {
     if (this.floor.holeId === mentionFloor.holeId) {
-      this.$emit('scroll-to-floor', mentionFloor.holeId)
+      this.$emit('scroll-to-floor', mentionFloor.floorId)
     } else {
       gotoHole(mentionFloor.holeId, mentionFloor.floorId)
     }

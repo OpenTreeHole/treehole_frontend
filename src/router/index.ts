@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
+import VueRouter, { Route } from 'vue-router'
 import LoginPage from '@/views/LoginPage.vue'
 import RegisterPage from '@/views/RegisterPage.vue'
 import HolePage from '@/views/HolePage.vue'
@@ -21,7 +21,15 @@ const routes = [
   { path: '/licence', redirect: '/license' },
   { path: '/home', redirect: '/division/1' },
   { path: '/login', meta: { title: '登录' }, component: LoginPage, name: 'login' },
-  { path: '/division/:id', meta: { title: '分区' }, component: DivisionPage, name: 'division' },
+  {
+    path: '/division/:id',
+    meta: { title: '分区' },
+    component: DivisionPage,
+    name: 'division',
+    props: (route: Route) => ({
+      divisionId: parseInt(route.params.id)
+    })
+  },
   { path: '/collections', meta: { title: '收藏' }, component: CollectionPage, name: 'collections' },
   { path: '/search', meta: { title: '搜索' }, component: SearchPage, name: 'search' },
   { path: '/', redirect: '/division/1' },

@@ -10,7 +10,7 @@
         <v-icon>mdi-autorenew</v-icon>
       </v-btn>
       <br />
-      <create-hole-dialog @refresh='reload'>
+      <create-hole-dialog :division-id='divisionId' @refresh='reload'>
         <template #activator='{ on, attrs }'>
           <v-btn
             fab
@@ -29,11 +29,12 @@
 </template>
 
 <script lang='ts'>
-import { Component, Ref } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import HolePanel from '@/components/panel/HolePanel.vue'
 import HoleListMobile from '@/components/column/HoleListMobile.vue'
 import BaseView from '@/mixins/BaseView.vue'
 import CreateHoleDialog from '@/components/dialog/CreateHoleDialog.vue'
+import UserStore from '@/store/modules/UserStore'
 
 @Component({
   components: {
@@ -45,6 +46,7 @@ import CreateHoleDialog from '@/components/dialog/CreateHoleDialog.vue'
 export default class DivisionPage extends BaseView {
   public showFloatBtn = true
 
+  @Prop({ required: true, type: Number }) divisionId: number
   @Ref() readonly holeComp!: HolePanel | HoleListMobile
 
   get floatBtnClass () {
@@ -63,6 +65,12 @@ export default class DivisionPage extends BaseView {
     window.addEventListener('resize', () => {
       this.checkDevice()
     })
+  }
+
+  public onPreloaded () {
+    if (!UserStore.divisions.find(v => v.divisionId === this.divisionId)) {
+      this.$router.push('/division/1')
+    }
   }
 
   public destroyed () {

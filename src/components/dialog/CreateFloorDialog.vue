@@ -12,7 +12,7 @@
 
       <v-card-text>
         <!-- 回复内容 -->
-        <mention-card v-if='replyFloor' :mention-floor='replyFloor' :cancel='replyFloor=null' />
+        <mention-card v-if='!replyCancelled && replyFloor' :mention-floor='replyFloor' :cancel='()=>{replyCancelled=true}' />
 
         <v-form ref='form' v-model='valid' lazy-validation>
           <!-- 回贴表单 -->
@@ -67,6 +67,7 @@ export default class CreateFloorDialog extends BaseComponentOrView {
 
   public valid = true
   public dialog = false
+  public replyCancelled = false
 
   get dialogWidth () {
     return dialogWidth()
@@ -83,7 +84,7 @@ export default class CreateFloorDialog extends BaseComponentOrView {
   public async addFloor () {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
-      const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
+      const content = (!this.replyCancelled && this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
 
       const response = await this.$axios
         .post('/floors', {
@@ -102,7 +103,7 @@ export default class CreateFloorDialog extends BaseComponentOrView {
   public async editFloor () {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
-      const content = (this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
+      const content = (!this.replyCancelled && this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
 
       const response = await this.$axios
         .put(`/floors/${this.floorId}`, {
