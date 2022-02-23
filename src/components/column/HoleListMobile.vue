@@ -19,7 +19,7 @@
     <v-row class='ma-0' justify='center'>
       <v-col>
         <!-- 载入中信息 -->
-        <loading :request='[getHoles]' ref='loading' :pause-loading='!preloaded' />
+        <loading :request='[getHoles]' ref='loading' :pause-loading='pauseLoading' />
       </v-col>
     </v-row>
   </v-container>

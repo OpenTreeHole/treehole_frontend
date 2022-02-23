@@ -24,6 +24,8 @@ export default class HoleListMixin extends BaseComponentOrView {
 
   public request: HoleListRequest
 
+  public pauseLoading = true
+
   public route: string
 
   @Ref() loading: Loading
@@ -111,6 +113,7 @@ export default class HoleListMixin extends BaseComponentOrView {
 
   async onPreloaded () {
     this.pin()
+    this.pauseLoading = false
     await this.$nextTick()
     this.loading.continueLoad()
   }
