@@ -10,6 +10,11 @@
 <script lang='ts'>
 import Vditor from 'vditor'
 import 'vditor/dist/index.css'
+import 'vditor/dist/js/i18n/zh_CN.js'
+import 'vditor/dist/js/lute/lute.min.js'
+import 'vditor/dist/css/content-theme/light.css'
+import 'vditor/dist/js/icons/material.js'
+
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
@@ -90,7 +95,7 @@ export default class AppEditor extends BaseComponentOrView {
           ]
         }]
     this.editor = new Vditor(this.contentName, {
-      height: window.innerHeight - 220,
+      height: window.innerHeight - 375,
       placeholder: '说些什么......',
       toolbarConfig: {
         pin: false
@@ -103,6 +108,7 @@ export default class AppEditor extends BaseComponentOrView {
       counter: {
         enable: true
       },
+      cdn: '', // Link nothing from jsdelivr. This will make vditor link local files and fail.
       upload: {
         accept: 'image/*',
         handler: (files: File[]) => new Promise<null>(resolve => {

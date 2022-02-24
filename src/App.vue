@@ -33,6 +33,7 @@ import 'github-markdown-css/github-markdown.css'
 import 'katex/dist/katex.min.css'
 import 'highlight.js/styles/github.css'
 import 'overlayscrollbars/css/OverlayScrollbars.css'
+import '@mdi/font/css/materialdesignicons.css'
 
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
