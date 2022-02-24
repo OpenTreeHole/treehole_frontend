@@ -304,7 +304,9 @@ export default class FloorCard extends BaseComponentOrView {
     const data: any = {}
     if (msg) data.delete_reason = msg
 
-    const response = await this.$axios.delete(`/floors/${this.floor.floorId}`, data)
+    const response = await this.$axios.delete(`/floors/${this.floor.floorId}`, {
+      data: data
+    })
     this.messageSuccess(response.data.message)
   }
 

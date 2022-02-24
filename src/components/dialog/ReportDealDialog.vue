@@ -58,8 +58,8 @@ export default class ReportDealDialog extends BaseComponentOrView {
 
   public dialog = false
   public dealType: string | null = null
-  public reason: any = { fold: '', delete: '' }
-  public reasonDefault: any = { fold: '该内容已被折叠', delete: '该内容因违反社区规范被删除' }
+  public reason = { fold: '', delete: '' }
+  public reasonDefault = { fold: '该内容已被折叠', delete: '该内容因违反社区规范被删除' }
   public silent = 0
 
   get dialogWidth () {
@@ -68,16 +68,26 @@ export default class ReportDealDialog extends BaseComponentOrView {
 
   @Ref() readonly form!: HTMLFormElement
 
+  get reasonSubmit () {
+    return {
+      fold: this.reason.fold || this.reasonDefault.fold,
+      delete: this.reason.delete || this.reasonDefault.delete
+    }
+  }
+
   public async submit () {
     if (this.form.validate()) {
       this.dialog = false
-      const params: any = {}
-      if (this.dealType) {
-        params[this.dealType] = this.reason[this.dealType] || this.reasonDefault[this.dealType]
-        params.silent = this.silent
+      const data: any = {}
+      if (this.dealType === 'fold') {
+        data.fold = this.reasonSubmit.fold
+        data.silent = this.silent
+      } else if (this.dealType === 'delete') {
+        data.delete = this.reasonSubmit.delete
+        data.silent = this.silent
       }
       const response = await this.$axios.delete(`/reports/${this.report.reportId}`, {
-        params: params
+        data: data
       })
       this.reason = { fold: '', delete: '' }
       this.silent = 0

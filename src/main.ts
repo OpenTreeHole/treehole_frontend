@@ -51,15 +51,18 @@ axios.interceptors.response.use(response => response, async (error) => {
   if (error.response) {
     if (error.response.status === 401) {
       localStorage.removeItem('token')
-      await router.replace({
-        name: 'login'
-      })
-      MessageStore.messageError('会话已过期，请重新登录')
-    } else if (error.response.message) {
-      MessageStore.messageError(`${error.response.status}: ${error.response.message}`)
+      if (router.currentRoute.name !== 'login') {
+        router.replace({
+          name: 'login'
+        })
+      }
+      if (error.response.data.message) MessageStore.messageError(`${error.response.status}: ${error.response.data.message}`)
+      else MessageStore.messageError('会话已过期，请重新登录')
+    } else if (error.response.data.message) {
+      MessageStore.messageError(`${error.response.status}: ${error.response.data.message}`)
     } else {
       MessageStore.messageError(`${error.response.status}: 未知错误，请按F12查看控制台以获得错误信息并发至站务分区`)
-      console.log(error)
+      console.log(error.response)
     }
   } else {
     MessageStore.messageError('未知axios错误，请按F12查看控制台以获得错误信息并发至站务分区，')
