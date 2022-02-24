@@ -199,7 +199,7 @@ export default class RegisterPage extends BaseView {
         .post('/register', {
           email: this.email,
           password: this.password,
-          verification: parseInt(this.code)
+          verification: this.code
         })
         // 注册成功后直接跳转到主页面
       this.messageSuccess('注册成功！')

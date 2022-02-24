@@ -164,7 +164,7 @@ export default class ChangePasswordPage extends BaseView {
         .put('/register', {
           email: LocalStorageStore.email,
           password: this.password,
-          verification: parseInt(this.code)
+          verification: this.code
         })
       this.messageSuccess('修改密码成功！')
       await sleep(1000)

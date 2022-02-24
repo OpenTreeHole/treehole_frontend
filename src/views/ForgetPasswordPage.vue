@@ -194,7 +194,7 @@ export default class ForgetPasswordPage extends BaseView {
         .put('/register', {
           email: this.email,
           password: this.password,
-          verification: parseInt(this.code)
+          verification: this.code
         })
       this.messageSuccess('重置密码成功！')
       await sleep(1000)
