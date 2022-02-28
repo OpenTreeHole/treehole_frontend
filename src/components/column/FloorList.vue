@@ -82,7 +82,6 @@ import Loading from '@/components/Loading.vue'
 import AppEditor from '@/components/app/AppEditor.vue'
 import { Component, Prop, Ref } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
-import MentionCard from '@/components/card/MentionCard.vue'
 import hljs from 'highlight.js'
 import FloorCard from '@/components/card/FloorCard.vue'
 import { Floor } from '@/models/floor'
@@ -97,7 +96,6 @@ import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
 @Component({
   components: {
     CreateFloorDialog,
-    MentionCard,
     Loading,
     AppEditor,
     FloorCard

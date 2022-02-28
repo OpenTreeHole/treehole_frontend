@@ -24,19 +24,26 @@ export default class BaseComponentOrView extends Vue {
   public addTag = (route: string, tag: Tag) => TagStore.addTag({ route: route, tag: tag })
   public clearTag = TagStore.clearTag
 
-  get filtedTagMap () {
+  get filtedTagMap() {
     return TagStore.tagMap
   }
 
-  get isMobile () {
+  get themeClasses() {
+    return {
+      'theme--light': !this.$vuetify.theme.dark,
+      'theme--dark': this.$vuetify.theme.dark
+    }
+  }
+
+  get isMobile() {
     return UtilStore.isMobile
   }
 
-  public onPreloaded () {
+  public onPreloaded() {
     this.preloaded = true
   }
 
-  public onWsMessage (msg: WsMessage) {
+  public onWsMessage(msg: WsMessage) {
   }
 
   created () {

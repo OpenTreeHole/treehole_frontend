@@ -84,3 +84,21 @@ img {
 .overflow-y-scroll {
   overflow-y: scroll;
 }
+
+.v-application .text-body-1 {
+  -webkit-text-size-adjust: 100%;
+  word-wrap: break-word;
+}
+
+.theme--dark.v-sheet {
+  background-color: #303030;
+}
+
+.theme--dark.v-card {
+  background-color: #424242;
+}
+
+.theme--dark .text-body-1 a {
+  color: #32a1d2
+}
+

@@ -1,5 +1,5 @@
 <template>
-  <v-card :id='`#${hole.holeId}`' class='rounded' :class='isActive ? "hole-card--active" : "hole-card"' elevation='1'>
+  <v-card :id='`#${hole.holeId}`' :class='{"hole-card--active": isActive}' class='rounded' elevation='1'>
     <!-- 标签栏 -->
     <v-card-text class='d-flex pb-0 pt-2 pl-3 pr-3 font-weight-medium'>
       <span class='flex-left'>
@@ -42,7 +42,7 @@
           class='fold'
           :fix='fixHeight'
         >
-          {{ hole.firstFloor.content | plainText }}
+          <p>{{ hole.firstFloor.content | plainText }}</p>
         </fix-height-div>
         <fix-height-div
           v-else
@@ -99,7 +99,6 @@
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
-              color: rgba(19,13,10,0.83)
             '
           >
             RE：{{ hole.lastFloor.content | plainText | wordLimit }}
@@ -190,12 +189,15 @@ export default class HoleCard extends BaseComponentOrView {
 </script>
 
 <style lang='scss' scoped>
-.hole-card {
-  transition: 1s;
+.v-card {
+  transition: background-color 0.5s;
 }
 
-.hole-card--active {
-  transition: 1s;
-  background-color: #DFDFDF !important;
+.theme--light.hole-card--active {
+  background-color: #CFCFCF !important;
+}
+
+.theme--dark.hole-card--active {
+  background-color: #707070 !important;
 }
 </style>

@@ -7,7 +7,7 @@ import Vue from 'vue'
 import UtilStore from '@/store/modules/UtilStore'
 import { Main } from '@/main'
 import { VueInstance } from '@/instance'
-import { IFloor, DetailedFloor, Floor } from '@/models/floor'
+import { DetailedFloor, Floor, IFloor } from '@/models/floor'
 
 export async function renderFloor (curFloor: DetailedFloor, toMention: (mentionFloor: Floor) => void, idPrefix: string = 'fl'): Promise<void> {
   if (('mention' in curFloor) && curFloor.mention.length !== 0) {
@@ -68,21 +68,18 @@ export function renderMention (curFloor: DetailedFloor, toMention: (mentionFloor
     const mentionFloor: Floor | undefined = mentionMap.get(mentionAttr)
     if (!mentionFloor) continue
 
-    let additionalClass = ''
-    if (elements[i].parentElement && (elements[i].parentElement as HTMLElement).firstChild !== elements[i]) {
-      additionalClass += 'mt-3 '
-    }
-    if (elements[i].parentElement && (elements[i].parentElement as HTMLElement).lastChild !== elements[i]) {
-      additionalClass += 'mb-3 '
-    }
-    additionalClass = additionalClass.trimEnd()
     new MentionCard({
       propsData: {
         mentionFloor: mentionFloor,
-        gotoMentionFloor: () => { toMention(mentionFloor) },
+        gotoMentionFloor: () => {
+          toMention(mentionFloor)
+        },
         gotoMentionFloorIcon: 'mdi-arrow-collapse-up',
         mentionFloorInfo: mentionAttr,
-        additionalClass: additionalClass
+        additionalClass: {
+          'mt-3': elements[i].parentElement && (elements[i].parentElement as HTMLElement).firstChild !== elements[i],
+          'mb-3': elements[i].parentElement && (elements[i].parentElement as HTMLElement).lastChild !== elements[i]
+        }
       },
       vuetify
     }).$mount(elements[i])

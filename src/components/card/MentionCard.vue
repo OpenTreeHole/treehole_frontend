@@ -1,11 +1,11 @@
 <template>
-  <v-card class='reply mx-0 mb-2' :class='additionalClass'>
+  <v-card ref='card' :class='classes' class='reply mx-0 mb-2'>
     <!-- 回复框顶栏 -->
     <v-card-actions class='pb-0 pl-4 pr-4 pt-2 text-body-2'>
-      <span style='color: rgba(85,93,86,0.48); '>
+      <span :class='themeClasses'>
         <b>{{ mentionFloor.anonyname }}</b> {{ mentionFloorInfo }}
       </span>
-      <v-spacer/>
+      <v-spacer />
       <v-icon
         v-if='gotoMentionFloor'
         @click='gotoMentionFloor'
@@ -21,7 +21,7 @@
         mdi-close
       </v-icon>
     </v-card-actions>
-    <v-card-text class='reply-text pt-2 pb-2' v-html='mentionFloor.html' :class='clipClass'/>
+    <v-card-text :class='{"reply-clip":isClipped}' class='reply-text pt-2 pb-2' v-html='mentionFloor.html' />
     <v-btn
       v-if='needClip'
       text
@@ -40,7 +40,7 @@
 </template>
 
 <script lang='ts'>
-import { Component, Prop } from 'vue-property-decorator'
+import { Component, Prop, Ref } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import hljs from 'highlight.js/lib/core'
 import { Floor } from '@/models/floor'
@@ -56,16 +56,23 @@ export default class MentionCard extends BaseComponentOrView {
    * e.g. 6L, #12354
    */
   @Prop({ type: String, default: '' }) mentionFloorInfo: string
-  @Prop({ type: String, default: '' }) additionalClass: string
+  @Prop({ type: Object, default: '' }) additionalClass: any
   @Prop({ type: Function }) cancel?: Function
+
+  @Ref() card: any
+
+  get classes() {
+    return {
+      ...this.additionalClass,
+      ...this.themeClasses
+    }
+  }
+
   public maxHeight = 200
   public needClip = false
   public isClipped = false
-  get clipClass () {
-    return this.isClipped ? ' reply-clip' : ''
-  }
 
-  mounted () {
+  mounted() {
     hljs.highlightAll()
     if (!this.$el) return
     const height = parseInt(window.getComputedStyle(this.$el).height)
@@ -77,10 +84,20 @@ export default class MentionCard extends BaseComponentOrView {
 }
 </script>
 
-<style scoped>
+<style lang='scss' scoped>
 .btn-fixed-br {
   position: absolute;
   bottom: 5px;
   right: 5px;
+}
+
+.v-card__actions {
+  span.theme--light {
+    color: rgba(85, 93, 86, 0.48)
+  }
+
+  span.theme--dark {
+    color: #cfd8dc
+  }
 }
 </style>

@@ -26,7 +26,7 @@
               <!-- 正文部分 -->
               <div
                 :index='index'
-                class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
+                class='floor-body rich-text text--primary ma-0 text-body-1'
                 v-html='floor.html'
               ></div>
             </v-card-text>

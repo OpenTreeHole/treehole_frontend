@@ -12,7 +12,6 @@
     "@mdi/font": "^6.4.95",
     "axios": "^0.21.1",
     "core-js": "^3.6.5",
-    "github-markdown-css": "^5.0.0",
     "gsap": "^3.9.1",
     "highlight.js": "^11.3.1",
     "katex": "^0.13.20",
