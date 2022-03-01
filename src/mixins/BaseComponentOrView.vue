@@ -2,7 +2,7 @@
 
 import Vue from 'vue'
 
-import { Component } from 'vue-property-decorator'
+import { Component, Watch } from 'vue-property-decorator'
 import MessageStore from '@/store/modules/MessageStore'
 import UtilStore from '@/store/modules/UtilStore'
 import TagStore from '@/store/modules/TagStore'
@@ -28,7 +28,7 @@ export default class BaseComponentOrView extends Vue {
     return TagStore.tagMap
   }
 
-  get themeClasses() {
+  get themeClasses(): any {
     return {
       'theme--light': !this.$vuetify.theme.dark,
       'theme--dark': this.$vuetify.theme.dark
@@ -46,19 +46,31 @@ export default class BaseComponentOrView extends Vue {
   public onWsMessage(msg: WsMessage) {
   }
 
-  created () {
+  created() {
     EventBus.$on('preloaded', this.onPreloaded)
     EventBus.$on('receive-ws-message', this.onWsMessage)
   }
 
-  activated () {
+  @Watch('themeClasses', { immediate: true })
+  async themeClassesChanged() {
+    await this.$nextTick()
+    const keys = Object.keys(this.themeClasses)
+    this.$el.classList.remove(...keys)
+    for (const key of keys) {
+      if (this.themeClasses[key]) {
+        this.$el.classList.add(key)
+      }
+    }
+  }
+
+  activated() {
     EventBus.$off('preloaded', this.onPreloaded)
     EventBus.$off('receive-ws-message', this.onWsMessage)
     EventBus.$on('preloaded', this.onPreloaded)
     EventBus.$on('receive-ws-message', this.onWsMessage)
   }
 
-  deactivated () {
+  deactivated() {
     EventBus.$off('preloaded', this.onPreloaded)
     EventBus.$off('receive-ws-message', this.onWsMessage)
   }

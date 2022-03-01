@@ -1,10 +1,6 @@
 <template>
-  <v-container>
-    <v-row justify='center'>
-      <v-col cols='12' md='9'>
-        <FloorList :wrapped-hole-or-id='computedDiscussionId' :display-floor-id='mentionFloorId'/>
-      </v-col>
-    </v-row>
+  <v-container class='pa-0'>
+    <floor-list :display-floor-id='mentionFloorId' :wrapped-hole-or-id='computedDiscussionId' />
   </v-container>
 </template>
 

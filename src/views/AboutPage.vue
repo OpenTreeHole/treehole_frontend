@@ -1,5 +1,5 @@
 <template>
-  <v-container  >
+  <v-container>
     <v-card>
       <v-card-title>FDU Hole</v-card-title>
 
@@ -146,7 +146,6 @@ export default class AboutPage extends BaseView {
 </script>
 
 <style scoped>
-/*noinspection CssUnusedSymbol*/
 .v-card {
   margin: 20px;
   padding: 15px;

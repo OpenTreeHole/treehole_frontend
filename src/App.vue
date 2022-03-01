@@ -29,6 +29,7 @@ import Navbar from '@/layout/Navbar.vue'
 import Message from '@/components/Message.vue'
 
 import '@/style/global.scss'
+import '@/style/theme.scss'
 import 'katex/dist/katex.min.css'
 import 'highlight.js/styles/github.css'
 import 'overlayscrollbars/css/OverlayScrollbars.css'
