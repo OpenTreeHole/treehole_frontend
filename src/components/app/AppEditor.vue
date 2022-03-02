@@ -38,7 +38,7 @@ export default class AppEditor extends BaseComponentOrView {
     this.editor.setValue(content)
   }
 
-  mounted () {
+  async mounted () {
     const toolbar = this.isMobile ? [
       'headings', 'bold', 'italic', 'strike', '|',
       'line', 'quote', 'list', 'code', '|',

@@ -181,7 +181,7 @@ export default class FloorCard extends BaseComponentOrView {
 
   public renderMentions () {
     if (this.floor instanceof DetailedFloor) {
-      renderFloor(this.floor, this.toMention)
+      renderFloor(this, this.floor, this.toMention)
     }
   }
 
@@ -196,12 +196,12 @@ export default class FloorCard extends BaseComponentOrView {
       }
       if (flag) {
         this.floor.html += ' '
-        renderFloor(this.floor, this.toMention)
+        renderFloor(this, this.floor, this.toMention)
       }
     }
   }
 
-  mounted () {
+  async mounted () {
     this.renderMentions()
   }
 

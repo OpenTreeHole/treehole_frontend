@@ -217,7 +217,7 @@ export default class ForgetPasswordPage extends BaseView {
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }
 
-  mounted () {
+  async mounted () {
     if (this.$route.query.email) {
       this.email = this.$route.query.email as string
     }

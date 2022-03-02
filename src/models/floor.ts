@@ -48,6 +48,11 @@ export class DetailedFloor extends Floor implements IDetailedFloor {
   liked: boolean
   mention: Array<IFloor>
 
+  public constructor (floor: IDetailedFloor) {
+    super(floor)
+    Object.assign(this, floor)
+  }
+
   public convertHtml () {
     this.html = this.signMention(convertKatex(this.content))
   }

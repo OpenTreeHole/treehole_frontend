@@ -20,7 +20,7 @@ export default class SearchPage extends BaseView {
     this.searchStr = searchStr
   }
 
-  mounted () {
+  async mounted () {
     if (this.$route.query.wd && typeof this.$route.query.wd === 'string') {
       this.searchStr = this.$route.query.wd
     }

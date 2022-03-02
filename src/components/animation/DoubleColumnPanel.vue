@@ -144,7 +144,7 @@ export default class DoubleColumnPanel extends Vue {
     this.osColSecond.scroll(el, 1300)
   }
 
-  mounted () {
+  async mounted () {
     this.viewport = window.innerHeight
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight

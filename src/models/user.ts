@@ -51,7 +51,7 @@ export class Collection {
         this.collectionIds.push(holeItem.hole_id)
       })
       this.update()
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(error)
     }
   }

@@ -16,7 +16,7 @@
     <v-row>
       <v-col>
         <!-- 载入中信息 -->
-        <loading :request='[getHoles]' ref='loading' :pause-loading='pauseLoading' />
+        <loading ref='loading' :pause-loading='!preloaded' :request='[getHoles]' />
       </v-col>
     </v-row>
   </v-container>
@@ -62,18 +62,16 @@ export default class HoleList extends BaseComponentOrView {
 
   public request: HoleListRequest
 
-  public pauseLoading = true
-
   public route: string
 
   @Ref() loading: Loading
 
-  get colClass() {
+  get colClass () {
     if (this.isMobile) return 'px-1 py-1'
     else return 'px-1 py-2'
   }
 
-  get divisionId() {
+  get divisionId () {
     if (this.route.includes('division')) return parseInt(this.$route.params.id)
     else return 1
   }
@@ -81,7 +79,7 @@ export default class HoleList extends BaseComponentOrView {
   /**
    * Clear the hole list and reload.
    */
-  public refresh() {
+  public refresh () {
     this.request.clear()
     this.holes = this.request.datas
     this.loading.continueLoad()
@@ -91,7 +89,7 @@ export default class HoleList extends BaseComponentOrView {
   /**
    * Decide if pinned by hole id.
    */
-  public isPinned(holeId: number) {
+  public isPinned (holeId: number) {
     for (let i = 0; i < this.request.pinCount; i++) {
       if (this.holes[i].holeId === holeId) return true
     }
@@ -101,7 +99,7 @@ export default class HoleList extends BaseComponentOrView {
   /**
    * Calculate the number of the total lines of the display (i.e. the first floor) of each hole.
    */
-  public calculateLines(): void {
+  public calculateLines (): void {
     for (let i = 0; i < this.holes.length; i++) {
       const element = document.getElementById('p' + i)
       const totalHeight = element?.scrollHeight ?? 0
@@ -109,12 +107,12 @@ export default class HoleList extends BaseComponentOrView {
     }
   }
 
-  public async getHoles(): Promise<boolean> {
+  public async getHoles (): Promise<boolean> {
     return await this.request.request()
   }
 
   @Watch('holes')
-  holesChanged() {
+  holesChanged () {
     setTimeout(() => {
       const element = document.getElementById('p1')
       this.lineHeight = (element ? parseInt(
@@ -124,13 +122,13 @@ export default class HoleList extends BaseComponentOrView {
     }, 100)
   }
 
-  public getDivisionById(divisionId: number): Division | undefined {
+  public getDivisionById (divisionId: number): Division | undefined {
     return UserStore.divisions.find(v => {
       return v.divisionId === divisionId
     })
   }
 
-  pin() {
+  pin () {
     const division = this.getDivisionById(this.divisionId)
     if (division && (this.request instanceof HomeHoleListRequest || this.request instanceof DivisionHoleListRequest)) {
       for (let i = division.pinned.length - 1; i >= 0; i--) {
@@ -139,14 +137,13 @@ export default class HoleList extends BaseComponentOrView {
     }
   }
 
-  async onPreloaded() {
+  async onPreloaded () {
     this.pin()
-    this.pauseLoading = false
     await this.$nextTick()
     this.loading.continueLoad()
   }
 
-  created() {
+  created () {
     this.route = this.$route.path
     UserStore.collection.getCollections()
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
@@ -164,7 +161,7 @@ export default class HoleList extends BaseComponentOrView {
   @Watch('filtedTagMap', {
     deep: true
   })
-  filtedTagMapChanged() {
+  filtedTagMapChanged () {
     this.request.tag = this.filtedTagMap[this.route] ? this.filtedTagMap[this.route] : null
     this.$emit('refresh')
   }
@@ -172,7 +169,7 @@ export default class HoleList extends BaseComponentOrView {
   /**
    * Calculate the height of the hole list.
    */
-  public getHeight(): number {
+  public getHeight (): number {
     const holeListElement = document.getElementById('holeList')
     if (!holeListElement) return 0
     return parseInt(window.getComputedStyle(holeListElement).height)
@@ -235,12 +232,13 @@ export default class HoleList extends BaseComponentOrView {
   public openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
   }
 
-  mounted () {
+  async mounted () {
     window.addEventListener('resize', () => {
       this.debouncedCalculateLines()
     })
     EventBus.$on('goto-mention-floor', this.onGotoMentionFloor)
     EventBus.$on('goto-hole', this.openNewOrExistHole)
+    await this.$nextTick()
   }
 
   destroyed () {

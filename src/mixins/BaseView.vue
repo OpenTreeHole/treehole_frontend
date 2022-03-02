@@ -3,7 +3,6 @@
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UserStore from '@/store/modules/UserStore'
-import { EventBus } from '@/event-bus'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component
@@ -12,6 +11,7 @@ export default class BaseView extends BaseComponentOrView {
    * Conduct Preloading.
    */
   public async preload (): Promise<void> {
+    this.preloadSubject.next(false)
     if (!LocalStorageStore.token) return
 
     if (!this.$ws.isConnecting() && !this.$ws.isConnected()) {
@@ -26,7 +26,7 @@ export default class BaseView extends BaseComponentOrView {
     const requestUserProfile = UserStore.requestUserProfile
     const taskList = [requestDivision(), requestUserProfile()]
     await Promise.all(taskList)
-    EventBus.$emit('preloaded')
+    this.preloadSubject.next(true)
   }
 
   public created () {

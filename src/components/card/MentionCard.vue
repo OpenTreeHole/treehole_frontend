@@ -61,7 +61,7 @@ export default class MentionCard extends BaseComponentOrView {
 
   @Ref() card: any
 
-  get classes() {
+  get classes () {
     return {
       ...this.additionalClass,
       ...this.themeClasses
@@ -72,7 +72,7 @@ export default class MentionCard extends BaseComponentOrView {
   public needClip = false
   public isClipped = false
 
-  mounted() {
+  async mounted () {
     hljs.highlightAll()
     if (!this.$el) return
     const height = parseInt(window.getComputedStyle(this.$el).height)

@@ -41,26 +41,26 @@ export default class MePage extends BaseView {
   public profile: UserProfile | null = null
   public joinedTimeDisplayMsg: string
 
-  get darkModeLabel(): string {
+  get darkModeLabel (): string {
     return this.$vuetify.theme.dark ? '夜间模式开启' : '夜间模式关闭'
   }
 
-  public getUserInfo(): void {
+  public getUserInfo (): void {
     this.profile = UserStore.userProfile
     this.joinedTimeDisplayMsg = convertDate(UserStore.userProfile?.joinedTime)
   }
 
-  public logout(): void {
+  public logout (): void {
     LocalStorageStore.clear()
     UserStore.clear()
     this.$router.push('/login')
   }
 
-  public changePassWd(): void {
+  public changePassWd (): void {
     this.$router.push('/changepassword')
   }
 
-  public onPreloaded() {
+  public onPreloaded () {
     this.getUserInfo()
   }
 }

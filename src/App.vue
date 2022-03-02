@@ -4,15 +4,11 @@
     <Navbar></Navbar>
 
     <v-main>
-      <keep-alive v-if='hasToken' include='Division'>
+      <keep-alive include='DivisionPage'>
         <router-view
           :key="$route.fullPath + ($route.params.id || '') + $route.query"
         ></router-view>
       </keep-alive>
-      <router-view
-        v-else
-        :key="$route.fullPath + ($route.params.id || '') + $route.query"
-      ></router-view>
     </v-main>
 
     <!-- <v-footer>
@@ -35,9 +31,12 @@ import 'highlight.js/styles/github.css'
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import '@mdi/font/css/materialdesignicons.css'
 
-import { Component } from 'vue-property-decorator'
-import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { Component, Provide } from 'vue-property-decorator'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
+import { BehaviorSubject } from 'rxjs'
+import Vue from 'vue'
+import MessageStore from '@/store/modules/MessageStore'
+import UtilStore from '@/store/modules/UtilStore'
 
 if (process.env.NODE_ENV !== 'production') {
   const VConsole = require('vconsole')
@@ -51,18 +50,26 @@ if (process.env.NODE_ENV !== 'production') {
     Message
   }
 })
-export default class App extends BaseComponentOrView {
+export default class App extends Vue {
+  @Provide() preloadSubject = new BehaviorSubject(false)
+
   get hasToken (): boolean {
     return !!LocalStorageStore.token
   }
 
   created () {
+    UtilStore.checkDevice()
+    window.addEventListener('resize', UtilStore.checkDevice)
     document.addEventListener('onlined', (event: any) => {
-      this.messageSuccess(event.detail)
+      MessageStore.messageSuccess(event.detail)
     })
     document.addEventListener('offlined', (event: any) => {
-      this.messageWarning(event.detail)
+      MessageStore.messageWarning(event.detail)
     })
+  }
+
+  public destroyed () {
+    window.removeEventListener('resize', UtilStore.checkDevice)
   }
 }
 </script>

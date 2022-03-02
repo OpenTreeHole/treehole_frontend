@@ -27,7 +27,7 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 export default class HoleListMobile extends BaseComponentOrView {
   @Ref() readonly holeList!: HoleList
 
-  public refresh() {
+  public refresh () {
     this.holeList.refresh()
   }
 
@@ -37,7 +37,7 @@ export default class HoleListMobile extends BaseComponentOrView {
    * @param hole - the hole.
    * @param displayFloorId - if this argument is set, the floor list will be scrolled to the specific floor after being loaded.
    */
-  public openHole(hole: Hole, displayFloorId?: number): void {
+  public openHole (hole: Hole, displayFloorId?: number): void {
     gotoHole(hole, displayFloorId)
   }
 }

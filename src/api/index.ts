@@ -242,6 +242,7 @@ export class FloorListRequest extends PrefetchedArrayRequest<Floor> {
     let index = response.config.params.start_floor
     let hasNext = false
     response.data.forEach((floorItem: any) => {
+      console.log(floorItem)
       const floor: DetailedFloor = new DetailedFloor(camelizeKeys(floorItem))
       this.pushData(floor, index++, () => {
         return true
