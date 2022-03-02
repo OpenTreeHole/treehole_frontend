@@ -139,7 +139,7 @@ export default class AboutPage extends BaseView {
     }
   }
 
-  async mounted (): void {
+  async mounted () {
     this.getLatestVersion()
   }
 }
