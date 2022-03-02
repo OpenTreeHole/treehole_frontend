@@ -1,16 +1,30 @@
 <template>
-  <v-container v-if='profile'>
-    <h1>注册时间：{{ joinedTimeDisplayMsg }}</h1>
-    <h1 v-if='profile.isAdmin'>您当前为管理员身份</h1>
-
-    <v-row justify='space-around' style='margin: 20px 0; width: 100%'
-    >
-      <v-btn color='primary' width='40%' @click='changePassWd'>
-        修改密码
-      </v-btn>
-      <v-btn color='error' width='40%' @click='logout'>退出登录</v-btn>
-    </v-row
-    >
+  <v-container>
+    <v-card v-if='profile'>
+      <v-card-title>
+        <p>注册时间：{{ joinedTimeDisplayMsg }}</p>
+      </v-card-title>
+      <v-card-text v-if='profile.isAdmin'>
+        <p>您当前为管理员身份</p>
+      </v-card-text>
+      <v-card-text class='d-flex'>
+        <v-switch
+          v-model='$vuetify.theme.dark'
+          :label='darkModeLabel'
+          :value='true'
+          color='dark'
+          hide-details
+        />
+      </v-card-text>
+      <v-card-text class='d-flex'>
+        <span class='d-flex'>
+          <v-btn color='primary' width='40vw' @click='changePassWd'>修改密码</v-btn>
+        </span>
+        <span class='d-flex'>
+          <v-btn color='error' width='40vw' @click='logout'>退出登录</v-btn>
+        </span>
+      </v-card-text>
+    </v-card>
   </v-container>
 </template>
 
@@ -26,6 +40,10 @@ import LocalStorageStore from '@/store/modules/LocalStorageStore'
 export default class MePage extends BaseView {
   public profile: UserProfile | null = null
   public joinedTimeDisplayMsg: string
+
+  get darkModeLabel (): string {
+    return this.$vuetify.theme.dark ? '夜间模式开启' : '夜间模式关闭'
+  }
 
   public getUserInfo (): void {
     this.profile = UserStore.userProfile
@@ -47,3 +65,10 @@ export default class MePage extends BaseView {
   }
 }
 </script>
+
+<style scoped>
+.v-card {
+  margin: 20px;
+  padding: 15px;
+}
+</style>

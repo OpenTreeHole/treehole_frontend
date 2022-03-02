@@ -2,8 +2,8 @@
 <template>
   <v-container class='pa-0'>
     <v-card
-      v-if='this.$route.name === "hole" && !this.initiating'
-      class='mt-n2 mx-n2 mb-3'
+      v-if='this.$route.name === "hole" && hole'
+      class='mx-1 mb-2'
       max-width='700px'
     >
       <v-card-text class='text--primary pb-2 pt-2 font-weight-medium'>
@@ -21,14 +21,14 @@
 
       <v-divider></v-divider>
 
-      <v-card-text class='text--primary pt-2 pb-2 text-center'>
-        <span style='float: left'>#{{ hole.holeId }}</span>
-        <span style='float: inherit'>{{
+      <v-card-text class='pt-2 pb-2 text-center d-flex text-body-2'>
+        <span class='flex-left'>#{{ hole.holeId }}</span>
+        <span class='flex-center'>{{
             hole.timeUpdated | timeDifference
           }}</span>
-        <span style='float: right'>
-          {{ hole.reply }}
+        <span class='flex-right'>
           <v-icon small>mdi-message-processing-outline</v-icon>
+          {{ hole.reply }}
         </span>
       </v-card-text>
     </v-card>
@@ -55,7 +55,7 @@
     </transition-group>
 
     <!-- 弹出式表单及浮动按钮 -->
-    <div class='float-btn' v-if='!initiating'>
+    <div v-if='hole' class='float-btn'>
       <create-floor-dialog operation='add' :hole-id='holeId' @continue-load='continueLoad'>
         <!-- 浮动按钮 -->
         <template v-slot:activator='{ on, attrs }'>
@@ -73,7 +73,7 @@
     </div>
 
     <!-- 载入中信息 -->
-    <loading :request='[getFloors]' ref='loading' :pause-loading='initiating' />
+    <loading v-if='hole' ref='loading' :request='[getFloors]' />
   </v-container>
 </template>
 
@@ -82,7 +82,6 @@ import Loading from '@/components/Loading.vue'
 import AppEditor from '@/components/app/AppEditor.vue'
 import { Component, Prop, Ref } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
-import MentionCard from '@/components/card/MentionCard.vue'
 import hljs from 'highlight.js'
 import FloorCard from '@/components/card/FloorCard.vue'
 import { Floor } from '@/models/floor'
@@ -97,7 +96,6 @@ import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
 @Component({
   components: {
     CreateFloorDialog,
-    MentionCard,
     Loading,
     AppEditor,
     FloorCard
@@ -105,7 +103,7 @@ import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
 })
 export default class FloorList extends BaseComponentOrView {
   // 帖子列表
-  public hole: Hole
+  public hole: Hole | null = null
   public floors: Array<Floor> = []
   // 发帖表单
   public dialog = false
@@ -122,8 +120,6 @@ export default class FloorList extends BaseComponentOrView {
   @Ref() readonly editor!: AppEditor
   @Ref() readonly loading!: Loading
   @Ref() readonly floorCards!: FloorCard[]
-
-  public initiating = true
 
   /**
    * Clear the floor list and reload.
@@ -167,6 +163,7 @@ export default class FloorList extends BaseComponentOrView {
   }
 
   public async changeCollectionStatus () {
+    if (!this.hole) throw new ReferenceError('Hole is empty!')
     this.hole.isStarred = !this.hole.isStarred
     try {
       let response
@@ -234,9 +231,9 @@ export default class FloorList extends BaseComponentOrView {
   }
 
   public async init (displayFloorId: number) {
+    if (!this.hole) throw new ReferenceError('Hole is empty!')
     this.request = new FloorListRequest(this.hole.markedFloors, this.holeId)
     this.floors = this.request.datas
-    this.initiating = false
     await this.$nextTick()
     await this.getAndScrollToFloor(displayFloorId)
     await this.loadPrefetched()

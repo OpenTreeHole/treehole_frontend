@@ -72,7 +72,7 @@
           <!-- 正文部分 -->
           <div
             :id='id'
-            class='floor-body markdown-body rich-text text--primary ma-0 text-body-1'
+            class='floor-body rich-text text--primary ma-0 text-body-1'
             v-html='floor.html'
           ></div>
         </v-card-text>
@@ -181,7 +181,7 @@ export default class FloorCard extends BaseComponentOrView {
 
   public renderMentions () {
     if (this.floor instanceof DetailedFloor) {
-      renderFloor(this.floor, this.toMention)
+      renderFloor(this, this.floor, this.toMention)
     }
   }
 
@@ -196,12 +196,12 @@ export default class FloorCard extends BaseComponentOrView {
       }
       if (flag) {
         this.floor.html += ' '
-        renderFloor(this.floor, this.toMention)
+        renderFloor(this, this.floor, this.toMention)
       }
     }
   }
 
-  mounted () {
+  async mounted () {
     this.renderMentions()
   }
 

@@ -1,5 +1,5 @@
 <template>
-  <v-container  >
+  <v-container>
     <v-card>
       <v-card-title>FDU Hole</v-card-title>
 
@@ -134,19 +134,18 @@ export default class AboutPage extends BaseView {
         })
       this.latestVersion = response.data.version
       this.updateMsgIndex = this.updateUpdateMsgIndex()
-    } catch (error) {
+    } catch (error: any) {
       this.latestVersion = '获取失败 ' + error.message
     }
   }
 
-  mounted (): void {
+  async mounted () {
     this.getLatestVersion()
   }
 }
 </script>
 
 <style scoped>
-/*noinspection CssUnusedSymbol*/
 .v-card {
   margin: 20px;
   padding: 15px;

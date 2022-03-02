@@ -24,7 +24,7 @@ export default class FixHeightDiv extends BaseComponentOrView {
     this.fixedHeight = window.getComputedStyle(element).height
   }
 
-  mounted () {
+  async mounted () {
     this.computeFixHeight()
     this.resizeObserver = new ResizeObserver(debounce(this.computeFixHeight, 100))
     this.resizeObserver.observe(this.$el)

@@ -1,8 +1,7 @@
 <template>
   <v-container class='pa-0 max-height max-width'>
     <!-- 帖子列表 -->
-    <HolePanel v-if='!isMobile' ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged' />
-    <HoleListMobile v-else ref='holeComp' />
+    <component :is='isMobile ? "HoleListMobile" : "HolePanel"' @show-floor-list-changed='onShowFloatBtnChanged'></component>
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div :class='floatBtnClass' v-show='showFloatBtn'>
@@ -58,23 +57,10 @@ export default class DivisionPage extends BaseView {
     this.holeComp.refresh()
   }
 
-  public mounted () {
-    this.$nextTick(() => {
-      this.checkDevice()
-    })
-    window.addEventListener('resize', () => {
-      this.checkDevice()
-    })
-  }
-
   public onPreloaded () {
     if (!UserStore.divisions.find(v => v.divisionId === this.divisionId)) {
       this.$router.push('/division/1')
     }
-  }
-
-  public destroyed () {
-    window.removeEventListener('resize', this.checkDevice)
   }
 
   public onShowFloatBtnChanged (val: boolean): void {

@@ -37,8 +37,8 @@ const config = {
   ],
 
   // 页面元素显示配置
-  allowBackRoutes: ['discussion', 'license', 'search'], // 允许显示“返回”按钮的路由名称
-  banMenuRoutes: ['login', 'register', 'license', 'discussion', 'search'], // 禁止显示“菜单”按钮的路由名称
+  allowBackRoutes: ['hole', 'license', 'search'], // 允许显示“返回”按钮的路由名称
+  banMenuRoutes: ['login', 'register', 'license', 'hole', 'search'], // 禁止显示“菜单”按钮的路由名称
   navItems: [
     {
       title: '分区',

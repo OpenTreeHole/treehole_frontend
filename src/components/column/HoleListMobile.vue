@@ -1,45 +1,36 @@
 <template>
   <v-container class='pa-0'>
-    <v-row
-      v-for='(hole, index) in holes'
-      :key='index'
-      justify='center'
-      class='ma-0'
-    >
-      <v-col class='py-1 px-1' cols='12' md='9'>
-        <HoleCard
-          :hole='hole'
-          :index='index'
-          :pinned='index < request.pinCount'
-          @open-hole='openHole'
-        />
-      </v-col>
-    </v-row>
-    <!-- 载入中信息 -->
-    <v-row class='ma-0' justify='center'>
-      <v-col>
-        <!-- 载入中信息 -->
-        <loading :request='[getHoles]' ref='loading' :pause-loading='pauseLoading' />
-      </v-col>
-    </v-row>
+    <hole-list
+      ref='holeList'
+      @refresh='refresh'
+      @open-hole='openHole'
+    />
   </v-container>
 </template>
 
 <script lang='ts'>
-import HoleListMixin from '@/mixins/HoleListMixin.vue'
 import Loading from '@/components/Loading.vue'
 import HoleCard from '@/components/card/HoleCard.vue'
-import { Component } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
 import { gotoHole } from '@/utils/floor'
+import HoleList from '@/components/column/HoleList.vue'
+import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component({
   components: {
+    HoleList,
     HoleCard,
     Loading
   }
 })
-export default class HoleListMobile extends HoleListMixin {
+export default class HoleListMobile extends BaseComponentOrView {
+  @Ref() readonly holeList!: HoleList
+
+  public refresh () {
+    this.holeList.refresh()
+  }
+
   /**
    * Set router to the hole page.
    *

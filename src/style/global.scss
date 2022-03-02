@@ -84,3 +84,9 @@ img {
 .overflow-y-scroll {
   overflow-y: scroll;
 }
+
+.v-application .text-body-1 {
+  -webkit-text-size-adjust: 100%;
+  word-wrap: break-word;
+}
+

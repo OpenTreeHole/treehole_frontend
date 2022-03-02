@@ -152,7 +152,6 @@ import AppNavbarListGroup from '@/components/app/AppNavbarListGroup.vue'
   components: { AppNavbarListGroup, NotificationsMenu, TagChip }
 })
 export default class Navbar extends BaseComponentOrView {
-  public isDarkTheme = false
   public searchText = ''
 
   /**
@@ -167,7 +166,7 @@ export default class Navbar extends BaseComponentOrView {
   public groupNavItem = new Map()
   public navItems = this.$feConfig.navItems
 
-  @Watch('isMobile')
+  @Watch('isMobile', { immediate: true })
   isMobileChanged () {
     this.showSidebar = !this.isMobile
   }
@@ -215,33 +214,12 @@ export default class Navbar extends BaseComponentOrView {
     this.$router.back()
   }
 
-  public mounted () {
-    this.$nextTick(this.checkDevice)
+  async mounted () {
     this.showSidebar = !this.isMobile
-  }
-
-  @Watch('isDarkTheme')
-  isDarkThemeChange () {
-    this.$vuetify.theme.dark = this.isDarkTheme
-    console.log(
-      `%c [切换主题] 当前主题 %c ${
-        !this.$vuetify.theme.dark ? 'light' : 'dark'
-      } %c`,
-      'background:#35495e ; padding: 1px; border-radius: 3px 0 0 3px;  color: #fff',
-      'background:#41b883 ; padding: 1px; border-radius: 0 3px 3px 0;  color: #fff',
-      'background:transparent'
-    )
   }
 
   @Watch('$route', { immediate: true })
   routeChange () {
-    this.isDarkTheme = matchMedia('(prefers-color-scheme: dark)').matches
-    matchMedia('(prefers-color-scheme: dark)').addEventListener(
-      'change',
-      (event) => {
-        this.isDarkTheme = event.matches
-      }
-    )
     this.inAllowBackRoutes = (() => {
       const currentRoute = this.$router.currentRoute.name
       let i
