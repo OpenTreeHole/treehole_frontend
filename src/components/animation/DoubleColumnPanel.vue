@@ -172,8 +172,6 @@ export default class DoubleColumnPanel extends Vue {
 </script>
 
 <style scoped>
-@import "../../style/fix-height.scss";
-
 .double-column-panel {
   overflow: hidden;
   height: 100%

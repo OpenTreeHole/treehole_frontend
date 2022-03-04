@@ -30,14 +30,12 @@
 
       <!-- 导航列表 -->
       <v-list nav dense>
-        <v-list-item-group color='primary'>
           <template v-for='item in navItems'>
             <v-list-item
               :key='item.route'
               v-if='!item.group'
-              @click.stop='$router.replace(item.route)'
+              @click.stop='$router.push(item.route)'
               :class="item.route === $route.path ? activeClass : ''"
-              :disabled='item.route===$route.path'
             >
               <v-list-item-icon>
                 <v-icon v-text='item.icon' />
@@ -61,8 +59,7 @@
                 v-for='childItem in groupNavItem.get(item.route)'
                 :key='item.route+childItem.route'
                 :class="item.route+childItem.route===$route.fullPath ? activeClass : ''"
-                @click.stop='$router.replace(item.route+childItem.route)'
-                :disabled='item.route+childItem.route===$route.fullPath'
+                @click.stop='$router.push(item.route+childItem.route)'
               >
                 <v-list-item-content>
                   <v-list-item-title v-text='childItem.name' />
@@ -70,8 +67,6 @@
               </v-list-item>
             </app-navbar-list-group>
           </template>
-
-        </v-list-item-group>
       </v-list>
 
       <v-divider />
