@@ -33,7 +33,6 @@ import 'overlayscrollbars/css/OverlayScrollbars.css'
 import '@mdi/font/css/materialdesignicons.css'
 
 import { Component, Provide } from 'vue-property-decorator'
-import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { BehaviorSubject } from 'rxjs'
 import Vue from 'vue'
 import MessageStore from '@/store/modules/MessageStore'
@@ -53,10 +52,6 @@ if (process.env.NODE_ENV !== 'production') {
 })
 export default class App extends Vue {
   @Provide() preloadSubject = new BehaviorSubject(false)
-
-  get hasToken (): boolean {
-    return !!LocalStorageStore.token
-  }
 
   created () {
     UtilStore.checkDevice()

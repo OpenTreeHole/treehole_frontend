@@ -12,27 +12,14 @@
 
 <script lang='ts'>
 import Vue from 'vue'
-import { Component, Prop, Ref, Watch } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 
 @Component
 export default class AppNavbarListGroup extends Vue {
   @Ref() readonly group: any
-  @Prop({ required: true, type: String }) route: string
 
   get isDarkTheme () {
     return this.$vuetify.theme.dark
-  }
-
-  public activate (isActive: boolean) {
-  }
-
-  @Watch('$route')
-  async routeChanged () {
-    this.activate(this.$route.path.includes(this.route))
-  }
-
-  async mounted () {
-    this.activate(this.$route.path.includes(this.route))
   }
 }
 </script>

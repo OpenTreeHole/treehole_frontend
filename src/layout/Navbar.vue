@@ -3,20 +3,20 @@
     <!--    <v-system-bar app color='primary'></v-system-bar>-->
     <v-app-bar app elevate-on-scroll dark color='primary' dense flat>
       <v-app-bar-nav-icon
-        v-if='!inBanMenuRoutes'
+        v-if='!banMenu && !$route.meta.allowBack'
         icon
         @click.stop='showSidebar = !showSidebar'
       ></v-app-bar-nav-icon>
-      <v-app-bar-nav-icon v-if='inAllowBackRoutes' icon @click.stop='back'>
+      <v-app-bar-nav-icon v-if='$route.meta.allowBack' icon @click.stop='back'>
         <v-icon>mdi-arrow-left</v-icon>
       </v-app-bar-nav-icon>
       <v-app-bar-title>FDU Hole</v-app-bar-title>
       <v-spacer></v-spacer>
-      <notifications-menu/>
+      <notifications-menu />
     </v-app-bar>
 
     <!-- 侧栏抽屉 -->
-    <v-navigation-drawer app v-model='showSidebar'>
+    <v-navigation-drawer app :value='!banMenu && showSidebar'>
       <div class='iphone-fitter' />
 
       <v-list-item color='primary'>
@@ -30,43 +30,42 @@
 
       <!-- 导航列表 -->
       <v-list nav dense>
-          <template v-for='item in navItems'>
-            <v-list-item
-              :key='item.route'
-              v-if='!item.group'
-              @click.stop='$router.push(item.route)'
-              :class="item.route === $route.path ? activeClass : ''"
-            >
+        <template v-for='route in routes'>
+          <v-list-item
+            :key='route.path'
+            v-if='!route.children && route.meta.children === undefined'
+            @click.stop='$router.push({name: route.name})'
+            :class="route.path === $route.path ? activeClass : ''"
+          >
+            <v-list-item-icon v-if='route.meta.icon'>
+              <v-icon v-text='route.meta.icon' />
+            </v-list-item-icon>
+            <v-list-item-content>
+              <v-list-item-title v-text='route.meta.title' />
+            </v-list-item-content>
+          </v-list-item>
+          <app-navbar-list-group
+            :key='route.path'
+            v-else
+          >
+            <template #activator>
               <v-list-item-icon>
-                <v-icon v-text='item.icon' />
+                <v-icon v-text='route.meta.icon' />
               </v-list-item-icon>
+              <v-list-item-title>{{ route.meta.title }}</v-list-item-title>
+            </template>
+            <v-list-item
+              v-for='childRoute in (route.meta.children || route.children)'
+              :key='route.path+childRoute.path'
+              :class='childItemClass(route,childRoute,$route)'
+              @click.stop='$router.push(childRoute.name ? {name: childRoute.name} : {name: route.name, params: childRoute.meta.params})'
+            >
               <v-list-item-content>
-                <v-list-item-title v-text='item.title' />
+                <v-list-item-title v-text='childRoute.meta.title' />
               </v-list-item-content>
             </v-list-item>
-            <app-navbar-list-group
-              :route='item.route'
-              :key='item.route'
-              v-else
-            >
-              <template #activator>
-                <v-list-item-icon>
-                  <v-icon v-text='item.icon' />
-                </v-list-item-icon>
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </template>
-              <v-list-item
-                v-for='childItem in groupNavItem.get(item.route)'
-                :key='item.route+childItem.route'
-                :class="item.route+childItem.route===$route.fullPath ? activeClass : ''"
-                @click.stop='$router.push(item.route+childItem.route)'
-              >
-                <v-list-item-content>
-                  <v-list-item-title v-text='childItem.name' />
-                </v-list-item-content>
-              </v-list-item>
-            </app-navbar-list-group>
-          </template>
+          </app-navbar-list-group>
+        </template>
       </v-list>
 
       <v-divider />
@@ -142,6 +141,10 @@ import UserStore from '@/store/modules/UserStore'
 import NotificationsMenu from '@/components/menu/NotificationsMenu.vue'
 import { openDivisionAndGotoHole } from '@/utils/floor'
 import AppNavbarListGroup from '@/components/app/AppNavbarListGroup.vue'
+import { RouteConfig } from 'vue-router/types/router'
+import LocalStorageStore from '@/store/modules/LocalStorageStore'
+import { Route } from 'vue-router'
+import { isEqual } from 'lodash-es'
 
 @Component({
   components: { AppNavbarListGroup, NotificationsMenu, TagChip }
@@ -151,19 +154,30 @@ export default class Navbar extends BaseComponentOrView {
 
   /**
    * The display status of sidebar.
-   * <p> show by default on wide screen device, and hide by default on narrow screen device. </p>
+   * <p> show by default on wide screen edvice, and hide by default on narrow screen device. </p>
    */
   public showSidebar = !this.isMobile
   public currentPage = 0
-  public inAllowBackRoutes = false
-  public inBanMenuRoutes = true
   public holeToGo = ''
-  public groupNavItem = new Map()
-  public navItems = this.$feConfig.navItems
+
+  get banMenu () {
+    return !LocalStorageStore.token
+  }
 
   @Watch('isMobile', { immediate: true })
   isMobileChanged () {
     this.showSidebar = !this.isMobile
+  }
+
+  public childItemClass (route: RouteConfig, childRoute: RouteConfig, $route: Route) {
+    return route.path + childRoute.path === $route.fullPath || isEqual(childRoute.meta?.params, $route.params) ? this.activeClass : ''
+  }
+
+  get routes (): RouteConfig[] {
+    if (!this.preloaded || !LocalStorageStore.token) {
+      return this.$router.options.routes!.filter(v => !v.meta?.hide && !v.meta?.requireAuth)
+    }
+    return this.$router.options.routes!.filter(v => !v.meta?.hide && (!v.meta?.requireAdmin || UserStore.userProfile?.isAdmin))
   }
 
   get activeClass () {
@@ -194,47 +208,12 @@ export default class Navbar extends BaseComponentOrView {
     this.holeToGo = ''
   }
 
-  public onPreloaded () {
-    const divisionInfos: { route: string, name: string }[] = []
-    UserStore.divisions.forEach((v) => {
-      divisionInfos.push({ route: '/' + v.divisionId.toString(), name: v.name })
-    })
-    this.groupNavItem = new Map(this.groupNavItem.set('/division', divisionInfos))
-    if (UserStore.userProfile?.isAdmin) {
-      this.navItems = [...this.$feConfig.navItems, ...this.$feConfig.adminNavItems]
-    }
-  }
-
   public back (): void {
     this.$router.back()
   }
 
   async mounted () {
     this.showSidebar = !this.isMobile
-  }
-
-  @Watch('$route', { immediate: true })
-  routeChange () {
-    this.inAllowBackRoutes = (() => {
-      const currentRoute = this.$router.currentRoute.name
-      let i
-      for (i of this.$feConfig.allowBackRoutes) {
-        if (currentRoute === i) {
-          return true
-        }
-      }
-      return false
-    })()
-    this.inBanMenuRoutes = (() => {
-      const currentRoute = this.$router.currentRoute.name
-      let i
-      for (i of this.$feConfig.banMenuRoutes) {
-        if (currentRoute === i) {
-          return true
-        }
-      }
-      return false
-    })()
   }
 }
 </script>
