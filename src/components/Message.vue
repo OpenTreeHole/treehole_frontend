@@ -19,7 +19,7 @@ export default class Message extends BaseComponentOrView {
   public type = 'info'
   public message = ''
   public icon = ''
-  public timeout = '2000'
+  public timeout = 2000
 
   async mounted () {
     this.setMessageComponent(this)
