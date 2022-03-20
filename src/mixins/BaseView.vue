@@ -26,6 +26,18 @@ export default class BaseView extends BaseComponentOrView {
     const requestUserProfile = UserStore.requestUserProfile
     const taskList = [requestDivision(), requestUserProfile()]
     await Promise.all(taskList)
+    this.$router.options.routes!.find(v => v.name === 'division')!.meta!.children = UserStore.divisions.map(v => ({
+      path: `/${v.divisionId}`,
+      meta: {
+        title: v.name,
+        hide: false,
+        requireAuth: true,
+        requireAdmin: false,
+        params: {
+          id: v.divisionId.toString()
+        }
+      }
+    }))
     this.preloadSubject.next(true)
   }
 

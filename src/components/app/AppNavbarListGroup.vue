@@ -1,5 +1,5 @@
 <template>
-  <v-list-group ref='group' no-action :color="`primary ${$vuetify.theme.dark ? 'lighten-1' : 'darken-2'}`">
+  <v-list-group ref='group' :color="`blue ${isDarkTheme ? 'lighten-1' : 'darken-2'}`" :value='true' no-action>
     <template #activator>
       <slot
         name='activator'
@@ -12,27 +12,14 @@
 
 <script lang='ts'>
 import Vue from 'vue'
-import { Component, Prop, Ref, Watch } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 
 @Component
 export default class AppNavbarListGroup extends Vue {
   @Ref() readonly group: any
-  @Prop({ required: true, type: String }) route: string
 
-  public activate (isActive: boolean) {
-    this.group.isActive = isActive
-  }
-
-  @Watch('$route')
-  async routeChanged () {
-    await this.$nextTick()
-    this.activate(this.$route.path.includes(this.route))
-  }
-
-  async mounted () {
-    await this.$nextTick()
-    await this.$nextTick()
-    this.activate(this.$route.path.includes(this.route))
+  get isDarkTheme () {
+    return this.$vuetify.theme.dark
   }
 }
 </script>

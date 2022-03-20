@@ -1,11 +1,12 @@
 <template>
   <v-container class='pa-0 max-height max-width'>
     <!-- 帖子列表 -->
-    <component :is='isMobile ? "HoleListMobile" : "HolePanel"' @show-floor-list-changed='onShowFloatBtnChanged'></component>
+    <HoleListMobile v-if='isMobile' ref='holeComp'></HoleListMobile>
+    <HolePanel v-else ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged'></HolePanel>
 
     <!-- 新帖编辑器及浮动按钮 -->
     <div :class='floatBtnClass' v-show='showFloatBtn'>
-      <v-btn v-if='!this.isMobile' fab color='secondary' @mousedown.prevent @click='reload'>
+      <v-btn v-if='!isMobile' color='secondary' fab @click='reload' @mousedown.prevent>
         <v-icon>mdi-autorenew</v-icon>
       </v-btn>
       <br />
@@ -34,9 +35,11 @@ import HoleListMobile from '@/components/column/HoleListMobile.vue'
 import BaseView from '@/mixins/BaseView.vue'
 import CreateHoleDialog from '@/components/dialog/CreateHoleDialog.vue'
 import UserStore from '@/store/modules/UserStore'
+import HoleList from '@/components/column/HoleList.vue'
 
 @Component({
   components: {
+    HoleList,
     CreateHoleDialog,
     HolePanel,
     HoleListMobile

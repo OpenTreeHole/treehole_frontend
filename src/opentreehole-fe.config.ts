@@ -35,40 +35,6 @@ const config = {
       link: `${baseUrl}licenses/open-source-licenses.md`
     }
   ],
-
-  // 页面元素显示配置
-  allowBackRoutes: ['hole', 'license', 'search'], // 允许显示“返回”按钮的路由名称
-  banMenuRoutes: ['login', 'register', 'license', 'hole', 'search'], // 禁止显示“菜单”按钮的路由名称
-  navItems: [
-    {
-      title: '分区',
-      icon: 'mdi-home',
-      route: '/division',
-      group: true
-    },
-    {
-      title: '收藏',
-      icon: 'mdi-star',
-      route: '/collections'
-    },
-    {
-      title: '我的',
-      icon: 'mdi-account',
-      route: '/me'
-    },
-    {
-      title: '关于',
-      icon: 'mdi-information',
-      route: '/about'
-    }
-  ],
-  adminNavItems: [
-    {
-      title: '举报',
-      icon: 'mdi-alert-box-outline',
-      route: '/report'
-    }
-  ],
   friendLinks: [ // 友链
     {
       siteName: '旦夕 App',

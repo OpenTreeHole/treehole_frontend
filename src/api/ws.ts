@@ -39,9 +39,6 @@ export class WsClient {
   public send (msg: string) {
     if (!this.ws) this.unhandledMessages.push(msg)
     else {
-      if (msg.length > 1000) {
-        console.log(msg)
-      }
       this.ws.send(msg)
     }
   }

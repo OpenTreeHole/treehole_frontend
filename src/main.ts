@@ -24,12 +24,6 @@ import { stopOverscroll, timeDifference } from '@/utils/utils'
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
 import MessageStore from '@/store/modules/MessageStore'
 
-import { gsap } from 'gsap'
-
-gsap.config({
-  force3D: true
-})
-
 stopOverscroll()
 
 // global registration

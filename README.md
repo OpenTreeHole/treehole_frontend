@@ -34,6 +34,8 @@ Feel free to dive in! [Open an issue](https://github.com/OpenTreeHole/vue/issues
 
 ### Development
 
+Getting Started: https://www.github.com/OpenTreeHole/Getting-Started/Getting-Started.md
+
 ```shell
 # Clone the repository
 git clone https://www.github.com/OpenTreeHole/vue.git
