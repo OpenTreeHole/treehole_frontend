@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <message ref='message'></message>
-    <Navbar></Navbar>
+    <message-snackbar ref='message'/>
+    <navigation-bar/>
 
     <v-main>
       <keep-alive include='DivisionPage'>
@@ -11,18 +11,13 @@
       </keep-alive>
     </v-main>
 
-    <!-- <v-footer>
-      <v-col class="text-center" cols="12">
-        &copy; {{ new Date().getFullYear() }} —
-        <span @click="newEvent">FDUHOLE PROJECT</span>
-      </v-col>
-    </v-footer> -->
+    <float-btn-group/>
   </v-app>
 </template>
 
 <script lang='ts'>
-import Navbar from '@/layout/Navbar.vue'
-import Message from '@/components/Message.vue'
+import NavigationBar from '@/components/bar/NavigationBar.vue'
+import MessageSnackbar from '@/components/bar/MessageSnackbar.vue'
 
 import '@/style/global.scss'
 import '@/style/theme.scss'
@@ -32,28 +27,32 @@ import 'highlight.js/styles/github.css'
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import '@mdi/font/css/materialdesignicons.css'
 
-import { Component, Provide } from 'vue-property-decorator'
+import { Component, Provide, Ref, Watch } from 'vue-property-decorator'
 import { BehaviorSubject } from 'rxjs'
 import Vue from 'vue'
 import MessageStore from '@/store/modules/MessageStore'
 import UtilStore from '@/store/modules/UtilStore'
+import FloatBtnGroup from '@/components/FloatBtnGroup.vue'
+import FloatBtnStore from '@/store/modules/FloatBtnStore'
 
-if (process.env.NODE_ENV !== 'production') {
-  const VConsole = require('vconsole')
-  // eslint-disable-next-line no-new
-  new VConsole()
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   const VConsole = require('vconsole')
+//   // eslint-disable-next-line no-new
+//   new VConsole()
+// }
 
 @Component({
   components: {
-    Navbar,
-    Message
+    FloatBtnGroup,
+    NavigationBar,
+    MessageSnackbar
   }
 })
 export default class App extends Vue {
   @Provide() preloadSubject = new BehaviorSubject(false)
 
-  created () {
+  @Ref() message: MessageSnackbar
+  async created () {
     UtilStore.checkDevice()
     window.addEventListener('resize', UtilStore.checkDevice)
     document.addEventListener('onlined', (event: any) => {
@@ -64,8 +63,18 @@ export default class App extends Vue {
     })
   }
 
-  public destroyed () {
+  destroyed () {
     window.removeEventListener('resize', UtilStore.checkDevice)
+  }
+
+  errorCaptured (err: Error, vm: Vue, info: string) {
+    MessageStore.messageError(err.message)
+    throw err
+  }
+
+  @Watch('$route')
+  routeChange () {
+    FloatBtnStore.clean()
   }
 }
 </script>

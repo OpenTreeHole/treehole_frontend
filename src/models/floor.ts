@@ -1,17 +1,24 @@
 import marked from 'marked'
 import { convertKatex } from '@/utils/utils'
 
-export interface IFloor {
-  anonyname: string
+export interface IFloorData {
   content: string
+  holeId: number
+  specialTag?: string
+}
+
+export interface IFloor {
+  content: string
+  holeId: number
+  specialTag: string
+  anonyname: string
   deleted: boolean
   floorId: number
-  fold: Array<any>
-  holeId: number
+  storey: number
+  fold: string[]
   like: number
-  timeCreated: string
-  timeUpdated: string
-  specialTag: string
+  timeCreated: Date | string
+  timeUpdated: Date | string
 }
 
 export class Floor implements IFloor {
@@ -19,16 +26,27 @@ export class Floor implements IFloor {
   content: string
   deleted: boolean
   floorId: number
-  fold: Array<any>
+  fold: string[]
   holeId: number
   like: number
-  timeCreated: string
-  timeUpdated: string
+  storey: number
+  timeCreated: Date
+  timeUpdated: Date
   html: string
   specialTag: string
 
   constructor (floor: IFloor) {
-    Object.assign(this, floor)
+    this.anonyname = floor.anonyname
+    this.content = floor.content
+    this.deleted = floor.deleted
+    this.floorId = floor.floorId
+    this.fold = floor.fold
+    this.holeId = floor.holeId
+    this.storey = floor.storey
+    this.like = floor.like
+    this.timeCreated = new Date(floor.timeCreated)
+    this.timeUpdated = new Date(floor.timeUpdated)
+    this.specialTag = floor.specialTag
     this.convertHtml()
   }
 
@@ -40,17 +58,19 @@ export class Floor implements IFloor {
 export interface IDetailedFloor extends IFloor {
   isMe: boolean
   liked: boolean
-  mention: Array<IFloor>
+  mention: IFloor[]
 }
 
 export class DetailedFloor extends Floor implements IDetailedFloor {
   isMe: boolean
   liked: boolean
-  mention: Array<IFloor>
+  mention: Floor[]
 
   public constructor (floor: IDetailedFloor) {
     super(floor)
-    Object.assign(this, floor)
+    this.liked = floor.liked
+    this.isMe = floor.isMe
+    this.mention = floor.mention.map(v => new Floor(v))
   }
 
   public convertHtml () {

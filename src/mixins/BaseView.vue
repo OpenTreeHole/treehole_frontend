@@ -10,7 +10,7 @@ export default class BaseView extends BaseComponentOrView {
   /**
    * Conduct Preloading.
    */
-  public async preload (): Promise<void> {
+  async preload (): Promise<void> {
     this.preloadSubject.next(false)
     if (!LocalStorageStore.token) return
 
@@ -23,7 +23,7 @@ export default class BaseView extends BaseComponentOrView {
     }
 
     const requestDivision = UserStore.requestDivision
-    const requestUserProfile = UserStore.requestUserProfile
+    const requestUserProfile = UserStore.requestUser
     const taskList = [requestDivision(), requestUserProfile()]
     await Promise.all(taskList)
     this.$router.options.routes!.find(v => v.name === 'division')!.meta!.children = UserStore.divisions.map(v => ({
@@ -41,8 +41,8 @@ export default class BaseView extends BaseComponentOrView {
     this.preloadSubject.next(true)
   }
 
-  public created () {
-    this.preload()
+  async created () {
+    await this.preload()
   }
 }
 </script>

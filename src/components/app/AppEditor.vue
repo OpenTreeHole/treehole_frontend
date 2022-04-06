@@ -13,6 +13,7 @@ import 'vditor/dist/index.css'
 
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { uploadImage } from '@/apis/api'
 
 @Component
 export default class AppEditor extends BaseComponentOrView {
@@ -111,10 +112,8 @@ export default class AppEditor extends BaseComponentOrView {
             const reader = new FileReader()
             reader.onload = async (e) => {
               if (e.target) {
-                const response = await this.$axios.post('/images', {
-                  image: (e.target.result as string).split(',')[1]
-                })
-                this.editor.insertValue(`![](${response.data.url})`)
+                const { url } = await uploadImage((e.target.result as string).split(',')[1])
+                this.editor.insertValue(`![](${url})`)
               }
               resolve(null)
             }
@@ -127,7 +126,7 @@ export default class AppEditor extends BaseComponentOrView {
     })
   }
 
-  created () {
+  async created () {
   }
 }
 </script>

@@ -88,6 +88,7 @@ import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
+import { changePassword, verifyWithEmail } from '@/apis/api'
 
 @Component
 export default class ChangePasswordPage extends BaseView {
@@ -135,14 +136,10 @@ export default class ChangePasswordPage extends BaseView {
   public async sendCode () {
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
-    const response = await this.$axios
-      .get('/verify/email', {
-        params: {
-          email: LocalStorageStore.email
-        }
-      })
 
-    this.messageSuccess(response.data.message)
+    const { message } = await verifyWithEmail(LocalStorageStore.email)
+
+    this.messageSuccess(message)
   }
 
   public sendButtonChangeStatus (): void {
@@ -160,12 +157,7 @@ export default class ChangePasswordPage extends BaseView {
 
   public async changepassword () {
     if (this.form.validate()) {
-      await this.$axios
-        .put('/register', {
-          email: LocalStorageStore.email,
-          password: this.password,
-          verification: this.code
-        })
+      changePassword(this.password, LocalStorageStore.email, this.code)
       this.messageSuccess('修改密码成功！')
       await sleep(1000)
       await this.$router.replace('/division/1')
@@ -177,7 +169,7 @@ export default class ChangePasswordPage extends BaseView {
     this.debouncedCheckPassword()
   }
 
-  created () {
+  async created () {
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }
 }

@@ -5,8 +5,8 @@ export interface IReport {
   holeId: number
   floor: IFloor
   reason: string
-  timeCreated: string
-  timeUpdated: string
+  timeCreated: Date | string
+  timeUpdated: Date | string
   dealed: boolean
   dealedBy: number | null
 }
@@ -18,11 +18,24 @@ export class Report implements IReport {
   holeId: number
   reason: string
   reportId: number
-  timeCreated: string
-  timeUpdated: string
+  timeCreated: Date
+  timeUpdated: Date
 
   constructor (report: IReport) {
-    Object.assign(this, report)
+    this.reportId = report.reportId
+    this.holeId = report.holeId
+    this.reason = report.reason
+    this.timeCreated = new Date(report.timeCreated)
+    this.timeUpdated = new Date(report.timeUpdated)
+    this.dealed = report.dealed
+    this.dealedBy = report.dealedBy
     this.floor = new Floor(report.floor)
   }
+}
+
+export interface IReportDeal {
+  fold?: string[],
+  delete?: string
+  silent?: number,
+  notDeal?: boolean
 }

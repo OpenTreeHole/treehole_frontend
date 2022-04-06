@@ -116,19 +116,19 @@
         </v-card-text>
       </template>
     </dynamic-expansion-panel>
-    <create-floor-dialog ref='editFloorDialog' :reply-floor='replyFloor' operation='edit' :floor-id='floor.floorId' @update-floor='updateFloor'/>
+    <create-floor-dialog v-model='dialog' :reply-floor='replyFloor' operation='edit' :floor-id='floor.floorId' @update-floor='updateFloor'/>
   </v-card>
 </template>
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
-import Vue from 'vue'
+import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
 import UserStore from '@/store/modules/UserStore'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { gotoHole, renderFloor } from '@/utils/floor'
 import DynamicExpansionPanel from '@/components/animation/DynamicExpansionPanel.vue'
 import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
+import { addPenalty, addReport, deleteFloor, likeFloor } from '@/apis/api'
 
 interface Operation {
   icon: string
@@ -146,9 +146,9 @@ export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
   @Prop({ type: String, default: 'fl' }) idPrefix: string
 
-  @Ref() editFloorDialog: CreateFloorDialog
+  dialog = false
 
-  public display: boolean = false
+  display: boolean = false
 
   get idInfo () {
     return this.index === -1 ? `<b>##${this.floor.floorId}</b>` : `<b>${this.index}L</b>(##${this.floor.floorId})`
@@ -160,7 +160,7 @@ export default class FloorCard extends BaseComponentOrView {
 
   get replyFloor () {
     if (this.floor instanceof DetailedFloor && this.floor.mention[0]) {
-      return new Floor(this.floor.mention[0])
+      return this.floor.mention[0]
     }
     return undefined
   }
@@ -205,7 +205,7 @@ export default class FloorCard extends BaseComponentOrView {
     this.renderMentions()
   }
 
-  created () {
+  async created () {
     this.display = this.floor.fold.length === 0
   }
 
@@ -239,7 +239,7 @@ export default class FloorCard extends BaseComponentOrView {
       icon: 'pencil-outline',
       text: '编辑',
       operation: () => {
-        this.editFloorDialog.dialog = true
+        this.dialog = true
       }
     }
     const opPenalty = {
@@ -249,7 +249,7 @@ export default class FloorCard extends BaseComponentOrView {
     }
     if (this.floor instanceof DetailedFloor && this.floor.isMe) {
       this.operations = [opRemoveFloor, opEdit]
-    } else if (UserStore.userProfile?.isAdmin) {
+    } else if (UserStore.user?.isAdmin) {
       this.operations = [opRemoveFloorWithReason, opEdit, opPenalty]
     } else {
       this.operations = [opReport]
@@ -263,68 +263,48 @@ export default class FloorCard extends BaseComponentOrView {
     this.setOperation()
   }
 
-  public penalty () {
+  async penalty () {
     const msg = prompt('输入惩罚等级')
     if (msg == null) return
     const level = parseInt(msg)
     if (isNaN(level) || level < 0 || level > 3) this.messageError('非有效惩罚等级！（惩罚应为0,1,2或3）')
-    this.$axios.post(`/penalty/${this.floor.floorId}`, {
-      penalty_level: level,
-      division_id: this.divisionId
-    })
+    await addPenalty(this.floor.floorId, level, this.divisionId)
   }
 
-  public async like () {
+  async like () {
     if (!(this.floor instanceof DetailedFloor)) return
-    if (this.floor.liked) {
-      Vue.set(this.floor, 'like', this.floor.like - 1)
-    } else {
-      this.floor.like++
-    }
-    const data = {
-      like: this.floor.liked ? 'cancel' : 'add'
-    }
-    Vue.set(this.floor, 'liked', !this.floor.liked)
 
-    const response = await this.$axios
-      .put(`/floors/${this.floor.floorId}`, data)
-    if (response.data.liked) {
-      this.messageSuccess('点赞成功')
-    } else {
-      this.messageSuccess('取消点赞成功')
-    }
+    this.floor.like = this.floor.liked ? (this.floor.like - 1) : (this.floor.like + 1)
+    this.floor.liked = !this.floor.liked
+    const { liked } = await likeFloor(this.floor.floorId, this.floor.liked)
+
+    if (liked) this.messageSuccess('点赞成功')
+    else this.messageSuccess('取消点赞成功')
   }
 
-  public async removeFloor (needReason?: boolean) {
+  async removeFloor (needReason?: boolean) {
     let msg: string | null = ''
     if (needReason) {
       msg = prompt('输入删除理由')
-      if (!msg) return
+      if (msg === null) return
     }
-    const data: any = {}
-    if (msg) data.delete_reason = msg
 
-    const response = await this.$axios.delete(`/floors/${this.floor.floorId}`, {
-      data: data
-    })
-    this.messageSuccess(response.data.message)
+    await deleteFloor(this.floor.floorId, msg ?? undefined)
+
+    this.messageSuccess('删除成功！')
   }
 
   /**
    * Send a report.
    */
-  public async report () {
+  async report () {
     const msg = prompt('输入举报理由')
-    if (msg === '') {
+    if (!msg) {
       this.messageError('举报理由不能为空！')
+      return
     }
-    const response = await this.$axios.post('/reports', {
-      floor_id: this.floor.floorId,
-      reason: msg
-    })
-    if (response.status === 201) {
-      this.messageSuccess('举报成功')
-    }
+    await addReport(this.floor.floorId, msg)
+    this.messageSuccess('举报成功')
   }
 }
 </script>

@@ -43,12 +43,12 @@
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component, Prop, Ref } from 'vue-property-decorator'
+import { Component, ModelSync, Prop, Ref } from 'vue-property-decorator'
 import MentionCard from '@/components/card/MentionCard.vue'
 import AppEditor from '@/components/app/AppEditor.vue'
 import { DetailedFloor, Floor } from '@/models/floor'
-import { camelizeKeys } from '@/utils/utils'
 import { dialogWidth } from '@/utils/style'
+import { addFloor, modifyFloor } from '@/apis/api'
 
 @Component({
   components: {
@@ -65,15 +65,21 @@ export default class CreateFloorDialog extends BaseComponentOrView {
   @Ref() readonly editor: AppEditor
   @Ref() readonly form: HTMLFormElement
 
-  public valid = true
-  public dialog = false
-  public replyCancelled = false
+  @ModelSync('dialogProp', 'change', { type: Boolean, default: false }) dialog: boolean
+
+  valid = true
+
+  replyCancelled = false
 
   get dialogWidth () {
     return dialogWidth()
   }
 
-  public closeDialog (): void {
+  get contentName (): string {
+    return `${this.operation}-${this.operation === 'add' ? this.holeId : this.floorId}`
+  }
+
+  closeDialog (): void {
     this.dialog = false
     this.valid = true
   }
@@ -81,17 +87,16 @@ export default class CreateFloorDialog extends BaseComponentOrView {
   /**
    * Create a new floor.
    */
-  public async addFloor () {
+  async addFloor () {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
       const content = (!this.replyCancelled && this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
 
-      const response = await this.$axios
-        .post('/floors', {
-          content: content,
-          hole_id: this.holeId
-        })
-      this.messageSuccess(response.data.message)
+      const { message } = await addFloor({
+        content: content,
+        holeId: this.holeId
+      })
+      this.messageSuccess(message)
       this.editor.setContent('') // Clear the reply editor.
       this.$emit('continue-load')
     }
@@ -100,25 +105,16 @@ export default class CreateFloorDialog extends BaseComponentOrView {
   /**
    * Edit a floor.
    */
-  public async editFloor () {
+  async editFloor () {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
       const content = (!this.replyCancelled && this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
 
-      const response = await this.$axios
-        .put(`/floors/${this.floorId}`, {
-          content: content
-        })
+      const floor: DetailedFloor = await modifyFloor(this.floorId, content)
       this.messageSuccess('修改成功')
-      const floor: DetailedFloor = new DetailedFloor(camelizeKeys(response.data))
-
       this.editor.setContent('') // Clear the reply editor.
       this.$emit('update-floor', floor)
     }
-  }
-
-  get contentName (): string {
-    return `${this.operation}-${this.operation === 'add' ? this.holeId : this.floorId}`
   }
 }
 </script>

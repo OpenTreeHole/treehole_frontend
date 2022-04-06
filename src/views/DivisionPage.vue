@@ -1,41 +1,22 @@
 <template>
   <v-container class='pa-0 max-height max-width'>
-    <!-- 帖子列表 -->
     <HoleListMobile v-if='isMobile' ref='holeComp'></HoleListMobile>
-    <HolePanel v-else ref='holeComp' @show-floor-list-changed='onShowFloatBtnChanged'></HolePanel>
+    <HolePanel v-else ref='holeComp'></HolePanel>
 
-    <!-- 新帖编辑器及浮动按钮 -->
-    <div :class='floatBtnClass' v-show='showFloatBtn'>
-      <v-btn v-if='!isMobile' color='secondary' fab @click='reload' @mousedown.prevent>
-        <v-icon>mdi-autorenew</v-icon>
-      </v-btn>
-      <br />
-      <create-hole-dialog :division-id='divisionId' @refresh='reload'>
-        <template #activator='{ on, attrs }'>
-          <v-btn
-            fab
-            color='secondary'
-            v-bind='attrs'
-            v-on='on'
-            @mousedown.prevent
-          >
-            <v-icon>mdi-message-plus</v-icon>
-          </v-btn>
-        </template>
-      </create-hole-dialog>
-    </div>
+    <create-hole-dialog v-model='showDialog' :division-id='divisionId' @refresh='reload' />
 
   </v-container>
 </template>
 
 <script lang='ts'>
-import { Component, Prop, Ref } from 'vue-property-decorator'
+import { Component, Prop, Provide, Ref } from 'vue-property-decorator'
 import HolePanel from '@/components/panel/HolePanel.vue'
 import HoleListMobile from '@/components/column/HoleListMobile.vue'
 import BaseView from '@/mixins/BaseView.vue'
 import CreateHoleDialog from '@/components/dialog/CreateHoleDialog.vue'
-import UserStore from '@/store/modules/UserStore'
 import HoleList from '@/components/column/HoleList.vue'
+import UtilStore from '@/store/modules/UtilStore'
+import FloatBtnStore from '@/store/modules/FloatBtnStore'
 
 @Component({
   components: {
@@ -46,50 +27,35 @@ import HoleList from '@/components/column/HoleList.vue'
   }
 })
 export default class DivisionPage extends BaseView {
-  public showFloatBtn = true
+  showDialog = false
 
   @Prop({ required: true, type: Number }) divisionId: number
   @Ref() readonly holeComp!: HolePanel | HoleListMobile
+  @Provide() holeListType = 'division'
 
-  get floatBtnClass () {
-    return this.isMobile ? 'float-btn' : 'float-btn-mobile'
+  async mounted () {
+    UtilStore.setCurrentDivisionId(this.divisionId)
+
+    FloatBtnStore.setLayer({
+      order: 1,
+      floatBtns: [
+        {
+          icon: 'mdi-autorenew',
+          callback: this.reload
+        },
+        {
+          icon: 'mdi-message-plus',
+          callback: () => {
+            this.showDialog = true
+          }
+        }
+      ]
+    })
   }
 
-  public reload (): void {
+  reload (): void {
     this.clearTag(this.$route.name!)
     this.holeComp.refresh()
   }
-
-  public onPreloaded () {
-    if (!UserStore.divisions.find(v => v.divisionId === this.divisionId)) {
-      this.$router.push('/division/1')
-    }
-  }
-
-  public onShowFloatBtnChanged (val: boolean): void {
-    this.showFloatBtn = !val
-  }
 }
 </script>
-
-<style lang='scss'>
-.float-btn {
-  position: fixed;
-  right: 8px;
-  bottom: 64px;
-
-  .v-btn {
-    margin: 5px;
-  }
-}
-
-.float-btn-mobile {
-  position: fixed;
-  right: 8px;
-  bottom: 16px;
-
-  .v-btn {
-    margin: 5px;
-  }
-}
-</style>
