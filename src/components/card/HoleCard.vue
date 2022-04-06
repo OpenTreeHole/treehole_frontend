@@ -165,11 +165,11 @@ export default class HoleCard extends BaseComponentOrView {
   @Emit('update-pin-info')
   async unpin () {
     const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId)
-    if (!division) throw Error(`Division ${this.hole.divisionId} Not Found!`)
+    if (!division) return Promise.reject(new Error(`Division ${this.hole.divisionId} Not Found!`))
     const pinnedIdList = division.pinned.map(v => v.holeId)
-    remove(pinnedIdList, this.hole.holeId)
+    remove(pinnedIdList, v => v === this.hole.holeId)
 
-    const modified = await modifyDivision({
+    const modified = await modifyDivision(this.hole.divisionId, {
       pinned: pinnedIdList
     })
     UserStore.setDivision({ divisionId: this.hole.divisionId, division: modified })
@@ -178,10 +178,10 @@ export default class HoleCard extends BaseComponentOrView {
   @Emit('update-pin-info')
   async pin () {
     const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId)
-    if (!division) throw Error(`Division ${this.hole.divisionId} Not Found!`)
-    const pinnedIdList = division!.pinned.map(v => v.holeId)
+    if (!division) return Promise.reject(new Error(`Division ${this.hole.divisionId} Not Found!`))
+    const pinnedIdList = division.pinned.map(v => v.holeId)
     pinnedIdList.push(this.hole.holeId)
-    const modified = await modifyDivision({
+    const modified = await modifyDivision(this.hole.divisionId, {
       pinned: pinnedIdList
     })
     UserStore.setDivision({ divisionId: this.hole.divisionId, division: modified })

@@ -27,21 +27,22 @@
 <script lang='ts'>
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { debounce } from 'lodash-es'
 
 @Component
 export default class Loading extends BaseComponentOrView {
   @Prop({ required: true, type: Array }) request: (() => Promise<boolean>)[]
 
-  // 加载状态
-  public hasNext = true
-  public isLoading = false
+  hasNext = true
+  isLoading = false
+  debounceLoad = debounce(this.load, 100)
 
   /**
    * Try to load when the loading intersected with the view component (i.e. comes into view).
    */
   public onIntersect (entries: IntersectionObserverEntry[]): void {
     if (entries[0].isIntersecting) {
-      this.load()
+      this.debounceLoad()
     }
   }
 

@@ -14,7 +14,6 @@ import HolePanel from '@/components/panel/HolePanel.vue'
 import HoleListMobile from '@/components/column/HoleListMobile.vue'
 import BaseView from '@/mixins/BaseView.vue'
 import CreateHoleDialog from '@/components/dialog/CreateHoleDialog.vue'
-import UserStore from '@/store/modules/UserStore'
 import HoleList from '@/components/column/HoleList.vue'
 import UtilStore from '@/store/modules/UtilStore'
 import FloatBtnStore from '@/store/modules/FloatBtnStore'
@@ -35,6 +34,8 @@ export default class DivisionPage extends BaseView {
   @Provide() holeListType = 'division'
 
   async mounted () {
+    UtilStore.setCurrentDivisionId(this.divisionId)
+
     FloatBtnStore.setLayer({
       order: 1,
       floatBtns: [
@@ -55,15 +56,6 @@ export default class DivisionPage extends BaseView {
   reload (): void {
     this.clearTag(this.$route.name!)
     this.holeComp.refresh()
-  }
-
-  onPreloaded () {
-    const currentDivision = UserStore.divisions.find(v => v.divisionId === this.divisionId)
-    if (!currentDivision) {
-      this.$router.push('/division/1')
-    } else {
-      UtilStore.setCurrentDivision(currentDivision)
-    }
   }
 }
 </script>

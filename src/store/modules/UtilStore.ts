@@ -1,17 +1,16 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
-import { Division } from '@/models/division'
 import { Hole } from '@/models/hole'
 
 @Module({ store: store, dynamic: true, name: 'UtilStore', namespaced: true })
 class UtilStore extends VuexModule {
   public isMobile: boolean = false
-  public currentDivision: Division | null
-  public currentHole: Hole | null
+  public currentDivisionId: number | null = null
+  public currentHole: Hole | null = null
 
   @Mutation
-  setCurrentDivision (division: Division | null) {
-    this.currentDivision = division
+  setCurrentDivisionId (divisionId: number | null) {
+    this.currentDivisionId = divisionId
   }
 
   @Mutation

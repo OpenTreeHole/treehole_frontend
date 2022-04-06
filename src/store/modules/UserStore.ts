@@ -1,47 +1,57 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
-import { UserAuth } from '@/models/user'
+import { User } from '@/models/user'
 import { Division } from '@/models/division'
 import Vue from 'vue'
-import { getCurrentUser, listDivisions } from '@/apis/api'
+import { getUserProfile, listDivisions } from '@/apis/api'
 import { Hole } from '@/models/hole'
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {
-  public collection: Hole[] = []
-  public divisions: Division[] = []
-  public user: UserAuth | null = null
+  collection: Hole[] = []
+  divisions: Division[] = []
+  user: User | null = null
 
   @Mutation
-  public clear () {
+  clear () {
     this.collection = []
     this.divisions = []
   }
 
   @Mutation
-  public setDivisions (divisions: Division[]) {
+  setDivisions (divisions: Division[]) {
     this.divisions = divisions
   }
 
   @Mutation
-  public setDivision (payload: {divisionId: number, division: Division}) {
+  collectionAdd (hole: Hole) {
+    this.collection.push(hole)
+  }
+
+  @Mutation
+  collectionRemove (holeId: number) {
+    this.collection = this.collection.filter(v => v.holeId !== holeId)
+  }
+
+  @Mutation
+  setDivision (payload: {divisionId: number, division: Division}) {
     const index = this.divisions.findIndex(v => v.divisionId === payload.divisionId)
     Vue.set(this.divisions, index, payload.division)
   }
 
   @Mutation
-  public setUser (userProfile: UserAuth) {
+  setUser (userProfile: User) {
     this.user = userProfile
   }
 
-  @Action
-  public async requestDivision () {
+  @Action({ rawError: true })
+  async requestDivision () {
     this.setDivisions(await listDivisions())
   }
 
-  @Action
-  public async requestUser () {
-    this.setUser(await getCurrentUser())
+  @Action({ rawError: true })
+  async requestUser () {
+    this.setUser(await getUserProfile())
   }
 }
 

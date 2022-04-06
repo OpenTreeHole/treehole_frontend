@@ -202,7 +202,7 @@ export default class ForgetPasswordPage extends BaseView {
     this.debouncedCheckPassword()
   }
 
-  created () {
+  async created () {
     this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }

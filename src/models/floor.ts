@@ -15,10 +15,10 @@ export interface IFloor {
   deleted: boolean
   floorId: number
   storey: number
-  fold: Array<any>
+  fold: string[]
   like: number
-  timeCreated: string
-  timeUpdated: string
+  timeCreated: Date | string
+  timeUpdated: Date | string
 }
 
 export class Floor implements IFloor {
@@ -26,12 +26,12 @@ export class Floor implements IFloor {
   content: string
   deleted: boolean
   floorId: number
-  fold: Array<any>
+  fold: string[]
   holeId: number
   like: number
   storey: number
-  timeCreated: string
-  timeUpdated: string
+  timeCreated: Date
+  timeUpdated: Date
   html: string
   specialTag: string
 
@@ -44,8 +44,8 @@ export class Floor implements IFloor {
     this.holeId = floor.holeId
     this.storey = floor.storey
     this.like = floor.like
-    this.timeCreated = floor.timeCreated
-    this.timeUpdated = floor.timeUpdated
+    this.timeCreated = new Date(floor.timeCreated)
+    this.timeUpdated = new Date(floor.timeUpdated)
     this.specialTag = floor.specialTag
     this.convertHtml()
   }

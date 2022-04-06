@@ -56,7 +56,7 @@ export default class MentionCard extends BaseComponentOrView {
    * e.g. 6L, #12354
    */
   @Prop({ type: String, default: '' }) mentionFloorInfo: string
-  @Prop({ type: Object, default: '' }) additionalClass: any
+  @Prop({ type: Object, default: () => ({}) }) additionalClass: {[key: string]: boolean}
   @Prop({ type: Function }) cancel?: Function
 
   @Ref() card: any
@@ -68,9 +68,9 @@ export default class MentionCard extends BaseComponentOrView {
     }
   }
 
-  public maxHeight = 200
-  public needClip = false
-  public isClipped = false
+  maxHeight = 200
+  needClip = false
+  isClipped = false
 
   async mounted () {
     hljs.highlightAll()

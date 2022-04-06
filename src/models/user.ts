@@ -7,7 +7,7 @@ export interface IUserAuthData {
 
 export interface IUserAuth extends IUserAuthData {
   id: number
-  joinedTime: Date
+  joinedTime: Date | string
 }
 
 export class UserAuth implements IUserAuth {
@@ -21,7 +21,7 @@ export class UserAuth implements IUserAuth {
   constructor (user: IUserAuth) {
     this.id = user.id
     this.isAdmin = user.isAdmin
-    this.joinedTime = user.joinedTime
+    this.joinedTime = new Date(user.joinedTime)
     this.nickname = user.nickname
     this.offenseCount = user.offenseCount
     this.silent = user.silent
@@ -38,8 +38,8 @@ export interface IPunishment {
   }
   reason: string
   scope: string
-  startTime: Date
-  endTime: Date
+  startTime: Date | string
+  endTime: Date | string
 }
 
 export class Punishment implements IPunishment {
@@ -53,11 +53,11 @@ export class Punishment implements IPunishment {
 
   constructor (punishment: IPunishment) {
     this.id = punishment.id
-    this.endTime = punishment.endTime
+    this.endTime = new Date(punishment.endTime)
     this.madeBy = punishment.madeBy
     this.reason = punishment.reason
     this.scope = punishment.scope
-    this.startTime = punishment.startTime
+    this.startTime = new Date(punishment.startTime)
     this.user = punishment.user
   }
 }
@@ -67,15 +67,15 @@ export interface IUser {
   nickname: string
   favorites: number[]
   permission: {
-    admin: Date
-    silent: { [key: string]: Date }
+    admin: Date | string
+    silent: { [key: string]: Date | string }
     offenseCount: number
   }
   config: {
     notify: string[],
     showFolded: boolean
   }
-  joinedTime: Date
+  joinedTime: Date | string
   isAdmin: boolean
 }
 
@@ -92,9 +92,16 @@ export class User implements IUser {
     this.userId = user.userId
     this.nickname = user.nickname
     this.favorites = user.favorites
-    this.permission = user.permission
+    this.permission = {
+      admin: new Date(user.permission.admin),
+      silent: {},
+      offenseCount: user.permission.offenseCount
+    }
+    for (const key in user.permission.silent) {
+      this.permission.silent[key] = new Date(user.permission.silent[key])
+    }
     this.config = user.config
-    this.joinedTime = user.joinedTime
+    this.joinedTime = new Date(user.joinedTime)
     this.isAdmin = user.isAdmin
   }
 }

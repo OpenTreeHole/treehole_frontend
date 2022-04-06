@@ -45,7 +45,7 @@ import UtilStore from '@/store/modules/UtilStore'
   }
 })
 export default class HoleList extends BaseComponentOrView {
-  @Prop({ required: false, type: Number, default: -1 }) displayHoleId: number
+  @Prop({ required: false, default: null }) displayHoleId: number | null
   @Prop({ type: Boolean, default: false }) fixCardHeight: boolean
   @Inject() holeListType: 'division' | 'collection'
 
@@ -78,7 +78,7 @@ export default class HoleList extends BaseComponentOrView {
   }
 
   get divisionId () {
-    return UtilStore.currentDivision?.divisionId
+    return UtilStore.currentDivisionId
   }
 
   /**
@@ -110,10 +110,11 @@ export default class HoleList extends BaseComponentOrView {
   }
 
   async getDivisionHoles () {
-    if (!this.divisionId) throw new Error('Cannot get division id!')
+    if (!this.divisionId) return Promise.reject(new Error('Cannot get division id!'))
     const holes = await listHoles(this.divisionId, this.startTime, 10, TagStore.tagMap[this.route])
-    const holesNotPinned = this.holes.filter(v => this.pinnedHoles.find(u => u.holeId === v.holeId))
-    this.holes.push(...holesNotPinned)
+    const newHoles = holes.filter(v => !this.allHoles.find(u => u.holeId === v.holeId))
+    this.holes.push(...newHoles)
+    this.startTime = holes[holes.length - 1].timeUpdated
     return holes.length > 0
   }
 
@@ -140,18 +141,15 @@ export default class HoleList extends BaseComponentOrView {
 
   pin () {
     const division = UserStore.divisions.find(v => v.divisionId === this.divisionId)
-    if (!division) throw new Error(`Division ${this.divisionId} Not Found!`)
-
+    if (!division) return Promise.reject(new Error(`Division ${this.divisionId} Not Found!`))
     this.pinnedHoles = division.pinned
   }
 
   async onPreloaded () {
     this.pin()
-    await this.$nextTick()
-    this.loading.continueLoad()
   }
 
-  created () {
+  async created () {
     this.route = this.$route.path
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
   }

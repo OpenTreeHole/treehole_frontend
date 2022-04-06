@@ -28,12 +28,13 @@ export class ApiError extends Error {
 
 const refreshAuthLogic = async (failedRequest: AxiosError) => {
   const response = await refresh()
-  if (response.refresh) {
-    LocalStorageStore.setToken(response.refresh)
+  if (response.refresh && response.access) {
+    LocalStorageStore.setRefreshToken(response.refresh)
+    LocalStorageStore.setToken(response.access)
     if (failedRequest.response?.config.headers) {
-      failedRequest.response.config.headers.Authorization = 'Bearer ' + response.refresh
+      failedRequest.response.config.headers.Authorization = 'Bearer ' + response.access
     }
-  } else throw failedRequest
+  } else return Promise.reject(failedRequest)
 }
 
 createAuthRefreshInterceptor(axios, refreshAuthLogic)
@@ -55,24 +56,24 @@ const errorInterceptor = async (error: AxiosError) => {
         })
       }
 
-      if (error.response.data.message) throw new ApiError(error, `${error.response.status}: ${error.response.data.message}`)
-      else throw new ApiError(error, '会话已过期，请重新登录')
+      if (error.response.data.message) return Promise.reject(new ApiError(error, `${error.response.status}: ${error.response.data.message}`))
+      else return Promise.reject(new ApiError(error, '会话已过期，请重新登录'))
     } else if (error.response.data.message) {
-      throw new ApiError(error, `${error.response.status}: ${error.response.data.message}`)
+      return Promise.reject(new ApiError(error, `${error.response.status}: ${error.response.data.message}`))
     } else {
       console.log(error.response)
-      throw new ApiError(error, `${error.response.status}: 未知错误，请按F12查看控制台以获得错误信息并发至站务分区`)
+      return Promise.reject(new ApiError(error, `${error.response.status}: 未知错误，请按F12查看控制台以获得错误信息并发至站务分区`))
     }
   } else {
-    console.log(error)
-    throw new ApiError(error, '未知axios错误，请按F12查看控制台以获得错误信息并发至站务分区，')
+    // console.log(error)
+    return Promise.reject(new ApiError(error, '未知axios错误，请按F12查看控制台以获得错误信息并发至站务分区，'))
   }
 }
 
 axios.defaults.baseURL = FDUHoleFEConfig.backEndUrl
 axios.interceptors.request.use(requestInterceptor)
 axios.interceptors.response.use(response => response, errorInterceptor)
-authAxios.defaults.baseURL = FDUHoleFEConfig.backEndUrl
+authAxios.defaults.baseURL = FDUHoleFEConfig.authUrl
 authAxios.interceptors.request.use(requestInterceptor)
 authAxios.interceptors.response.use(response => response, errorInterceptor)
 
@@ -96,7 +97,7 @@ export const logout = async (): Promise<{ message: string }> => {
 export const refresh = async (): Promise<{ message: string, access?: string, refresh?: string }> => {
   const response = await authAxios.post('/refresh', {}, {
     headers: {
-      Authentication: 'Bearer ' + LocalStorageStore.refreshToken
+      Authorization: 'Bearer ' + LocalStorageStore.refreshToken
     }
   })
   return camelizeKeys(response.data)
@@ -226,8 +227,8 @@ export const getDivision = async (id: number) => {
   return new Division(camelizeKeys(response.data))
 }
 
-export const modifyDivision = async (division: IDivisionModify) => {
-  const response = await axios.post('/divisions', snakifyKeys(division))
+export const modifyDivision = async (id: number, division: IDivisionModify) => {
+  const response = await axios.put(`/divisions/${id}`, snakifyKeys(division))
   return new Division(camelizeKeys(response.data))
 }
 
@@ -246,13 +247,27 @@ export const deleteDivision = async (id: number, to: number) => {
 
 export const getFloor = async (id: number) => {
   const response = await axios.get(`/floors/${id}`)
+  return new DetailedFloor(camelizeKeys(response.data))
 }
 
-export const listFloorsInHole = async (holeId: number, size: number, offset: number) => {
-  const response = await axios.get(`/holes/${holeId}/floors`, {
+export const listFloors = async (holeId: number, length: number, startFloor: number) => {
+  const response = await axios.get('/floors', {
     params: {
-      size: size,
-      offset: offset
+      hole_id: holeId,
+      length: length,
+      start_floor: startFloor
+    }
+  })
+  const data: IDetailedFloor[] = camelizeKeys(response.data)
+  return data.map(v => new DetailedFloor(v))
+}
+
+export const searchFloors = async (s: string, length: number, startFloor: number) => {
+  const response = await axios.get('/floors', {
+    params: {
+      s: s,
+      length: length,
+      start_floor: startFloor
     }
   })
   const data: IDetailedFloor[] = camelizeKeys(response.data)
@@ -325,20 +340,21 @@ export const deleteFloor = async (floorId: number, deleteReason?: string) => {
 //   return data.map(v => new Hole(v))
 // }
 
-export const addHole = async (divisionId: number, content: string, tags: string[] | ITag[]) => {
+export const addHole = async (divisionId: number, content: string, tags: string[] | ITag[]): Promise<{ message: string, hole: Hole }> => {
   const response = await axios.post('/holes', {
     division_id: divisionId,
     content: content,
     tags: tags.length > 0 ? (typeof tags[0] === 'string' ? (tags as string[]).map(v => ({ name: v })) : tags.map((v) => ({ name: (v as ITag).name }))) : []
   })
-  return new Hole(camelizeKeys(response.data))
+  const data = camelizeKeys(response.data)
+  return { message: data.message, hole: new Hole(data.data) }
 }
 
 export const listHoles = async (divisionId: number, startTime: Date, length: number, tag?: string | ITag) => {
   const response = await axios.get('/holes', {
     params: {
       division_id: divisionId,
-      start_time: startTime,
+      start_time: startTime.toISOString(),
       length: length,
       prefetch_length: 10,
       tag: tag ? (typeof tag === 'string' ? tag : tag.name) : undefined
@@ -401,27 +417,27 @@ export const deleteTag = async (id: number) => {
 }
 
 export const getFavorites = async () => {
-  const response = await axios.get('/users/favorites')
+  const response = await axios.get('/users/favorite')
   const data: IHole[] = camelizeKeys(response.data)
   return data.map(v => new Hole(v))
 }
 
 export const addFavorites = async (holeId: number): Promise<string> => {
-  const response = await axios.post('/users/favorites', {
+  const response = await axios.post('/user/favorites', {
     hole_id: holeId
   })
   return response.data.message
 }
 
 export const modifyFavorites = async (holeIds: number[]): Promise<string> => {
-  const response = await axios.post('/users/favorites', {
+  const response = await axios.post('/user/favorites', {
     hole_ids: holeIds
   })
   return response.data.message
 }
 
-export const deleteFavorites = async (holeId:number): Promise<string> => {
-  const response = await axios.delete('/users/favorites', {
+export const deleteFavorites = async (holeId: number): Promise<string> => {
+  const response = await axios.delete('/user/favorites', {
     data: {
       hole_id: holeId
     }
@@ -435,7 +451,7 @@ export const listReports = async () => {
   return data.map(v => new Report(v))
 }
 
-export const getReport = async (id:number) => {
+export const getReport = async (id: number) => {
   const response = await axios.get(`/reports/${id}`)
   return new Report(camelizeKeys(response.data))
 }
@@ -448,12 +464,12 @@ export const addReport = async (floorId: number, reason: string) => {
   return new Report(camelizeKeys(response.data))
 }
 
-export const dealReport = async (id:number, deal: IReportDeal): Promise<string> => {
+export const dealReport = async (id: number, deal: IReportDeal): Promise<string> => {
   const response = await axios.post(`/reports/${id}`, snakifyKeys(deal))
   return response.data.message
 }
 
-export const addPenalty = async (floorId: number, penaltyLevel: number, divisionId:number) => {
+export const addPenalty = async (floorId: number, penaltyLevel: number, divisionId: number) => {
   const response = await axios.post(`/penalty/${floorId}`, {
     penalty_level: penaltyLevel,
     division_id: divisionId

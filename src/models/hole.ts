@@ -1,6 +1,5 @@
 import { Floor, IFloor } from '@/models/floor'
 import { ITag, Tag } from '@/models/tag'
-import { PrefetchedArray } from '@/utils/structs'
 
 export interface IHole {
   divisionId: number
@@ -12,32 +11,32 @@ export interface IHole {
   }
   reply: number
   tags: ITag[]
-  timeCreated: string
-  timeUpdated: string
+  timeCreated: Date | string
+  timeUpdated: Date | string
 }
 
 export class Hole implements IHole {
-  public styleData: {
+  styleData: {
     fold: boolean
     lines: number
     displayIt: boolean
   }
 
-  public divisionId: number
-  public floors: {
+  divisionId: number
+  floors: {
     firstFloor: IFloor
     lastFloor: IFloor
     prefetch: IFloor[]
   }
 
-  public cFloors: PrefetchedArray<Floor>
-  public firstFloor: Floor
-  public lastFloor: Floor
-  public holeId: number
-  public timeCreated: string
-  public timeUpdated: string
-  public reply: number
-  public tags: Tag[]
+  cFloors: Floor[]
+  firstFloor: Floor
+  lastFloor: Floor
+  holeId: number
+  timeCreated: Date
+  timeUpdated: Date
+  reply: number
+  tags: Tag[]
 
   get isFolded () {
     for (const tag of this.tags) {
@@ -52,14 +51,14 @@ export class Hole implements IHole {
   }
 
   constructor (hole: IHole) {
-    this.cFloors = new PrefetchedArray<Floor>(...hole.floors.prefetch.map(v => new Floor(v)))
+    this.cFloors = hole.floors.prefetch.map(v => new Floor(v))
     this.divisionId = hole.divisionId
     this.floors = hole.floors
     this.firstFloor = new Floor(hole.floors.firstFloor)
     this.lastFloor = new Floor(hole.floors.lastFloor)
     this.holeId = hole.holeId
-    this.timeCreated = hole.timeCreated
-    this.timeUpdated = hole.timeUpdated
+    this.timeCreated = new Date(hole.timeCreated)
+    this.timeUpdated = new Date(hole.timeUpdated)
     this.reply = hole.reply
     this.tags = hole.tags.map(v => new Tag(v))
 

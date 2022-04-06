@@ -116,13 +116,13 @@
         </v-card-text>
       </template>
     </dynamic-expansion-panel>
-    <create-floor-dialog ref='editFloorDialog' :reply-floor='replyFloor' operation='edit' :floor-id='floor.floorId' @update-floor='updateFloor'/>
+    <create-floor-dialog v-model='dialog' :reply-floor='replyFloor' operation='edit' :floor-id='floor.floorId' @update-floor='updateFloor'/>
   </v-card>
 </template>
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
+import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
 import UserStore from '@/store/modules/UserStore'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { gotoHole, renderFloor } from '@/utils/floor'
@@ -146,9 +146,9 @@ export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
   @Prop({ type: String, default: 'fl' }) idPrefix: string
 
-  @Ref() editFloorDialog: CreateFloorDialog
+  dialog = false
 
-  public display: boolean = false
+  display: boolean = false
 
   get idInfo () {
     return this.index === -1 ? `<b>##${this.floor.floorId}</b>` : `<b>${this.index}L</b>(##${this.floor.floorId})`
@@ -205,7 +205,7 @@ export default class FloorCard extends BaseComponentOrView {
     this.renderMentions()
   }
 
-  created () {
+  async created () {
     this.display = this.floor.fold.length === 0
   }
 
@@ -239,7 +239,7 @@ export default class FloorCard extends BaseComponentOrView {
       icon: 'pencil-outline',
       text: '编辑',
       operation: () => {
-        this.editFloorDialog.dialog = true
+        this.dialog = true
       }
     }
     const opPenalty = {
@@ -282,7 +282,7 @@ export default class FloorCard extends BaseComponentOrView {
     else this.messageSuccess('取消点赞成功')
   }
 
-  public async removeFloor (needReason?: boolean) {
+  async removeFloor (needReason?: boolean) {
     let msg: string | null = ''
     if (needReason) {
       msg = prompt('输入删除理由')
@@ -297,7 +297,7 @@ export default class FloorCard extends BaseComponentOrView {
   /**
    * Send a report.
    */
-  public async report () {
+  async report () {
     const msg = prompt('输入举报理由')
     if (!msg) {
       this.messageError('举报理由不能为空！')

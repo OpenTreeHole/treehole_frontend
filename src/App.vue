@@ -27,18 +27,19 @@ import 'highlight.js/styles/github.css'
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import '@mdi/font/css/materialdesignicons.css'
 
-import { Component, Provide } from 'vue-property-decorator'
+import { Component, Provide, Ref, Watch } from 'vue-property-decorator'
 import { BehaviorSubject } from 'rxjs'
 import Vue from 'vue'
 import MessageStore from '@/store/modules/MessageStore'
 import UtilStore from '@/store/modules/UtilStore'
 import FloatBtnGroup from '@/components/FloatBtnGroup.vue'
+import FloatBtnStore from '@/store/modules/FloatBtnStore'
 
-if (process.env.NODE_ENV !== 'production') {
-  const VConsole = require('vconsole')
-  // eslint-disable-next-line no-new
-  new VConsole()
-}
+// if (process.env.NODE_ENV !== 'production') {
+//   const VConsole = require('vconsole')
+//   // eslint-disable-next-line no-new
+//   new VConsole()
+// }
 
 @Component({
   components: {
@@ -50,7 +51,8 @@ if (process.env.NODE_ENV !== 'production') {
 export default class App extends Vue {
   @Provide() preloadSubject = new BehaviorSubject(false)
 
-  created () {
+  @Ref() message: MessageSnackbar
+  async created () {
     UtilStore.checkDevice()
     window.addEventListener('resize', UtilStore.checkDevice)
     document.addEventListener('onlined', (event: any) => {
@@ -61,8 +63,18 @@ export default class App extends Vue {
     })
   }
 
-  public destroyed () {
+  destroyed () {
     window.removeEventListener('resize', UtilStore.checkDevice)
+  }
+
+  errorCaptured (err: Error, vm: Vue, info: string) {
+    MessageStore.messageError(err.message)
+    throw err
+  }
+
+  @Watch('$route')
+  routeChange () {
+    FloatBtnStore.clean()
   }
 }
 </script>

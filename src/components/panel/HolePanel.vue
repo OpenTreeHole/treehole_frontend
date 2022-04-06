@@ -1,5 +1,5 @@
 <template>
-  <double-column-panel ref='doubleColumnPanel'>
+  <double-column-panel ref='doubleColumnPanel' @show-second-col-changed='showFloorListChanged'>
     <template #first>
       <HoleList
         :display-hole-id='displayHoleId'
@@ -11,7 +11,7 @@
     </template>
     <template #second>
       <FloorList
-        v-if='displayHoleId!==-1 && showFloorList'
+        v-if='displayHoleId && showFloorList'
         :key='displayHoleId'
         :display-floor-id='displayFloorId'
         :wrapped-hole-or-id='displayHole'
@@ -39,23 +39,23 @@ import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
   }
 })
 export default class HolePanel extends BaseComponentOrView {
-  public displayHoleId = -1
-  public isLoadingVisible = false
-  public displayHole: Hole | null = null
-  public displayFloorId = -1
+  displayHoleId: number | null = null
+  isLoadingVisible = false
+  displayHole: Hole | null = null
+  displayFloorId: number | null = null
 
-  public showFloorList = false
+  showFloorList = false
 
   @Ref() readonly holeList: HoleList
   @Ref() readonly floorList: FloorList
   @Ref() readonly doubleColumnPanel: DoubleColumnPanel
 
-  public refresh (): void {
+  refresh (): void {
     this.deactivate()
     this.holeList.refresh()
   }
 
-  public openHole (wrappedHole: Hole, displayFloorId?: number, preventClose: boolean = false): void {
+  openHole (wrappedHole: Hole, displayFloorId?: number, preventClose: boolean = false): void {
     this.displayHole = wrappedHole
     if (displayFloorId) {
       this.displayFloorId = displayFloorId
@@ -63,17 +63,17 @@ export default class HolePanel extends BaseComponentOrView {
         this.floorList.getAndScrollToFloor(displayFloorId)
       }
     } else {
-      this.displayFloorId = -1
+      this.displayFloorId = null
     }
     if (!preventClose || this.displayHoleId !== wrappedHole.holeId) {
       this.activate(wrappedHole.holeId)
     }
   }
 
-  public activate (id: number): void {
+  activate (id: number): void {
     if (id === this.displayHoleId) {
       this.doubleColumnPanel.deactivate()
-      this.displayHoleId = -1
+      this.displayHoleId = null
     } else {
       this.doubleColumnPanel.activate()
       this.displayHoleId = id
@@ -81,9 +81,13 @@ export default class HolePanel extends BaseComponentOrView {
     }
   }
 
-  public deactivate (): void {
-    this.displayHoleId = -1
+  deactivate (): void {
+    this.displayHoleId = null
     this.doubleColumnPanel.deactivate()
+  }
+
+  showFloorListChanged (show: boolean) {
+    this.showFloorList = show
   }
 }
 </script>

@@ -33,6 +33,6 @@ export default class WsMessage implements IWsMessage {
   message: string
 
   constructor (wsMessage: IWsMessage) {
-    Object.assign(this, wsMessage)
+    this.message = wsMessage.message
   }
 }

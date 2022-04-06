@@ -43,7 +43,7 @@
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component, Prop, Ref } from 'vue-property-decorator'
+import { Component, ModelSync, Prop, Ref } from 'vue-property-decorator'
 import MentionCard from '@/components/card/MentionCard.vue'
 import AppEditor from '@/components/app/AppEditor.vue'
 import { DetailedFloor, Floor } from '@/models/floor'
@@ -65,15 +65,21 @@ export default class CreateFloorDialog extends BaseComponentOrView {
   @Ref() readonly editor: AppEditor
   @Ref() readonly form: HTMLFormElement
 
-  public valid = true
-  public dialog = false
-  public replyCancelled = false
+  @ModelSync('dialogProp', 'change', { type: Boolean, default: false }) dialog: boolean
+
+  valid = true
+
+  replyCancelled = false
 
   get dialogWidth () {
     return dialogWidth()
   }
 
-  public closeDialog (): void {
+  get contentName (): string {
+    return `${this.operation}-${this.operation === 'add' ? this.holeId : this.floorId}`
+  }
+
+  closeDialog (): void {
     this.dialog = false
     this.valid = true
   }
@@ -81,7 +87,7 @@ export default class CreateFloorDialog extends BaseComponentOrView {
   /**
    * Create a new floor.
    */
-  public async addFloor () {
+  async addFloor () {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
       const content = (!this.replyCancelled && this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
@@ -99,7 +105,7 @@ export default class CreateFloorDialog extends BaseComponentOrView {
   /**
    * Edit a floor.
    */
-  public async editFloor () {
+  async editFloor () {
     if (this.form.validate() && this.editor.validate()) {
       this.dialog = false
       const content = (!this.replyCancelled && this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
@@ -109,10 +115,6 @@ export default class CreateFloorDialog extends BaseComponentOrView {
       this.editor.setContent('') // Clear the reply editor.
       this.$emit('update-floor', floor)
     }
-  }
-
-  get contentName (): string {
-    return `${this.operation}-${this.operation === 'add' ? this.holeId : this.floorId}`
   }
 }
 </script>

@@ -24,7 +24,7 @@ export default class CollectionPage extends BaseView {
   @Provide() holeListType = 'collection'
 
   async mounted () {
-    UtilStore.setCurrentDivision(null)
+    UtilStore.setCurrentDivisionId(null)
   }
 }
 </script>

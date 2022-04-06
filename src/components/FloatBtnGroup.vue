@@ -2,7 +2,7 @@
   <div :class='floatBtnClass' v-if='floatBtns'>
     <div v-for='(btn, index) in floatBtns' :key='index'>
       <v-btn color='secondary' fab @click='btn.callback' @mousedown.prevent>
-        <v-icon>{{ btn.icon }}</v-icon>
+        <v-icon :style='btn.style'>{{ btn.icon }}</v-icon>
       </v-btn>
     </div>
   </div>

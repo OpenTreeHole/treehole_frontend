@@ -36,8 +36,7 @@ export const convertDate = (v: any): string => {
   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
 }
 
-export const timeDifference = (v: string): string => {
-  const date = new Date(v)
+export const timeDifference = (date: Date): string => {
   const now = new Date()
 
   let seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
@@ -53,10 +52,8 @@ export const timeDifference = (v: string): string => {
     return Math.floor(seconds / 3600) + '小时前'
   } else if (seconds < 604800) {
     return Math.floor(seconds / 86400) + '天前'
-  } else if (date.getFullYear() === now.getFullYear()) {
-    return v.substring(5, 10)
   } else {
-    return v.substring(0, 10)
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
   }
 }
 

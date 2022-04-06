@@ -121,7 +121,7 @@ export default class LoginPage extends BaseView {
     this.debouncedCheckEmail()
   }
 
-  created () {
+  async created () {
     this.debouncedCheckEmail = debounce(this.checkEmail, 500)
   }
 }

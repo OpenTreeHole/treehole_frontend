@@ -58,6 +58,7 @@ export default class BaseComponentOrView extends Vue {
   async themeClassesChanged () {
     await this.$nextTick()
     const keys = Object.keys(this.themeClasses)
+    if (!this.$el.classList) return
     this.$el.classList.remove(...keys)
     for (const key of keys) {
       if (this.themeClasses[key]) {

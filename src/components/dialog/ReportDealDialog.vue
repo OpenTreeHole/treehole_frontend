@@ -49,7 +49,7 @@
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component, Prop, Ref } from 'vue-property-decorator'
+import { Component, ModelSync, Prop, Ref } from 'vue-property-decorator'
 import { IReportDeal, Report } from '@/models/report'
 import { dealReport } from '@/apis/api'
 
@@ -57,11 +57,12 @@ import { dealReport } from '@/apis/api'
 export default class ReportDealDialog extends BaseComponentOrView {
   @Prop({ required: true, type: Object }) report: Report
 
-  public dialog = false
-  public dealType: string | null = null
-  public reason = { fold: '', delete: '' }
-  public reasonDefault = { fold: '该内容已被折叠', delete: '该内容因违反社区规范被删除' }
-  public silent = 0
+  @ModelSync('dialogProp', 'change', { type: Boolean, default: false }) dialog: boolean
+
+  dealType: string | null = null
+  reason = { fold: '', delete: '' }
+  reasonDefault = { fold: '该内容已被折叠', delete: '该内容因违反社区规范被删除' }
+  silent = 0
 
   get dialogWidth () {
     return this.isMobile ? '98vw' : '70vw'
@@ -76,7 +77,7 @@ export default class ReportDealDialog extends BaseComponentOrView {
     }
   }
 
-  public async submit () {
+  async submit () {
     if (this.form.validate()) {
       this.dialog = false
       const data: IReportDeal = {}
@@ -96,7 +97,3 @@ export default class ReportDealDialog extends BaseComponentOrView {
   }
 }
 </script>
-
-<style lang='scss' scoped>
-
-</style>

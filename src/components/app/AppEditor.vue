@@ -126,7 +126,7 @@ export default class AppEditor extends BaseComponentOrView {
     })
   }
 
-  created () {
+  async created () {
   }
 }
 </script>

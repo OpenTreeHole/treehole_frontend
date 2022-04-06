@@ -70,11 +70,9 @@ import { Floor } from '@/models/floor'
 import { scrollToFloor } from '@/utils/floor'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
-import { addFavorites, deleteFavorites, getHole, listFloorsInHole } from '@/apis/api'
-import { PrefetchedArray } from '@/utils/structs'
-import FloatBtnStore from '@/store/modules/FloatBtnStore'
+import { addFavorites, deleteFavorites, getHole, listFloors } from '@/apis/api'
+import FloatBtnStore, { IFloatBtnInfo } from '@/store/modules/FloatBtnStore'
 import UserStore from '@/store/modules/UserStore'
-import remove from 'lodash-es/remove'
 
 @Component({
   components: {
@@ -85,13 +83,14 @@ import remove from 'lodash-es/remove'
   }
 })
 export default class FloorList extends BaseComponentOrView {
-  public hole?: Hole = undefined
-  public dialog = false
+  hole: Hole | null = null
+  dialog = false
   // content: '',
-  public requiredRules = [(v: any) => !!v || '内容不能为空']
-  public valid = true
+  requiredRules = [(v: any) => !!v || '内容不能为空']
+  valid = true
+  loadedLength = 0
 
-  @Prop({ type: Number, default: -1 }) displayFloorId: number
+  @Prop({ default: null }) displayFloorId: number | null
   @Prop({ required: true }) wrappedHoleOrId: Hole | number
 
   @Ref() readonly form!: HTMLFormElement
@@ -107,10 +106,20 @@ export default class FloorList extends BaseComponentOrView {
     if (!this.hole) throw ReferenceError('Hole is undefined!')
 
     if (newVal) {
-      if (!this.isStarred) UserStore.collection.push(this.hole)
+      if (!this.isStarred) UserStore.collectionAdd(this.hole)
     } else {
-      remove(UserStore.collection, v => v.holeId === this.holeId)
+      UserStore.collectionRemove(this.holeId)
     }
+
+    this.floatBtnLayer[1].style = newVal ? 'color: #FF9300' : 'color: #FFFFFF'
+  }
+
+  get floatBtnLayer () {
+    return FloatBtnStore.floatBtnLayers['2'] as Partial<IFloatBtnInfo>[]
+  }
+
+  set floatBtnLayer (layer) {
+    FloatBtnStore.setLayer({ order: 2, floatBtns: layer })
   }
 
   get floors () {
@@ -135,21 +144,16 @@ export default class FloorList extends BaseComponentOrView {
   }
 
   async mounted () {
-    FloatBtnStore.setLayer({
-      order: 2,
-      floatBtns: [
-        {
-          icon: 'mdi-send',
-          callback: () => {
-            this.dialog = true
-          }
-        },
-        {
-          icon: 'mdi-star',
-          callback: this.changeCollectionStatus
-        }
-      ]
-    })
+    this.floatBtnLayer = [
+      {
+        icon: 'mdi-send',
+        callback: this.showFloorDialog
+      },
+      {
+        icon: 'mdi-star',
+        callback: this.changeCollectionStatus
+      }
+    ]
 
     if (this.wrappedHoleOrId instanceof Hole) {
       this.hole = this.wrappedHoleOrId
@@ -161,6 +165,10 @@ export default class FloorList extends BaseComponentOrView {
     await this.loadPrefetched()
   }
 
+  showFloorDialog () {
+    this.dialog = true
+  }
+
   async changeCollectionStatus () {
     this.isStarred = !this.isStarred
     try {
@@ -170,7 +178,7 @@ export default class FloorList extends BaseComponentOrView {
       this.messageSuccess(message)
     } catch (e) {
       this.isStarred = !this.isStarred
-      throw e
+      return Promise.reject(e)
     }
   }
 
@@ -178,17 +186,17 @@ export default class FloorList extends BaseComponentOrView {
     hljs.highlightAll()
   }
 
-  public continueLoad () {
+  continueLoad () {
     this.loading.continueLoad()
   }
 
   /**
    * Clear the floor list and reload.
    */
-  public refresh (): void {
-    if (!this.hole) throw ReferenceError('Hole is undefined!')
+  refresh (): void {
+    if (!this.hole) throw new ReferenceError('Hole is undefined!')
 
-    this.hole.cFloors = new PrefetchedArray<Floor>()
+    this.hole.cFloors = []
     this.continueLoad()
   }
 
@@ -198,33 +206,36 @@ export default class FloorList extends BaseComponentOrView {
    *
    * @param holeId - the hole id
    */
-  public async getHole (holeId: number) {
+  async getHole (holeId: number) {
     this.hole = await getHole(holeId)
   }
 
   /**
    * Get floors from backend.
    */
-  public async getFloors (): Promise<boolean> {
-    if (!this.floors) throw ReferenceError('Hole is undefined!')
-    const currentLoadedFloors = await listFloorsInHole(this.holeId, 100, this.floors.loadedLength)
-    this.floors.load(...currentLoadedFloors)
+  async getFloors (): Promise<boolean> {
+    if (!this.floors) return Promise.reject(new ReferenceError('Hole is undefined!'))
+    const currentLoadedFloors = await listFloors(this.holeId, 10, this.loadedLength)
+
+    this.floors.splice(this.loadedLength, currentLoadedFloors.length, ...currentLoadedFloors)
+    this.loadedLength += currentLoadedFloors.length
+
     return currentLoadedFloors.length > 0
   }
 
-  public updateFloor (index: number) {
-    if (!this.floors) throw ReferenceError('Hole is undefined!')
+  updateFloor (index: number) {
+    if (!this.floors) throw new ReferenceError('Hole is undefined!')
     this.checkAndRerenderFloors(this.floors[index])
   }
 
-  public checkAndRerenderFloors (mentionFloor: Floor) {
+  checkAndRerenderFloors (mentionFloor: Floor) {
     for (const floorCard of this.floorCards) {
       floorCard.rerenderSpecificMention(mentionFloor)
     }
   }
 
-  public async getFloorsUntil (waitingFloorId: number): Promise<Floor | null> {
-    if (!this.floors) throw ReferenceError('Hole is undefined!')
+  async getFloorsUntil (waitingFloorId: number): Promise<Floor | null> {
+    if (!this.floors) return Promise.reject(new ReferenceError('Hole is undefined!'))
     while (this.loading.hasNext) {
       await this.loading.load()
       const result = this.floors.find(v => v.floorId === waitingFloorId)
@@ -233,15 +244,16 @@ export default class FloorList extends BaseComponentOrView {
     return null
   }
 
-  public async getAndScrollToFloor (floorId: number) {
+  async getAndScrollToFloor (floorId: number | null) {
+    if (!floorId) return
     const floor = await this.getFloorsUntil(floorId)
     if (floor) scrollToFloor(floor.storey)
-    else throw Error(`Cannot scroll to floor with id: ${floorId}!`)
+    else return Promise.reject(new Error(`Cannot scroll to floor with id: ${floorId}!`))
   }
 
-  public async loadPrefetched () {
-    if (!this.floors) throw ReferenceError('Hole is undefined!')
-    while (this.floors.loadedLength < this.floors.length && this.loading.hasNext) {
+  async loadPrefetched () {
+    if (!this.floors) return Promise.reject(new ReferenceError('Hole is undefined!'))
+    while (this.loadedLength < this.floors.length && this.loading.hasNext) {
       await this.loading.load()
     }
   }

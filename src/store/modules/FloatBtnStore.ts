@@ -3,8 +3,16 @@ import store from '@/store'
 import Vue from 'vue'
 
 export interface IFloatBtnInfo {
+  style: string
   icon: string
   callback: () => void
+}
+
+const defaultBtnInfo: IFloatBtnInfo = {
+  style: '',
+  icon: 'mdi-send',
+  callback: () => {
+  }
 }
 
 @Module({ store: store, dynamic: true, name: 'FloatBtnStore', namespaced: true })
@@ -17,8 +25,14 @@ class FloatBtnStore extends VuexModule {
   floatBtnLayers: { [key: string]: IFloatBtnInfo[] } = {}
 
   @Mutation
-  setLayer ({ order, floatBtns }: {order: number, floatBtns: IFloatBtnInfo[]}) {
-    Vue.set(this.floatBtnLayers, order.toString(), floatBtns)
+  setLayer ({ order, floatBtns }: { order: number, floatBtns: Partial<IFloatBtnInfo>[] }) {
+    const cFloatBtns = floatBtns.map(v => ({ ...defaultBtnInfo, ...v }))
+    Vue.set(this.floatBtnLayers, order.toString(), cFloatBtns)
+  }
+
+  @Mutation
+  clean () {
+    this.floatBtnLayers = {}
   }
 
   get floatBtns () {

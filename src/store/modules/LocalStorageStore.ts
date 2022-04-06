@@ -6,7 +6,7 @@ class LocalStorageStore extends VuexModule {
   public token = localStorage.getItem('token') || ''
   public email = localStorage.getItem('email') || ''
   public newcomer = localStorage.getItem('newcomer') || ''
-  public refreshToken = localStorage.getItem('refreshToken') || ''
+  public refreshToken = localStorage.getItem('refresh') || ''
 
   get tokenNoPrefix () {
     return this.token?.substring(6)

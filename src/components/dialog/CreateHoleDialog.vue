@@ -95,7 +95,7 @@
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UserStore from '@/store/modules/UserStore'
-import { Component, Prop, Ref, Watch } from 'vue-property-decorator'
+import { Component, ModelSync, Prop, Ref, Watch } from 'vue-property-decorator'
 import AppEditor from '@/components/app/AppEditor.vue'
 import { ITag } from '@/models/tag'
 import { IDivision } from '@/models/division'
@@ -112,25 +112,26 @@ import { addHole, listTags } from '@/apis/api'
 })
 export default class CreateHoleDialog extends BaseComponentOrView {
   @Prop({ type: Number, default: 1 }) divisionId: number
+  @ModelSync('dialogProp', 'change', { type: Boolean, default: false }) dialog: boolean
 
-  public content = ''
-  public tags: Array<ITag> = []
-  public selectedTags: Array<ITag> = []
-  public selectedDivision: IDivision = {
+  content = ''
+
+  tags: Array<ITag> = []
+  selectedTags: Array<ITag> = []
+  selectedDivision: IDivision = {
     divisionId: 0,
     description: '',
     name: '',
     pinned: []
   }
 
-  public dialog = false
-  public tagRules = [
+  tagRules = [
     (v: string | any[]) => v.length <= 5 || '标签不能多于5个',
     (v: string | any[]) => v.length >= 1 || '请至少选择1个标签'
   ]
 
-  public errorMsg: any = {}
-  public valid = true
+  errorMsg: any = {}
+  valid = true
 
   @Ref() readonly editor!: AppEditor
   @Ref() readonly form!: HTMLFormElement
@@ -153,9 +154,9 @@ export default class CreateHoleDialog extends BaseComponentOrView {
     return dialogWidth()
   }
 
-  public parseTagColor = parseTagColor
+  parseTagColor = parseTagColor
 
-  public openDialog (): void {
+  openDialog (): void {
     this.getTags()
     this.selectedDivision = UserStore.divisions[0]
     UserStore.divisions.forEach((v) => {
@@ -165,7 +166,7 @@ export default class CreateHoleDialog extends BaseComponentOrView {
     })
   }
 
-  public closeDialog (): void {
+  closeDialog (): void {
     this.dialog = false
     // 重置表单验证
     this.errorMsg = {}
@@ -175,11 +176,11 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   /**
    * Send request to add a new hole.
    */
-  public async addHole () {
+  async addHole () {
     if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
-      await addHole(this.selectedDivision.divisionId, this.editor.getContent(), this.selectedTags)
-      this.messageSuccess('发送成功')
+      const { message } = await addHole(this.selectedDivision.divisionId, this.editor.getContent(), this.selectedTags)
+      this.messageSuccess(message)
       this.editor.setContent('')
       this.selectedTags = []
       this.$emit('refresh')
@@ -189,7 +190,7 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   /**
    * Get the tag list from the backend.
    */
-  public async getTags () {
+  async getTags () {
     this.tags = await listTags()
   }
 

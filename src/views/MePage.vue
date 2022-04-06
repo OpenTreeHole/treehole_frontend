@@ -17,11 +17,11 @@
         />
       </v-card-text>
       <v-card-text class='d-flex'>
-        <span class='d-flex'>
-          <v-btn color='primary' width='40vw' @click='changePassWd'>修改密码</v-btn>
+        <span class='d-flex mx-3' style='flex-grow: 1;'>
+          <v-btn color='primary' width='100%' @click='changePassWd'>修改密码</v-btn>
         </span>
-        <span class='d-flex'>
-          <v-btn color='error' width='40vw' @click='logout'>退出登录</v-btn>
+        <span class='d-flex mx-3' style='flex-grow: 1'>
+          <v-btn color='error' width='100%' @click='logout'>退出登录</v-btn>
         </span>
       </v-card-text>
     </v-card>
@@ -30,7 +30,7 @@
 
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
-import { IUserAuth } from '@/models/user'
+import { User } from '@/models/user'
 import { convertDate } from '@/utils/utils'
 import UserStore from '@/store/modules/UserStore'
 import BaseView from '@/mixins/BaseView.vue'
@@ -38,7 +38,7 @@ import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component
 export default class MePage extends BaseView {
-  public profile: IUserAuth | null = null
+  public profile: User | null = null
   public joinedTimeDisplayMsg: string
 
   get darkModeLabel (): string {
@@ -46,8 +46,9 @@ export default class MePage extends BaseView {
   }
 
   public getUserInfo (): void {
+    if (!UserStore.user) throw new Error('User Not Found!')
     this.profile = UserStore.user
-    this.joinedTimeDisplayMsg = convertDate(UserStore.user?.joinedTime)
+    this.joinedTimeDisplayMsg = convertDate(UserStore.user.joinedTime)
   }
 
   public logout (): void {

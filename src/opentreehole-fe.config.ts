@@ -45,10 +45,10 @@ const config = {
   ]
 }
 if (process.env.NODE_ENV !== 'production') { // development
-  config.backEndUrl = 'https://test.fduhole.com/'
+  config.backEndUrl = 'https://hole.hath.top/api/'
   config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/ws/notification'
   config.backEndWebsocketImageApi = 'wss://hole.hath.top/ws/images'
-  config.authUrl = 'https://testauth.fduhole.com/'
+  config.authUrl = 'https://testAuth.fduhole.com/api/'
 }
 
 export default config

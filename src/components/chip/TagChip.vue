@@ -26,7 +26,7 @@ export default class TagChip extends BaseComponentOrView {
   @Emit('click')
   public onClick (_e: MouseEvent) {}
 
-  created () {
+  async created () {
     this.color = parseTagColor(this.tag.name)
   }
 }
