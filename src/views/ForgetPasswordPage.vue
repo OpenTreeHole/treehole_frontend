@@ -96,6 +96,7 @@ import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
+import { changePassword, verifyWithEmail } from '@/apis/api'
 
 @Component
 export default class ForgetPasswordPage extends BaseView {
@@ -165,14 +166,8 @@ export default class ForgetPasswordPage extends BaseView {
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
 
-    const response = await this.$axios
-      .get('/verify/email', {
-        params: {
-          email: this.email
-        }
-      })
-
-    this.messageSuccess(response.data.message)
+    const { message } = await verifyWithEmail(this.email)
+    this.messageSuccess(message)
   }
 
   public sendButtonChangeStatus (): void {
@@ -190,15 +185,10 @@ export default class ForgetPasswordPage extends BaseView {
 
   public async changepassword () {
     if (this.form.validate()) {
-      await this.$axios
-        .put('/register', {
-          email: this.email,
-          password: this.password,
-          verification: this.code
-        })
+      await changePassword(this.password, this.email, this.code)
       this.messageSuccess('重置密码成功！')
       await sleep(1000)
-      await this.$router.replace('/login')
+      await this.$router.replace('/division/1')
     }
   }
 

@@ -1,4 +1,3 @@
-<!--suppress HtmlUnknownAttribute -->
 <template>
   <v-container class='pa-0'>
     <v-card
@@ -23,9 +22,9 @@
 
       <v-card-text class='pt-2 pb-2 text-center d-flex text-body-2'>
         <span class='flex-left'>#{{ hole.holeId }}</span>
-        <span class='flex-center'>{{
-            hole.timeUpdated | timeDifference
-          }}</span>
+        <span class='flex-center'>
+          {{ hole.timeUpdated | timeDifference }}
+        </span>
         <span class='flex-right'>
           <v-icon small>mdi-message-processing-outline</v-icon>
           {{ hole.reply }}
@@ -54,25 +53,8 @@
       </v-row>
     </transition-group>
 
-    <!-- 弹出式表单及浮动按钮 -->
-    <div v-if='hole' class='float-btn'>
-      <create-floor-dialog operation='add' :hole-id='holeId' @continue-load='continueLoad'>
-        <!-- 浮动按钮 -->
-        <template v-slot:activator='{ on, attrs }'>
-          <v-btn fab color='secondary' @mousedown.prevent v-bind='attrs' v-on='on'>
-            <v-icon>mdi-send</v-icon>
-          </v-btn>
-        </template>
-      </create-floor-dialog>
+    <create-floor-dialog v-model='dialog' operation='add' :hole-id='holeId' @continue-load='continueLoad' />
 
-      <br />
-
-      <v-btn fab color='secondary' @mousedown.prevent @click='changeCollectionStatus'>
-        <v-icon :class='hole.isStarred ? "v-icon--starred" : ""'>mdi-star</v-icon>
-      </v-btn>
-    </div>
-
-    <!-- 载入中信息 -->
     <loading v-if='hole' ref='loading' :request='[getFloors]' />
   </v-container>
 </template>
@@ -85,13 +67,14 @@ import { Hole } from '@/models/hole'
 import hljs from 'highlight.js'
 import FloorCard from '@/components/card/FloorCard.vue'
 import { Floor } from '@/models/floor'
-import { FloorListRequest } from '@/api'
-import { camelizeKeys } from '@/utils/utils'
-import UserStore from '@/store/modules/UserStore'
-import Vue from 'vue'
 import { scrollToFloor } from '@/utils/floor'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
+import { addFavorites, deleteFavorites, getHole, listFloorsInHole } from '@/apis/api'
+import { PrefetchedArray } from '@/utils/structs'
+import FloatBtnStore from '@/store/modules/FloatBtnStore'
+import UserStore from '@/store/modules/UserStore'
+import remove from 'lodash-es/remove'
 
 @Component({
   components: {
@@ -102,16 +85,11 @@ import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
   }
 })
 export default class FloorList extends BaseComponentOrView {
-  // 帖子列表
-  public hole: Hole | null = null
-  public floors: Array<Floor> = []
-  // 发帖表单
+  public hole?: Hole = undefined
   public dialog = false
   // content: '',
   public requiredRules = [(v: any) => !!v || '内容不能为空']
   public valid = true
-
-  public request: FloorListRequest
 
   @Prop({ type: Number, default: -1 }) displayFloorId: number
   @Prop({ required: true }) wrappedHoleOrId: Hole | number
@@ -121,135 +99,22 @@ export default class FloorList extends BaseComponentOrView {
   @Ref() readonly loading!: Loading
   @Ref() readonly floorCards!: FloorCard[]
 
-  /**
-   * Clear the floor list and reload.
-   */
-  public refresh (): void {
-    this.request.clear()
-    this.floors = this.request.datas
-    this.loading.continueLoad()
+  get isStarred () {
+    return !!UserStore.collection.find(v => v.holeId === this.holeId)
   }
 
-  /**
-   * Get the index of a floor in the current hole by its floor id.
-   *
-   * @param floorId - the floor id.
-   * @returns the index, or -1 if the floor doesn't exist in the current hole.
-   */
-  public getIndex (floorId: number): number {
-    for (let i = 0; i < this.floors.length; i++) {
-      if (this.floors[i].floorId === floorId) {
-        return i
-      }
-    }
-    return -1
-  }
+  set isStarred (newVal: boolean) {
+    if (!this.hole) throw ReferenceError('Hole is undefined!')
 
-  public continueLoad () {
-    this.loading.continueLoad()
-  }
-
-  /**
-   * Get the hole object by hole id from the backend.
-   * <p> the hole object contains only brief information of the prefetched floors.
-   *
-   * @param holeId - the hole id
-   */
-  public async getHole (holeId: number) {
-    const response = await this.$axios.get('/holes/' + holeId)
-    if (response.data) {
-      this.hole = new Hole(camelizeKeys(response.data))
-    }
-  }
-
-  public async changeCollectionStatus () {
-    if (!this.hole) throw new ReferenceError('Hole is empty!')
-    this.hole.isStarred = !this.hole.isStarred
-    try {
-      let response
-      if (!this.hole.isStarred) {
-        response = await this.$axios.delete('/user/favorites', {
-          data: {
-            hole_id: this.hole.holeId
-          }
-        })
-      } else {
-        response = await this.$axios.post('/user/favorites', {
-          hole_id: this.hole.holeId
-        })
-      }
-      this.messageSuccess(response.data.message)
-      UserStore.collection.setCollection(response.data.data)
-    } catch (error) {
-      this.hole.isStarred = !this.hole.isStarred
-    }
-  }
-
-  /**
-   * Get floors from backend.
-   */
-  public async getFloors (): Promise<boolean> {
-    if (!this.request) return false
-    return await this.request.request()
-  }
-
-  public updateFloor (floor: Floor) {
-    this.checkAndRerenderFloors(floor)
-    Vue.set(this.floors, this.getIndex(floor.floorId), floor)
-  }
-
-  public checkAndRerenderFloors (mentionFloor: Floor) {
-    for (const floorCard of this.floorCards) {
-      floorCard.rerenderSpecificMention(mentionFloor)
-    }
-  }
-
-  public async getFloorsUntil (waitingFloorId: number): Promise<number> {
-    for (let i = 0; i < this.request.loadedLength; i++) {
-      if (this.floors[i].floorId === waitingFloorId) {
-        return i
-      }
-    }
-    if (this.loading.hasNext) {
-      await this.loading.load()
-      return await this.getFloorsUntil(waitingFloorId)
-    }
-    return -1
-  }
-
-  public async getAndScrollToFloor (floorId: number) {
-    if (floorId !== -1) {
-      const index = await this.getFloorsUntil(floorId)
-      scrollToFloor(index)
-    }
-  }
-
-  public async loadPrefetched () {
-    while (this.request.loadedLength < this.floors.length && this.loading.hasNext) {
-      await this.loading.load()
-    }
-  }
-
-  public async init (displayFloorId: number) {
-    if (!this.hole) throw new ReferenceError('Hole is empty!')
-    this.request = new FloorListRequest(this.hole.markedFloors, this.holeId)
-    this.floors = this.request.datas
-    await this.$nextTick()
-    await this.getAndScrollToFloor(displayFloorId)
-    await this.loadPrefetched()
-  }
-
-  async mounted () {
-    if (this.wrappedHoleOrId instanceof Hole) {
-      this.hole = this.wrappedHoleOrId
+    if (newVal) {
+      if (!this.isStarred) UserStore.collection.push(this.hole)
     } else {
-      await this.getHole(this.wrappedHoleOrId)
+      remove(UserStore.collection, v => v.holeId === this.holeId)
     }
-    await this.init(this.displayFloorId)
   }
 
-  get editorWidth () {
-    return this.isMobile ? '98vw' : '70vw'
+  get floors () {
+    return this.hole?.cFloors
   }
 
   get holeId (): number {
@@ -260,13 +125,125 @@ export default class FloorList extends BaseComponentOrView {
     }
   }
 
+  get editorWidth () {
+    return this.isMobile ? '98vw' : '70vw'
+  }
+
   get colClass () {
     if (this.isMobile) return 'px-1 py-1'
     else return 'px-1 py-2'
   }
 
+  async mounted () {
+    FloatBtnStore.setLayer({
+      order: 2,
+      floatBtns: [
+        {
+          icon: 'mdi-send',
+          callback: () => {
+            this.dialog = true
+          }
+        },
+        {
+          icon: 'mdi-star',
+          callback: this.changeCollectionStatus
+        }
+      ]
+    })
+
+    if (this.wrappedHoleOrId instanceof Hole) {
+      this.hole = this.wrappedHoleOrId
+    } else {
+      await this.getHole(this.wrappedHoleOrId)
+    }
+    await this.$nextTick()
+    await this.getAndScrollToFloor(this.displayFloorId)
+    await this.loadPrefetched()
+  }
+
+  async changeCollectionStatus () {
+    this.isStarred = !this.isStarred
+    try {
+      let message
+      if (this.isStarred)message = await addFavorites(this.holeId)
+      else message = await deleteFavorites(this.holeId)
+      this.messageSuccess(message)
+    } catch (e) {
+      this.isStarred = !this.isStarred
+      throw e
+    }
+  }
+
   updated () {
     hljs.highlightAll()
+  }
+
+  public continueLoad () {
+    this.loading.continueLoad()
+  }
+
+  /**
+   * Clear the floor list and reload.
+   */
+  public refresh (): void {
+    if (!this.hole) throw ReferenceError('Hole is undefined!')
+
+    this.hole.cFloors = new PrefetchedArray<Floor>()
+    this.continueLoad()
+  }
+
+  /**
+   * Get the hole object by hole id from the backend.
+   * <p> the hole object contains only brief information of the prefetched floors.
+   *
+   * @param holeId - the hole id
+   */
+  public async getHole (holeId: number) {
+    this.hole = await getHole(holeId)
+  }
+
+  /**
+   * Get floors from backend.
+   */
+  public async getFloors (): Promise<boolean> {
+    if (!this.floors) throw ReferenceError('Hole is undefined!')
+    const currentLoadedFloors = await listFloorsInHole(this.holeId, 100, this.floors.loadedLength)
+    this.floors.load(...currentLoadedFloors)
+    return currentLoadedFloors.length > 0
+  }
+
+  public updateFloor (index: number) {
+    if (!this.floors) throw ReferenceError('Hole is undefined!')
+    this.checkAndRerenderFloors(this.floors[index])
+  }
+
+  public checkAndRerenderFloors (mentionFloor: Floor) {
+    for (const floorCard of this.floorCards) {
+      floorCard.rerenderSpecificMention(mentionFloor)
+    }
+  }
+
+  public async getFloorsUntil (waitingFloorId: number): Promise<Floor | null> {
+    if (!this.floors) throw ReferenceError('Hole is undefined!')
+    while (this.loading.hasNext) {
+      await this.loading.load()
+      const result = this.floors.find(v => v.floorId === waitingFloorId)
+      if (result) return result
+    }
+    return null
+  }
+
+  public async getAndScrollToFloor (floorId: number) {
+    const floor = await this.getFloorsUntil(floorId)
+    if (floor) scrollToFloor(floor.storey)
+    else throw Error(`Cannot scroll to floor with id: ${floorId}!`)
+  }
+
+  public async loadPrefetched () {
+    if (!this.floors) throw ReferenceError('Hole is undefined!')
+    while (this.floors.loadedLength < this.floors.length && this.loading.hasNext) {
+      await this.loading.load()
+    }
   }
 }
 </script>
@@ -283,27 +260,8 @@ export default class FloorList extends BaseComponentOrView {
   color: #30312c;
 }
 
-/* 可点击 */
-/*noinspection CssUnusedSymbol*/
 .clickable {
   cursor: pointer;
-}
-
-/* 浮动按钮 固定在右下角 */
-.float-btn {
-  position: fixed;
-  right: 8px;
-  bottom: 64px;
-
-  .v-btn {
-    margin: 5px;
-
-    .v-btn__content {
-      .v-icon--starred {
-        color: #FF9300;
-      }
-    }
-  }
 }
 
 .slide-fade-enter-active {

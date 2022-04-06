@@ -1,5 +1,5 @@
 <template>
-  <double-column-panel ref='doubleColumnPanel' @show-second-col-changed='showFloorListChanged'>
+  <double-column-panel ref='doubleColumnPanel'>
     <template #first>
       <HoleList
         :display-hole-id='displayHoleId'
@@ -26,7 +26,7 @@
 import HoleList from '@/components/column/HoleList.vue'
 import FloorList from '@/components/column/FloorList.vue'
 
-import { Component, Emit, Ref } from 'vue-property-decorator'
+import { Component, Ref } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
@@ -84,11 +84,6 @@ export default class HolePanel extends BaseComponentOrView {
   public deactivate (): void {
     this.displayHoleId = -1
     this.doubleColumnPanel.deactivate()
-  }
-
-  @Emit()
-  public showFloorListChanged (show: boolean) {
-    this.showFloorList = show
   }
 }
 </script>

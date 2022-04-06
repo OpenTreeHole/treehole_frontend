@@ -3,50 +3,46 @@ import store from '@/store'
 
 @Module({ store: store, dynamic: true, name: 'LocalStorageStore', namespaced: true })
 class LocalStorageStore extends VuexModule {
-  public _token = localStorage.getItem('token') || ''
-  public _email = localStorage.getItem('email') || ''
-  public _newcomer = localStorage.getItem('newcomer') || ''
-
-  get token () {
-    return this._token
-  }
+  public token = localStorage.getItem('token') || ''
+  public email = localStorage.getItem('email') || ''
+  public newcomer = localStorage.getItem('newcomer') || ''
+  public refreshToken = localStorage.getItem('refreshToken') || ''
 
   get tokenNoPrefix () {
-    return this._token?.substring(6)
-  }
-
-  get email () {
-    return this._email
-  }
-
-  get newcomer () {
-    return this._newcomer
+    return this.token?.substring(6)
   }
 
   @Mutation
-  public setToken (newToken: string) {
-    this._token = newToken
+  setRefreshToken (newRefreshToken: string) {
+    this.refreshToken = newRefreshToken
+    localStorage.setItem('refresh', newRefreshToken)
+  }
+
+  @Mutation
+  setToken (newToken: string) {
+    this.token = newToken
     localStorage.setItem('token', newToken)
   }
 
   @Mutation
-  public setEmail (newEmail: string) {
-    this._email = newEmail
+  setEmail (newEmail: string) {
+    this.email = newEmail
     localStorage.setItem('email', newEmail)
   }
 
   @Mutation
-  public setNewcomer (newNewcomer: string) {
-    this._newcomer = newNewcomer
+  setNewcomer (newNewcomer: string) {
+    this.newcomer = newNewcomer
     localStorage.setItem('newcomer', newNewcomer)
   }
 
   @Mutation
-  public clear () {
+  clear () {
     localStorage.clear()
-    this._token = ''
-    this._email = ''
-    this._newcomer = ''
+    this.token = ''
+    this.refreshToken = ''
+    this.email = ''
+    this.newcomer = ''
   }
 }
 

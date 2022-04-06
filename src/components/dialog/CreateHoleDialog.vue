@@ -97,11 +97,12 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UserStore from '@/store/modules/UserStore'
 import { Component, Prop, Ref, Watch } from 'vue-property-decorator'
 import AppEditor from '@/components/app/AppEditor.vue'
-import { Tag } from '@/models/tag'
-import { Division } from '@/models/division'
+import { ITag } from '@/models/tag'
+import { IDivision } from '@/models/division'
 import { parseTagColor } from '@/utils/utils'
 import { dialogWidth } from '@/utils/style'
 import TagChip from '@/components/chip/TagChip.vue'
+import { addHole, listTags } from '@/apis/api'
 
 @Component({
   components: {
@@ -113,9 +114,9 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   @Prop({ type: Number, default: 1 }) divisionId: number
 
   public content = ''
-  public tags: Array<Tag> = []
-  public selectedTags: Array<Tag> = []
-  public selectedDivision: Division = {
+  public tags: Array<ITag> = []
+  public selectedTags: Array<ITag> = []
+  public selectedDivision: IDivision = {
     divisionId: 0,
     description: '',
     name: '',
@@ -177,14 +178,7 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   public async addHole () {
     if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
-      await this.$axios
-        .post('/holes', {
-          content: this.editor.getContent(),
-          division_id: this.selectedDivision.divisionId,
-          tags: this.selectedTags.map(v => {
-            return { name: v.name }
-          })
-        })
+      await addHole(this.selectedDivision.divisionId, this.editor.getContent(), this.selectedTags)
       this.messageSuccess('发送成功')
       this.editor.setContent('')
       this.selectedTags = []
@@ -196,9 +190,7 @@ export default class CreateHoleDialog extends BaseComponentOrView {
    * Get the tag list from the backend.
    */
   public async getTags () {
-    const response = await this.$axios
-      .get('/tags')
-    this.tags = response.data
+    this.tags = await listTags()
   }
 
   @Watch('selectedTags')

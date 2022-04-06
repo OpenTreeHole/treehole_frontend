@@ -1,13 +1,13 @@
 <template>
   <v-container id='holeList' class='pa-0'>
-    <animated-list ref='animatedHoleList' :datas='holes' vkey='holeIdStr' v-slot='{ data, index }'>
+    <animated-list ref='animatedHoleList' :datas='allHoles' vkey='holeIdStr' v-slot='{ data, index }'>
       <v-col :class='colClass'>
         <hole-card
           :hole='data'
           :index='index'
           :is-active='data.holeId === displayHoleId'
           :fix-height='fixCardHeight'
-          :pinned='index < request.pinCount'
+          :pinned='index < pinnedHoles.length'
           @open-hole='openHole'
           @update-pin-info='refresh'
         />
@@ -15,8 +15,7 @@
     </animated-list>
     <v-row>
       <v-col>
-        <!-- 载入中信息 -->
-        <loading ref='loading' :pause-loading='!preloaded' :request='[getHoles]' />
+        <loading v-if='preloaded' ref='loading' :request='[getHoles]' />
       </v-col>
     </v-row>
   </v-container>
@@ -25,17 +24,18 @@
 <script lang='ts'>
 import HoleCard from '@/components/card/HoleCard.vue'
 import Loading from '@/components/Loading.vue'
-import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
+import { Component, Emit, Inject, Prop, Ref, Watch } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
 import { EventBus } from '@/event-bus'
 import AnimatedList from '@/components/animation/AnimatedList.vue'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { sleep } from '@/utils/utils'
-import { CollectionHoleListRequest, DivisionHoleListRequest, HoleListRequest, HomeHoleListRequest } from '@/api'
 import UserStore from '@/store/modules/UserStore'
-import { Division } from '@/models/division'
 import { debounce } from 'lodash-es'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { getHole, listHoles } from '@/apis/api'
+import TagStore from '@/store/modules/TagStore'
+import UtilStore from '@/store/modules/UtilStore'
 
 @Component({
   components: {
@@ -47,24 +47,30 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 export default class HoleList extends BaseComponentOrView {
   @Prop({ required: false, type: Number, default: -1 }) displayHoleId: number
   @Prop({ type: Boolean, default: false }) fixCardHeight: boolean
+  @Inject() holeListType: 'division' | 'collection'
 
   @Ref() readonly animatedHoleList: AnimatedList
 
   // 帖子列表
-  public holes: Hole[] = []
+  holes: Hole[] = []
+  pinnedHoles: Hole[] = []
 
-  public startTime: Date = new Date()
+  startTime: Date = new Date()
 
-  public collectionIds: number[] = []
+  debouncedCalculateLines: Function
+  lineHeight: number = 10
 
-  public debouncedCalculateLines: Function
-  public lineHeight: number = 10
-
-  public request: HoleListRequest
-
-  public route: string
+  route: string
 
   @Ref() loading: Loading
+
+  get allHoles () {
+    return [...this.pinnedHoles, ...this.holes]
+  }
+
+  get getHoles () {
+    return this.holeListType === 'division' ? this.getDivisionHoles : this.getCollectionHoles
+  }
 
   get colClass () {
     if (this.isMobile) return 'px-1 py-1'
@@ -72,16 +78,15 @@ export default class HoleList extends BaseComponentOrView {
   }
 
   get divisionId () {
-    if (this.route.includes('division')) return parseInt(this.$route.params.id)
-    else return 1
+    return UtilStore.currentDivision?.divisionId
   }
 
   /**
    * Clear the hole list and reload.
    */
-  public refresh () {
-    this.request.clear()
-    this.holes = this.request.datas
+  refresh () {
+    this.holes = []
+    this.startTime = new Date()
     this.loading.continueLoad()
     this.pin()
   }
@@ -89,17 +94,14 @@ export default class HoleList extends BaseComponentOrView {
   /**
    * Decide if pinned by hole id.
    */
-  public isPinned (holeId: number) {
-    for (let i = 0; i < this.request.pinCount; i++) {
-      if (this.holes[i].holeId === holeId) return true
-    }
-    return false
+  isPinned (holeId: number) {
+    return !!this.pinnedHoles.find(v => v.holeId === holeId)
   }
 
   /**
    * Calculate the number of the total lines of the display (i.e. the first floor) of each hole.
    */
-  public calculateLines (): void {
+  calculateLines (): void {
     for (let i = 0; i < this.holes.length; i++) {
       const element = document.getElementById('p' + i)
       const totalHeight = element?.scrollHeight ?? 0
@@ -107,8 +109,22 @@ export default class HoleList extends BaseComponentOrView {
     }
   }
 
-  public async getHoles (): Promise<boolean> {
-    return await this.request.request()
+  async getDivisionHoles () {
+    if (!this.divisionId) throw new Error('Cannot get division id!')
+    const holes = await listHoles(this.divisionId, this.startTime, 10, TagStore.tagMap[this.route])
+    const holesNotPinned = this.holes.filter(v => this.pinnedHoles.find(u => u.holeId === v.holeId))
+    this.holes.push(...holesNotPinned)
+    return holes.length > 0
+  }
+
+  async getCollectionHoles () {
+    this.holes = UserStore.collection
+    return false
+  }
+
+  async getHole (holeId: number, toIndex: number) {
+    const hole = await getHole(holeId)
+    this.holes.splice(toIndex, 0, hole)
   }
 
   @Watch('holes')
@@ -122,19 +138,11 @@ export default class HoleList extends BaseComponentOrView {
     }, 100)
   }
 
-  public getDivisionById (divisionId: number): Division | undefined {
-    return UserStore.divisions.find(v => {
-      return v.divisionId === divisionId
-    })
-  }
-
   pin () {
-    const division = this.getDivisionById(this.divisionId)
-    if (division && (this.request instanceof HomeHoleListRequest || this.request instanceof DivisionHoleListRequest)) {
-      for (let i = division.pinned.length - 1; i >= 0; i--) {
-        this.request.pin(new Hole(division.pinned[i]))
-      }
-    }
+    const division = UserStore.divisions.find(v => v.divisionId === this.divisionId)
+    if (!division) throw new Error(`Division ${this.divisionId} Not Found!`)
+
+    this.pinnedHoles = division.pinned
   }
 
   async onPreloaded () {
@@ -145,24 +153,13 @@ export default class HoleList extends BaseComponentOrView {
 
   created () {
     this.route = this.$route.path
-    UserStore.collection.getCollections()
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
-    if (this.route.includes('home')) {
-      this.request = new HomeHoleListRequest()
-    } else if (this.route.includes('collections')) {
-      this.request = new CollectionHoleListRequest()
-    } else if (this.route.includes('division')) {
-      this.request = new DivisionHoleListRequest(this.divisionId)
-    }
-    this.holes = this.request.datas
-    UserStore.collection.registerUpdateHoleArray(this.route, this.holes)
   }
 
-  @Watch('filtedTagMap', {
+  @Watch('filteredTagMap', {
     deep: true
   })
-  filtedTagMapChanged () {
-    this.request.tag = this.filtedTagMap[this.route] ? this.filtedTagMap[this.route] : null
+  filteredTagMapChanged () {
     this.$emit('refresh')
   }
 
@@ -194,9 +191,7 @@ export default class HoleList extends BaseComponentOrView {
     this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId, curIndex)
   }
 
-  public async openNewOrExistHole (holeIdOrHole: number | Hole, floorId?: number, toIndex = this.request.pinCount) {
-    await this.loading.waitForUnpause(8)
-
+  public async openNewOrExistHole (holeIdOrHole: number | Hole, floorId?: number, toIndex = 0) {
     const holeId = (typeof holeIdOrHole === 'number') ? holeIdOrHole : holeIdOrHole.holeId
 
     let hole: Hole | undefined, index: number | undefined
@@ -212,7 +207,7 @@ export default class HoleList extends BaseComponentOrView {
         hole = holeIdOrHole
         this.holes.splice(toIndex, 0, hole)
       } else {
-        await this.loading.loadCustomRequestOnce(async () => this.request.requestHole(holeId, toIndex))
+        await this.loading.loadCustomRequestOnce(async () => await this.getHole(holeId, toIndex))
         hole = this.holes[toIndex]
       }
     } else {
@@ -242,7 +237,6 @@ export default class HoleList extends BaseComponentOrView {
   }
 
   destroyed () {
-    UserStore.collection.unregisterUpdateHoleArray(this.$route.name as string)
     EventBus.$off('goto-mention-floor', this.onGotoMentionFloor)
     EventBus.$off('goto-hole', this.openNewOrExistHole)
   }

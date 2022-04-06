@@ -1,5 +1,5 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
-import Message from '@/components/Message.vue'
+import Message from '@/components/bar/MessageSnackbar.vue'
 import store from '@/store'
 
 @Module({ store: store, dynamic: true, name: 'MessageStore', namespaced: true })

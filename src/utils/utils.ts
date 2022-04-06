@@ -1,6 +1,7 @@
 import { assign, camelCase, keys, pick } from 'lodash'
 import katex from 'katex'
 import { gsap } from 'gsap'
+import { snakeCase } from 'lodash-es'
 
 const macros: any = []
 
@@ -67,6 +68,21 @@ export const camelizeKeys = (obj: any): any => {
       (result, key) => ({
         ...result,
         [camelCase(key)]: camelizeKeys(obj[key])
+      }),
+      {}
+    )
+  }
+  return obj
+}
+
+export const snakifyKeys = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(v => snakifyKeys(v))
+  } else if (obj != null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [snakeCase(key)]: snakifyKeys(obj[key])
       }),
       {}
     )

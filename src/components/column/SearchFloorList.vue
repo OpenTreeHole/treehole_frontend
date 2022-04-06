@@ -42,7 +42,7 @@
     </transition-group>
 
     <!-- 载入中信息 -->
-    <loading :request='[]' ref='loading' :pause-loading='initiating' />
+    <loading v-if='!initiating' :request='[]' ref='loading' />
   </v-container>
 </template>
 
@@ -51,7 +51,6 @@ import Loading from '@/components/Loading.vue'
 import { Component, Prop } from 'vue-property-decorator'
 import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { SearchFloorListRequest } from '@/api'
 import { openDivisionAndGotoHole } from '@/utils/floor'
 import { Floor } from '@/models/floor'
 
@@ -74,8 +73,6 @@ export default class SearchFloorList extends BaseComponentOrView {
   }
 
   async mounted () {
-    this.request = new SearchFloorListRequest(this.searchStr)
-    this.floors = this.request.datas
     await this.request.request()
     this.initiating = false
   }

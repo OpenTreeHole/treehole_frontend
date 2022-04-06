@@ -105,6 +105,7 @@ import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
+import { register, verifyWithEmail } from '@/apis/api'
 
 @Component
 export default class RegisterPage extends BaseView {
@@ -175,12 +176,8 @@ export default class RegisterPage extends BaseView {
     }
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
-    const response = await this.$axios.get('/verify/email', {
-      params: {
-        email: this.email
-      }
-    })
-    this.messageSuccess(response.data.message)
+    const { message } = await verifyWithEmail(this.email)
+    this.messageSuccess(message)
   }
 
   public async sendButtonChangeStatus () {
@@ -195,16 +192,9 @@ export default class RegisterPage extends BaseView {
 
   public async register () {
     if (this.form.validate()) {
-      const response = await this.$axios
-        .post('/register', {
-          email: this.email,
-          password: this.password,
-          verification: this.code
-        })
-        // 注册成功后直接跳转到主页面
-      this.messageSuccess('注册成功！')
+      const { message } = await register(this.password, this.email, this.code)
+      this.messageSuccess(message)
       LocalStorageStore.setNewcomer('true')
-      LocalStorageStore.setToken('token ' + response.data.token)
       await sleep(1000)
       await this.$router.replace('/division/1')
     }

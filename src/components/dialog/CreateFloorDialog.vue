@@ -47,8 +47,8 @@ import { Component, Prop, Ref } from 'vue-property-decorator'
 import MentionCard from '@/components/card/MentionCard.vue'
 import AppEditor from '@/components/app/AppEditor.vue'
 import { DetailedFloor, Floor } from '@/models/floor'
-import { camelizeKeys } from '@/utils/utils'
 import { dialogWidth } from '@/utils/style'
+import { addFloor, modifyFloor } from '@/apis/api'
 
 @Component({
   components: {
@@ -86,12 +86,11 @@ export default class CreateFloorDialog extends BaseComponentOrView {
       this.dialog = false
       const content = (!this.replyCancelled && this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
 
-      const response = await this.$axios
-        .post('/floors', {
-          content: content,
-          hole_id: this.holeId
-        })
-      this.messageSuccess(response.data.message)
+      const { message } = await addFloor({
+        content: content,
+        holeId: this.holeId
+      })
+      this.messageSuccess(message)
       this.editor.setContent('') // Clear the reply editor.
       this.$emit('continue-load')
     }
@@ -105,13 +104,8 @@ export default class CreateFloorDialog extends BaseComponentOrView {
       this.dialog = false
       const content = (!this.replyCancelled && this.replyFloor ? '##' + this.replyFloor.floorId + '\n\n' : '') + this.editor.getContent()
 
-      const response = await this.$axios
-        .put(`/floors/${this.floorId}`, {
-          content: content
-        })
+      const floor: DetailedFloor = await modifyFloor(this.floorId, content)
       this.messageSuccess('修改成功')
-      const floor: DetailedFloor = new DetailedFloor(camelizeKeys(response.data))
-
       this.editor.setContent('') // Clear the reply editor.
       this.$emit('update-floor', floor)
     }

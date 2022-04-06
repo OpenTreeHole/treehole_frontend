@@ -1,70 +1,100 @@
-// noinspection JSUnusedGlobalSymbols
+export interface IUserAuthData {
+  silent: any
+  nickname: string
+  offenseCount: number
+  isAdmin: boolean
+}
 
-import { Hole } from '@/models/hole'
-import Vue from 'vue'
-import { VueInstance } from '@/instance'
+export interface IUserAuth extends IUserAuthData {
+  id: number
+  joinedTime: Date
+}
 
-export interface UserProfile {
+export class UserAuth implements IUserAuth {
+  id: number
+  isAdmin: boolean
+  joinedTime: Date
+  nickname: string
+  offenseCount: number
+  silent: any
+
+  constructor (user: IUserAuth) {
+    this.id = user.id
+    this.isAdmin = user.isAdmin
+    this.joinedTime = user.joinedTime
+    this.nickname = user.nickname
+    this.offenseCount = user.offenseCount
+    this.silent = user.silent
+  }
+}
+
+export interface IPunishment {
+  id: number,
+  user: {
+    id: number
+  }
+  madeBy: {
+    id: number
+  }
+  reason: string
+  scope: string
+  startTime: Date
+  endTime: Date
+}
+
+export class Punishment implements IPunishment {
+  endTime: Date
+  id: number
+  madeBy: { id: number }
+  reason: string
+  scope: string
+  startTime: Date
+  user: { id: number }
+
+  constructor (punishment: IPunishment) {
+    this.id = punishment.id
+    this.endTime = punishment.endTime
+    this.madeBy = punishment.madeBy
+    this.reason = punishment.reason
+    this.scope = punishment.scope
+    this.startTime = punishment.startTime
+    this.user = punishment.user
+  }
+}
+
+export interface IUser {
   userId: number
   nickname: string
+  favorites: number[]
   permission: {
     admin: Date
-    silent: Array<any>
+    silent: { [key: string]: Date }
+    offenseCount: number
   }
   config: {
-    showFolded: string
-    notify: Array<string>
+    notify: string[],
+    showFolded: boolean
   }
   joinedTime: Date
   isAdmin: boolean
 }
 
-export class Collection {
-  public collectionIds: Array<number> = []
-  public updateHoleMap = new Map<string, Array<Hole>>()
+export class User implements IUser {
+  config: { notify: string[]; showFolded: boolean }
+  favorites: number[]
+  isAdmin: boolean
+  joinedTime: Date
+  nickname: string
+  permission: { admin: Date; silent: { [p: string]: Date }; offenseCount: number }
+  userId: number
 
-  public clearCollection () {
-    this.collectionIds = []
-  }
-
-  public setCollection (collectionIds: Array<number>) {
-    this.collectionIds = collectionIds
-    this.update()
-  }
-
-  public update () {
-    for (const value of this.updateHoleMap.values()) {
-      for (let i = 0; i < value.length; i++) {
-        if (value[i].isStarred !== this.isStarred(value[i].holeId)) {
-          Vue.set(value, i, new Hole(value[i]))
-        }
-      }
-    }
-  }
-
-  public async getCollections () {
-    try {
-      const response = await VueInstance.$axios?.get('/user/favorites')
-      this.clearCollection()
-      response.data.forEach((holeItem: any) => {
-        if (!holeItem.floors.first_floor || !holeItem.floors.last_floor || holeItem.reply < 0) return
-        this.collectionIds.push(holeItem.hole_id)
-      })
-      this.update()
-    } catch (error: any) {
-      throw new Error(error)
-    }
-  }
-
-  public isStarred (holeId: number): boolean {
-    return this.collectionIds.includes(holeId)
-  }
-
-  public registerUpdateHoleArray (name: string, holeArray: Array<Hole>) {
-    this.updateHoleMap.set(name, holeArray)
-  }
-
-  public unregisterUpdateHoleArray (name: string) {
-    this.updateHoleMap.delete(name)
+  constructor (user: IUser) {
+    this.userId = user.userId
+    this.nickname = user.nickname
+    this.favorites = user.favorites
+    this.permission = user.permission
+    this.config = user.config
+    this.joinedTime = user.joinedTime
+    this.isAdmin = user.isAdmin
   }
 }

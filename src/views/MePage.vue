@@ -30,7 +30,7 @@
 
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
-import { UserProfile } from '@/models/user'
+import { IUserAuth } from '@/models/user'
 import { convertDate } from '@/utils/utils'
 import UserStore from '@/store/modules/UserStore'
 import BaseView from '@/mixins/BaseView.vue'
@@ -38,7 +38,7 @@ import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component
 export default class MePage extends BaseView {
-  public profile: UserProfile | null = null
+  public profile: IUserAuth | null = null
   public joinedTimeDisplayMsg: string
 
   get darkModeLabel (): string {
@@ -46,8 +46,8 @@ export default class MePage extends BaseView {
   }
 
   public getUserInfo (): void {
-    this.profile = UserStore.userProfile
-    this.joinedTimeDisplayMsg = convertDate(UserStore.userProfile?.joinedTime)
+    this.profile = UserStore.user
+    this.joinedTimeDisplayMsg = convertDate(UserStore.user?.joinedTime)
   }
 
   public logout (): void {

@@ -50,7 +50,8 @@
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Prop, Ref } from 'vue-property-decorator'
-import { Report } from '@/models/report'
+import { IReportDeal, Report } from '@/models/report'
+import { dealReport } from '@/apis/api'
 
 @Component
 export default class ReportDealDialog extends BaseComponentOrView {
@@ -78,20 +79,18 @@ export default class ReportDealDialog extends BaseComponentOrView {
   public async submit () {
     if (this.form.validate()) {
       this.dialog = false
-      const data: any = {}
+      const data: IReportDeal = {}
       if (this.dealType === 'fold') {
-        data.fold = this.reasonSubmit.fold
+        data.fold = [this.reasonSubmit.fold]
         data.silent = this.silent
       } else if (this.dealType === 'delete') {
         data.delete = this.reasonSubmit.delete
         data.silent = this.silent
       }
-      const response = await this.$axios.delete(`/reports/${this.report.reportId}`, {
-        data: data
-      })
+      const message = await dealReport(this.report.reportId, data)
       this.reason = { fold: '', delete: '' }
       this.silent = 0
-      this.messageSuccess(response.data.message)
+      this.messageSuccess(message)
       this.$emit('refresh')
     }
   }

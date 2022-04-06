@@ -8,10 +8,11 @@
 </template>
 
 <script lang='ts'>
-import { Component } from 'vue-property-decorator'
+import { Component, Provide } from 'vue-property-decorator'
 import HolePanel from '@/components/panel/HolePanel.vue'
 import HoleListMobile from '@/components/column/HoleListMobile.vue'
 import BaseView from '@/mixins/BaseView.vue'
+import UtilStore from '@/store/modules/UtilStore'
 
 @Component({
   components: {
@@ -20,5 +21,10 @@ import BaseView from '@/mixins/BaseView.vue'
   }
 })
 export default class CollectionPage extends BaseView {
+  @Provide() holeListType = 'collection'
+
+  async mounted () {
+    UtilStore.setCurrentDivision(null)
+  }
 }
 </script>

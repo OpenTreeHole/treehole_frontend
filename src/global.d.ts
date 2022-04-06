@@ -1,12 +1,11 @@
-import { AxiosStatic } from 'axios'
 import Vuex from 'vuex'
 import VueRouter, { Route } from 'vue-router'
-import { WsClient } from '@/api/ws'
+import { WsClient } from '@/apis/ws'
+import FDUHoleFEConfig from '@/opentreehole-fe.config'
 
 declare module 'vue/types/vue' {
   interface Vue {
-    $axios: AxiosStatic
-    $feConfig: any
+    $feConfig: typeof FDUHoleFEConfig
     $store: Vuex.Store
     $router: VueRouter
     $route: Route

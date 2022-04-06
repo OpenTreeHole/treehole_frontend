@@ -22,7 +22,20 @@ export class Report implements IReport {
   timeUpdated: string
 
   constructor (report: IReport) {
-    Object.assign(this, report)
+    this.reportId = report.reportId
+    this.holeId = report.holeId
+    this.reason = report.reason
+    this.timeCreated = report.timeCreated
+    this.timeUpdated = report.timeUpdated
+    this.dealed = report.dealed
+    this.dealedBy = report.dealedBy
     this.floor = new Floor(report.floor)
   }
+}
+
+export interface IReportDeal {
+  fold?: string[],
+  delete?: string
+  silent?: number,
+  notDeal?: boolean
 }

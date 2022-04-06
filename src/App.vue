@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <message ref='message'></message>
-    <Navbar></Navbar>
+    <message-snackbar ref='message'/>
+    <navigation-bar/>
 
     <v-main>
       <keep-alive include='DivisionPage'>
@@ -11,18 +11,13 @@
       </keep-alive>
     </v-main>
 
-    <!-- <v-footer>
-      <v-col class="text-center" cols="12">
-        &copy; {{ new Date().getFullYear() }} —
-        <span @click="newEvent">FDUHOLE PROJECT</span>
-      </v-col>
-    </v-footer> -->
+    <float-btn-group/>
   </v-app>
 </template>
 
 <script lang='ts'>
-import Navbar from '@/layout/Navbar.vue'
-import Message from '@/components/Message.vue'
+import NavigationBar from '@/components/bar/NavigationBar.vue'
+import MessageSnackbar from '@/components/bar/MessageSnackbar.vue'
 
 import '@/style/global.scss'
 import '@/style/theme.scss'
@@ -37,6 +32,7 @@ import { BehaviorSubject } from 'rxjs'
 import Vue from 'vue'
 import MessageStore from '@/store/modules/MessageStore'
 import UtilStore from '@/store/modules/UtilStore'
+import FloatBtnGroup from '@/components/FloatBtnGroup.vue'
 
 if (process.env.NODE_ENV !== 'production') {
   const VConsole = require('vconsole')
@@ -46,8 +42,9 @@ if (process.env.NODE_ENV !== 'production') {
 
 @Component({
   components: {
-    Navbar,
-    Message
+    FloatBtnGroup,
+    NavigationBar,
+    MessageSnackbar
   }
 })
 export default class App extends Vue {

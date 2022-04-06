@@ -1,6 +1,6 @@
-import UserStore from '@/store/modules/UserStore'
-import { IFloor, Floor } from '@/models/floor'
-import { Tag } from '@/models/tag'
+import { Floor, IFloor } from '@/models/floor'
+import { ITag, Tag } from '@/models/tag'
+import { PrefetchedArray } from '@/utils/structs'
 
 export interface IHole {
   divisionId: number
@@ -8,10 +8,10 @@ export interface IHole {
   floors: {
     firstFloor: IFloor
     lastFloor: IFloor
-    prefetch: Array<IFloor>
+    prefetch: IFloor[]
   }
   reply: number
-  tags: Array<Tag>
+  tags: ITag[]
   timeCreated: string
   timeUpdated: string
 }
@@ -27,43 +27,42 @@ export class Hole implements IHole {
   public floors: {
     firstFloor: IFloor
     lastFloor: IFloor
-    prefetch: Array<IFloor>
+    prefetch: IFloor[]
   }
 
-  public markedFloors: Array<Floor> = []
+  public cFloors: PrefetchedArray<Floor>
   public firstFloor: Floor
   public lastFloor: Floor
-  public isFolded: boolean
-  public isStarred: boolean
   public holeId: number
-  public holeIdStr: string
   public timeCreated: string
   public timeUpdated: string
   public reply: number
-  public tags: Array<Tag>
+  public tags: Tag[]
+
+  get isFolded () {
+    for (const tag of this.tags) {
+      if (tag.name[0] === '*') {
+        return true
+      }
+    }
+  }
+
+  get holeIdStr () {
+    return this.holeId.toString()
+  }
 
   constructor (hole: IHole) {
-    hole.floors.prefetch.forEach((floor: IFloor) => {
-      this.markedFloors.push(new Floor(floor))
-    })
+    this.cFloors = new PrefetchedArray<Floor>(...hole.floors.prefetch.map(v => new Floor(v)))
     this.divisionId = hole.divisionId
     this.floors = hole.floors
     this.firstFloor = new Floor(hole.floors.firstFloor)
     this.lastFloor = new Floor(hole.floors.lastFloor)
-    this.isFolded = this.firstFloor.fold.length > 0
-    this.isStarred = UserStore.collection.isStarred(hole.holeId)
     this.holeId = hole.holeId
-    this.holeIdStr = this.holeId.toString()
     this.timeCreated = hole.timeCreated
     this.timeUpdated = hole.timeUpdated
     this.reply = hole.reply
-    this.tags = hole.tags
+    this.tags = hole.tags.map(v => new Tag(v))
 
-    hole.tags.forEach((v: Tag) => {
-      if (v.name.charAt(0) === '*') {
-        this.isFolded = true
-      }
-    })
     this.styleData = {
       fold: true,
       lines: 3,

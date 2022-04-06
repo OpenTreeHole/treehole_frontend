@@ -18,7 +18,8 @@ import { Component, Emit } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import ReportCard from '@/components/card/ReportCard.vue'
 import { Report } from '@/models/report'
-import { camelizeKeys } from '@/utils/utils'
+import { listReports } from '@/apis/api'
+
 @Component({
   components: { ReportCard }
 })
@@ -40,15 +41,7 @@ export default class ReportList extends BaseComponentOrView {
   }
 
   async getReports () {
-    const response = await this.$axios.get('/reports', {
-      params: {
-        category: 'not_dealed'
-      }
-    })
-    this.reports = []
-    response.data.forEach((v:any) => {
-      this.reports.push(new Report(camelizeKeys(v)))
-    })
+    this.reports = await listReports()
   }
 
   async mounted () {

@@ -8,7 +8,7 @@ import UtilStore from '@/store/modules/UtilStore'
 import TagStore from '@/store/modules/TagStore'
 import { EventBus } from '@/event-bus'
 import WsMessage from '@/models/websocket/WsMessage'
-import { Tag } from '@/models/tag'
+import { ITag } from '@/models/tag'
 import { BehaviorSubject, Subscription } from 'rxjs'
 
 @Component
@@ -25,10 +25,10 @@ export default class BaseComponentOrView extends Vue {
 
   public preloaded = false
 
-  public addTag = (route: string, tag: Tag) => TagStore.addTag({ route: route, tag: tag })
+  public addTag = (route: string, tag: ITag) => TagStore.addTag({ route: route, tag: tag })
   public clearTag = TagStore.clearTag
 
-  get filtedTagMap () {
+  get filteredTagMap () {
     return TagStore.tagMap
   }
 
