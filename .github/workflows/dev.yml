@@ -15,7 +15,7 @@ jobs:
           node-version: '15'
 
       - run: git checkout dev
-      - run: npm ci
+      - run: yarn install --frozen-lockfile
 
       - name: Configure git
         run: |
@@ -25,7 +25,7 @@ jobs:
       - name: Build (With Report)
         run: |
           set -e
-          npm run dev-report
+          yarn dev-report
 
       - name: Deploy
         env:
