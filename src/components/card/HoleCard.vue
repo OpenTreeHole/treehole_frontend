@@ -121,7 +121,6 @@
   </v-card>
 </template>
 
-<!--suppress JSUnusedLocalSymbols -->
 <script lang='ts'>
 import { Component, Emit, Prop } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
@@ -130,9 +129,8 @@ import TagChip from '@/components/chip/TagChip.vue'
 import LabelChip from '@/components/chip/LabelChip.vue'
 import UserStore from '@/store/modules/UserStore'
 import { remove } from 'lodash-es'
-import { Division } from '@/models/division'
-import { camelizeKeys } from '@/utils/utils'
 import FixHeightDiv from '@/components/animation/FixHeightDiv.vue'
+import { modifyDivision } from '@/apis/api'
 
 @Component({
   components: {
@@ -149,7 +147,7 @@ export default class HoleCard extends BaseComponentOrView {
   @Prop({ type: Boolean, default: false }) pinned: boolean
 
   get isAdmin () {
-    return UserStore.userProfile?.isAdmin
+    return UserStore.user?.isAdmin
   }
 
   @Emit()
@@ -166,24 +164,27 @@ export default class HoleCard extends BaseComponentOrView {
 
   @Emit('update-pin-info')
   async unpin () {
-    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId) as Division
-    const pinnedIdList = division!.pinned.map(v => v.holeId)
+    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId)
+    if (!division) return Promise.reject(new Error(`Division ${this.hole.divisionId} Not Found!`))
+    const pinnedIdList = division.pinned.map(v => v.holeId)
     remove(pinnedIdList, v => v === this.hole.holeId)
-    const response = await this.$axios.put(`/divisions/${this.hole.divisionId}`, {
+
+    const modified = await modifyDivision(this.hole.divisionId, {
       pinned: pinnedIdList
     })
-    UserStore.setDivision({ divisionId: this.hole.divisionId, division: camelizeKeys(response.data) })
+    UserStore.setDivision({ divisionId: this.hole.divisionId, division: modified })
   }
 
   @Emit('update-pin-info')
   async pin () {
-    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId) as Division
-    const pinnedIdList = division!.pinned.map(v => v.holeId)
+    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId)
+    if (!division) return Promise.reject(new Error(`Division ${this.hole.divisionId} Not Found!`))
+    const pinnedIdList = division.pinned.map(v => v.holeId)
     pinnedIdList.push(this.hole.holeId)
-    const response = await this.$axios.put(`/divisions/${this.hole.divisionId}`, {
+    const modified = await modifyDivision(this.hole.divisionId, {
       pinned: pinnedIdList
     })
-    UserStore.setDivision({ divisionId: this.hole.divisionId, division: camelizeKeys(response.data) })
+    UserStore.setDivision({ divisionId: this.hole.divisionId, division: modified })
   }
 }
 </script>

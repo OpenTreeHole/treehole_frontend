@@ -40,33 +40,21 @@
         </v-col>
       </v-row>
     </transition-group>
-
-    <!-- 载入中信息 -->
-    <loading :request='[]' ref='loading' :pause-loading='initiating' />
   </v-container>
 </template>
 
 <script lang='ts'>
-import Loading from '@/components/Loading.vue'
 import { Component, Prop } from 'vue-property-decorator'
 import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { SearchFloorListRequest } from '@/api'
 import { openDivisionAndGotoHole } from '@/utils/floor'
 import { Floor } from '@/models/floor'
+import { searchFloors } from '@/apis/api'
 
-@Component({
-  components: {
-    Loading
-  }
-})
+@Component
 export default class SearchFloorList extends BaseComponentOrView {
-  @Prop({ required: true }) private searchStr: string
-  public floors: Array<Floor> = []
-
-  public request: SearchFloorListRequest
-
-  public initiating = true
+  @Prop({ required: true }) searchStr: string
+  floors: Floor[] = []
 
   get colClass () {
     if (this.isMobile) return 'px-1 py-1'
@@ -74,10 +62,7 @@ export default class SearchFloorList extends BaseComponentOrView {
   }
 
   async mounted () {
-    this.request = new SearchFloorListRequest(this.searchStr)
-    this.floors = this.request.datas
-    await this.request.request()
-    this.initiating = false
+    await searchFloors(this.searchStr, 20, 0)
   }
 
   updated () {

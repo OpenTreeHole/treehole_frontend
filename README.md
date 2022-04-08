@@ -22,11 +22,11 @@ docker run -d -p 80:80 shi2002/open_tree_hole_frontend
 
 ## Badge
 
-[![dev build](https://github.com/OpenTreeHole/vue/actions/workflows/dev.yml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/dev.yml)
+[![dev build](https://github.com/OpenTreeHole/treehole-frontend/actions/workflows/dev.yml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/dev.yml)
 
-[![docker](https://github.com/OpenTreeHole/vue/actions/workflows/docker-master.yaml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/docker-master.yaml)
+[![docker](https://github.com/OpenTreeHole/treehole-frontend/actions/workflows/docker-master.yaml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/docker-master.yaml)
 
-[![dev docker](https://github.com/OpenTreeHole/vue/actions/workflows/docker-dev.yaml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/docker-dev.yml)
+[![dev docker](https://github.com/OpenTreeHole/treehole-frontend/actions/workflows/docker-dev.yaml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/docker-dev.yml)
 
 ## Contributing
 
@@ -34,11 +34,11 @@ Feel free to dive in! [Open an issue](https://github.com/OpenTreeHole/vue/issues
 
 ### Development
 
-Getting Started: https://www.github.com/OpenTreeHole/Getting-Started/Getting-Started.md
+Getting Started: https://github.com/OpenTreeHole/treehole-frontend/blob/dev/Getting-Started/Getting-Started.md
 
 ```shell
 # Clone the repository
-git clone https://www.github.com/OpenTreeHole/vue.git
+git clone https://www.github.com/OpenTreeHole/treehole-frontend.git
 cd vue
 # Install Dependencies
 npm install # (Or yarn)
@@ -57,10 +57,10 @@ npm run build # (Or yarn run build)
 This project exists thanks to all the people who contribute.
 
 <a href="https://github.com/OpenTreeHole/vue/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=OpenTreeHole/vue" />
+  <img src="https://contrib.rocks/image?repo=OpenTreeHole/treehole-frontend" />
 </a>
 
 ## Licence
 
-[![license](https://img.shields.io/github/license/OpenTreeHole/vue)](https://github.com/OpenTreeHole/vue/blob/dev/LICENSE)
+[![license](https://img.shields.io/github/license/OpenTreeHole/treehole-frontend)](https://github.com/OpenTreeHole/treehole-frontend/blob/dev/LICENSE)
 © OpenTreeHole

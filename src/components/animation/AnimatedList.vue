@@ -12,7 +12,7 @@
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { sleep } from '@/utils/utils'
-import { gsap, CustomEase } from '@/plugins/gsap'
+import { CustomEase, gsap } from '@/plugins/gsap'
 import { Power4 } from 'gsap/gsap-core'
 
 interface ComputedData {
@@ -165,11 +165,11 @@ export default class AnimatedList extends BaseComponentOrView {
       this.animating = true
       this.animatingCount = this.computedDatas.length
     }
-    this.computedDatas.forEach(computedData => {
+    this.computedDatas.forEach(async computedData => {
       const from = this.currentTop.get(computedData.data[this.vkey])
       const to = this.updatedTop.get(computedData.data[this.vkey])
       const target = '#animated-' + computedData.data[this.vkey]
-      if (from === undefined) throw new Error('Cannot Get From Data!')
+      if (from === undefined) return Promise.reject(new Error('Cannot Get From Data!'))
       if (to === undefined) {
         gsap.to(target, {
           opacity: 0,
@@ -214,7 +214,7 @@ export default class AnimatedList extends BaseComponentOrView {
     })
   }
 
-  created () {
+  async created () {
     CustomEase.create('animatedListEase', '0.385, 0.900, 0.570, 1.010')
   }
 }

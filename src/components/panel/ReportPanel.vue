@@ -27,25 +27,26 @@ import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
 import ReportList from '@/components/column/ReportList.vue'
 import FloorList from '@/components/column/FloorList.vue'
 import { Report } from '@/models/report'
+
 @Component({
   components: { FloorList, ReportList, DoubleColumnPanel }
 })
 export default class ReportPanel extends BaseComponentOrView {
-  public displayReport: Report | null = null
-  public isLoadingVisible = false
+  displayReport: Report | null = null
+  isLoadingVisible = false
 
-  public showFloorList = false
+  showFloorList = false
 
   @Ref() readonly reportList: ReportList
   @Ref() readonly floorList: FloorList
   @Ref() readonly doubleColumnPanel: DoubleColumnPanel
 
-  public refresh (): void {
+  refresh (): void {
     this.deactivate()
     this.reportList.refresh()
   }
 
-  public openReport (report: Report): void {
+  openReport (report: Report): void {
     if (this.displayReport && report.reportId === this.displayReport.reportId) {
       this.doubleColumnPanel.deactivate()
       this.displayReport = null
@@ -56,17 +57,13 @@ export default class ReportPanel extends BaseComponentOrView {
     }
   }
 
-  public deactivate (): void {
+  deactivate (): void {
     this.displayReport = null
     this.doubleColumnPanel.deactivate()
   }
 
-  public showFloorListChanged (show: boolean) {
+  showFloorListChanged (show: boolean) {
     this.showFloorList = show
   }
 }
 </script>
-
-<style lang='scss' scoped>
-
-</style>

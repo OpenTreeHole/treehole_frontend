@@ -70,10 +70,10 @@
 
       <v-divider />
       <v-list style='padding: 5px'>
-        <v-list-item v-if='filtedTagMap && filtedTagMap[$route.path]'>
+        <v-list-item v-if='filteredTagMap && filteredTagMap[$route.path]'>
           <TagChip
-            :tag='filtedTagMap[$route.path]'
-            :key='"filtedTag-"+filtedTagMap[$route.path].tagId'
+            :tag='filteredTagMap[$route.path]'
+            :key='"filtedTag-"+filteredTagMap[$route.path].tagId'
             @click='clearTag($route.path)'
           />
         </v-list-item>
@@ -177,7 +177,7 @@ export default class Navbar extends BaseComponentOrView {
     if (!this.preloaded || !LocalStorageStore.token) {
       return this.$router.options.routes!.filter(v => !v.meta?.hide && !v.meta?.requireAuth)
     }
-    return this.$router.options.routes!.filter(v => !v.meta?.hide && (!v.meta?.requireAdmin || UserStore.userProfile?.isAdmin))
+    return this.$router.options.routes!.filter(v => !v.meta?.hide && (!v.meta?.requireAdmin || UserStore.user?.isAdmin))
   }
 
   get activeClass () {

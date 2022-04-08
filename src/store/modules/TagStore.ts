@@ -1,17 +1,17 @@
 import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
 import Vue from 'vue'
-import { Tag } from '@/models/tag'
+import { ITag } from '@/models/tag'
 
 @Module({ store: store, dynamic: true, name: 'TagStore', namespaced: true })
 class TagStore extends VuexModule {
   /**
    * The selected tags. (as filter)
    */
-  public tagMap: any = {}
+  public tagMap: { [key: string]: ITag } = {}
 
   @Mutation
-  public addTag (payload: { route: string, tag: Tag }): void {
+  public addTag (payload: { route: string, tag: ITag }): void {
     Vue.set(this.tagMap, payload.route, payload.tag)
   }
 

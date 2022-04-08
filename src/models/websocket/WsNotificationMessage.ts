@@ -15,7 +15,7 @@ export interface IWsNotificationMessage extends IWsMessage {
   code: string
   data: IDetailedFloor
   hasRead: boolean
-  timeCreated: string
+  timeCreated: Date | string
 }
 
 export function checkIWsNotificationMessage (message: any): boolean {
@@ -28,5 +28,14 @@ export default class WsNotificationMessage extends WsMessage implements IWsNotif
   data: IDetailedFloor
   hasRead: boolean
   messageId: number
-  timeCreated: string
+  timeCreated: Date
+
+  constructor (msg: IWsNotificationMessage) {
+    super(msg)
+    this.messageId = msg.messageId
+    this.code = msg.code
+    this.data = msg.data
+    this.hasRead = msg.hasRead
+    this.timeCreated = new Date(msg.timeCreated)
+  }
 }

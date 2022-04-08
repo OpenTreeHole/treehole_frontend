@@ -1,12 +1,25 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
+import { Hole } from '@/models/hole'
 
 @Module({ store: store, dynamic: true, name: 'UtilStore', namespaced: true })
 class UtilStore extends VuexModule {
   public isMobile: boolean = false
+  public currentDivisionId: number | null = null
+  public currentHole: Hole | null = null
 
   @Mutation
-  public setIsMobile (val: boolean): void {
+  setCurrentDivisionId (divisionId: number | null) {
+    this.currentDivisionId = divisionId
+  }
+
+  @Mutation
+  setCurrentHole (hole: Hole | null) {
+    this.currentHole = hole
+  }
+
+  @Mutation
+  setIsMobile (val: boolean): void {
     this.isMobile = val
   }
 
@@ -14,7 +27,7 @@ class UtilStore extends VuexModule {
    * Check whether the device is narrow-screen or wide-screen and update isMobile property.
    */
   @Action
-  public checkDevice (): void {
+  checkDevice (): void {
     this.setIsMobile(document.body.clientWidth <= 768)
   }
 }

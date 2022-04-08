@@ -66,6 +66,7 @@ import { Component, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
+import { login } from '@/apis/api'
 
 @Component
 export default class LoginPage extends BaseView {
@@ -100,13 +101,8 @@ export default class LoginPage extends BaseView {
   public async login () {
     if (this.valid) {
       this.$refs.form.validate()
-      const response = await this.$axios
-        .post('login', {
-          email: this.email,
-          password: this.password
-        })
-      this.messageSuccess(response.data.message)
-      LocalStorageStore.setToken('token ' + response.data.token)
+      const { message } = await login(this.email, this.password)
+      this.messageSuccess(message)
       LocalStorageStore.setEmail(this.email)
       await this.$router.replace('/division/1')
     }
@@ -125,7 +121,7 @@ export default class LoginPage extends BaseView {
     this.debouncedCheckEmail()
   }
 
-  created () {
+  async created () {
     this.debouncedCheckEmail = debounce(this.checkEmail, 500)
   }
 }

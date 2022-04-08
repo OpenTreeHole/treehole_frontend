@@ -83,6 +83,7 @@
 <script lang='ts'>
 import { Component } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
+import axios from 'axios'
 
 @Component
 export default class AboutPage extends BaseView {
@@ -122,12 +123,14 @@ export default class AboutPage extends BaseView {
 
   public async getLatestVersion () {
     try {
-      const response = await this.$axios
+      const response = await axios
         .request({
           url: this.$feConfig.latestReleasePkgJSON,
           transformRequest: [
             (data, headers) => {
-              delete headers.Authorization
+              if (headers) {
+                delete headers.Authorization
+              }
               return data
             }
           ]

@@ -1,50 +1,57 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
-import { Collection, UserProfile } from '@/models/user'
-import { camelizeKeys } from '@/utils/utils'
-import { VueInstance } from '@/instance'
+import { User } from '@/models/user'
 import { Division } from '@/models/division'
 import Vue from 'vue'
+import { getUserProfile, listDivisions } from '@/apis/api'
+import { Hole } from '@/models/hole'
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {
-  public collection: Collection = new Collection()
-  public divisions: Division[] = []
-  public userProfile: UserProfile | null = null
+  collection: Hole[] = []
+  divisions: Division[] = []
+  user: User | null = null
 
   @Mutation
-  public clear () {
-    this.collection = new Collection()
+  clear () {
+    this.collection = []
     this.divisions = []
   }
 
   @Mutation
-  public setDivisions (divisions: Division[]) {
+  setDivisions (divisions: Division[]) {
     this.divisions = divisions
   }
 
   @Mutation
-  public setDivision (payload: {divisionId: number, division: Division}) {
+  collectionAdd (hole: Hole) {
+    this.collection.push(hole)
+  }
+
+  @Mutation
+  collectionRemove (holeId: number) {
+    this.collection = this.collection.filter(v => v.holeId !== holeId)
+  }
+
+  @Mutation
+  setDivision (payload: {divisionId: number, division: Division}) {
     const index = this.divisions.findIndex(v => v.divisionId === payload.divisionId)
     Vue.set(this.divisions, index, payload.division)
   }
 
   @Mutation
-  public setUserProfile (userProfile: UserProfile) {
-    this.userProfile = userProfile
+  setUser (userProfile: User) {
+    this.user = userProfile
   }
 
-  @Action
-  public async requestDivision () {
-    const response = await VueInstance.$axios?.get('/divisions')
-    const divisions: Division[] = camelizeKeys(response.data)
-    this.setDivisions(divisions)
+  @Action({ rawError: true })
+  async requestDivision () {
+    this.setDivisions(await listDivisions())
   }
 
-  @Action
-  public async requestUserProfile () {
-    const response = await VueInstance.$axios?.get('/users')
-    this.setUserProfile(camelizeKeys(response.data))
+  @Action({ rawError: true })
+  async requestUser () {
+    this.setUser(await getUserProfile())
   }
 }
 
