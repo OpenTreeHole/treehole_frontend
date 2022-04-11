@@ -1,7 +1,7 @@
 <template>
   <div class='navbar'>
     <!--    <v-system-bar app color='primary'></v-system-bar>-->
-    <v-app-bar app elevate-on-scroll dark color='primary' dense flat>
+    <v-app-bar app fixed elevate-on-scroll dark color='primary' dense flat>
       <v-app-bar-nav-icon
         v-if='!banMenu && !$route.meta.allowBack'
         icon
@@ -150,27 +150,18 @@ import { isEqual } from 'lodash-es'
   components: { AppNavbarListGroup, NotificationsMenu, TagChip }
 })
 export default class Navbar extends BaseComponentOrView {
-  public searchText = ''
+  searchText = ''
 
   /**
    * The display status of sidebar.
-   * <p> show by default on wide screen edvice, and hide by default on narrow screen device. </p>
+   * <p> show by default on wide screen device, and hide by default on narrow screen device. </p>
    */
-  public showSidebar = !this.isMobile
-  public currentPage = 0
-  public holeToGo = ''
+  showSidebar = !this.isMobile
+  currentPage = 0
+  holeToGo = ''
 
   get banMenu () {
     return !LocalStorageStore.token
-  }
-
-  @Watch('isMobile', { immediate: true })
-  isMobileChanged () {
-    this.showSidebar = !this.isMobile
-  }
-
-  public childItemClass (route: RouteConfig, childRoute: RouteConfig, $route: Route) {
-    return route.path + childRoute.path === $route.fullPath || isEqual(childRoute.meta?.params, $route.params) ? this.activeClass : ''
   }
 
   get routes (): RouteConfig[] {
@@ -187,7 +178,16 @@ export default class Navbar extends BaseComponentOrView {
     }
   }
 
-  public search (): void {
+  @Watch('isMobile', { immediate: true })
+  isMobileChanged () {
+    this.showSidebar = !this.isMobile
+  }
+
+  childItemClass (route: RouteConfig, childRoute: RouteConfig, $route: Route) {
+    return route.path + childRoute.path === $route.fullPath || isEqual(childRoute.meta?.params, $route.params) ? this.activeClass : ''
+  }
+
+  search (): void {
     if (this.$route.path !== 'search') {
       this.$router.push({
         name: 'search',
@@ -198,17 +198,17 @@ export default class Navbar extends BaseComponentOrView {
     this.searchText = ''
   }
 
-  public reload (): void {
+  reload (): void {
     location.reload()
   }
 
-  public gotoHole (): void {
+  gotoHole (): void {
     const holeId = this.holeToGo.charAt(0) === '#' ? parseInt(this.holeToGo.substring(1)) : parseInt(this.holeToGo)
     openDivisionAndGotoHole(holeId)
     this.holeToGo = ''
   }
 
-  public back (): void {
+  back (): void {
     this.$router.back()
   }
 

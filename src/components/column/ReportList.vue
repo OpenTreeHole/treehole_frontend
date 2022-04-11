@@ -24,7 +24,7 @@ import { listReports } from '@/apis/api'
   components: { ReportCard }
 })
 export default class ReportList extends BaseComponentOrView {
-  public reports: Report[] = []
+  reports: Report[] = []
 
   @Emit()
   openReport (_report: Report) {

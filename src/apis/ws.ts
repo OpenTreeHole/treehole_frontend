@@ -5,25 +5,25 @@ import WsMessage, { parseMessage } from '@/models/websocket/WsMessage'
 import FDUHoleFEConfig from '@/opentreehole-fe.config'
 
 export class WsClient {
-  public ws: WebSocket | null = null
-  public unhandledMessages: string[] = []
-  public api: string
+  ws: WebSocket | null = null
+  unhandledMessages: string[] = []
+  api: string
 
   constructor (api: string) {
     this.api = api
   }
 
-  public isConnecting (): boolean {
+  isConnecting (): boolean {
     if (!this.ws) return false
     return this.ws.readyState === WebSocket.CONNECTING
   }
 
-  public isConnected (): boolean {
+  isConnected (): boolean {
     if (!this.ws) return false
     return this.ws.readyState === WebSocket.OPEN
   }
 
-  public connect () {
+  connect () {
     const token = LocalStorageStore.tokenNoPrefix
     if (!token) {
       throw new Error('No Token!')
@@ -36,18 +36,18 @@ export class WsClient {
     this.ws.onclose = () => this.onClose()
   }
 
-  public send (msg: string) {
+  send (msg: string) {
     if (!this.ws) this.unhandledMessages.push(msg)
     else {
       this.ws.send(msg)
     }
   }
 
-  public sendAction (action: any) {
+  sendAction (action: any) {
     this.send(JSON.stringify(action))
   }
 
-  public onOpen () {
+  onOpen () {
     if (this.unhandledMessages.length > 0) {
       this.unhandledMessages.forEach(m => {
         this.ws!.send(m)
@@ -56,15 +56,14 @@ export class WsClient {
     }
   }
 
-  public onError () {
-
+  onError () {
   }
 
-  public onClose () {
+  onClose () {
     this.ws = null
   }
 
-  public onMessage (e: MessageEvent) {
+  onMessage (e: MessageEvent) {
     const raw = (typeof e.data) === 'string' ? JSON.parse(e.data) : e.data
     const msg: WsMessage | null = parseMessage(camelizeKeys(raw))
     if (msg) {

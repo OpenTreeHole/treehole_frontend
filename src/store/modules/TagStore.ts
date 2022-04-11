@@ -8,15 +8,15 @@ class TagStore extends VuexModule {
   /**
    * The selected tags. (as filter)
    */
-  public tagMap: { [key: string]: ITag } = {}
+  tagMap: { [key: string]: ITag } = {}
 
   @Mutation
-  public addTag (payload: { route: string, tag: ITag }): void {
+  addTag (payload: { route: string, tag: ITag }): void {
     Vue.set(this.tagMap, payload.route, payload.tag)
   }
 
   @Mutation
-  public clearTag (route?: string): void {
+  clearTag (route?: string): void {
     if (route) {
       Vue.delete(this.tagMap, route)
     } else {

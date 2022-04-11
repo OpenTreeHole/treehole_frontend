@@ -19,7 +19,7 @@ const authAxios = axios.create()
  * Error caused by axios (or other api interaction)
  */
 export class ApiError extends Error {
-  public originalError: AxiosError
+  originalError: AxiosError
 
   constructor (originalError: AxiosError, message?: string, options?: any) {
     super(message, options)
@@ -417,7 +417,7 @@ export const deleteTag = async (id: number) => {
 }
 
 export const getFavorites = async () => {
-  const response = await axios.get('/users/favorite')
+  const response = await axios.get('/user/favorites')
   const data: IHole[] = camelizeKeys(response.data)
   return data.map(v => new Hole(v))
 }

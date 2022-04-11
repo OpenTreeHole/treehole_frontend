@@ -11,13 +11,9 @@
       </v-card-title>
 
       <v-card-text>
-        <!-- 回复内容 -->
         <mention-card v-if='!replyCancelled && replyFloor' :mention-floor='replyFloor' :cancel='()=>{replyCancelled=true}' />
 
         <v-form ref='form' v-model='valid' lazy-validation>
-          <!-- 回贴表单 -->
-
-          <!-- 富文本输入框 -->
           <app-editor
             ref='editor'
             :contentName='contentName'
@@ -26,7 +22,6 @@
         </v-form>
       </v-card-text>
 
-      <!-- 下方按钮 -->
       <v-card-actions>
         <v-spacer></v-spacer>
         <v-btn color='primary' text @click='closeDialog'>关闭</v-btn>

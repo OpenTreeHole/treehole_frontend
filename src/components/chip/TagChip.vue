@@ -21,10 +21,10 @@ import { ITag } from '@/models/tag'
 @Component
 export default class TagChip extends BaseComponentOrView {
   @Prop({ required: true, type: Object }) tag: ITag
-  public color: string = 'red'
+  color: string = 'red'
 
   @Emit('click')
-  public onClick (_e: MouseEvent) {}
+  onClick (_e: MouseEvent) {}
 
   async created () {
     this.color = parseTagColor(this.tag.name)

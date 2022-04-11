@@ -24,18 +24,19 @@ interface ComputedData {
 export default class AnimatedList extends BaseComponentOrView {
   @Prop({ required: true, type: Array }) datas: any[]
   @Prop({ required: true, type: String }) vkey: string
-  public computedDatas: ComputedData[] = []
-  public intermediateDatas: any[] = []
 
-  public animating = false
-  public animatingCount = 0
-  public completeCount = 0
+  computedDatas: ComputedData[] = []
+  intermediateDatas: any[] = []
 
-  public computedHeight: Map<string, number> = new Map()
-  public currentTop: Map<string, number> = new Map()
-  public updatedTop: Map<string, number> = new Map()
+  animating = false
+  animatingCount = 0
+  completeCount = 0
 
-  public generateComputedData (): ComputedData[] {
+  computedHeight: Map<string, number> = new Map()
+  currentTop: Map<string, number> = new Map()
+  updatedTop: Map<string, number> = new Map()
+
+  generateComputedData () {
     const ret: ComputedData[] = []
     this.intermediateDatas.forEach(data => {
       ret.push({ data: data, class: '' })
@@ -43,7 +44,7 @@ export default class AnimatedList extends BaseComponentOrView {
     return ret
   }
 
-  public measureHeight () {
+  measureHeight () {
     this.computedDatas.forEach(computedData => {
       const element = document.getElementById('animated-' + computedData.data[this.vkey])
       if (element) {
@@ -53,7 +54,7 @@ export default class AnimatedList extends BaseComponentOrView {
     })
   }
 
-  public measureCurrentTop () {
+  measureCurrentTop () {
     let top = 0
     this.currentTop = new Map()
     this.computedDatas.forEach(computedData => {
@@ -64,7 +65,7 @@ export default class AnimatedList extends BaseComponentOrView {
     })
   }
 
-  public measureUpdatedTop () {
+  measureUpdatedTop () {
     let top = 0
     this.updatedTop = new Map()
     this.intermediateDatas.forEach(data => {
@@ -75,7 +76,7 @@ export default class AnimatedList extends BaseComponentOrView {
     })
   }
 
-  public getComputedDatasFromKey (key: string): ComputedData | null {
+  getComputedDatasFromKey (key: string): ComputedData | null {
     let ret: ComputedData | null = null
     this.computedDatas.forEach(computedData => {
       if (computedData.data[this.vkey] === key) {
@@ -89,7 +90,7 @@ export default class AnimatedList extends BaseComponentOrView {
    * Block until all animation is finished.
    * @param times - The max retry times. (Planned to be replaced with a timeout)
    */
-  public async waitForAnimatingFinish (times: number) {
+  async waitForAnimatingFinish (times: number) {
     if (this.animating && times > 0) {
       await sleep(500)
       await this.waitForAnimatingFinish(times - 1)
@@ -97,7 +98,7 @@ export default class AnimatedList extends BaseComponentOrView {
     if (this.animating) console.error('Animating Not Finished!')
   }
 
-  public finishAnimation () {
+  finishAnimation () {
     this.animating = false
     this.updateData()
   }
@@ -106,7 +107,7 @@ export default class AnimatedList extends BaseComponentOrView {
    * Called when each animation completed.
    * <p>Calculate how many animation is still running. When all animation is finished, it updates the datas to the intermediateDatas.</p>
    */
-  public complete () {
+  complete () {
     this.completeCount++
     if (this.completeCount === this.animatingCount) {
       this.computedDatas = this.generateComputedData()
@@ -114,7 +115,7 @@ export default class AnimatedList extends BaseComponentOrView {
     }
   }
 
-  public isDataUpToDate (): boolean {
+  isDataUpToDate (): boolean {
     if (this.intermediateDatas.length !== this.datas.length) return false
     for (let i = 0; i < this.intermediateDatas.length && i < this.datas.length; i++) {
       if (this.intermediateDatas[i] !== this.datas[i]) return false
@@ -122,7 +123,7 @@ export default class AnimatedList extends BaseComponentOrView {
     return true
   }
 
-  public updateData () {
+  updateData () {
     if (this.isDataUpToDate()) return
     this.intermediateDatas = this.datas.map(v => v)
   }

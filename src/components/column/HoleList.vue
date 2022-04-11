@@ -15,7 +15,7 @@
     </animated-list>
     <v-row>
       <v-col>
-        <loading v-if='preloaded' ref='loading' :request='[getHoles]' />
+        <the-loader v-if='preloaded' ref='loading' :request='[getHoles]' />
       </v-col>
     </v-row>
   </v-container>
@@ -23,7 +23,7 @@
 
 <script lang='ts'>
 import HoleCard from '@/components/card/HoleCard.vue'
-import Loading from '@/components/Loading.vue'
+import TheLoader from '@/components/TheLoader.vue'
 import { Component, Emit, Inject, Prop, Ref, Watch } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
 import { EventBus } from '@/event-bus'
@@ -36,11 +36,12 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { getHole, listHoles } from '@/apis/api'
 import TagStore from '@/store/modules/TagStore'
 import UtilStore from '@/store/modules/UtilStore'
+import Vue from 'vue'
 
 @Component({
   components: {
+    TheLoader,
     HoleCard,
-    Loading,
     AnimatedList
   }
 })
@@ -53,7 +54,6 @@ export default class HoleList extends BaseComponentOrView {
 
   // 帖子列表
   holes: Hole[] = []
-  pinnedHoles: Hole[] = []
 
   startTime: Date = new Date()
 
@@ -62,10 +62,16 @@ export default class HoleList extends BaseComponentOrView {
 
   route: string
 
-  @Ref() loading: Loading
+  @Ref() loading: TheLoader
+
+  get pinnedHoles () {
+    const division = UserStore.divisions.find(v => v.divisionId === this.divisionId)
+    if (!division) return [] as Hole[]
+    return division.pinned
+  }
 
   get allHoles () {
-    return [...this.pinnedHoles, ...this.holes]
+    return [...this.pinnedHoles, ...this.holes.filter(v => !this.pinnedHoles.find(u => u.holeId === v.holeId))]
   }
 
   get getHoles () {
@@ -88,7 +94,14 @@ export default class HoleList extends BaseComponentOrView {
     this.holes = []
     this.startTime = new Date()
     this.loading.continueLoad()
-    this.pin()
+  }
+
+  modifyHole (hole: Hole) {
+    const indexHoles = this.holes.findIndex(v => v.holeId === hole.holeId)
+    const division = UserStore.divisions.find(v => v.divisionId === this.divisionId)
+    const indexPinnedHoles = division!.pinned.findIndex(v => v.holeId === hole.holeId)
+    if (indexHoles !== -1)Vue.set(this.holes, indexHoles, hole)
+    if (indexPinnedHoles !== -1)Vue.set(division!.pinned, indexPinnedHoles, hole)
   }
 
   /**
@@ -112,9 +125,9 @@ export default class HoleList extends BaseComponentOrView {
   async getDivisionHoles () {
     if (!this.divisionId) return Promise.reject(new Error('Cannot get division id!'))
     const holes = await listHoles(this.divisionId, this.startTime, 10, TagStore.tagMap[this.route])
-    const newHoles = holes.filter(v => !this.allHoles.find(u => u.holeId === v.holeId))
+    const newHoles = holes.filter(v => !this.holes.find(u => u.holeId === v.holeId))
     this.holes.push(...newHoles)
-    this.startTime = holes[holes.length - 1].timeUpdated
+    if (holes.length > 0) this.startTime = holes[holes.length - 1].timeUpdated
     return holes.length > 0
   }
 
@@ -139,16 +152,6 @@ export default class HoleList extends BaseComponentOrView {
     }, 100)
   }
 
-  pin () {
-    const division = UserStore.divisions.find(v => v.divisionId === this.divisionId)
-    if (!division) return Promise.reject(new Error(`Division ${this.divisionId} Not Found!`))
-    this.pinnedHoles = division.pinned
-  }
-
-  async onPreloaded () {
-    this.pin()
-  }
-
   async created () {
     this.route = this.$route.path
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
@@ -164,13 +167,13 @@ export default class HoleList extends BaseComponentOrView {
   /**
    * Calculate the height of the hole list.
    */
-  public getHeight (): number {
+  getHeight (): number {
     const holeListElement = document.getElementById('holeList')
     if (!holeListElement) return 0
     return parseInt(window.getComputedStyle(holeListElement).height)
   }
 
-  public onGotoMentionFloor (curFloor: DetailedFloor, mentionFloor: Floor) {
+  onGotoMentionFloor (curFloor: DetailedFloor, mentionFloor: Floor) {
     if (this.isPinned(curFloor.holeId)) {
       this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId)
       return
@@ -189,7 +192,7 @@ export default class HoleList extends BaseComponentOrView {
     this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId, curIndex)
   }
 
-  public async openNewOrExistHole (holeIdOrHole: number | Hole, floorId?: number, toIndex = 0) {
+  async openNewOrExistHole (holeIdOrHole: number | Hole, floorId?: number, toIndex = 0) {
     const holeId = (typeof holeIdOrHole === 'number') ? holeIdOrHole : holeIdOrHole.holeId
 
     let hole: Hole | undefined, index: number | undefined
@@ -222,7 +225,7 @@ export default class HoleList extends BaseComponentOrView {
   }
 
   @Emit()
-  public openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
+  openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
   }
 
   async mounted () {

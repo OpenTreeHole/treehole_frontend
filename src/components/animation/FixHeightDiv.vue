@@ -12,14 +12,14 @@ import { debounce } from 'lodash-es'
 @Component
 export default class FixHeightDiv extends BaseComponentOrView {
   @Prop({ required: false, default: true, type: Boolean }) fix: boolean
-  public fixedHeight = '4.5rem'
-  public resizeObserver: ResizeObserver
+  fixedHeight = '4.5rem'
+  resizeObserver: ResizeObserver
 
   get style () {
     return this.fix ? `max-height: ${this.fixedHeight};` : ''
   }
 
-  public computeFixHeight () {
+  computeFixHeight () {
     const element = this.$el as HTMLElement
     this.fixedHeight = window.getComputedStyle(element).height
   }

@@ -87,21 +87,20 @@ import axios from 'axios'
 
 @Component
 export default class AboutPage extends BaseView {
-  public latestVersion = '正在获取'
-  public installed =
-    window.matchMedia('(display-mode: standalone)').matches
+  latestVersion = '正在获取'
+  installed = window.matchMedia('(display-mode: standalone)').matches
 
-  public updateMsg = [
+  updateMsg = [
     '您正在使用开发版，如遇 BUG 请前往 GitHub 提交 Issue 或 Pull Request！',
     '检测到新版本，重载应用以升级！',
     '您正在使用最新版的FDU Hole！'
   ]
 
-  public updateMsgIndex = 2
+  updateMsgIndex = 2
 
-  public isProduction = process.env.NODE_ENV !== 'production'
+  isProduction = process.env.NODE_ENV !== 'production'
 
-  public updateUpdateMsgIndex (): number {
+  updateUpdateMsgIndex (): number {
     const currentVersion = this.$feConfig.feVersion.split('.')
     const latestVersion = this.latestVersion.split('.')
     if (
@@ -121,7 +120,7 @@ export default class AboutPage extends BaseView {
     }
   }
 
-  public async getLatestVersion () {
+  async getLatestVersion () {
     try {
       const response = await axios
         .request({

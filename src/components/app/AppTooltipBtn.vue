@@ -38,7 +38,7 @@ import Vue from 'vue'
 
 @Component
 export default class AppTooltipBtn extends Vue {
-  public inheritAttrs = false
+  inheritAttrs = false
   @Prop({ type: String }) icon: string
   @Prop({ required: true, type: String }) text: string
 }

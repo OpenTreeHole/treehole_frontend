@@ -22,10 +22,7 @@ export default class BaseView extends BaseComponentOrView {
       this.$wsImage.connect()
     }
 
-    const requestDivision = UserStore.requestDivision
-    const requestUserProfile = UserStore.requestUser
-    const taskList = [requestDivision(), requestUserProfile()]
-    await Promise.all(taskList)
+    await Promise.all([UserStore.requestDivisions(), UserStore.requestUser(), UserStore.requestTags()])
     this.$router.options.routes!.find(v => v.name === 'division')!.meta!.children = UserStore.divisions.map(v => ({
       path: `/${v.divisionId}`,
       meta: {

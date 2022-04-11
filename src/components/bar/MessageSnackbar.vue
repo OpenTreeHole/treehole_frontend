@@ -15,11 +15,11 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
 export default class Message extends BaseComponentOrView {
-  public isAlert = false
-  public type = 'info'
-  public message = ''
-  public icon = ''
-  public timeout = 2000
+  isAlert = false
+  type = 'info'
+  message = ''
+  icon = ''
+  timeout = 2000
 
   async mounted () {
     this.setMessageComponent(this)
@@ -28,7 +28,7 @@ export default class Message extends BaseComponentOrView {
   /**
    * (Re)set the Message Component visible.
    */
-  public alert () {
+  alert () {
     if (this.isAlert) {
       this.isAlert = false
       this.$nextTick(() => {
@@ -39,28 +39,28 @@ export default class Message extends BaseComponentOrView {
     }
   }
 
-  public success (message: string): void {
+  success (message: string): void {
     this.type = 'success'
     this.message = message
     this.icon = 'mdi-check-circle-outline'
     this.alert()
   }
 
-  public info (message: string): void {
+  info (message: string): void {
     this.type = 'info'
     this.message = message
     this.icon = 'mdi-alert-circle-outline'
     this.alert()
   }
 
-  public warning (message: string): void {
+  warning (message: string): void {
     this.type = 'warning'
     this.message = message
     this.icon = 'mdi-alert-outline'
     this.alert()
   }
 
-  public error (message: string): void {
+  error (message: string): void {
     this.type = 'error'
     this.message = message
     this.icon = 'mdi-alert-octagram-outline'

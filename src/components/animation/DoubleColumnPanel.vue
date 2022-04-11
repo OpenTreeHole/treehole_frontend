@@ -34,9 +34,9 @@ import { Power3 } from 'gsap/gsap-core'
 
 @Component
 export default class DoubleColumnPanel extends Vue {
-  public viewport = 0
+  viewport = 0
 
-  public osOptions: Options = {
+  osOptions: Options = {
     className: 'os-theme-dark',
     resize: 'none',
     sizeAutoCapable: true,
@@ -84,12 +84,12 @@ export default class DoubleColumnPanel extends Vue {
     }
   }
 
-  public osColFirst: OverlayScrollbars
-  public osColSecond: OverlayScrollbars
+  osColFirst: OverlayScrollbars
+  osColSecond: OverlayScrollbars
 
-  public showSecondCol = false
+  showSecondCol = false
 
-  public deactivate (): void {
+  deactivate (): void {
     gsap.to('.col-first',
       {
         x: '50%',
@@ -103,7 +103,7 @@ export default class DoubleColumnPanel extends Vue {
       })
   }
 
-  public activate (): void {
+  activate (): void {
     gsap.to('.col-first',
       {
         x: 0,
@@ -118,7 +118,7 @@ export default class DoubleColumnPanel extends Vue {
       })
   }
 
-  public scrollToHole (holeId: number) {
+  scrollToHole (holeId: number) {
     const el = document.getElementById(`#${holeId}`)
     if (!el) {
       console.error(`Not Found Element with Id: #${holeId}!`)
@@ -131,7 +131,7 @@ export default class DoubleColumnPanel extends Vue {
     this.osColFirst.scroll(el, 1000)
   }
 
-  public scrollToFloor (toIndex: number) {
+  scrollToFloor (toIndex: number) {
     const el = document.getElementById(toIndex.toString())
     if (!el) {
       console.error(`Not Found Element with Id: ${toIndex}!`)

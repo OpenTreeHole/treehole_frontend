@@ -4,9 +4,9 @@ import { Hole } from '@/models/hole'
 
 @Module({ store: store, dynamic: true, name: 'UtilStore', namespaced: true })
 class UtilStore extends VuexModule {
-  public isMobile: boolean = false
-  public currentDivisionId: number | null = null
-  public currentHole: Hole | null = null
+  isMobile: boolean = false
+  currentDivisionId: number | null = null
+  currentHole: Hole | null = null
 
   @Mutation
   setCurrentDivisionId (divisionId: number | null) {

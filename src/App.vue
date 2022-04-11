@@ -11,7 +11,6 @@
       </keep-alive>
     </v-main>
 
-    <float-btn-group/>
   </v-app>
 </template>
 
@@ -27,13 +26,12 @@ import 'highlight.js/styles/github.css'
 import 'overlayscrollbars/css/OverlayScrollbars.css'
 import '@mdi/font/css/materialdesignicons.css'
 
-import { Component, Provide, Ref, Watch } from 'vue-property-decorator'
+import { Component, Provide, Ref } from 'vue-property-decorator'
 import { BehaviorSubject } from 'rxjs'
 import Vue from 'vue'
 import MessageStore from '@/store/modules/MessageStore'
 import UtilStore from '@/store/modules/UtilStore'
 import FloatBtnGroup from '@/components/FloatBtnGroup.vue'
-import FloatBtnStore from '@/store/modules/FloatBtnStore'
 
 // if (process.env.NODE_ENV !== 'production') {
 //   const VConsole = require('vconsole')
@@ -70,11 +68,6 @@ export default class App extends Vue {
   errorCaptured (err: Error, vm: Vue, info: string) {
     MessageStore.messageError(err.message)
     throw err
-  }
-
-  @Watch('$route')
-  routeChange () {
-    FloatBtnStore.clean()
   }
 }
 </script>

@@ -3,10 +3,10 @@ import store from '@/store'
 
 @Module({ store: store, dynamic: true, name: 'LocalStorageStore', namespaced: true })
 class LocalStorageStore extends VuexModule {
-  public token = localStorage.getItem('token') || ''
-  public email = localStorage.getItem('email') || ''
-  public newcomer = localStorage.getItem('newcomer') || ''
-  public refreshToken = localStorage.getItem('refresh') || ''
+  token = localStorage.getItem('token') || ''
+  email = localStorage.getItem('email') || ''
+  newcomer = localStorage.getItem('newcomer') || ''
+  refreshToken = localStorage.getItem('refresh') || ''
 
   get tokenNoPrefix () {
     return this.token?.substring(6)

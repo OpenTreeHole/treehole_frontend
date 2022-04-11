@@ -50,7 +50,7 @@ export class Floor implements IFloor {
     this.convertHtml()
   }
 
-  public convertHtml () {
+  convertHtml () {
     this.html = marked(convertKatex(this.content))
   }
 }
@@ -66,14 +66,14 @@ export class DetailedFloor extends Floor implements IDetailedFloor {
   liked: boolean
   mention: Floor[]
 
-  public constructor (floor: IDetailedFloor) {
+  constructor (floor: IDetailedFloor) {
     super(floor)
     this.liked = floor.liked
     this.isMe = floor.isMe
     this.mention = floor.mention.map(v => new Floor(v))
   }
 
-  public convertHtml () {
+  convertHtml () {
     this.html = this.signMention(convertKatex(this.content))
   }
 
@@ -82,7 +82,7 @@ export class DetailedFloor extends Floor implements IDetailedFloor {
    *
    * @param str - the original string
    */
-  public signMention (str: string): string {
+  signMention (str: string): string {
     str = str.replace(/##?\d+/g, v => '\n\n<p mention="' + v + '"></p>\n\n')
     str = marked(convertKatex(str))
     str = str.replace(/<p mention="##?\d+"><\/p>/g, (str) => {

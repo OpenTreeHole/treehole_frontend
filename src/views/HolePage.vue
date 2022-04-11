@@ -15,12 +15,12 @@ import BaseView from '@/mixins/BaseView.vue'
   }
 })
 export default class HolePage extends BaseView {
-  public get computedDiscussionId (): number {
+  get computedDiscussionId () {
     return parseInt(this.$route.params.id)
   }
 
-  public get mentionFloorId (): number {
-    return (this.$route.query.mention && typeof this.$route.query.mention === 'string') ? parseInt(this.$route.query.mention) : -1
+  get mentionFloorId () {
+    return (this.$route.query.mention && typeof this.$route.query.mention === 'string') ? parseInt(this.$route.query.mention) : null
   }
 }
 </script>

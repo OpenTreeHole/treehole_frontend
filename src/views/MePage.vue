@@ -38,30 +38,30 @@ import LocalStorageStore from '@/store/modules/LocalStorageStore'
 
 @Component
 export default class MePage extends BaseView {
-  public profile: User | null = null
-  public joinedTimeDisplayMsg: string
+  profile: User | null = null
+  joinedTimeDisplayMsg: string
 
   get darkModeLabel (): string {
     return this.$vuetify.theme.dark ? '夜间模式开启' : '夜间模式关闭'
   }
 
-  public getUserInfo (): void {
+  getUserInfo (): void {
     if (!UserStore.user) throw new Error('User Not Found!')
     this.profile = UserStore.user
     this.joinedTimeDisplayMsg = convertDate(UserStore.user.joinedTime)
   }
 
-  public logout (): void {
+  logout (): void {
     LocalStorageStore.clear()
     UserStore.clear()
     this.$router.push('/login')
   }
 
-  public changePassWd (): void {
+  changePassWd (): void {
     this.$router.push('/changepassword')
   }
 
-  public onPreloaded () {
+  onPreloaded () {
     this.getUserInfo()
   }
 }

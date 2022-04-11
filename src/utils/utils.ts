@@ -31,6 +31,15 @@ export const sleep = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+export const max = (...nums: number[]) => {
+  if (nums.length === 0) return 0
+  let maxNum = nums[0]
+  for (const num of nums) {
+    maxNum = num > maxNum ? num : maxNum
+  }
+  return maxNum
+}
+
 export const convertDate = (v: any): string => {
   const date = new Date(v)
   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()

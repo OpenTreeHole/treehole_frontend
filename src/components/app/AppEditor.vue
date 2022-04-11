@@ -19,9 +19,9 @@ import { uploadImage } from '@/apis/api'
 export default class AppEditor extends BaseComponentOrView {
   @Prop({ type: String }) contentName: string
 
-  public editor: Vditor
+  editor: Vditor
 
-  public validate (): boolean {
+  validate (): boolean {
     if (!this.getContent()) {
       this.messageError('内容不能为空')
       return false
@@ -30,12 +30,12 @@ export default class AppEditor extends BaseComponentOrView {
     }
   }
 
-  public getContent (): string {
+  getContent (): string {
     return this.editor.getValue() // Markdown
     // return this.editor.getHTML()  HTML
   }
 
-  public setContent (content: string): void {
+  setContent (content: string): void {
     this.editor.setValue(content)
   }
 

@@ -148,16 +148,16 @@ import { DetailedFloor } from '@/models/floor'
   }
 })
 export default class NotificationsMenu extends BaseComponentOrView {
-  public archived = false
-  public icons = {
+  archived = false
+  icons = {
     read: 'mdi-email-open',
     unread: 'mdi-email-mark-as-unread'
   }
 
-  public menu = false
+  menu = false
 
-  public readRaw: WsNotificationMessage[] = []
-  public unreadRaw: WsNotificationMessage[] = []
+  readRaw: WsNotificationMessage[] = []
+  unreadRaw: WsNotificationMessage[] = []
 
   @Ref() responsive: Vue
 
@@ -202,14 +202,14 @@ export default class NotificationsMenu extends BaseComponentOrView {
     return this.archived ? '标记为未读' : '标记为已读'
   }
 
-  public select (msg: WsNotificationMessage) {
+  select (msg: WsNotificationMessage) {
     openDivisionAndGotoHole(msg.data.holeId, msg.data.floorId)
     this.toggle(msg.messageId)
 
     this.menu = false
   }
 
-  public toggle (msgId: number) {
+  toggle (msgId: number) {
     this.$ws.sendAction({ action: this.archived ? 'unread' : 'read', id: msgId })
 
     const all = this.readRaw.concat(this.unreadRaw).sort((a, b) => b.messageId - a.messageId)
@@ -220,7 +220,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
     this.unreadRaw = all.filter(v => !v.hasRead)
   }
 
-  public toggleAll () {
+  toggleAll () {
     if (this.archived) {
       this.readRaw.forEach(v => {
         this.$ws.sendAction({ action: 'unread', id: v.messageId })
@@ -233,7 +233,7 @@ export default class NotificationsMenu extends BaseComponentOrView {
     else this.readRaw = all
   }
 
-  public onWsMessage (msg: WsMessage) {
+  onWsMessage (msg: WsMessage) {
     if (msg instanceof WsNotificationMessage) {
       let all = this.readRaw.concat(this.unreadRaw)
       let flag = false

@@ -3,19 +3,22 @@ import store from '@/store'
 import { User } from '@/models/user'
 import { Division } from '@/models/division'
 import Vue from 'vue'
-import { getUserProfile, listDivisions } from '@/apis/api'
+import { getUserProfile, listDivisions, listTags } from '@/apis/api'
 import { Hole } from '@/models/hole'
+import { Tag } from '@/models/tag'
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {
   collection: Hole[] = []
   divisions: Division[] = []
+  tags: Tag[] = []
   user: User | null = null
 
   @Mutation
   clear () {
     this.collection = []
     this.divisions = []
+    this.tags = []
   }
 
   @Mutation
@@ -44,14 +47,24 @@ class UserStore extends VuexModule {
     this.user = userProfile
   }
 
+  @Mutation
+  setTags (tags: Tag[]) {
+    this.tags = tags
+  }
+
   @Action({ rawError: true })
-  async requestDivision () {
+  async requestDivisions () {
     this.setDivisions(await listDivisions())
   }
 
   @Action({ rawError: true })
   async requestUser () {
     this.setUser(await getUserProfile())
+  }
+
+  @Action({ rawError: true })
+  async requestTags () {
+    this.setTags(await listTags())
   }
 }
 

@@ -15,11 +15,7 @@
         >
         </tag-chip>
       </span>
-      <span class='flex-right' v-if='isAdmin'>
-        <v-icon v-if='pinned' color='blue' v-ripple @click='unpin'>mdi-pin</v-icon>
-        <v-icon v-else color='blue' v-ripple @click='pin'>mdi-pin-outline</v-icon>
-      </span>
-      <span class='flex-right' v-else-if='pinned'>
+      <span class='flex-right' v-if='isPinned'>
         <v-icon color='blue'>mdi-pin</v-icon>
       </span>
     </v-card-text>
@@ -146,6 +142,12 @@ export default class HoleCard extends BaseComponentOrView {
   @Prop({ type: Boolean, default: false }) fixHeight: boolean
   @Prop({ type: Boolean, default: false }) pinned: boolean
 
+  get isPinned () {
+    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId)
+    if (!division) throw new Error(`Division ${this.hole.divisionId} Not Found!`)
+    return !!division.pinned.find(v => v.holeId === this.hole.holeId)
+  }
+
   get isAdmin () {
     return UserStore.user?.isAdmin
   }
@@ -154,11 +156,11 @@ export default class HoleCard extends BaseComponentOrView {
   openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
   }
 
-  public unfold (): void {
+  unfold (): void {
     this.hole.styleData.fold = false
   }
 
-  public fold (): void {
+  fold (): void {
     this.hole.styleData.fold = true
   }
 

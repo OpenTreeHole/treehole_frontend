@@ -10,17 +10,33 @@
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component } from 'vue-property-decorator'
-import FloatBtnStore from '@/store/modules/FloatBtnStore'
+import { Component, Prop } from 'vue-property-decorator'
+
+export interface IFloatBtnInfo {
+  name: string
+  style: string
+  icon: string
+  callback: () => void
+}
+
+const defaultBtnInfo: IFloatBtnInfo = {
+  name: '',
+  style: '',
+  icon: 'mdi-send',
+  callback: () => {
+  }
+}
 
 @Component
 export default class FloatBtnGroup extends BaseComponentOrView {
-  get floatBtnClass () {
-    return this.isMobile ? 'float-btn' : 'float-btn-mobile'
+  @Prop({ type: Array, default: () => [] }) floatBtns: Partial<IFloatBtnInfo>[]
+
+  get cInfo () {
+    return this.floatBtns.map(v => ({ ...defaultBtnInfo, ...v }))
   }
 
-  get floatBtns () {
-    return FloatBtnStore.floatBtns
+  get floatBtnClass () {
+    return this.isMobile ? 'float-btn-mobile' : 'float-btn'
   }
 }
 </script>
@@ -29,7 +45,7 @@ export default class FloatBtnGroup extends BaseComponentOrView {
 .float-btn {
   position: fixed;
   right: 8px;
-  bottom: 64px;
+  bottom: 32px;
 
   .v-btn {
     margin: 5px;
