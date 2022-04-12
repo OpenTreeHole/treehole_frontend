@@ -8,10 +8,10 @@ const config = {
   teamMail: 'danxi_dev@protonmail.com',
   latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/OpenTreeHole/vue@master/package.json', // the latest version number of front end.
   feVersion: pksjson.version,
-  backEndUrl: 'https://www.fduhole.com/api/', // the api address for backend
-  authUrl: 'https://testauth.fduhole.com/api/', // test address
-  backEndWebsocketNotificationApi: 'wss://www.fduhole.com/ws/notification',
-  backEndWebsocketImageApi: 'wss://www.fduhole.com/ws/images',
+  backEndUrl: 'https://www.fduhole.com/api/',
+  authUrl: 'https://auth.fduhole.com/api/',
+  backEndWebsocketNotificationApi: 'wss://www.fduhole.com/api/ws/notification',
+  backEndWebsocketImageApi: 'wss://www.fduhole.com/api/ws/images',
 
   // licenses
   licenses: [
@@ -46,8 +46,8 @@ const config = {
 }
 if (process.env.NODE_ENV !== 'production') { // development
   config.backEndUrl = 'https://hole.hath.top/api/'
-  config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/ws/notification'
-  config.backEndWebsocketImageApi = 'wss://hole.hath.top/ws/images'
+  config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/api/ws/notification'
+  config.backEndWebsocketImageApi = 'wss://hole.hath.top/api/ws/images'
   config.authUrl = 'https://testAuth.fduhole.com/api/'
 }
 
