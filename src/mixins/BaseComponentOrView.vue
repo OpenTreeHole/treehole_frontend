@@ -8,27 +8,27 @@ import UtilStore from '@/store/modules/UtilStore'
 import TagStore from '@/store/modules/TagStore'
 import { EventBus } from '@/event-bus'
 import WsMessage from '@/models/websocket/WsMessage'
-import { Tag } from '@/models/tag'
+import { ITag } from '@/models/tag'
 import { BehaviorSubject, Subscription } from 'rxjs'
 
 @Component
 export default class BaseComponentOrView extends Vue {
   @Inject() preloadSubject: BehaviorSubject<boolean>
-  public preloadSubscription: Subscription
+  preloadSubscription: Subscription
 
-  public setMessageComponent = MessageStore.setMessageComponent
-  public messageError = MessageStore.messageError
-  public messageSuccess = MessageStore.messageSuccess
-  public messageInfo = MessageStore.messageInfo
-  public messageWarning = MessageStore.messageWarning
-  public checkDevice = UtilStore.checkDevice
+  setMessageComponent = MessageStore.setMessageComponent
+  messageError = MessageStore.messageError
+  messageSuccess = MessageStore.messageSuccess
+  messageInfo = MessageStore.messageInfo
+  messageWarning = MessageStore.messageWarning
+  checkDevice = UtilStore.checkDevice
 
-  public preloaded = false
+  preloaded = false
 
-  public addTag = (route: string, tag: Tag) => TagStore.addTag({ route: route, tag: tag })
-  public clearTag = TagStore.clearTag
+  addTag = (route: string, tag: ITag) => TagStore.addTag({ route: route, tag: tag })
+  clearTag = TagStore.clearTag
 
-  get filtedTagMap () {
+  get filteredTagMap () {
     return TagStore.tagMap
   }
 
@@ -43,10 +43,10 @@ export default class BaseComponentOrView extends Vue {
     return UtilStore.isMobile
   }
 
-  public onPreloaded () {
+  onPreloaded () {
   }
 
-  public onWsMessage (msg: WsMessage) {
+  onWsMessage (msg: WsMessage) {
   }
 
   async mounted () {
@@ -58,6 +58,7 @@ export default class BaseComponentOrView extends Vue {
   async themeClassesChanged () {
     await this.$nextTick()
     const keys = Object.keys(this.themeClasses)
+    if (!this.$el.classList) return
     this.$el.classList.remove(...keys)
     for (const key of keys) {
       if (this.themeClasses[key]) {

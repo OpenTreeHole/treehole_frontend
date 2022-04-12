@@ -1,13 +1,13 @@
 <template>
   <v-container id='holeList' class='pa-0'>
-    <animated-list ref='animatedHoleList' :datas='holes' vkey='holeIdStr' v-slot='{ data, index }'>
+    <animated-list ref='animatedHoleList' :datas='allHoles' vkey='holeIdStr' v-slot='{ data, index }'>
       <v-col :class='colClass'>
         <hole-card
           :hole='data'
           :index='index'
           :is-active='data.holeId === displayHoleId'
           :fix-height='fixCardHeight'
-          :pinned='index < request.pinCount'
+          :pinned='index < pinnedHoles.length'
           @open-hole='openHole'
           @update-pin-info='refresh'
         />
@@ -15,8 +15,7 @@
     </animated-list>
     <v-row>
       <v-col>
-        <!-- 载入中信息 -->
-        <loading ref='loading' :pause-loading='!preloaded' :request='[getHoles]' />
+        <the-loader v-if='preloaded' ref='loading' :request='[getHoles]' />
       </v-col>
     </v-row>
   </v-container>
@@ -24,47 +23,63 @@
 
 <script lang='ts'>
 import HoleCard from '@/components/card/HoleCard.vue'
-import Loading from '@/components/Loading.vue'
-import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
+import TheLoader from '@/components/TheLoader.vue'
+import { Component, Emit, Inject, Prop, Ref, Watch } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
 import { EventBus } from '@/event-bus'
 import AnimatedList from '@/components/animation/AnimatedList.vue'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { sleep } from '@/utils/utils'
-import { CollectionHoleListRequest, DivisionHoleListRequest, HoleListRequest, HomeHoleListRequest } from '@/api'
-import UserStore from '@/store/modules/UserStore'
-import { Division } from '@/models/division'
+import UserStore, { ShowNSFWStatus } from '@/store/modules/UserStore'
 import { debounce } from 'lodash-es'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { getHole, listHoles } from '@/apis/api'
+import TagStore from '@/store/modules/TagStore'
+import UtilStore from '@/store/modules/UtilStore'
+import Vue from 'vue'
+import { ITag } from '@/models/tag'
 
 @Component({
   components: {
+    TheLoader,
     HoleCard,
-    Loading,
     AnimatedList
   }
 })
 export default class HoleList extends BaseComponentOrView {
-  @Prop({ required: false, type: Number, default: -1 }) displayHoleId: number
+  @Prop({ required: false, default: null }) displayHoleId: number | null
   @Prop({ type: Boolean, default: false }) fixCardHeight: boolean
+  @Inject() holeListType: 'division' | 'collection'
 
   @Ref() readonly animatedHoleList: AnimatedList
 
-  // 帖子列表
-  public holes: Hole[] = []
+  /**
+   * Store all fetched holes, including pinned ones. (However, if the pinned holes have not been fetched through listHoles or getHole, it won't be listed in this field.)
+   */
+  holes: Hole[] = []
 
-  public startTime: Date = new Date()
+  startTime: Date = new Date()
 
-  public collectionIds: number[] = []
+  debouncedCalculateLines: Function
+  lineHeight: number = 10
 
-  public debouncedCalculateLines: Function
-  public lineHeight: number = 10
+  route: string
 
-  public request: HoleListRequest
+  @Ref() loading: TheLoader
 
-  public route: string
+  get pinnedHoles () {
+    const division = UserStore.divisions.find(v => v.divisionId === this.divisionId)
+    if (!division) return [] as Hole[]
+    return division.pinned
+  }
 
-  @Ref() loading: Loading
+  get allHoles () {
+    return [...this.pinnedHoles, ...this.holes.filter(v => !this.pinnedHoles.find(u => u.holeId === v.holeId))]
+  }
+
+  get getHoles () {
+    return this.holeListType === 'division' ? this.getDivisionHoles : this.getCollectionHoles
+  }
 
   get colClass () {
     if (this.isMobile) return 'px-1 py-1'
@@ -72,34 +87,57 @@ export default class HoleList extends BaseComponentOrView {
   }
 
   get divisionId () {
-    if (this.route.includes('division')) return parseInt(this.$route.params.id)
-    else return 1
+    return UtilStore.currentDivisionId
+  }
+
+  get showNSFW () {
+    return UserStore.showNSFW
+  }
+
+  @Watch('showNSFW')
+  showNSFWChanged (newVal: ShowNSFWStatus) {
+    if (newVal === ShowNSFWStatus.hidden) this.holes = this.holes.filter(v => !v.isFolded)
+    else if (newVal === ShowNSFWStatus.show) this.$emit('refresh')
+  }
+
+  get blockedTags () {
+    return TagStore.blockedTags
+  }
+
+  @Watch('blockedTags')
+  blockedTagsChanged (newVal: ITag[], oldVal: ITag[]) {
+    if (newVal.every(tag => oldVal.find(oldTag => oldTag.name === tag.name))) this.holes.filter(v => v.tags.every(tag => !this.blockedTags.find(blockedTag => blockedTag.name === tag.name)))
+    else this.$emit('refresh')
   }
 
   /**
    * Clear the hole list and reload.
    */
-  public refresh () {
-    this.request.clear()
-    this.holes = this.request.datas
+  refresh () {
+    this.holes = []
+    this.startTime = new Date()
     this.loading.continueLoad()
-    this.pin()
+  }
+
+  modifyHole (hole: Hole) {
+    const indexHoles = this.holes.findIndex(v => v.holeId === hole.holeId)
+    const division = UserStore.divisions.find(v => v.divisionId === this.divisionId)
+    const indexPinnedHoles = division!.pinned.findIndex(v => v.holeId === hole.holeId)
+    if (indexHoles !== -1)Vue.set(this.holes, indexHoles, hole)
+    if (indexPinnedHoles !== -1)Vue.set(division!.pinned, indexPinnedHoles, hole)
   }
 
   /**
    * Decide if pinned by hole id.
    */
-  public isPinned (holeId: number) {
-    for (let i = 0; i < this.request.pinCount; i++) {
-      if (this.holes[i].holeId === holeId) return true
-    }
-    return false
+  isPinned (holeId: number) {
+    return !!this.pinnedHoles.find(v => v.holeId === holeId)
   }
 
   /**
    * Calculate the number of the total lines of the display (i.e. the first floor) of each hole.
    */
-  public calculateLines (): void {
+  calculateLines (): void {
     for (let i = 0; i < this.holes.length; i++) {
       const element = document.getElementById('p' + i)
       const totalHeight = element?.scrollHeight ?? 0
@@ -107,8 +145,30 @@ export default class HoleList extends BaseComponentOrView {
     }
   }
 
-  public async getHoles (): Promise<boolean> {
-    return await this.request.request()
+  async getDivisionHoles () {
+    if (!this.divisionId) return Promise.reject(new Error('Cannot get division id!'))
+    const holes = await listHoles(this.divisionId, this.startTime, 10, TagStore.tagMap[this.route])
+    const newHoles = holes.filter(v => !this.holes.find(u => u.holeId === v.holeId))
+
+    // Filter blocked tags.
+    let filteredHoles = newHoles.filter(v => v.tags.every(tag => !this.blockedTags.find(blockedTag => blockedTag.name === tag.name)))
+
+    // Filter NSFW tags.
+    if (this.showNSFW === ShowNSFWStatus.hidden) filteredHoles = filteredHoles.filter(v => !v.isFolded)
+
+    this.holes.push(...filteredHoles)
+    if (holes.length > 0) this.startTime = holes[holes.length - 1].timeUpdated
+    return holes.length > 0
+  }
+
+  async getCollectionHoles () {
+    this.holes = UserStore.collection
+    return false
+  }
+
+  async getHole (holeId: number, toIndex: number) {
+    const hole = await getHole(holeId)
+    this.holes.splice(toIndex, 0, hole)
   }
 
   @Watch('holes')
@@ -122,60 +182,28 @@ export default class HoleList extends BaseComponentOrView {
     }, 100)
   }
 
-  public getDivisionById (divisionId: number): Division | undefined {
-    return UserStore.divisions.find(v => {
-      return v.divisionId === divisionId
-    })
-  }
-
-  pin () {
-    const division = this.getDivisionById(this.divisionId)
-    if (division && (this.request instanceof HomeHoleListRequest || this.request instanceof DivisionHoleListRequest)) {
-      for (let i = division.pinned.length - 1; i >= 0; i--) {
-        this.request.pin(new Hole(division.pinned[i]))
-      }
-    }
-  }
-
-  async onPreloaded () {
-    this.pin()
-    await this.$nextTick()
-    this.loading.continueLoad()
-  }
-
-  created () {
+  async created () {
     this.route = this.$route.path
-    UserStore.collection.getCollections()
     this.debouncedCalculateLines = debounce(this.calculateLines, 300)
-    if (this.route.includes('home')) {
-      this.request = new HomeHoleListRequest()
-    } else if (this.route.includes('collections')) {
-      this.request = new CollectionHoleListRequest()
-    } else if (this.route.includes('division')) {
-      this.request = new DivisionHoleListRequest(this.divisionId)
-    }
-    this.holes = this.request.datas
-    UserStore.collection.registerUpdateHoleArray(this.route, this.holes)
   }
 
-  @Watch('filtedTagMap', {
+  @Watch('filteredTagMap', {
     deep: true
   })
-  filtedTagMapChanged () {
-    this.request.tag = this.filtedTagMap[this.route] ? this.filtedTagMap[this.route] : null
+  filteredTagMapChanged () {
     this.$emit('refresh')
   }
 
   /**
    * Calculate the height of the hole list.
    */
-  public getHeight (): number {
+  getHeight (): number {
     const holeListElement = document.getElementById('holeList')
     if (!holeListElement) return 0
     return parseInt(window.getComputedStyle(holeListElement).height)
   }
 
-  public onGotoMentionFloor (curFloor: DetailedFloor, mentionFloor: Floor) {
+  onGotoMentionFloor (curFloor: DetailedFloor, mentionFloor: Floor) {
     if (this.isPinned(curFloor.holeId)) {
       this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId)
       return
@@ -194,9 +222,7 @@ export default class HoleList extends BaseComponentOrView {
     this.openNewOrExistHole(mentionFloor.holeId, mentionFloor.floorId, curIndex)
   }
 
-  public async openNewOrExistHole (holeIdOrHole: number | Hole, floorId?: number, toIndex = this.request.pinCount) {
-    await this.loading.waitForUnpause(8)
-
+  async openNewOrExistHole (holeIdOrHole: number | Hole, floorId?: number, toIndex = 0) {
     const holeId = (typeof holeIdOrHole === 'number') ? holeIdOrHole : holeIdOrHole.holeId
 
     let hole: Hole | undefined, index: number | undefined
@@ -212,7 +238,7 @@ export default class HoleList extends BaseComponentOrView {
         hole = holeIdOrHole
         this.holes.splice(toIndex, 0, hole)
       } else {
-        await this.loading.loadCustomRequestOnce(async () => this.request.requestHole(holeId, toIndex))
+        await this.loading.loadCustomRequestOnce(async () => await this.getHole(holeId, toIndex))
         hole = this.holes[toIndex]
       }
     } else {
@@ -229,7 +255,7 @@ export default class HoleList extends BaseComponentOrView {
   }
 
   @Emit()
-  public openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
+  openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
   }
 
   async mounted () {
@@ -242,7 +268,6 @@ export default class HoleList extends BaseComponentOrView {
   }
 
   destroyed () {
-    UserStore.collection.unregisterUpdateHoleArray(this.$route.name as string)
     EventBus.$off('goto-mention-floor', this.onGotoMentionFloor)
     EventBus.$off('goto-hole', this.openNewOrExistHole)
   }

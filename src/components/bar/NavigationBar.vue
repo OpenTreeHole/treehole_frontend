@@ -1,7 +1,7 @@
 <template>
   <div class='navbar'>
     <!--    <v-system-bar app color='primary'></v-system-bar>-->
-    <v-app-bar app elevate-on-scroll dark color='primary' dense flat>
+    <v-app-bar app fixed elevate-on-scroll dark color='primary' dense flat>
       <v-app-bar-nav-icon
         v-if='!banMenu && !$route.meta.allowBack'
         icon
@@ -70,10 +70,10 @@
 
       <v-divider />
       <v-list style='padding: 5px'>
-        <v-list-item v-if='filtedTagMap && filtedTagMap[$route.path]'>
+        <v-list-item v-if='filteredTagMap && filteredTagMap[$route.path]'>
           <TagChip
-            :tag='filtedTagMap[$route.path]'
-            :key='"filtedTag-"+filtedTagMap[$route.path].tagId'
+            :tag='filteredTagMap[$route.path]'
+            :key='"filtedTag-"+filteredTagMap[$route.path].tagId'
             @click='clearTag($route.path)'
           />
         </v-list-item>
@@ -150,34 +150,25 @@ import { isEqual } from 'lodash-es'
   components: { AppNavbarListGroup, NotificationsMenu, TagChip }
 })
 export default class Navbar extends BaseComponentOrView {
-  public searchText = ''
+  searchText = ''
 
   /**
    * The display status of sidebar.
-   * <p> show by default on wide screen edvice, and hide by default on narrow screen device. </p>
+   * <p> show by default on wide screen device, and hide by default on narrow screen device. </p>
    */
-  public showSidebar = !this.isMobile
-  public currentPage = 0
-  public holeToGo = ''
+  showSidebar = !this.isMobile
+  currentPage = 0
+  holeToGo = ''
 
   get banMenu () {
     return !LocalStorageStore.token
-  }
-
-  @Watch('isMobile', { immediate: true })
-  isMobileChanged () {
-    this.showSidebar = !this.isMobile
-  }
-
-  public childItemClass (route: RouteConfig, childRoute: RouteConfig, $route: Route) {
-    return route.path + childRoute.path === $route.fullPath || isEqual(childRoute.meta?.params, $route.params) ? this.activeClass : ''
   }
 
   get routes (): RouteConfig[] {
     if (!this.preloaded || !LocalStorageStore.token) {
       return this.$router.options.routes!.filter(v => !v.meta?.hide && !v.meta?.requireAuth)
     }
-    return this.$router.options.routes!.filter(v => !v.meta?.hide && (!v.meta?.requireAdmin || UserStore.userProfile?.isAdmin))
+    return this.$router.options.routes!.filter(v => !v.meta?.hide && (!v.meta?.requireAdmin || UserStore.user?.isAdmin))
   }
 
   get activeClass () {
@@ -187,7 +178,16 @@ export default class Navbar extends BaseComponentOrView {
     }
   }
 
-  public search (): void {
+  @Watch('isMobile', { immediate: true })
+  isMobileChanged () {
+    this.showSidebar = !this.isMobile
+  }
+
+  childItemClass (route: RouteConfig, childRoute: RouteConfig, $route: Route) {
+    return route.path + childRoute.path === $route.fullPath || isEqual(childRoute.meta?.params, $route.params) ? this.activeClass : ''
+  }
+
+  search (): void {
     if (this.$route.path !== 'search') {
       this.$router.push({
         name: 'search',
@@ -198,17 +198,17 @@ export default class Navbar extends BaseComponentOrView {
     this.searchText = ''
   }
 
-  public reload (): void {
+  reload (): void {
     location.reload()
   }
 
-  public gotoHole (): void {
+  gotoHole (): void {
     const holeId = this.holeToGo.charAt(0) === '#' ? parseInt(this.holeToGo.substring(1)) : parseInt(this.holeToGo)
     openDivisionAndGotoHole(holeId)
     this.holeToGo = ''
   }
 
-  public back (): void {
+  back (): void {
     this.$router.back()
   }
 

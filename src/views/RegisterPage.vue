@@ -76,7 +76,7 @@
                 justify='center'
                 style='margin-bottom: -12px'
               >
-                <v-checkbox v-model='agreelicenses' label='同意'></v-checkbox>
+                <v-checkbox v-model='agreeLicenses' label='同意'></v-checkbox>
                 <!--suppress HtmlUnknownAnchorTarget -->
                 <a href='/#/license' target='_blank'>相关协议</a>
               </v-row>
@@ -87,7 +87,7 @@
                 class='my-4'
                 color='success'
                 block
-                :disabled='!(agreelicenses && valid)'
+                :disabled='!(agreeLicenses && valid)'
                 @click='register'
               >注册
               </v-btn>
@@ -105,54 +105,52 @@ import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
+import { register, verifyWithEmail } from '@/apis/api'
 
 @Component
 export default class RegisterPage extends BaseView {
   // 同意协议
-  public agreelicenses: boolean = false
+  agreeLicenses: boolean = false
   // 表单信息
-  public password: string = ''
-  public password2: string = ''
-  public email: string = ''
+  password: string = ''
+  password2: string = ''
+  email: string = ''
   // 发送验证码信息
-  public code: string = ''
-  public sendButton: string = '发送验证码'
-  public sendValid: boolean = true
+  code: string = ''
+  sendButton: string = '发送验证码'
+  sendValid: boolean = true
   // 验证信息
-  public valid: boolean = true
-  public isAlert: boolean = false
-  public alertMsg: string = ''
-  public alertType: string = 'info'
-  public errorMsg: {
-    email: string
-    password: string
-  } = {
+  valid: boolean = true
+  isAlert: boolean = false
+  alertMsg: string = ''
+  alertType: string = 'info'
+  errorMsg = {
     email: '',
     password: ''
   }
 
-  public notEmptyRules: Array<Function> = [(v: string) => !!v || '内容不能为空']
+  notEmptyRules = [(v: string) => !!v || '内容不能为空']
   // emailRules: [
   //   v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || '@fudan.edu.cn'
   // ],
-  public codeRules: Array<Function> = [
+  codeRules= [
     (v: string) => !!v || '内容不能为空',
     (v: string) => /^[0-9]{6}$/.test(v) || '验证码格式不对'
   ]
 
-  public passwordRules: Array<Function> = [
+  passwordRules= [
     (v: string) => !!v || '内容不能为空',
     (v: string) => v.length <= 32 || '密码不能超过32字符',
     (v: string) => v.length >= 8 || '密码不能少于8字符'
   ]
 
-  public debouncedCheckUsername: Function
-  public debouncedCheckEmail: Function
-  public debouncedCheckPassword: Function
+  debouncedCheckUsername: Function
+  debouncedCheckEmail: Function
+  debouncedCheckPassword: Function
 
   @Ref() readonly form: HTMLFormElement
 
-  public checkEmail (): void {
+  checkEmail (): void {
     if (!/^[0-9]+@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
       this.errorMsg.email = '复旦学邮'
     } else {
@@ -160,7 +158,7 @@ export default class RegisterPage extends BaseView {
     }
   }
 
-  public checkPassword (): void {
+  checkPassword (): void {
     if (this.password !== this.password2) {
       this.errorMsg.password = '两次输入不一致'
     } else {
@@ -168,22 +166,18 @@ export default class RegisterPage extends BaseView {
     }
   }
 
-  public async sendCode () {
+  async sendCode () {
     if (!this.email) {
       this.messageError('用户名与邮箱不能为空')
       return
     }
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
-    const response = await this.$axios.get('/verify/email', {
-      params: {
-        email: this.email
-      }
-    })
-    this.messageSuccess(response.data.message)
+    const { message } = await verifyWithEmail(this.email)
+    this.messageSuccess(message)
   }
 
-  public async sendButtonChangeStatus () {
+  async sendButtonChangeStatus () {
     this.sendValid = false
     for (let i = 60; i >= 0; i--) {
       this.sendButton = i.toString()
@@ -193,18 +187,11 @@ export default class RegisterPage extends BaseView {
     this.sendValid = true
   }
 
-  public async register () {
+  async register () {
     if (this.form.validate()) {
-      const response = await this.$axios
-        .post('/register', {
-          email: this.email,
-          password: this.password,
-          verification: this.code
-        })
-        // 注册成功后直接跳转到主页面
-      this.messageSuccess('注册成功！')
+      const { message } = await register(this.password, this.email, this.code)
+      this.messageSuccess(message)
       LocalStorageStore.setNewcomer('true')
-      LocalStorageStore.setToken('token ' + response.data.token)
       await sleep(1000)
       await this.$router.replace('/division/1')
     }
@@ -220,7 +207,7 @@ export default class RegisterPage extends BaseView {
     this.debouncedCheckPassword()
   }
 
-  created () {
+  async created () {
     this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }

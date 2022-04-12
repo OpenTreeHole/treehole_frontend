@@ -14,9 +14,9 @@ import BaseView from '@/mixins/BaseView.vue'
   }
 })
 export default class SearchPage extends BaseView {
-  public searchStr: string = ''
+  searchStr: string = ''
 
-  public search (searchStr: string) {
+  search (searchStr: string) {
     this.searchStr = searchStr
   }
 

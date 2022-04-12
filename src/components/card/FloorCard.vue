@@ -57,9 +57,8 @@
                       style='padding-bottom: -10px'
                       @click='op.operation'
                     >
-                      <v-icon>mdi-{{ op.icon }}</v-icon>
-                      <br />
-                      <span>{{ op.text }}</span>
+                      <span class='flex-left' style='min-width: 30px'><v-icon v-if='op.icon'>{{ op.icon }}</v-icon></span>
+                      <span class='flex-right'>{{ op.text }}</span>
                     </v-btn>
                   </v-list-item>
                 </v-list>
@@ -116,22 +115,22 @@
         </v-card-text>
       </template>
     </dynamic-expansion-panel>
-    <create-floor-dialog ref='editFloorDialog' :reply-floor='replyFloor' operation='edit' :floor-id='floor.floorId' @update-floor='updateFloor'/>
+    <create-floor-dialog v-model='dialog' :reply-floor='replyFloor' operation='edit' :floor-id='floor.floorId' @update-floor='updateFloor'/>
   </v-card>
 </template>
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component, Emit, Prop, Ref, Watch } from 'vue-property-decorator'
-import Vue from 'vue'
+import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
 import UserStore from '@/store/modules/UserStore'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { gotoHole, renderFloor } from '@/utils/floor'
 import DynamicExpansionPanel from '@/components/animation/DynamicExpansionPanel.vue'
 import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
+import { addPenalty, addReport, addSpecialTag, deleteFloor, likeFloor } from '@/apis/api'
 
 interface Operation {
-  icon: string
+  icon: string | null
   text: string
   operation: Function
 }
@@ -146,9 +145,9 @@ export default class FloorCard extends BaseComponentOrView {
   @Prop({ required: false, type: Boolean, default: false }) noAction: boolean
   @Prop({ type: String, default: 'fl' }) idPrefix: string
 
-  @Ref() editFloorDialog: CreateFloorDialog
+  dialog = false
 
-  public display: boolean = false
+  display: boolean = false
 
   get idInfo () {
     return this.index === -1 ? `<b>##${this.floor.floorId}</b>` : `<b>${this.index}L</b>(##${this.floor.floorId})`
@@ -160,18 +159,18 @@ export default class FloorCard extends BaseComponentOrView {
 
   get replyFloor () {
     if (this.floor instanceof DetailedFloor && this.floor.mention[0]) {
-      return new Floor(this.floor.mention[0])
+      return this.floor.mention[0]
     }
     return undefined
   }
 
   @Emit('continue-load')
-  public continueLoad () {}
+  continueLoad () {}
 
   @Emit('update-floor')
-  public updateFloor () {}
+  updateFloor () {}
 
-  public toMention (mentionFloor: Floor) {
+  toMention (mentionFloor: Floor) {
     if (this.floor.holeId === mentionFloor.holeId) {
       this.$emit('scroll-to-floor', mentionFloor.floorId)
     } else {
@@ -179,13 +178,13 @@ export default class FloorCard extends BaseComponentOrView {
     }
   }
 
-  public renderMentions () {
+  renderMentions () {
     if (this.floor instanceof DetailedFloor) {
       renderFloor(this, this.floor, this.toMention)
     }
   }
 
-  public rerenderSpecificMention (mentionFloor: Floor) {
+  rerenderSpecificMention (mentionFloor: Floor) {
     if (this.floor instanceof DetailedFloor && this.floor.mention.length !== 0) {
       let flag = false
       for (let i = 0; i < this.floor.mention.length; i++) {
@@ -205,7 +204,7 @@ export default class FloorCard extends BaseComponentOrView {
     this.renderMentions()
   }
 
-  created () {
+  async created () {
     this.display = this.floor.fold.length === 0
   }
 
@@ -217,114 +216,98 @@ export default class FloorCard extends BaseComponentOrView {
   /**
    * Any other operation except reply.
    */
-  public operations: Operation[] = []
-
-  public setOperation () {
+  get operations (): Operation[] {
     const opReport = {
-      icon: 'alert-outline',
+      icon: 'mdi-alert-outline',
       text: '举报',
       operation: this.report
     }
     const opRemoveFloor = {
-      icon: 'close-box-outline',
+      icon: 'mdi-close-box-outline',
       text: '删除本层',
       operation: () => this.removeFloor(false)
     }
     const opRemoveFloorWithReason = {
-      icon: 'close-box-outline',
+      icon: 'mdi-close-box-outline',
       text: '删除本层',
       operation: () => this.removeFloor(true)
     }
     const opEdit = {
-      icon: 'pencil-outline',
+      icon: 'mdi-pencil-outline',
       text: '编辑',
       operation: () => {
-        this.editFloorDialog.dialog = true
+        this.dialog = true
       }
     }
     const opPenalty = {
-      icon: 'close-outline',
+      icon: 'mdi-close-outline',
       text: '处罚',
       operation: this.penalty
     }
+    const opSpecialTag = {
+      icon: null,
+      text: '新增特殊标签',
+      operation: this.addSpecialTag
+    }
     if (this.floor instanceof DetailedFloor && this.floor.isMe) {
-      this.operations = [opRemoveFloor, opEdit]
-    } else if (UserStore.userProfile?.isAdmin) {
-      this.operations = [opRemoveFloorWithReason, opEdit, opPenalty]
+      return [opRemoveFloor, opEdit]
+    } else if (UserStore.user?.isAdmin) {
+      return [opRemoveFloorWithReason, opEdit, opPenalty, opSpecialTag]
     } else {
-      this.operations = [opReport]
+      return [opReport]
     }
   }
 
-  @Watch('floor', {
-    immediate: true
-  })
-  floorChanged () {
-    this.setOperation()
+  async addSpecialTag () {
+    const msg = prompt('输入特殊标签')
+    if (msg == null) return
+    await addSpecialTag(this.floor.floorId, msg)
+    this.messageSuccess(`添加特殊标签"${msg}"成功！`)
   }
 
-  public penalty () {
+  async penalty () {
     const msg = prompt('输入惩罚等级')
     if (msg == null) return
     const level = parseInt(msg)
     if (isNaN(level) || level < 0 || level > 3) this.messageError('非有效惩罚等级！（惩罚应为0,1,2或3）')
-    this.$axios.post(`/penalty/${this.floor.floorId}`, {
-      penalty_level: level,
-      division_id: this.divisionId
-    })
+    await addPenalty(this.floor.floorId, level, this.divisionId)
+    this.messageSuccess(`处罚成功！等级为：${level}`)
   }
 
-  public async like () {
+  async like () {
     if (!(this.floor instanceof DetailedFloor)) return
-    if (this.floor.liked) {
-      Vue.set(this.floor, 'like', this.floor.like - 1)
-    } else {
-      this.floor.like++
-    }
-    const data = {
-      like: this.floor.liked ? 'cancel' : 'add'
-    }
-    Vue.set(this.floor, 'liked', !this.floor.liked)
 
-    const response = await this.$axios
-      .put(`/floors/${this.floor.floorId}`, data)
-    if (response.data.liked) {
-      this.messageSuccess('点赞成功')
-    } else {
-      this.messageSuccess('取消点赞成功')
-    }
+    this.floor.like = this.floor.liked ? (this.floor.like - 1) : (this.floor.like + 1)
+    this.floor.liked = !this.floor.liked
+    const { liked } = await likeFloor(this.floor.floorId, this.floor.liked)
+
+    if (liked) this.messageSuccess('点赞成功')
+    else this.messageSuccess('取消点赞成功')
   }
 
-  public async removeFloor (needReason?: boolean) {
+  async removeFloor (needReason?: boolean) {
     let msg: string | null = ''
     if (needReason) {
       msg = prompt('输入删除理由')
-      if (!msg) return
+      if (msg == null) return
     }
-    const data: any = {}
-    if (msg) data.delete_reason = msg
 
-    const response = await this.$axios.delete(`/floors/${this.floor.floorId}`, {
-      data: data
-    })
-    this.messageSuccess(response.data.message)
+    await deleteFloor(this.floor.floorId, msg ?? undefined)
+
+    this.messageSuccess('删除成功！')
   }
 
   /**
    * Send a report.
    */
-  public async report () {
+  async report () {
     const msg = prompt('输入举报理由')
-    if (msg === '') {
+    if (!msg) {
       this.messageError('举报理由不能为空！')
+      return
     }
-    const response = await this.$axios.post('/reports', {
-      floor_id: this.floor.floorId,
-      reason: msg
-    })
-    if (response.status === 201) {
-      this.messageSuccess('举报成功')
-    }
+    await addReport(this.floor.floorId, msg)
+    this.messageSuccess('举报成功')
   }
 }
 </script>

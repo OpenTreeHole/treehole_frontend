@@ -16,17 +16,17 @@
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Emit, Prop } from 'vue-property-decorator'
 import { parseTagColor } from '@/utils/utils'
-import { Tag } from '@/models/tag'
+import { ITag } from '@/models/tag'
 
 @Component
 export default class TagChip extends BaseComponentOrView {
-  @Prop({ required: true, type: Object }) tag: Tag
-  public color: string = 'red'
+  @Prop({ required: true, type: Object }) tag: ITag
+  color: string = 'red'
 
   @Emit('click')
-  public onClick (_e: MouseEvent) {}
+  onClick (_e: MouseEvent) {}
 
-  created () {
+  async created () {
     this.color = parseTagColor(this.tag.name)
   }
 }

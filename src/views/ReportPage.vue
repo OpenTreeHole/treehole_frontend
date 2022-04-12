@@ -1,16 +1,8 @@
 <template>
   <v-container class='pa-0 max-height max-width'>
-    <!-- 帖子列表 -->
     <report-panel v-if='!isMobile' ref='reportComp' />
     <report-list-mobile v-else ref='reportComp' />
-
-    <!-- 新帖编辑器及浮动按钮 -->
-    <div :class='floatBtnClass'>
-      <v-btn v-if='!this.isMobile' fab color='secondary' @mousedown.prevent @click='reload'>
-        <v-icon>mdi-autorenew</v-icon>
-      </v-btn>
-    </div>
-
+    <float-btn-group :float-btns='floatBtns' />
   </v-container>
 </template>
 
@@ -19,17 +11,26 @@ import { Component, Ref } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import ReportPanel from '@/components/panel/ReportPanel.vue'
 import ReportListMobile from '@/components/column/ReportListMobile.vue'
+import FloatBtnGroup from '@/components/FloatBtnGroup.vue'
+
 @Component({
-  components: { ReportListMobile, ReportPanel }
+  components: { FloatBtnGroup, ReportListMobile, ReportPanel }
 })
 export default class ReportPage extends BaseView {
   @Ref() readonly reportComp!: ReportPanel
+
+  floatBtns = [
+    {
+      icon: 'mdi-autorenew',
+      callback: this.reload
+    }
+  ]
 
   get floatBtnClass () {
     return this.isMobile ? 'float-btn' : 'float-btn-mobile'
   }
 
-  public reload (): void {
+  reload () {
     this.reportComp.refresh()
   }
 }

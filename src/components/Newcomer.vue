@@ -65,15 +65,15 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 
 @Component
 export default class Newcomer extends BaseComponentOrView {
-  public newcomer = ''
-  public dialog = true
+  newcomer = ''
+  dialog = true
 
-  public acceptDialog (): void {
+  acceptDialog (): void {
     this.dialog = false
     localStorage.removeItem('newcomer')
   }
 
-  public closeDialog (): void {
+  closeDialog (): void {
     this.dialog = false
     this.$router.replace('login')
   }

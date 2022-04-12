@@ -15,21 +15,17 @@
         >
         </tag-chip>
       </span>
-      <span class='flex-right' v-if='isAdmin'>
-        <v-icon v-if='pinned' color='blue' v-ripple @click='unpin'>mdi-pin</v-icon>
-        <v-icon v-else color='blue' v-ripple @click='pin'>mdi-pin-outline</v-icon>
-      </span>
-      <span class='flex-right' v-else-if='pinned'>
+      <span class='flex-right' v-if='isPinned'>
         <v-icon color='blue'>mdi-pin</v-icon>
       </span>
     </v-card-text>
-    <v-card-text class='folded-hint' v-if='hole.isFolded' color='grey'>
+    <v-card-text class='folded-hint' v-if='isFolded' color='grey'>
       该内容已折叠：
       <span class='clickable' @click='hole.styleData.displayIt = !hole.styleData.displayIt'>
         {{ hole.styleData.displayIt ? '收起' : '展开' }}
       </span>
     </v-card-text>
-    <div class='post-content' v-if='hole.styleData.displayIt'>
+    <div class='post-content' v-if='hole.styleData.displayIt || !isFolded'>
       <!-- 内容主体 -->
       <v-card-text
         @click='openHole(hole)'
@@ -121,18 +117,16 @@
   </v-card>
 </template>
 
-<!--suppress JSUnusedLocalSymbols -->
 <script lang='ts'>
 import { Component, Emit, Prop } from 'vue-property-decorator'
 import { Hole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import TagChip from '@/components/chip/TagChip.vue'
 import LabelChip from '@/components/chip/LabelChip.vue'
-import UserStore from '@/store/modules/UserStore'
+import UserStore, { ShowNSFWStatus } from '@/store/modules/UserStore'
 import { remove } from 'lodash-es'
-import { Division } from '@/models/division'
-import { camelizeKeys } from '@/utils/utils'
 import FixHeightDiv from '@/components/animation/FixHeightDiv.vue'
+import { modifyDivision } from '@/apis/api'
 
 @Component({
   components: {
@@ -148,42 +142,55 @@ export default class HoleCard extends BaseComponentOrView {
   @Prop({ type: Boolean, default: false }) fixHeight: boolean
   @Prop({ type: Boolean, default: false }) pinned: boolean
 
+  get isPinned () {
+    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId)
+    if (!division) throw new Error(`Division ${this.hole.divisionId} Not Found!`)
+    return !!division.pinned.find(v => v.holeId === this.hole.holeId)
+  }
+
   get isAdmin () {
-    return UserStore.userProfile?.isAdmin
+    return UserStore.user?.isAdmin
+  }
+
+  get isFolded () {
+    return this.hole.isFolded && UserStore.showNSFW !== ShowNSFWStatus.show
   }
 
   @Emit()
   openHole (_hole: Hole, _floorId?: number, _preventClose?: boolean) {
   }
 
-  public unfold (): void {
+  unfold (): void {
     this.hole.styleData.fold = false
   }
 
-  public fold (): void {
+  fold (): void {
     this.hole.styleData.fold = true
   }
 
   @Emit('update-pin-info')
   async unpin () {
-    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId) as Division
-    const pinnedIdList = division!.pinned.map(v => v.holeId)
+    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId)
+    if (!division) return Promise.reject(new Error(`Division ${this.hole.divisionId} Not Found!`))
+    const pinnedIdList = division.pinned.map(v => v.holeId)
     remove(pinnedIdList, v => v === this.hole.holeId)
-    const response = await this.$axios.put(`/divisions/${this.hole.divisionId}`, {
+
+    const modified = await modifyDivision(this.hole.divisionId, {
       pinned: pinnedIdList
     })
-    UserStore.setDivision({ divisionId: this.hole.divisionId, division: camelizeKeys(response.data) })
+    UserStore.setDivision({ divisionId: this.hole.divisionId, division: modified })
   }
 
   @Emit('update-pin-info')
   async pin () {
-    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId) as Division
-    const pinnedIdList = division!.pinned.map(v => v.holeId)
+    const division = UserStore.divisions.find(v => v.divisionId === this.hole.divisionId)
+    if (!division) return Promise.reject(new Error(`Division ${this.hole.divisionId} Not Found!`))
+    const pinnedIdList = division.pinned.map(v => v.holeId)
     pinnedIdList.push(this.hole.holeId)
-    const response = await this.$axios.put(`/divisions/${this.hole.divisionId}`, {
+    const modified = await modifyDivision(this.hole.divisionId, {
       pinned: pinnedIdList
     })
-    UserStore.setDivision({ divisionId: this.hole.divisionId, division: camelizeKeys(response.data) })
+    UserStore.setDivision({ divisionId: this.hole.divisionId, division: modified })
   }
 }
 </script>

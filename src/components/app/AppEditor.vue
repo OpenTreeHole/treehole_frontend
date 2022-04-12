@@ -13,14 +13,15 @@ import 'vditor/dist/index.css'
 
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { uploadImage } from '@/apis/api'
 
 @Component
 export default class AppEditor extends BaseComponentOrView {
   @Prop({ type: String }) contentName: string
 
-  public editor: Vditor
+  editor: Vditor
 
-  public validate (): boolean {
+  validate (): boolean {
     if (!this.getContent()) {
       this.messageError('内容不能为空')
       return false
@@ -29,12 +30,12 @@ export default class AppEditor extends BaseComponentOrView {
     }
   }
 
-  public getContent (): string {
+  getContent (): string {
     return this.editor.getValue() // Markdown
     // return this.editor.getHTML()  HTML
   }
 
-  public setContent (content: string): void {
+  setContent (content: string): void {
     this.editor.setValue(content)
   }
 
@@ -111,10 +112,8 @@ export default class AppEditor extends BaseComponentOrView {
             const reader = new FileReader()
             reader.onload = async (e) => {
               if (e.target) {
-                const response = await this.$axios.post('/images', {
-                  image: (e.target.result as string).split(',')[1]
-                })
-                this.editor.insertValue(`![](${response.data.url})`)
+                const { url } = await uploadImage((e.target.result as string).split(',')[1])
+                this.editor.insertValue(`![](${url})`)
               }
               resolve(null)
             }
@@ -127,7 +126,7 @@ export default class AppEditor extends BaseComponentOrView {
     })
   }
 
-  created () {
+  async created () {
   }
 }
 </script>

@@ -1,50 +1,83 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
-import { Collection, UserProfile } from '@/models/user'
-import { camelizeKeys } from '@/utils/utils'
-import { VueInstance } from '@/instance'
+import { User } from '@/models/user'
 import { Division } from '@/models/division'
 import Vue from 'vue'
+import { getUserProfile, listDivisions, listTags } from '@/apis/api'
+import { Hole } from '@/models/hole'
+import { Tag } from '@/models/tag'
+
+export enum ShowNSFWStatus {
+  hidden, fold, show
+}
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {
-  public collection: Collection = new Collection()
-  public divisions: Division[] = []
-  public userProfile: UserProfile | null = null
+  collection: Hole[] = []
+  divisions: Division[] = []
+  tags: Tag[] = []
+  user: User | null = null
+  showNSFW: ShowNSFWStatus = parseInt(localStorage.getItem('showNSFW') ?? '1')
 
   @Mutation
-  public clear () {
-    this.collection = new Collection()
+  clear () {
+    this.collection = []
     this.divisions = []
+    this.tags = []
   }
 
   @Mutation
-  public setDivisions (divisions: Division[]) {
+  setShowNSFW (showNSFW: ShowNSFWStatus) {
+    this.showNSFW = showNSFW
+    localStorage.setItem('showNSFW', showNSFW.toString(
+
+    ))
+  }
+
+  @Mutation
+  setDivisions (divisions: Division[]) {
     this.divisions = divisions
   }
 
   @Mutation
-  public setDivision (payload: {divisionId: number, division: Division}) {
+  collectionAdd (hole: Hole) {
+    this.collection.push(hole)
+  }
+
+  @Mutation
+  collectionRemove (holeId: number) {
+    this.collection = this.collection.filter(v => v.holeId !== holeId)
+  }
+
+  @Mutation
+  setDivision (payload: {divisionId: number, division: Division}) {
     const index = this.divisions.findIndex(v => v.divisionId === payload.divisionId)
     Vue.set(this.divisions, index, payload.division)
   }
 
   @Mutation
-  public setUserProfile (userProfile: UserProfile) {
-    this.userProfile = userProfile
+  setUser (userProfile: User) {
+    this.user = userProfile
   }
 
-  @Action
-  public async requestDivision () {
-    const response = await VueInstance.$axios?.get('/divisions')
-    const divisions: Division[] = camelizeKeys(response.data)
-    this.setDivisions(divisions)
+  @Mutation
+  setTags (tags: Tag[]) {
+    this.tags = tags
   }
 
-  @Action
-  public async requestUserProfile () {
-    const response = await VueInstance.$axios?.get('/users')
-    this.setUserProfile(camelizeKeys(response.data))
+  @Action({ rawError: true })
+  async requestDivisions () {
+    this.setDivisions(await listDivisions())
+  }
+
+  @Action({ rawError: true })
+  async requestUser () {
+    this.setUser(await getUserProfile())
+  }
+
+  @Action({ rawError: true })
+  async requestTags () {
+    this.setTags(await listTags())
   }
 }
 

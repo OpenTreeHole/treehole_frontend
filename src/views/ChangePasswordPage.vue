@@ -88,43 +88,44 @@ import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
+import { changePassword, verifyWithEmail } from '@/apis/api'
 
 @Component
 export default class ChangePasswordPage extends BaseView {
   // 表单信息
-  public password: string = ''
-  public password2: string = ''
+  password: string = ''
+  password2: string = ''
   // 发送验证码信息
-  public code: string = ''
-  public sendButton: string = '发送验证码'
-  public sendValid: boolean = true
+  code: string = ''
+  sendButton: string = '发送验证码'
+  sendValid: boolean = true
   // 验证信息
-  public valid: boolean = true
-  public isAlert: boolean = false
-  public alertMsg: string = ''
-  public alertType: string = 'info'
-  public errorMsg = {
+  valid: boolean = true
+  isAlert: boolean = false
+  alertMsg: string = ''
+  alertType: string = 'info'
+  errorMsg = {
     email: '',
     password: ''
   }
 
-  public codeRules: Array<Function> = [
+  codeRules = [
     (v: string) => !!v || '内容不能为空',
     (v: string) => /^[0-9]{6}$/.test(v) || '验证码格式不对'
   ]
 
-  public passwordRules: Array<Function> = [
+  passwordRules = [
     (v: string) => !!v || '内容不能为空',
     (v: string) => v.length <= 32 || '密码不能超过32字符',
     (v: string) => v.length >= 8 || '密码不能少于8字符'
   ]
 
-  public debouncedCheckUsername: Function
-  public debouncedCheckPassword: Function
+  debouncedCheckUsername: Function
+  debouncedCheckPassword: Function
 
   @Ref() readonly form: HTMLFormElement
 
-  public checkPassword (): void {
+  checkPassword (): void {
     if (this.password !== this.password2) {
       this.errorMsg.password = '两次输入不一致'
     } else {
@@ -132,20 +133,16 @@ export default class ChangePasswordPage extends BaseView {
     }
   }
 
-  public async sendCode () {
+  async sendCode () {
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
-    const response = await this.$axios
-      .get('/verify/email', {
-        params: {
-          email: LocalStorageStore.email
-        }
-      })
 
-    this.messageSuccess(response.data.message)
+    const { message } = await verifyWithEmail(LocalStorageStore.email)
+
+    this.messageSuccess(message)
   }
 
-  public sendButtonChangeStatus (): void {
+  sendButtonChangeStatus (): void {
     this.sendValid = false
     for (let i = 60; i >= 0; i--) {
       setTimeout(() => {
@@ -158,14 +155,9 @@ export default class ChangePasswordPage extends BaseView {
     }
   }
 
-  public async changepassword () {
+  async changepassword () {
     if (this.form.validate()) {
-      await this.$axios
-        .put('/register', {
-          email: LocalStorageStore.email,
-          password: this.password,
-          verification: this.code
-        })
+      changePassword(this.password, LocalStorageStore.email, this.code)
       this.messageSuccess('修改密码成功！')
       await sleep(1000)
       await this.$router.replace('/division/1')
@@ -177,7 +169,7 @@ export default class ChangePasswordPage extends BaseView {
     this.debouncedCheckPassword()
   }
 
-  created () {
+  async created () {
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }
 }

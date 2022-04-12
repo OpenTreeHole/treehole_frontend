@@ -2,17 +2,18 @@ const pksjson = require('../package.json')
 const baseUrl = process.env.BASE_URL
 
 const config = {
-  // 基本信息配置
+  // Basic info
   feRepository: 'https://www.github.com/OpenTreeHole/vue',
   teamHomepage: 'https://www.github.com/OpenTreeHole',
-  teamMail: 'fduhole@gmail.com',
-  latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/OpenTreeHole/vue@master/package.json', // 前端最新发布版版本号获取地址
+  teamMail: 'danxi_dev@protonmail.com',
+  latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/OpenTreeHole/vue@master/package.json', // the latest version number of front end.
   feVersion: pksjson.version,
-  backEndApi: 'https://www.fduhole.com/api/', // 后端 api 地址
+  backEndUrl: 'https://www.fduhole.com/api/', // the api address for backend
+  authUrl: 'https://testauth.fduhole.com/api/', // test address
   backEndWebsocketNotificationApi: 'wss://www.fduhole.com/ws/notification',
   backEndWebsocketImageApi: 'wss://www.fduhole.com/ws/images',
 
-  // 协议
+  // licenses
   licenses: [
     {
       name: '社区公约',
@@ -35,7 +36,7 @@ const config = {
       link: `${baseUrl}licenses/open-source-licenses.md`
     }
   ],
-  friendLinks: [ // 友链
+  friendLinks: [
     {
       siteName: '旦夕 App',
       author: 'DanXi-Dev',
@@ -44,9 +45,10 @@ const config = {
   ]
 }
 if (process.env.NODE_ENV !== 'production') { // development
-  config.backEndApi = 'https://hole.hath.top/'
+  config.backEndUrl = 'https://hole.hath.top/api/'
   config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/ws/notification'
   config.backEndWebsocketImageApi = 'wss://hole.hath.top/ws/images'
+  config.authUrl = 'https://testAuth.fduhole.com/api/'
 }
 
 export default config

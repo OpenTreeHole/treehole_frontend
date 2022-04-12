@@ -41,7 +41,7 @@ import pdf from 'vue-pdf'
   }
 })
 export default class LicensePage extends BaseView {
-  public licenses: Array<any> = []
+  licenses: Array<any> = []
 
   async created () {
     for (const license of this.$feConfig.licenses) {

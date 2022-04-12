@@ -96,52 +96,47 @@ import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
+import { changePassword, verifyWithEmail } from '@/apis/api'
 
 @Component
 export default class ForgetPasswordPage extends BaseView {
   // 表单信息
-  public password: string = ''
-  public password2: string = ''
-  public email: string = ''
+  password: string = ''
+  password2: string = ''
+  email: string = ''
   // 发送验证码信息
-  public code: string = ''
-  public sendButton: string = '发送验证码'
-  public sendValid: boolean = true
+  code: string = ''
+  sendButton: string = '发送验证码'
+  sendValid: boolean = true
   // 验证信息
-  public valid: boolean = true
-  public isAlert: boolean = false
-  public alertMsg: string = ''
-  public alertType: string = 'info'
-  public errorMsg: {
-    email: string
-    password: string
-  } = {
+  valid: boolean = true
+  isAlert: boolean = false
+  alertMsg: string = ''
+  alertType: string = 'info'
+  errorMsg = {
     email: '',
     password: ''
   }
 
-  public notEmptyRules: Array<Function> = [(v: string) => !!v || '内容不能为空']
-  // emailRules: [
-  //   v => /^([0-9]{11})@fudan\.edu\.cn$/.test(v) || '@fudan.edu.cn'
-  // ],
-  public codeRules: Array<Function> = [
+  notEmptyRules = [(v: string) => !!v || '内容不能为空']
+  codeRules = [
     (v: string) => !!v || '内容不能为空',
     (v: string) => /^[0-9]{6}$/.test(v) || '验证码格式不对'
   ]
 
-  public passwordRules: Array<Function> = [
+  passwordRules = [
     (v: string) => !!v || '内容不能为空',
     (v: string) => v.length <= 32 || '密码不能超过32字符',
     (v: string) => v.length >= 8 || '密码不能少于8字符'
   ]
 
-  public debouncedCheckUsername: Function
-  public debouncedCheckEmail: Function
-  public debouncedCheckPassword: Function
+  debouncedCheckUsername: Function
+  debouncedCheckEmail: Function
+  debouncedCheckPassword: Function
 
   @Ref() readonly form: HTMLFormElement
 
-  public checkEmail (): void {
+  checkEmail (): void {
     if (!/^[0-9]+@(m\.)?fudan\.edu\.cn$/.test(this.email)) {
       this.errorMsg.email = '复旦学邮'
     } else {
@@ -149,7 +144,7 @@ export default class ForgetPasswordPage extends BaseView {
     }
   }
 
-  public checkPassword (): void {
+  checkPassword (): void {
     if (this.password !== this.password2) {
       this.errorMsg.password = '两次输入不一致'
     } else {
@@ -157,7 +152,7 @@ export default class ForgetPasswordPage extends BaseView {
     }
   }
 
-  public async sendCode () {
+  async sendCode () {
     if (!this.email) {
       this.messageError('用户名与邮箱不能为空')
       return
@@ -165,17 +160,11 @@ export default class ForgetPasswordPage extends BaseView {
     this.sendButtonChangeStatus()
     this.messageInfo('验证码已发送, 请检查邮件以继续')
 
-    const response = await this.$axios
-      .get('/verify/email', {
-        params: {
-          email: this.email
-        }
-      })
-
-    this.messageSuccess(response.data.message)
+    const { message } = await verifyWithEmail(this.email)
+    this.messageSuccess(message)
   }
 
-  public sendButtonChangeStatus (): void {
+  sendButtonChangeStatus (): void {
     this.sendValid = false
     for (let i = 60; i >= 0; i--) {
       setTimeout(() => {
@@ -188,17 +177,12 @@ export default class ForgetPasswordPage extends BaseView {
     }
   }
 
-  public async changepassword () {
+  async changepassword () {
     if (this.form.validate()) {
-      await this.$axios
-        .put('/register', {
-          email: this.email,
-          password: this.password,
-          verification: this.code
-        })
+      await changePassword(this.password, this.email, this.code)
       this.messageSuccess('重置密码成功！')
       await sleep(1000)
-      await this.$router.replace('/login')
+      await this.$router.replace('/division/1')
     }
   }
 
@@ -212,7 +196,7 @@ export default class ForgetPasswordPage extends BaseView {
     this.debouncedCheckPassword()
   }
 
-  created () {
+  async created () {
     this.debouncedCheckEmail = debounce(this.checkEmail, 1000)
     this.debouncedCheckPassword = debounce(this.checkPassword, 500)
   }

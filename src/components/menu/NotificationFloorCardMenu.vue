@@ -30,6 +30,6 @@ import { DetailedFloor } from '@/models/floor'
 export default class NotificationFloorCardMenu extends Vue {
   @Prop({ required: true }) floor: DetailedFloor
 
-  public menu = false
+  menu = false
 }
 </script>

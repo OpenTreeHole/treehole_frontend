@@ -1,14 +1,14 @@
 import { Hole } from '@/models/hole'
-import { camelizeKeys, sleep } from '@/utils/utils'
+import { sleep } from '@/utils/utils'
 import { EventBus } from '@/event-bus'
 import MentionCard from '@/components/card/MentionCard.vue'
 import vuetify from '@/plugins/vuetify'
 import Vue from 'vue'
 import UtilStore from '@/store/modules/UtilStore'
 import { Main } from '@/main'
-import { VueInstance } from '@/instance'
 import { DetailedFloor, Floor, IFloor } from '@/models/floor'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
+import { getHole } from '@/apis/api'
 
 export async function renderFloor (parent: BaseComponentOrView, curFloor: DetailedFloor, toMention: (mentionFloor: Floor) => void, idPrefix: string = 'fl'): Promise<void> {
   if (('mention' in curFloor) && curFloor.mention.length !== 0) {
@@ -115,8 +115,7 @@ export function gotoHole (holeIdOrHole: number | Hole, floorId?: number, toIndex
 export async function openDivisionAndGotoHole (holeId: number, floorId?: number, toIndex?: number) {
   if (UtilStore.isMobile) gotoHole(holeId, floorId, toIndex)
   else {
-    const response = await VueInstance.$axios?.get(`/holes/${holeId}`)
-    const hole = new Hole(camelizeKeys(response.data))
+    const hole = await getHole(holeId)
     const path = `/division/${hole.divisionId}`
     if (Main.$route.path !== path) {
       await Main.$router.push(path)

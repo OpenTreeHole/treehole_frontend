@@ -1,6 +1,7 @@
 import { assign, camelCase, keys, pick } from 'lodash'
 import katex from 'katex'
 import { gsap } from 'gsap'
+import { snakeCase } from 'lodash-es'
 
 const macros: any = []
 
@@ -30,13 +31,21 @@ export const sleep = async (ms: number) => {
   return new Promise(resolve => setTimeout(resolve, ms))
 }
 
+export const max = (...nums: number[]) => {
+  if (nums.length === 0) return 0
+  let maxNum = nums[0]
+  for (const num of nums) {
+    maxNum = num > maxNum ? num : maxNum
+  }
+  return maxNum
+}
+
 export const convertDate = (v: any): string => {
   const date = new Date(v)
   return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
 }
 
-export const timeDifference = (v: string): string => {
-  const date = new Date(v)
+export const timeDifference = (date: Date): string => {
   const now = new Date()
 
   let seconds = Math.floor((now.getTime() - date.getTime()) / 1000)
@@ -52,10 +61,8 @@ export const timeDifference = (v: string): string => {
     return Math.floor(seconds / 3600) + '小时前'
   } else if (seconds < 604800) {
     return Math.floor(seconds / 86400) + '天前'
-  } else if (date.getFullYear() === now.getFullYear()) {
-    return v.substring(5, 10)
   } else {
-    return v.substring(0, 10)
+    return date.toLocaleDateString() + ' ' + date.toLocaleTimeString()
   }
 }
 
@@ -67,6 +74,21 @@ export const camelizeKeys = (obj: any): any => {
       (result, key) => ({
         ...result,
         [camelCase(key)]: camelizeKeys(obj[key])
+      }),
+      {}
+    )
+  }
+  return obj
+}
+
+export const snakifyKeys = (obj: any): any => {
+  if (Array.isArray(obj)) {
+    return obj.map(v => snakifyKeys(v))
+  } else if (obj != null && obj.constructor === Object) {
+    return Object.keys(obj).reduce(
+      (result, key) => ({
+        ...result,
+        [snakeCase(key)]: snakifyKeys(obj[key])
       }),
       {}
     )

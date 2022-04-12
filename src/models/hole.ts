@@ -1,6 +1,5 @@
-import UserStore from '@/store/modules/UserStore'
-import { IFloor, Floor } from '@/models/floor'
-import { Tag } from '@/models/tag'
+import { Floor, IFloor } from '@/models/floor'
+import { ITag, Tag } from '@/models/tag'
 
 export interface IHole {
   divisionId: number
@@ -8,62 +7,57 @@ export interface IHole {
   floors: {
     firstFloor: IFloor
     lastFloor: IFloor
-    prefetch: Array<IFloor>
+    prefetch: IFloor[]
   }
   reply: number
-  tags: Array<Tag>
-  timeCreated: string
-  timeUpdated: string
+  tags: ITag[]
+  timeCreated: Date | string
+  timeUpdated: Date | string
 }
 
 export class Hole implements IHole {
-  public styleData: {
+  styleData: {
     fold: boolean
     lines: number
     displayIt: boolean
   }
 
-  public divisionId: number
-  public floors: {
+  divisionId: number
+  floors: {
     firstFloor: IFloor
     lastFloor: IFloor
-    prefetch: Array<IFloor>
+    prefetch: IFloor[]
   }
 
-  public markedFloors: Array<Floor> = []
-  public firstFloor: Floor
-  public lastFloor: Floor
-  public isFolded: boolean
-  public isStarred: boolean
-  public holeId: number
-  public holeIdStr: string
-  public timeCreated: string
-  public timeUpdated: string
-  public reply: number
-  public tags: Array<Tag>
+  cFloors: Floor[]
+  firstFloor: Floor
+  lastFloor: Floor
+  holeId: number
+  timeCreated: Date
+  timeUpdated: Date
+  reply: number
+  tags: Tag[]
+
+  get isFolded () {
+    return !this.tags.every(tag => tag.name && tag.name[0] !== '*')
+  }
+
+  get holeIdStr () {
+    return this.holeId.toString()
+  }
 
   constructor (hole: IHole) {
-    hole.floors.prefetch.forEach((floor: IFloor) => {
-      this.markedFloors.push(new Floor(floor))
-    })
+    this.cFloors = hole.floors.prefetch.map(v => new Floor(v))
     this.divisionId = hole.divisionId
     this.floors = hole.floors
     this.firstFloor = new Floor(hole.floors.firstFloor)
     this.lastFloor = new Floor(hole.floors.lastFloor)
-    this.isFolded = this.firstFloor.fold.length > 0
-    this.isStarred = UserStore.collection.isStarred(hole.holeId)
     this.holeId = hole.holeId
-    this.holeIdStr = this.holeId.toString()
-    this.timeCreated = hole.timeCreated
-    this.timeUpdated = hole.timeUpdated
+    this.timeCreated = new Date(hole.timeCreated)
+    this.timeUpdated = new Date(hole.timeUpdated)
     this.reply = hole.reply
-    this.tags = hole.tags
+    this.tags = hole.tags.map(v => new Tag(v))
 
-    hole.tags.forEach((v: Tag) => {
-      if (v.name.charAt(0) === '*') {
-        this.isFolded = true
-      }
-    })
     this.styleData = {
       fold: true,
       lines: 3,

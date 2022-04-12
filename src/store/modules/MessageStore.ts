@@ -1,5 +1,5 @@
 import { Action, getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
-import Message from '@/components/Message.vue'
+import Message from '@/components/bar/MessageSnackbar.vue'
 import store from '@/store'
 
 @Module({ store: store, dynamic: true, name: 'MessageStore', namespaced: true })
@@ -7,7 +7,7 @@ class MessageStore extends VuexModule {
   /**
    * The message instance in the current page.
    */
-  public message: Message | null = null
+  message: Message | null = null
 
   /**
    * Set the message instance in the current page.
@@ -15,7 +15,7 @@ class MessageStore extends VuexModule {
    * @param messageInstance - the message instance in the current page.
    */
   @Mutation
-  public setMessageComponent (messageInstance: Message): void {
+  setMessageComponent (messageInstance: Message): void {
     this.message = messageInstance
   }
 
@@ -24,7 +24,7 @@ class MessageStore extends VuexModule {
    * @param str - the message.
    */
   @Action({ rawError: true })
-  public messageError (str: string): void {
+  messageError (str: string): void {
     if (this.message) this.message.error(str)
   }
 
@@ -33,7 +33,7 @@ class MessageStore extends VuexModule {
    * @param str - the message.
    */
   @Action({ rawError: true })
-  public messageSuccess (str: string): void {
+  messageSuccess (str: string): void {
     if (this.message) {
       this.message.success(str)
     }
@@ -44,7 +44,7 @@ class MessageStore extends VuexModule {
    * @param str - the message.
    */
   @Action({ rawError: true })
-  public messageWarning (str: string): void {
+  messageWarning (str: string): void {
     if (this.message) this.message.warning(str)
   }
 
@@ -53,7 +53,7 @@ class MessageStore extends VuexModule {
    * @param str - the message.
    */
   @Action({ rawError: true })
-  public messageInfo (str: string): void {
+  messageInfo (str: string): void {
     if (this.message) this.message.info(str)
   }
 }

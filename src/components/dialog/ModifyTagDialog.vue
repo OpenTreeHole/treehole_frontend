@@ -3,13 +3,13 @@
     <template #activator='{ on, attrs }'>
       <slot
         name='activator'
-        v-bind='{on,attrs}'
+        v-bind='{ on, attrs }'
       />
     </template>
 
     <v-card>
       <v-card-title>
-        <span class='headline'>发表树洞</span>
+        <span class='headline'>修改标签及分区</span>
       </v-card-title>
 
       <v-card-text>
@@ -23,16 +23,10 @@
             label='分区'
             hide-selected
           />
-
+          <!-- 标签输入框 -->
           <tag-input
             v-model='selectedTags'
             :counter='5'
-          />
-
-          <!-- 富文本输入框 -->
-          <app-editor
-            ref='editor'
-            :contentName='contentName'
           />
         </v-form>
       </v-card-text>
@@ -46,7 +40,7 @@
           text
           @click='submit'
         >
-          发送
+          修改
         </v-btn>
       </v-card-actions>
     </v-card>
@@ -55,40 +49,31 @@
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import UserStore from '@/store/modules/UserStore'
 import { Component, ModelSync, Prop, Ref, Watch } from 'vue-property-decorator'
-import AppEditor from '@/components/app/AppEditor.vue'
-import { ITag } from '@/models/tag'
 import { Division } from '@/models/division'
-import { dialogWidth } from '@/utils/style'
+import UserStore from '@/store/modules/UserStore'
+import { modifyHoleDivision, modifyHoleTag } from '@/apis/api'
+import { Hole } from '@/models/hole'
 import TagChip from '@/components/chip/TagChip.vue'
-import { addHole } from '@/apis/api'
+import { dialogWidth } from '@/utils/style'
 import TagInput from '@/components/input/TagInput.vue'
+import { ITag } from '@/models/tag'
 
 @Component({
-  components: {
-    TagInput,
-    TagChip,
-    AppEditor
-  }
+  components: { TagInput, TagChip }
 })
-export default class CreateHoleDialog extends BaseComponentOrView {
-  @Prop({ type: Number, default: 1 }) divisionId: number
+export default class ModifyTagDialog extends BaseComponentOrView {
+  @Prop({ required: true }) hole: Hole | null
   @ModelSync('dialogProp', 'change', { type: Boolean, default: false }) dialog: boolean
 
   content = ''
 
-  selectedTags: ITag[] = []
   selectedDivision: Division | null = null
+  selectedTags: ITag[] = []
 
   valid = true
 
-  @Ref() readonly editor!: AppEditor
   @Ref() readonly form!: HTMLFormElement
-
-  get contentName (): string {
-    return `division-${this.divisionId}-content`
-  }
 
   get divisions () {
     return UserStore.divisions
@@ -101,7 +86,11 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   @Watch('dialog')
   dialogChanged (newVal: boolean) {
     if (newVal) {
-      this.selectedDivision = UserStore.divisions.find(v => v.divisionId === this.divisionId) ?? null
+      if (!this.hole) {
+        this.messageError('未找到该主题帖，请稍后再试')
+      }
+      this.selectedDivision = UserStore.divisions.find(v => v.divisionId === this.hole!.divisionId) ?? null
+      this.selectedTags = this.hole!.tags
     }
   }
 
@@ -110,28 +99,15 @@ export default class CreateHoleDialog extends BaseComponentOrView {
     this.valid = true
   }
 
-  /**
-   * Send request to add a new hole.
-   */
   async submit () {
-    if (this.form.validate() && this.editor.validate()) {
+    if (this.form.validate()) {
       this.closeDialog()
-      const { message } = await addHole(this.selectedDivision!.divisionId, this.editor.getContent(), this.selectedTags)
-      this.messageSuccess(message)
-      this.editor.setContent('')
+      await modifyHoleTag(this.hole!.holeId, this.selectedTags.map(v => v.name))
+      const hole = await modifyHoleDivision(this.hole!.holeId, this.selectedDivision!.divisionId)
+      this.messageSuccess('修改成功！')
       this.selectedTags = []
-      this.$emit('refresh')
+      this.$emit('submit', hole)
     }
   }
 }
 </script>
-
-<style scoped>
-.tag-icon {
-  margin-left: 0.25rem;
-}
-
-.tag-count {
-  margin-left: -0.25rem;
-}
-</style>

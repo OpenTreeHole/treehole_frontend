@@ -62,57 +62,46 @@
 </template>
 
 <script lang='ts'>
-import { Component, Watch } from 'vue-property-decorator'
+import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
+import { login } from '@/apis/api'
 
 @Component
 export default class LoginPage extends BaseView {
-  public alert = false
+  alert = false
+  valid = true
+  email = ''
+  password = ''
+  notEmptyRules = [(v: string) => !!v || '内容不能为空']
 
-  public valid = true
-
-  public email = ''
-
-  public password = ''
-
-  public notEmptyRules: Array<Function> = [(v: string) => !!v || '内容不能为空']
-
-  public passwordRules = [
+  passwordRules = [
     (v: string) => !!v || '密码不能为空',
     (v: string) => v.length <= 32 || '密码不能超过32字符',
     (v: string) => v.length >= 8 || v === 'admin' || '密码不能少于8字符'
   ]
 
-  public errorMsg: {
-    email: string
-  } = {
+  errorMsg = {
     email: ''
   }
 
-  public debouncedCheckEmail: Function
+  debouncedCheckEmail = debounce(this.checkEmail, 500)
 
-  $refs: {
-    form: HTMLFormElement
-  }
+  @Ref() form: HTMLFormElement
 
-  public async login () {
+  async login () {
     if (this.valid) {
-      this.$refs.form.validate()
-      const response = await this.$axios
-        .post('login', {
-          email: this.email,
-          password: this.password
-        })
-      this.messageSuccess(response.data.message)
-      LocalStorageStore.setToken('token ' + response.data.token)
+      this.form.validate()
+      const { message } = await login(this.email, this.password)
+      this.messageSuccess(message)
       LocalStorageStore.setEmail(this.email)
+
       await this.$router.replace('/division/1')
     }
   }
 
-  public checkEmail (): void {
+  checkEmail (): void {
     if (!/^[0-9]+@(m\.)?fudan\.edu\.cn$/.test(this.email) && this.email !== 'admin@opentreehole.org') {
       this.errorMsg.email = '复旦学邮'
     } else {
@@ -123,10 +112,6 @@ export default class LoginPage extends BaseView {
   @Watch('email')
   emailChanged () {
     this.debouncedCheckEmail()
-  }
-
-  created () {
-    this.debouncedCheckEmail = debounce(this.checkEmail, 500)
   }
 }
 </script>
