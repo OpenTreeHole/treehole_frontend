@@ -30,13 +30,14 @@ import { EventBus } from '@/event-bus'
 import AnimatedList from '@/components/animation/AnimatedList.vue'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { sleep } from '@/utils/utils'
-import UserStore from '@/store/modules/UserStore'
+import UserStore, { ShowNSFWStatus } from '@/store/modules/UserStore'
 import { debounce } from 'lodash-es'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { getHole, listHoles } from '@/apis/api'
 import TagStore from '@/store/modules/TagStore'
 import UtilStore from '@/store/modules/UtilStore'
 import Vue from 'vue'
+import { ITag } from '@/models/tag'
 
 @Component({
   components: {
@@ -52,7 +53,9 @@ export default class HoleList extends BaseComponentOrView {
 
   @Ref() readonly animatedHoleList: AnimatedList
 
-  // 帖子列表
+  /**
+   * Store all fetched holes, including pinned ones. (However, if the pinned holes have not been fetched through listHoles or getHole, it won't be listed in this field.)
+   */
   holes: Hole[] = []
 
   startTime: Date = new Date()
@@ -85,6 +88,26 @@ export default class HoleList extends BaseComponentOrView {
 
   get divisionId () {
     return UtilStore.currentDivisionId
+  }
+
+  get showNSFW () {
+    return UserStore.showNSFW
+  }
+
+  @Watch('showNSFW')
+  showNSFWChanged (newVal: ShowNSFWStatus) {
+    if (newVal === ShowNSFWStatus.hidden) this.holes = this.holes.filter(v => !v.isFolded)
+    else if (newVal === ShowNSFWStatus.show) this.$emit('refresh')
+  }
+
+  get blockedTags () {
+    return TagStore.blockedTags
+  }
+
+  @Watch('blockedTags')
+  blockedTagsChanged (newVal: ITag[], oldVal: ITag[]) {
+    if (newVal.every(tag => oldVal.find(oldTag => oldTag.name === tag.name))) this.holes.filter(v => v.tags.every(tag => !this.blockedTags.find(blockedTag => blockedTag.name === tag.name)))
+    else this.$emit('refresh')
   }
 
   /**
@@ -126,7 +149,14 @@ export default class HoleList extends BaseComponentOrView {
     if (!this.divisionId) return Promise.reject(new Error('Cannot get division id!'))
     const holes = await listHoles(this.divisionId, this.startTime, 10, TagStore.tagMap[this.route])
     const newHoles = holes.filter(v => !this.holes.find(u => u.holeId === v.holeId))
-    this.holes.push(...newHoles)
+
+    // Filter blocked tags.
+    let filteredHoles = newHoles.filter(v => v.tags.every(tag => !this.blockedTags.find(blockedTag => blockedTag.name === tag.name)))
+
+    // Filter NSFW tags.
+    if (this.showNSFW === ShowNSFWStatus.hidden) filteredHoles = filteredHoles.filter(v => !v.isFolded)
+
+    this.holes.push(...filteredHoles)
     if (holes.length > 0) this.startTime = holes[holes.length - 1].timeUpdated
     return holes.length > 0
   }

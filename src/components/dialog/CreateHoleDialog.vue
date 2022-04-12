@@ -26,6 +26,7 @@
 
           <tag-input
             v-model='selectedTags'
+            :counter='5'
           />
 
           <!-- 富文本输入框 -->

@@ -39,11 +39,7 @@ export class Hole implements IHole {
   tags: Tag[]
 
   get isFolded () {
-    for (const tag of this.tags) {
-      if (tag.name[0] === '*') {
-        return true
-      }
-    }
+    return !this.tags.every(tag => tag.name && tag.name[0] !== '*')
   }
 
   get holeIdStr () {

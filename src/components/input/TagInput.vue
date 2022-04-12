@@ -7,8 +7,8 @@
     label='标签'
     hint='回车新增标签'
     :rules='tagRules'
+    :counter='counter'
     :error-messages='errorMsg'
-    :counter='5'
     hide-selected
     clearable
     multiple
@@ -47,22 +47,26 @@
 
 <script lang='ts'>
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { Component, ModelSync, Watch } from 'vue-property-decorator'
+import { Component, ModelSync, Prop, Watch } from 'vue-property-decorator'
 import TagChip from '@/components/chip/TagChip.vue'
 import { ITag } from '@/models/tag'
 import UserStore from '@/store/modules/UserStore'
 import { parseTagColor } from '@/utils/utils'
 
+const defaultTagRules = [
+  (v: ITag[]) => v.length <= 5 || '标签不能多于5个',
+  (v: ITag[]) => v.length >= 1 || '请至少选择1个标签'
+]
+
 @Component({
   components: { TagChip }
 })
 export default class TagInput extends BaseComponentOrView {
-  tagRules = [
-    (v: ITag[]) => v.length <= 5 || '标签不能多于5个',
-    (v: ITag[]) => v.length >= 1 || '请至少选择1个标签'
-  ]
+  @Prop({ type: Array, default: () => defaultTagRules }) tagRules: ((v: ITag[]) => (true | string))[]
+  @Prop({ default: null }) counter: number | null
 
   errorMsg = ''
+
   parseTagColor = parseTagColor
   @ModelSync('selectedTagsProp', 'change', { default: () => [] }) selectedTags: ITag[]
 

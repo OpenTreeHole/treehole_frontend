@@ -2,13 +2,27 @@
   <v-container>
     <v-card v-if='profile'>
       <v-card-title>
-        <p>注册时间：{{ joinedTimeDisplayMsg }}</p>
+        注册时间：{{ joinedTimeDisplayMsg }}
       </v-card-title>
       <v-card-text v-if='profile.isAdmin'>
-        <p>您当前为管理员身份</p>
+        您当前为<span style='color: mediumvioletred'>管理员</span>身份
+      </v-card-text>
+      <v-card-text>
+        屏蔽标签：<tag-input v-model='blockedTags' :tag-rules='[]'></tag-input>
+      </v-card-text>
+      <v-card-text>
+        <v-radio-group class='ma-0' v-model='showNSFW' row>
+          <template v-slot:label>
+            <span>NSFW 内容：</span>
+          </template>
+          <v-radio label='隐藏' :value='0' />
+          <v-radio label='折叠' :value='1' />
+          <v-radio label='显示' :value='2' />
+        </v-radio-group>
       </v-card-text>
       <v-card-text class='d-flex'>
         <v-switch
+          class='ma-0'
           v-model='$vuetify.theme.dark'
           :label='darkModeLabel'
           :value='true'
@@ -35,11 +49,31 @@ import { convertDate } from '@/utils/utils'
 import UserStore from '@/store/modules/UserStore'
 import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
+import TagInput from '@/components/input/TagInput.vue'
+import TagStore from '@/store/modules/TagStore'
 
-@Component
+@Component({
+  components: { TagInput }
+})
 export default class MePage extends BaseView {
   profile: User | null = null
   joinedTimeDisplayMsg: string
+
+  get showNSFW () {
+    return UserStore.showNSFW
+  }
+
+  set showNSFW (v) {
+    UserStore.setShowNSFW(v)
+  }
+
+  get blockedTags () {
+    return TagStore.blockedTags
+  }
+
+  set blockedTags (v) {
+    TagStore.setBlockedTags(v)
+  }
 
   get darkModeLabel (): string {
     return this.$vuetify.theme.dark ? '夜间模式开启' : '夜间模式关闭'

@@ -9,7 +9,7 @@ const config = {
   latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/OpenTreeHole/vue@master/package.json', // the latest version number of front end.
   feVersion: pksjson.version,
   backEndUrl: 'https://www.fduhole.com/api/', // the api address for backend
-  authUrl: 'https://testauth.fduhole.com/', // test address
+  authUrl: 'https://testauth.fduhole.com/api/', // test address
   backEndWebsocketNotificationApi: 'wss://www.fduhole.com/ws/notification',
   backEndWebsocketImageApi: 'wss://www.fduhole.com/ws/images',
 

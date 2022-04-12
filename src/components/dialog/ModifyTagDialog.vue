@@ -26,6 +26,7 @@
           <!-- 标签输入框 -->
           <tag-input
             v-model='selectedTags'
+            :counter='5'
           />
         </v-form>
       </v-card-text>

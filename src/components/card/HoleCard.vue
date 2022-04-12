@@ -19,13 +19,13 @@
         <v-icon color='blue'>mdi-pin</v-icon>
       </span>
     </v-card-text>
-    <v-card-text class='folded-hint' v-if='hole.isFolded' color='grey'>
+    <v-card-text class='folded-hint' v-if='isFolded' color='grey'>
       该内容已折叠：
       <span class='clickable' @click='hole.styleData.displayIt = !hole.styleData.displayIt'>
         {{ hole.styleData.displayIt ? '收起' : '展开' }}
       </span>
     </v-card-text>
-    <div class='post-content' v-if='hole.styleData.displayIt'>
+    <div class='post-content' v-if='hole.styleData.displayIt || !isFolded'>
       <!-- 内容主体 -->
       <v-card-text
         @click='openHole(hole)'
@@ -123,7 +123,7 @@ import { Hole } from '@/models/hole'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import TagChip from '@/components/chip/TagChip.vue'
 import LabelChip from '@/components/chip/LabelChip.vue'
-import UserStore from '@/store/modules/UserStore'
+import UserStore, { ShowNSFWStatus } from '@/store/modules/UserStore'
 import { remove } from 'lodash-es'
 import FixHeightDiv from '@/components/animation/FixHeightDiv.vue'
 import { modifyDivision } from '@/apis/api'
@@ -150,6 +150,10 @@ export default class HoleCard extends BaseComponentOrView {
 
   get isAdmin () {
     return UserStore.user?.isAdmin
+  }
+
+  get isFolded () {
+    return this.hole.isFolded && UserStore.showNSFW !== ShowNSFWStatus.show
   }
 
   @Emit()

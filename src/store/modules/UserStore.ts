@@ -7,18 +7,31 @@ import { getUserProfile, listDivisions, listTags } from '@/apis/api'
 import { Hole } from '@/models/hole'
 import { Tag } from '@/models/tag'
 
+export enum ShowNSFWStatus {
+  hidden, fold, show
+}
+
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
 class UserStore extends VuexModule {
   collection: Hole[] = []
   divisions: Division[] = []
   tags: Tag[] = []
   user: User | null = null
+  showNSFW: ShowNSFWStatus = parseInt(localStorage.getItem('showNSFW') ?? '1')
 
   @Mutation
   clear () {
     this.collection = []
     this.divisions = []
     this.tags = []
+  }
+
+  @Mutation
+  setShowNSFW (showNSFW: ShowNSFWStatus) {
+    this.showNSFW = showNSFW
+    localStorage.setItem('showNSFW', showNSFW.toString(
+
+    ))
   }
 
   @Mutation
