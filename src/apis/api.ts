@@ -14,6 +14,7 @@ import { ITag, Tag } from '@/models/tag'
 import { IReport, IReportDeal, Report } from '@/models/report'
 
 const authAxios = axios.create()
+const refreshAxios = axios.create()
 
 /**
  * Error caused by axios (or other api interaction)
@@ -27,14 +28,30 @@ export class ApiError extends Error {
 }
 
 const refreshAuthLogic = async (failedRequest: AxiosError) => {
-  const response = await refresh()
-  if (response.refresh && response.access) {
-    LocalStorageStore.setRefreshToken(response.refresh)
-    LocalStorageStore.setToken(response.access)
-    if (failedRequest.response?.config.headers) {
-      failedRequest.response.config.headers.Authorization = 'Bearer ' + response.access
+  try {
+    const response = await refresh()
+    if (response.refresh && response.access) {
+      LocalStorageStore.setRefreshToken(response.refresh)
+      LocalStorageStore.setToken(response.access)
+      if (failedRequest.response?.config.headers) {
+        failedRequest.response.config.headers.Authorization = 'Bearer ' + response.access
+      }
+      return
     }
-  } else return Promise.reject(failedRequest)
+  } catch (e: any) {
+    LocalStorageStore.setToken('')
+    LocalStorageStore.setRefreshToken('')
+    localStorage.removeItem('token')
+    localStorage.removeItem('refresh')
+    if (router.currentRoute.name !== 'login') {
+      await router.replace({
+        name: 'login'
+      })
+      if (e.response.data.message) return Promise.reject(new ApiError(e, `${e.response.status}: ${e.response.data.message}`))
+      else return Promise.reject(new ApiError(e, '会话已过期，请重新登录'))
+    }
+  }
+  return Promise.reject(failedRequest)
 }
 
 createAuthRefreshInterceptor(axios, refreshAuthLogic)
@@ -46,26 +63,22 @@ const requestInterceptor = (config: AxiosRequestConfig) => {
   return config
 }
 
+const refreshRequestInterceptor = (config: AxiosRequestConfig) => {
+  const token = localStorage.getItem('refresh')
+  if (config.headers && !config.headers.Authorization && token) config.headers.Authorization = 'Bearer ' + token
+  return config
+}
+
 const errorInterceptor = async (error: AxiosError) => {
   if (error.response) {
-    if (error.response.status === 401) {
-      localStorage.removeItem('token')
-      if (router.currentRoute.name !== 'login') {
-        router.replace({
-          name: 'login'
-        })
-      }
-
-      if (error.response.data.message) return Promise.reject(new ApiError(error, `${error.response.status}: ${error.response.data.message}`))
-      else return Promise.reject(new ApiError(error, '会话已过期，请重新登录'))
-    } else if (error.response.data.message) {
+    if (error.response.data.message) {
       return Promise.reject(new ApiError(error, `${error.response.status}: ${error.response.data.message}`))
     } else {
       console.log(error.response)
       return Promise.reject(new ApiError(error, `${error.response.status}: 未知错误，请按F12查看控制台以获得错误信息并发至站务分区`))
     }
   } else {
-    // console.log(error)
+    console.log(error)
     return Promise.reject(new ApiError(error, '未知axios错误，请按F12查看控制台以获得错误信息并发至站务分区，'))
   }
 }
@@ -76,6 +89,9 @@ axios.interceptors.response.use(response => response, errorInterceptor)
 authAxios.defaults.baseURL = FDUHoleFEConfig.authUrl
 authAxios.interceptors.request.use(requestInterceptor)
 authAxios.interceptors.response.use(response => response, errorInterceptor)
+refreshAxios.defaults.baseURL = FDUHoleFEConfig.authUrl
+refreshAxios.interceptors.request.use(refreshRequestInterceptor)
+refreshAxios.interceptors.response.use(response => response, errorInterceptor)
 
 // Auth-related apis.
 
@@ -95,16 +111,12 @@ export const logout = async (): Promise<{ message: string }> => {
 }
 
 export const refresh = async (): Promise<{ message: string, access?: string, refresh?: string }> => {
-  const response = await authAxios.post('/refresh', {}, {
-    headers: {
-      Authorization: 'Bearer ' + LocalStorageStore.refreshToken
-    }
-  })
+  const response = await refreshAxios.post('/refresh')
   return camelizeKeys(response.data)
 }
 
 export const verifyWithEmail = async (email: string): Promise<{ message: string, scope: string }> => {
-  const response = await authAxios.get('/email', {
+  const response = await authAxios.get('/verify/email', {
     params: {
       email: email
     }
