@@ -1,6 +1,6 @@
 {
   "name": "open-tree-hole",
-  "version": "1.2.0",
+  "version": "1.2.0-hf1",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
