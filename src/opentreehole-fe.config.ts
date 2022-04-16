@@ -45,7 +45,7 @@ const config = {
     }
   ]
 }
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' || process.env.BASE_URL.include('test.fduhole.com')) {
   // development
   config.backEndUrl = 'https://hole.hath.top/api/'
   config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/api/ws/notification'

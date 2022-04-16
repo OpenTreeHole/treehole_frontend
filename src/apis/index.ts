@@ -12,6 +12,7 @@ import { Hole, IHole } from '@/models/hole'
 import { ITag, Tag } from '@/models/tag'
 import { IReport, IReportDeal, Report } from '@/models/report'
 import JWTManager from '@/apis/jwt'
+import Cookies from 'js-cookie'
 
 const authAxios = axios.create()
 const refreshAxios = axios.create()
@@ -28,32 +29,32 @@ export class ApiError extends Error {
   }
 }
 
-const refreshAuthLogic = async (failedRequest: AxiosError) => {
-  try {
-    const response = await refresh()
-    if (response.refresh && response.access) {
-      LocalStorageStore.setRefreshToken(response.refresh)
-      LocalStorageStore.setToken(response.access)
-      if (failedRequest.response?.config.headers) {
-        failedRequest.response.config.headers.Authorization = 'Bearer ' + response.access
-      }
-      return
-    }
-  } catch (e: any) {
-    LocalStorageStore.setToken('')
-    LocalStorageStore.setRefreshToken('')
-    localStorage.removeItem('token')
-    localStorage.removeItem('refresh')
-    if (router.currentRoute.name !== 'login') {
-      await router.replace({
-        name: 'login'
-      })
-      if (e.response.data.message) return Promise.reject(new ApiError(e, `${e.response.status}: ${e.response.data.message}`))
-      else return Promise.reject(new ApiError(e, '会话已过期，请重新登录'))
-    }
-  }
-  return Promise.reject(failedRequest)
-}
+// const refreshAuthLogic = async (failedRequest: AxiosError) => {
+//   try {
+//     const response = await refresh()
+//     if (response.refresh && response.access) {
+//       LocalStorageStore.setRefreshToken(response.refresh)
+//       LocalStorageStore.setToken(response.access)
+//       if (failedRequest.response?.config.headers) {
+//         failedRequest.response.config.headers.Authorization = 'Bearer ' + response.access
+//       }
+//       return
+//     }
+//   } catch (e: any) {
+//     LocalStorageStore.setToken('')
+//     LocalStorageStore.setRefreshToken('')
+//     localStorage.removeItem('token')
+//     localStorage.removeItem('refresh')
+//     if (router.currentRoute.name !== 'login') {
+//       await router.replace({
+//         name: 'login'
+//       })
+//       if (e.response.data.message) return Promise.reject(new ApiError(e, `${e.response.status}: ${e.response.data.message}`))
+//       else return Promise.reject(new ApiError(e, '会话已过期，请重新登录'))
+//     }
+//   }
+//   return Promise.reject(failedRequest)
+// }
 
 // createAuthRefreshInterceptor(axios, refreshAuthLogic)
 // createAuthRefreshInterceptor(authAxios, refreshAuthLogic)
@@ -61,8 +62,6 @@ const jwt = new JWTManager(async () => (await refresh()).access)
 jwt.refreshErrorCallback = async (refreshError) => {
   LocalStorageStore.setToken('')
   LocalStorageStore.setRefreshToken('')
-  localStorage.removeItem('token')
-  localStorage.removeItem('refresh')
   if (router.currentRoute.name !== 'login') {
     await router.replace({
       name: 'login'
@@ -75,13 +74,13 @@ axios.interceptors.response.use((response) => response, jwt.responseErrorInterce
 authAxios.interceptors.response.use((response) => response, jwt.responseErrorInterceptor)
 
 const requestInterceptor = (config: AxiosRequestConfig) => {
-  const token = localStorage.getItem('token')
+  const token = Cookies.get('access')
   if (config.headers && !config.headers.Authorization && token) config.headers.Authorization = 'Bearer ' + token
   return config
 }
 
 const refreshRequestInterceptor = (config: AxiosRequestConfig) => {
-  const token = localStorage.getItem('refresh')
+  const token = Cookies.get('refresh')
   if (config.headers && !config.headers.Authorization && token) config.headers.Authorization = 'Bearer ' + token
   return config
 }

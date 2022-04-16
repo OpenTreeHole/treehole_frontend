@@ -12,7 +12,7 @@ export default class BaseView extends BaseComponentOrView {
    */
   async preload(): Promise<void> {
     this.preloadSubject.next(false)
-    if (!LocalStorageStore.token) return
+    if (!LocalStorageStore.access) return
 
     if (!this.$ws.isConnecting() && !this.$ws.isConnected()) {
       this.$ws.connect()

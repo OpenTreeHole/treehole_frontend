@@ -1,26 +1,34 @@
 import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
+import Cookies from 'js-cookie'
+
+const access = !Cookies.get('access') && localStorage.getItem('token')
+const refresh = !Cookies.get('refresh') && localStorage.getItem('refresh')
+if (access) {
+  Cookies.set('access', access)
+  localStorage.removeItem('token')
+}
+if (refresh) {
+  Cookies.set('refresh', refresh)
+  localStorage.removeItem('refresh')
+}
 
 @Module({ store: store, dynamic: true, name: 'LocalStorageStore', namespaced: true })
 class LocalStorageStore extends VuexModule {
-  token = localStorage.getItem('token') || ''
+  access = Cookies.get('access') || ''
+  refresh = Cookies.get('refresh') || ''
   email = localStorage.getItem('email') || ''
   newcomer = localStorage.getItem('newcomer') || ''
-  refreshToken = localStorage.getItem('refresh') || ''
-
-  get tokenNoPrefix() {
-    return this.token?.substring(6)
-  }
 
   @Mutation
   setRefreshToken(newRefreshToken: string) {
-    this.refreshToken = newRefreshToken
+    this.refresh = newRefreshToken
     localStorage.setItem('refresh', newRefreshToken)
   }
 
   @Mutation
   setToken(newToken: string) {
-    this.token = newToken
+    this.access = newToken
     localStorage.setItem('token', newToken)
   }
 
@@ -39,8 +47,8 @@ class LocalStorageStore extends VuexModule {
   @Mutation
   clear() {
     localStorage.clear()
-    this.token = ''
-    this.refreshToken = ''
+    this.access = ''
+    this.refresh = ''
     this.email = ''
     this.newcomer = ''
   }

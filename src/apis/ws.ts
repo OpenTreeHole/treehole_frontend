@@ -1,8 +1,8 @@
 import { camelizeKeys } from '@/utils/utils'
 import { EventBus } from '@/event-bus'
-import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import WsMessage, { parseMessage } from '@/models/websocket/WsMessage'
 import FDUHoleFEConfig from '@/opentreehole-fe.config'
+import Cookies from 'js-cookie'
 
 export class WsClient {
   ws: WebSocket | null = null
@@ -24,7 +24,7 @@ export class WsClient {
   }
 
   connect() {
-    const token = LocalStorageStore.tokenNoPrefix
+    const token = Cookies.get('access')
     if (!token) {
       throw new Error('No Token!')
     }

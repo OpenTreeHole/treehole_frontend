@@ -189,11 +189,11 @@ export default class Navbar extends BaseComponentOrView {
   holeToGo = ''
 
   get banMenu() {
-    return !LocalStorageStore.token
+    return !LocalStorageStore.access
   }
 
   get routes(): RouteConfig[] {
-    if (!this.preloaded || !LocalStorageStore.token) {
+    if (!this.preloaded || !LocalStorageStore.access) {
       return this.$router.options.routes!.filter((v) => !v.meta?.hide && !v.meta?.requireAuth)
     }
     return this.$router.options.routes!.filter((v) => !v.meta?.hide && (!v.meta?.requireAdmin || UserStore.user?.isAdmin))
