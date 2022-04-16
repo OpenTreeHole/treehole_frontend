@@ -45,12 +45,11 @@ const config = {
     }
   ]
 }
-if (process.env.NODE_ENV !== 'production' || process.env.BASE_URL.include('test.fduhole.com')) {
-  // development
-  config.backEndUrl = 'https://hole.hath.top/api/'
-  config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/api/ws/notification'
-  config.backEndWebsocketImageApi = 'wss://hole.hath.top/api/ws/images'
-  config.authUrl = 'https://testAuth.fduhole.com/api/'
-}
+
+// development
+config.backEndUrl = 'https://hole.hath.top/api/'
+config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/api/ws/notification'
+config.backEndWebsocketImageApi = 'wss://hole.hath.top/api/ws/images'
+config.authUrl = 'https://testAuth.fduhole.com/api/'
 
 export default config
