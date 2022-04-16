@@ -62,7 +62,7 @@ export default class SearchFloorList extends BaseComponentOrView {
   }
 
   async mounted () {
-    await searchFloors(this.searchStr, 20, 0)
+    this.floors = await searchFloors(this.searchStr, 10, 0)
   }
 
   updated () {

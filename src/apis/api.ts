@@ -24,6 +24,7 @@ export class ApiError extends Error {
 
   constructor (originalError: AxiosError, message?: string, options?: any) {
     super(message, options)
+    this.originalError = originalError
   }
 }
 
