@@ -126,7 +126,7 @@ import LabelChip from '@/components/chip/LabelChip.vue'
 import UserStore, { ShowNSFWStatus } from '@/store/modules/UserStore'
 import { remove } from 'lodash-es'
 import FixHeightDiv from '@/components/animation/FixHeightDiv.vue'
-import { modifyDivision } from '@/apis/api'
+import { modifyDivision } from '@/apis'
 
 @Component({
   components: {

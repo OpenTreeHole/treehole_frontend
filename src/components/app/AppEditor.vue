@@ -13,7 +13,7 @@ import 'vditor/dist/index.css'
 
 import { Component, Prop } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { uploadImage } from '@/apis/api'
+import { uploadImage } from '@/apis'
 
 @Component
 export default class AppEditor extends BaseComponentOrView {

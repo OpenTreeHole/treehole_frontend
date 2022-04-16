@@ -18,7 +18,7 @@ import { Component, Emit } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import ReportCard from '@/components/card/ReportCard.vue'
 import { Report } from '@/models/report'
-import { listReports } from '@/apis/api'
+import { listReports } from '@/apis'
 
 @Component({
   components: { ReportCard }

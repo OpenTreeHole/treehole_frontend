@@ -3,7 +3,7 @@ import store from '@/store'
 import { User } from '@/models/user'
 import { Division } from '@/models/division'
 import Vue from 'vue'
-import { getUserProfile, listDivisions, listTags } from '@/apis/api'
+import { getUserProfile, listDivisions, listTags } from '@/apis'
 import { Hole } from '@/models/hole'
 import { Tag } from '@/models/tag'
 

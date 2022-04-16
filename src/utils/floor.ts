@@ -8,7 +8,7 @@ import UtilStore from '@/store/modules/UtilStore'
 import { Main } from '@/main'
 import { DetailedFloor, Floor, IFloor } from '@/models/floor'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { getHole } from '@/apis/api'
+import { getHole } from '@/apis'
 
 export async function renderFloor (parent: BaseComponentOrView, curFloor: DetailedFloor, toMention: (mentionFloor: Floor) => void, idPrefix: string = 'fl'): Promise<void> {
   if (('mention' in curFloor) && curFloor.mention.length !== 0) {

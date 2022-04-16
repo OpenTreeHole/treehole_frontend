@@ -62,7 +62,7 @@ import { ITag } from '@/models/tag'
 import { Division } from '@/models/division'
 import { dialogWidth } from '@/utils/style'
 import TagChip from '@/components/chip/TagChip.vue'
-import { addHole } from '@/apis/api'
+import { addHole } from '@/apis'
 import TagInput from '@/components/input/TagInput.vue'
 
 @Component({

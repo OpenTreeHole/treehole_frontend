@@ -4,7 +4,6 @@ import axios, { AxiosError, AxiosRequestConfig } from 'axios'
 import FDUHoleFEConfig from '@/opentreehole-fe.config'
 import router from '@/router'
 import { camelizeKeys, snakifyKeys } from '@/utils/utils'
-import createAuthRefreshInterceptor from 'axios-auth-refresh'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { IPunishment, IUserAuth, IUserAuthData, Punishment, User, UserAuth } from '@/models/user'
 import { Division, IDivision, IDivisionAdd, IDivisionModify } from '@/models/division'
@@ -12,6 +11,7 @@ import { DetailedFloor, IDetailedFloor, IFloorData } from '@/models/floor'
 import { Hole, IHole } from '@/models/hole'
 import { ITag, Tag } from '@/models/tag'
 import { IReport, IReportDeal, Report } from '@/models/report'
+import JWTManager from '@/apis/jwt'
 
 const authAxios = axios.create()
 const refreshAxios = axios.create()
@@ -55,8 +55,24 @@ const refreshAuthLogic = async (failedRequest: AxiosError) => {
   return Promise.reject(failedRequest)
 }
 
-createAuthRefreshInterceptor(axios, refreshAuthLogic)
-createAuthRefreshInterceptor(authAxios, refreshAuthLogic)
+// createAuthRefreshInterceptor(axios, refreshAuthLogic)
+// createAuthRefreshInterceptor(authAxios, refreshAuthLogic)
+const jwt = new JWTManager(async () => (await refresh()).access)
+jwt.refreshErrorCallback = async (refreshError) => {
+  LocalStorageStore.setToken('')
+  LocalStorageStore.setRefreshToken('')
+  localStorage.removeItem('token')
+  localStorage.removeItem('refresh')
+  if (router.currentRoute.name !== 'login') {
+    await router.replace({
+      name: 'login'
+    })
+    if (refreshError.response?.data.message) return Promise.reject(new ApiError(refreshError, `${refreshError.response.status}: ${refreshError.response.data.message}`))
+    else return Promise.reject(new ApiError(refreshError, '会话已过期，请重新登录'))
+  }
+}
+axios.interceptors.response.use(response => response, jwt.responseErrorInterceptor)
+authAxios.interceptors.response.use(response => response, jwt.responseErrorInterceptor)
 
 const requestInterceptor = (config: AxiosRequestConfig) => {
   const token = localStorage.getItem('token')
@@ -75,11 +91,13 @@ const errorInterceptor = async (error: AxiosError) => {
     if (error.response.data.message) {
       return Promise.reject(new ApiError(error, `${error.response.status}: ${error.response.data.message}`))
     } else {
-      console.log(error.response)
+      console.log('请点开以下错误（如果存在response字段则将其一并点开，反正能点开多少点多少），并将错误信息截图')
+      console.log({ error })
       return Promise.reject(new ApiError(error, `${error.response.status}: 未知错误，请按F12查看控制台以获得错误信息并发至站务分区`))
     }
   } else {
-    console.log(error)
+    console.log('请点开以下错误（如果存在response字段则将其一并点开，反正能点开多少点多少），并将错误信息截图')
+    console.log({ error })
     return Promise.reject(new ApiError(error, '未知axios错误，请按F12查看控制台以获得错误信息并发至站务分区，'))
   }
 }
@@ -96,7 +114,7 @@ refreshAxios.interceptors.response.use(response => response, errorInterceptor)
 
 // Auth-related apis.
 
-export const login = async (email: string, password: string): Promise<{ message: string, access?: string, refresh?: string }> => {
+export const login = async (email: string, password: string): Promise<{ message: string, access: string, refresh: string }> => {
   const response = await authAxios.post('/login', {
     email: email,
     password: password
@@ -111,8 +129,10 @@ export const logout = async (): Promise<{ message: string }> => {
   return camelizeKeys(response.data)
 }
 
-export const refresh = async (): Promise<{ message: string, access?: string, refresh?: string }> => {
+export const refresh = async (): Promise<{ message: string, access: string, refresh: string }> => {
   const response = await refreshAxios.post('/refresh')
+  LocalStorageStore.setToken(response.data.access)
+  LocalStorageStore.setRefreshToken(response.data.refresh)
   return camelizeKeys(response.data)
 }
 

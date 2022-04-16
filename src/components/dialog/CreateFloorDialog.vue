@@ -43,7 +43,7 @@ import MentionCard from '@/components/card/MentionCard.vue'
 import AppEditor from '@/components/app/AppEditor.vue'
 import { DetailedFloor, Floor } from '@/models/floor'
 import { dialogWidth } from '@/utils/style'
-import { addFloor, modifyFloor } from '@/apis/api'
+import { addFloor, modifyFloor } from '@/apis'
 
 @Component({
   components: {

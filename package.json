@@ -12,7 +12,6 @@
     "@mdi/font": "^6.4.95",
     "@reactivex/rxjs": "^6.6.7",
     "axios": "^0.26.1",
-    "axios-auth-refresh": "^3.2.2",
     "core-js": "^3.6.5",
     "gsap": "^3.9.1",
     "highlight.js": "^11.3.1",

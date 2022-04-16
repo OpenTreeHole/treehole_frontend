@@ -88,7 +88,7 @@ import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
-import { changePassword, verifyWithEmail } from '@/apis/api'
+import { changePassword, verifyWithEmail } from '@/apis'
 
 @Component
 export default class ChangePasswordPage extends BaseView {

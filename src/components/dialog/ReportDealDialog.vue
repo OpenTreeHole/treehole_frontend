@@ -51,7 +51,7 @@
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, ModelSync, Prop, Ref } from 'vue-property-decorator'
 import { IReportDeal, Report } from '@/models/report'
-import { dealReport } from '@/apis/api'
+import { dealReport } from '@/apis'
 
 @Component
 export default class ReportDealDialog extends BaseComponentOrView {

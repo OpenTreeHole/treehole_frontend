@@ -66,7 +66,7 @@ import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
 import { debounce } from 'lodash-es'
-import { login } from '@/apis/api'
+import { login } from '@/apis'
 
 @Component
 export default class LoginPage extends BaseView {

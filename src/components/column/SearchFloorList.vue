@@ -49,7 +49,7 @@ import hljs from 'highlight.js/lib/core'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { openDivisionAndGotoHole } from '@/utils/floor'
 import { Floor } from '@/models/floor'
-import { searchFloors } from '@/apis/api'
+import { searchFloors } from '@/apis'
 
 @Component
 export default class SearchFloorList extends BaseComponentOrView {

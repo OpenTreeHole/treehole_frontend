@@ -96,7 +96,7 @@ import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import { debounce } from 'lodash-es'
 import { sleep } from '@/utils/utils'
-import { changePassword, verifyWithEmail } from '@/apis/api'
+import { changePassword, verifyWithEmail } from '@/apis'
 
 @Component
 export default class ForgetPasswordPage extends BaseView {

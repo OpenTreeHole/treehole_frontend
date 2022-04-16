@@ -127,7 +127,7 @@ import { DetailedFloor, Floor } from '@/models/floor'
 import { gotoHole, renderFloor } from '@/utils/floor'
 import DynamicExpansionPanel from '@/components/animation/DynamicExpansionPanel.vue'
 import CreateFloorDialog from '@/components/dialog/CreateFloorDialog.vue'
-import { addPenalty, addReport, addSpecialTag, deleteFloor, likeFloor } from '@/apis/api'
+import { addPenalty, addReport, addSpecialTag, deleteFloor, likeFloor } from '@/apis'
 
 interface Operation {
   icon: string | null
