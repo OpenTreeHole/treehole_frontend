@@ -1,56 +1,84 @@
 <template>
   <v-container fill-height>
-    <v-row align='center' justify='center'>
-      <v-col cols='10' sm='8' md='6' lg='4' class='text-center'>
-        <v-card class='py-8' elevation='4'>
+    <v-row
+      align="center"
+      justify="center"
+    >
+      <v-col
+        cols="10"
+        sm="8"
+        md="6"
+        lg="4"
+        class="text-center"
+      >
+        <v-card
+          class="py-8"
+          elevation="4"
+        >
           <h1>登录</h1>
-          <v-form ref='form' v-model='valid' lazy-validation>
-            <div class='pl-7 pr-10'>
+          <v-form
+            ref="form"
+            v-model="valid"
+            lazy-validation
+          >
+            <div class="pl-7 pr-10">
               <v-text-field
-                v-model='email'
-                label='edu邮箱'
-                prepend-icon='mdi-email'
-                :clearable='!valid'
-                :counter='32'
-                :error-messages='errorMsg.email'
-                :rules='notEmptyRules'
+                v-model="email"
+                label="edu邮箱"
+                prepend-icon="mdi-email"
+                :clearable="!valid"
+                :counter="32"
+                :error-messages="errorMsg.email"
+                :rules="notEmptyRules"
               />
 
               <v-text-field
-                v-model='password'
-                label='密码'
-                prepend-icon='mdi-lock'
-                type='password'
-                :clearable='!valid'
-                :counter='32'
-                :rules='passwordRules'
-                @keydown.enter='login'
+                v-model="password"
+                label="密码"
+                prepend-icon="mdi-lock"
+                type="password"
+                :clearable="!valid"
+                :counter="32"
+                :rules="passwordRules"
+                @keydown.enter="login"
               />
             </div>
-            <div class='px-10'>
+            <div class="px-10">
               <v-btn
-                class='my-4'
-                color='primary'
+                class="my-4"
+                color="primary"
                 block
-                :disabled='!valid'
-                @click='login'
+                :disabled="!valid"
+                @click="login"
               >
                 登录
               </v-btn>
             </div>
 
             <div>
-              <v-btn text color='primary' href='#/license'>
+              <v-btn
+                text
+                color="primary"
+                href="#/license"
+              >
                 登录意味着你同意这些协议
               </v-btn>
             </div>
             <div>
-              <v-btn text color='primary' href='#/register'>
+              <v-btn
+                text
+                color="primary"
+                href="#/register"
+              >
                 没有账号？点此注册
               </v-btn>
             </div>
             <div>
-              <v-btn text color='primary' href='#/forgetpassword'>
+              <v-btn
+                text
+                color="primary"
+                href="#/forgetpassword"
+              >
                 忘记密码
               </v-btn>
             </div>
@@ -61,7 +89,7 @@
   </v-container>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { Component, Ref, Watch } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
@@ -90,7 +118,7 @@ export default class LoginPage extends BaseView {
 
   @Ref() form: HTMLFormElement
 
-  async login () {
+  async login() {
     if (this.valid) {
       this.form.validate()
       const { message } = await login(this.email, this.password)
@@ -101,7 +129,7 @@ export default class LoginPage extends BaseView {
     }
   }
 
-  checkEmail (): void {
+  checkEmail(): void {
     if (!/^[0-9]+@(m\.)?fudan\.edu\.cn$/.test(this.email) && this.email !== 'admin@opentreehole.org') {
       this.errorMsg.email = '复旦学邮'
     } else {
@@ -110,7 +138,7 @@ export default class LoginPage extends BaseView {
   }
 
   @Watch('email')
-  emailChanged () {
+  emailChanged() {
     this.debouncedCheckEmail()
   }
 }

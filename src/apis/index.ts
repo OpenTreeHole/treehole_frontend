@@ -22,7 +22,7 @@ const refreshAxios = axios.create()
 export class ApiError extends Error {
   originalError: AxiosError
 
-  constructor (originalError: AxiosError, message?: string, options?: any) {
+  constructor(originalError: AxiosError, message?: string, options?: any) {
     super(message, options)
     this.originalError = originalError
   }
@@ -71,8 +71,8 @@ jwt.refreshErrorCallback = async (refreshError) => {
     else return Promise.reject(new ApiError(refreshError, '会话已过期，请重新登录'))
   }
 }
-axios.interceptors.response.use(response => response, jwt.responseErrorInterceptor)
-authAxios.interceptors.response.use(response => response, jwt.responseErrorInterceptor)
+axios.interceptors.response.use((response) => response, jwt.responseErrorInterceptor)
+authAxios.interceptors.response.use((response) => response, jwt.responseErrorInterceptor)
 
 const requestInterceptor = (config: AxiosRequestConfig) => {
   const token = localStorage.getItem('token')
@@ -104,17 +104,17 @@ const errorInterceptor = async (error: AxiosError) => {
 
 axios.defaults.baseURL = FDUHoleFEConfig.backEndUrl
 axios.interceptors.request.use(requestInterceptor)
-axios.interceptors.response.use(response => response, errorInterceptor)
+axios.interceptors.response.use((response) => response, errorInterceptor)
 authAxios.defaults.baseURL = FDUHoleFEConfig.authUrl
 authAxios.interceptors.request.use(requestInterceptor)
-authAxios.interceptors.response.use(response => response, errorInterceptor)
+authAxios.interceptors.response.use((response) => response, errorInterceptor)
 refreshAxios.defaults.baseURL = FDUHoleFEConfig.authUrl
 refreshAxios.interceptors.request.use(refreshRequestInterceptor)
-refreshAxios.interceptors.response.use(response => response, errorInterceptor)
+refreshAxios.interceptors.response.use((response) => response, errorInterceptor)
 
 // Auth-related apis.
 
-export const login = async (email: string, password: string): Promise<{ message: string, access: string, refresh: string }> => {
+export const login = async (email: string, password: string): Promise<{ message: string; access: string; refresh: string }> => {
   const response = await authAxios.post('/login', {
     email: email,
     password: password
@@ -129,14 +129,14 @@ export const logout = async (): Promise<{ message: string }> => {
   return camelizeKeys(response.data)
 }
 
-export const refresh = async (): Promise<{ message: string, access: string, refresh: string }> => {
+export const refresh = async (): Promise<{ message: string; access: string; refresh: string }> => {
   const response = await refreshAxios.post('/refresh')
   LocalStorageStore.setToken(response.data.access)
   LocalStorageStore.setRefreshToken(response.data.refresh)
   return camelizeKeys(response.data)
 }
 
-export const verifyWithEmail = async (email: string): Promise<{ message: string, scope: string }> => {
+export const verifyWithEmail = async (email: string): Promise<{ message: string; scope: string }> => {
   const response = await authAxios.get('/verify/email', {
     params: {
       email: email
@@ -145,7 +145,7 @@ export const verifyWithEmail = async (email: string): Promise<{ message: string,
   return camelizeKeys(response.data)
 }
 
-export const register = async (password: string, email: string, verification: string): Promise<{ message: string, access?: string, refresh?: string }> => {
+export const register = async (password: string, email: string, verification: string): Promise<{ message: string; access?: string; refresh?: string }> => {
   const response = await authAxios.post('/register', {
     password: password,
     email: email,
@@ -156,7 +156,7 @@ export const register = async (password: string, email: string, verification: st
   return camelizeKeys(response.data)
 }
 
-export const changePassword = async (password: string, email: string, verification: string): Promise<{ message: string, access?: string, refresh?: string }> => {
+export const changePassword = async (password: string, email: string, verification: string): Promise<{ message: string; access?: string; refresh?: string }> => {
   const response = await authAxios.put('/register', {
     password: password,
     email: email,
@@ -170,7 +170,7 @@ export const changePassword = async (password: string, email: string, verificati
 export const listPunishmentsByUser = async (userId: number) => {
   const response = await authAxios.get(`/users/${userId}/punishments`)
   const data: IPunishment[] = camelizeKeys(response.data)
-  return data.map(v => new Punishment(v))
+  return data.map((v) => new Punishment(v))
 }
 
 export const addPunishment = async (userId: number, reason: string, days: number, scope: string) => {
@@ -200,7 +200,7 @@ export const listPunishments = async (size: number, offset: number) => {
     }
   })
   const data: IPunishment[] = camelizeKeys(response.data)
-  return data.map(v => new Punishment(v))
+  return data.map((v) => new Punishment(v))
 }
 
 export const getCurrentUser = async () => {
@@ -234,7 +234,7 @@ export const listUsers = async (size: number, offset: number) => {
     }
   })
   const data: IUserAuth[] = camelizeKeys(response.data)
-  return data.map(v => new UserAuth(v))
+  return data.map((v) => new UserAuth(v))
 }
 
 export const getUserProfile = async () => {
@@ -247,7 +247,7 @@ export const getUserProfile = async () => {
 export const listDivisions = async () => {
   const response = await axios.get('/divisions')
   const data: IDivision[] = camelizeKeys(response.data)
-  return data.map(v => new Division(v))
+  return data.map((v) => new Division(v))
 }
 
 export const addDivision = async (division: IDivisionAdd) => {
@@ -292,7 +292,7 @@ export const listFloors = async (holeId: number, length: number, startFloor: num
     }
   })
   const data: IDetailedFloor[] = camelizeKeys(response.data)
-  return data.map(v => new DetailedFloor(v))
+  return data.map((v) => new DetailedFloor(v))
 }
 
 export const searchFloors = async (s: string, length: number, startFloor: number) => {
@@ -304,7 +304,7 @@ export const searchFloors = async (s: string, length: number, startFloor: number
     }
   })
   const data: IDetailedFloor[] = camelizeKeys(response.data)
-  return data.map(v => new DetailedFloor(v))
+  return data.map((v) => new DetailedFloor(v))
 }
 
 export const addFloor = async (floor: IFloorData) => {
@@ -373,11 +373,11 @@ export const deleteFloor = async (floorId: number, deleteReason?: string) => {
 //   return data.map(v => new Hole(v))
 // }
 
-export const addHole = async (divisionId: number, content: string, tags: string[] | ITag[]): Promise<{ message: string, hole: Hole }> => {
+export const addHole = async (divisionId: number, content: string, tags: string[] | ITag[]): Promise<{ message: string; hole: Hole }> => {
   const response = await axios.post('/holes', {
     division_id: divisionId,
     content: content,
-    tags: tags.length > 0 ? (typeof tags[0] === 'string' ? (tags as string[]).map(v => ({ name: v })) : tags.map((v) => ({ name: (v as ITag).name }))) : []
+    tags: tags.length > 0 ? (typeof tags[0] === 'string' ? (tags as string[]).map((v) => ({ name: v })) : tags.map((v) => ({ name: (v as ITag).name }))) : []
   })
   const data = camelizeKeys(response.data)
   return { message: data.message, hole: new Hole(data.data) }
@@ -394,12 +394,12 @@ export const listHoles = async (divisionId: number, startTime: Date, length: num
     }
   })
   const data: IHole[] = camelizeKeys(response.data)
-  return data.map(v => new Hole(v))
+  return data.map((v) => new Hole(v))
 }
 
 export const modifyHoleTag = async (id: number, tags: string[] | ITag[]) => {
   const response = await axios.put(`/holes/${id}`, {
-    tags: tags.length > 0 ? (typeof tags[0] === 'string' ? (tags as string[]).map(v => ({ name: v })) : tags.map((v) => ({ name: (v as ITag).name }))) : []
+    tags: tags.length > 0 ? (typeof tags[0] === 'string' ? (tags as string[]).map((v) => ({ name: v })) : tags.map((v) => ({ name: (v as ITag).name }))) : []
   })
   return new Hole(camelizeKeys(response.data))
 }
@@ -423,7 +423,7 @@ export const updatePageViews = async (id: number) => {
 export const listTags = async () => {
   const response = await axios.get('/tags')
   const data: ITag[] = camelizeKeys(response.data)
-  return data.map(v => new Tag(v))
+  return data.map((v) => new Tag(v))
 }
 
 export const getTag = async (id: number) => {
@@ -452,7 +452,7 @@ export const deleteTag = async (id: number) => {
 export const getFavorites = async () => {
   const response = await axios.get('/user/favorites')
   const data: IHole[] = camelizeKeys(response.data)
-  return data.map(v => new Hole(v))
+  return data.map((v) => new Hole(v))
 }
 
 export const addFavorites = async (holeId: number): Promise<string> => {
@@ -481,7 +481,7 @@ export const deleteFavorites = async (holeId: number): Promise<string> => {
 export const listReports = async () => {
   const response = await axios.get('/reports?category=not_dealed')
   const data: IReport[] = camelizeKeys(response.data)
-  return data.map(v => new Report(v))
+  return data.map((v) => new Report(v))
 }
 
 export const getReport = async (id: number) => {
@@ -510,7 +510,7 @@ export const addPenalty = async (floorId: number, penaltyLevel: number, division
   return new User(camelizeKeys(response.data))
 }
 
-export const uploadImage = async (imageBase64: string): Promise<{ message: string, url: string, medium: string, thumb: string }> => {
+export const uploadImage = async (imageBase64: string): Promise<{ message: string; url: string; medium: string; thumb: string }> => {
   const response = await axios.post('/images', {
     image: imageBase64
   })

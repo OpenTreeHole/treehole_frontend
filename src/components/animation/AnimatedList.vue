@@ -1,14 +1,21 @@
 <template>
-  <v-container class='pa-0 mb-3'>
-    <v-row class='ma-0' v-for='(computedData, index) in computedDatas' :key='computedData.data[vkey]' :class='computedData.class'
-           :id='"animated-"+computedData.data[vkey]'>
-      <slot :data='computedData.data' :index='index' />
+  <v-container class="pa-0 mb-3">
+    <v-row
+      class="ma-0"
+      v-for="(computedData, index) in computedDatas"
+      :key="computedData.data[vkey]"
+      :class="computedData.class"
+      :id="'animated-' + computedData.data[vkey]"
+    >
+      <slot
+        :data="computedData.data"
+        :index="index"
+      />
     </v-row>
   </v-container>
 </template>
 
-<script lang='ts'>
-
+<script lang="ts">
 import { Component, Prop, Watch } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { sleep } from '@/utils/utils'
@@ -36,16 +43,16 @@ export default class AnimatedList extends BaseComponentOrView {
   currentTop: Map<string, number> = new Map()
   updatedTop: Map<string, number> = new Map()
 
-  generateComputedData () {
+  generateComputedData() {
     const ret: ComputedData[] = []
-    this.intermediateDatas.forEach(data => {
+    this.intermediateDatas.forEach((data) => {
       ret.push({ data: data, class: '' })
     })
     return ret
   }
 
-  measureHeight () {
-    this.computedDatas.forEach(computedData => {
+  measureHeight() {
+    this.computedDatas.forEach((computedData) => {
       const element = document.getElementById('animated-' + computedData.data[this.vkey])
       if (element) {
         const height = parseInt(window.getComputedStyle(element).height)
@@ -54,10 +61,10 @@ export default class AnimatedList extends BaseComponentOrView {
     })
   }
 
-  measureCurrentTop () {
+  measureCurrentTop() {
     let top = 0
     this.currentTop = new Map()
-    this.computedDatas.forEach(computedData => {
+    this.computedDatas.forEach((computedData) => {
       this.currentTop.set(computedData.data[this.vkey], top)
       const height = this.computedHeight.get(computedData.data[this.vkey])
       if (!height) throw new Error('Computed Height Not Found!')
@@ -65,10 +72,10 @@ export default class AnimatedList extends BaseComponentOrView {
     })
   }
 
-  measureUpdatedTop () {
+  measureUpdatedTop() {
     let top = 0
     this.updatedTop = new Map()
-    this.intermediateDatas.forEach(data => {
+    this.intermediateDatas.forEach((data) => {
       this.updatedTop.set(data[this.vkey], top)
       const height = this.computedHeight.get(data[this.vkey])
       if (!height) throw new Error('Computed Height Not Found!')
@@ -76,9 +83,9 @@ export default class AnimatedList extends BaseComponentOrView {
     })
   }
 
-  getComputedDatasFromKey (key: string): ComputedData | null {
+  getComputedDatasFromKey(key: string): ComputedData | null {
     let ret: ComputedData | null = null
-    this.computedDatas.forEach(computedData => {
+    this.computedDatas.forEach((computedData) => {
       if (computedData.data[this.vkey] === key) {
         ret = computedData
       }
@@ -90,7 +97,7 @@ export default class AnimatedList extends BaseComponentOrView {
    * Block until all animation is finished.
    * @param times - The max retry times. (Planned to be replaced with a timeout)
    */
-  async waitForAnimatingFinish (times: number) {
+  async waitForAnimatingFinish(times: number) {
     if (this.animating && times > 0) {
       await sleep(500)
       await this.waitForAnimatingFinish(times - 1)
@@ -98,7 +105,7 @@ export default class AnimatedList extends BaseComponentOrView {
     if (this.animating) console.error('Animating Not Finished!')
   }
 
-  finishAnimation () {
+  finishAnimation() {
     this.animating = false
     this.updateData()
   }
@@ -107,7 +114,7 @@ export default class AnimatedList extends BaseComponentOrView {
    * Called when each animation completed.
    * <p>Calculate how many animation is still running. When all animation is finished, it updates the datas to the intermediateDatas.</p>
    */
-  complete () {
+  complete() {
     this.completeCount++
     if (this.completeCount === this.animatingCount) {
       this.computedDatas = this.generateComputedData()
@@ -115,7 +122,7 @@ export default class AnimatedList extends BaseComponentOrView {
     }
   }
 
-  isDataUpToDate (): boolean {
+  isDataUpToDate(): boolean {
     if (this.intermediateDatas.length !== this.datas.length) return false
     for (let i = 0; i < this.intermediateDatas.length && i < this.datas.length; i++) {
       if (this.intermediateDatas[i] !== this.datas[i]) return false
@@ -123,13 +130,13 @@ export default class AnimatedList extends BaseComponentOrView {
     return true
   }
 
-  updateData () {
+  updateData() {
     if (this.isDataUpToDate()) return
-    this.intermediateDatas = this.datas.map(v => v)
+    this.intermediateDatas = this.datas.map((v) => v)
   }
 
   @Watch('datas')
-  datasChanged () {
+  datasChanged() {
     if (!this.animating) this.updateData()
   }
 
@@ -140,7 +147,7 @@ export default class AnimatedList extends BaseComponentOrView {
    * <p>It runs when intermediateDatas changed instead of the data to ensure that every animation is finished with a complete lifecycle.</p>
    */
   @Watch('intermediateDatas', { immediate: true })
-  async intermediateDatasChanged () {
+  async intermediateDatasChanged() {
     if (!this.intermediateDatas || this.intermediateDatas.length === 0) {
       this.computedDatas = []
       return
@@ -152,7 +159,7 @@ export default class AnimatedList extends BaseComponentOrView {
         break
       }
     }
-    this.intermediateDatas.forEach(data => {
+    this.intermediateDatas.forEach((data) => {
       if (this.getComputedDatasFromKey(data[this.vkey]) === null) {
         this.computedDatas.push({ data: data, class: 'invisible' })
       }
@@ -166,7 +173,7 @@ export default class AnimatedList extends BaseComponentOrView {
       this.animating = true
       this.animatingCount = this.computedDatas.length
     }
-    this.computedDatas.forEach(async computedData => {
+    this.computedDatas.forEach(async (computedData) => {
       const from = this.currentTop.get(computedData.data[this.vkey])
       const to = this.updatedTop.get(computedData.data[this.vkey])
       const target = '#animated-' + computedData.data[this.vkey]
@@ -206,23 +213,30 @@ export default class AnimatedList extends BaseComponentOrView {
           x: -100
         })
       }
-      timeline.to(target, {
-        x: 0,
-        opacity: 1,
-        duration: 0.55,
-        ease: 'animatingListEase'
-      }, '+=0.05')
+      timeline.to(
+        target,
+        {
+          x: 0,
+          opacity: 1,
+          duration: 0.55,
+          ease: 'animatingListEase'
+        },
+        '+=0.05'
+      )
     })
   }
 
-  async created () {
+  async created() {
     CustomEase.create('animatedListEase', '0.385, 0.900, 0.570, 1.010')
   }
 }
 </script>
 
-<style scoped lang='scss'>
-.row{
-  will-change: transform
+<style
+  scoped
+  lang="scss"
+>
+.row {
+  will-change: transform;
 }
 </style>

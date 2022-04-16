@@ -12,11 +12,11 @@ export default class JWTManager {
   interval = 20
   timeout = 10000
 
-  constructor (
+  constructor(
     refresh: () => Promise<string>,
     needRefresh: (originalError: AxiosError) => boolean = (originalError: AxiosError) => originalError.response?.status === 401,
-    refreshErrorCallback: (refreshError: AxiosError) => void = () => {
-    }) {
+    refreshErrorCallback: (refreshError: AxiosError) => void = () => {}
+  ) {
     this.refresh = refresh
     this.needRefresh = needRefresh
     this.refreshErrorCallback = refreshErrorCallback

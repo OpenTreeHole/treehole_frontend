@@ -18,12 +18,12 @@ export interface IWsMessage {
   message: string
 }
 
-export function checkIWsMessage (message: any): boolean {
+export function checkIWsMessage(message: any): boolean {
   const keys = ['message']
   return checkType(message, keys)
 }
 
-export function parseMessage (message: any): WsMessage | null {
+export function parseMessage(message: any): WsMessage | null {
   if (checkIWsNotificationMessage(message)) return new WsNotificationMessage(message)
   if (checkIWsMessage(message)) return new WsMessage(message)
   return null
@@ -32,7 +32,7 @@ export function parseMessage (message: any): WsMessage | null {
 export default class WsMessage implements IWsMessage {
   message: string
 
-  constructor (wsMessage: IWsMessage) {
+  constructor(wsMessage: IWsMessage) {
     this.message = wsMessage.message
   }
 }

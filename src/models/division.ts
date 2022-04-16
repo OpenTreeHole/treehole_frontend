@@ -5,13 +5,13 @@ export interface IDivisionAdd {
   name: string
 }
 
-export interface IDivisionModify{
+export interface IDivisionModify {
   description?: string
   name?: string
   pinned?: number[]
 }
 
-export interface IDivision{
+export interface IDivision {
   description: string
   name: string
   pinned: IHole[]
@@ -24,10 +24,10 @@ export class Division implements IDivision {
   name: string
   pinned: Hole[]
 
-  constructor (division: IDivision) {
+  constructor(division: IDivision) {
     this.description = division.description
     this.divisionId = division.divisionId
     this.name = division.name
-    this.pinned = division.pinned.map(v => new Hole(v))
+    this.pinned = division.pinned.map((v) => new Hole(v))
   }
 }

@@ -1,15 +1,15 @@
 <template>
   <v-chip
-    color='yellow'
+    color="yellow"
     label
-    class='mx-1 my-1'
+    class="mx-1 my-1"
     small
   >
     {{ label }}
   </v-chip>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Prop } from 'vue-property-decorator'
 
@@ -19,6 +19,4 @@ export default class LabelChip extends BaseComponentOrView {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

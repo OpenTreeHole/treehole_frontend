@@ -1,4 +1,5 @@
-const pksjson = require('../package.json')
+import * as pksjson from '../package.json'
+
 const baseUrl = process.env.BASE_URL
 
 const config = {
@@ -44,7 +45,8 @@ const config = {
     }
   ]
 }
-if (process.env.NODE_ENV !== 'production') { // development
+if (process.env.NODE_ENV !== 'production') {
+  // development
   config.backEndUrl = 'https://hole.hath.top/api/'
   config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/api/ws/notification'
   config.backEndWebsocketImageApi = 'wss://hole.hath.top/api/ws/images'

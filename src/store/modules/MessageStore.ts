@@ -15,7 +15,7 @@ class MessageStore extends VuexModule {
    * @param messageInstance - the message instance in the current page.
    */
   @Mutation
-  setMessageComponent (messageInstance: Message): void {
+  setMessageComponent(messageInstance: Message): void {
     this.message = messageInstance
   }
 
@@ -24,7 +24,7 @@ class MessageStore extends VuexModule {
    * @param str - the message.
    */
   @Action({ rawError: true })
-  messageError (str: string): void {
+  messageError(str: string): void {
     if (this.message) this.message.error(str)
   }
 
@@ -33,7 +33,7 @@ class MessageStore extends VuexModule {
    * @param str - the message.
    */
   @Action({ rawError: true })
-  messageSuccess (str: string): void {
+  messageSuccess(str: string): void {
     if (this.message) {
       this.message.success(str)
     }
@@ -44,7 +44,7 @@ class MessageStore extends VuexModule {
    * @param str - the message.
    */
   @Action({ rawError: true })
-  messageWarning (str: string): void {
+  messageWarning(str: string): void {
     if (this.message) this.message.warning(str)
   }
 
@@ -53,7 +53,7 @@ class MessageStore extends VuexModule {
    * @param str - the message.
    */
   @Action({ rawError: true })
-  messageInfo (str: string): void {
+  messageInfo(str: string): void {
     if (this.message) this.message.info(str)
   }
 }

@@ -11,7 +11,7 @@ self.addEventListener('install', async () => {
   console.log('skip waiting')
 })
 
-self.addEventListener('active', async event => {
+self.addEventListener('active', async (event) => {
   console.log('active')
   console.log('active', event)
   await self.clientsClaim()
@@ -81,5 +81,5 @@ if (workbox) {
     })
   )
 } else {
-  console.log('Workbox didn\'t load')
+  console.log("Workbox didn't load")
 }

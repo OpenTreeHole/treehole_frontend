@@ -1,42 +1,50 @@
 <template>
   <v-combobox
-    v-model='selectedTags'
-    :items='tags'
-    item-text='name'
-    item-value='name'
-    label='标签'
-    hint='回车新增标签'
-    :rules='tagRules'
-    :counter='counter'
-    :error-messages='errorMsg'
+    v-model="selectedTags"
+    :items="tags"
+    item-text="name"
+    item-value="name"
+    label="标签"
+    hint="回车新增标签"
+    :rules="tagRules"
+    :counter="counter"
+    :error-messages="errorMsg"
     hide-selected
     clearable
     multiple
   >
     <!-- 自定义标签样式 -->
-    <template v-slot:selection='data'>
+    <template v-slot:selection="data">
       <tag-chip
-        :tag='data.item'
-        @click='selectedTags=selectedTags.filter(v=>v!==data.item)'
+        :tag="data.item"
+        @click="selectedTags = selectedTags.filter((v) => v !== data.item)"
       >
-        <span class='tag-icon'>
-          <v-icon x-small color='red'>mdi-fire</v-icon>
+        <span class="tag-icon">
+          <v-icon
+            x-small
+            color="red"
+            >mdi-fire</v-icon
+          >
         </span>
-        <span class='red--text'>
+        <span class="red--text">
           {{ data.item.temperature }}
         </span>
       </tag-chip>
     </template>
 
     <!-- 自定义下拉框样式 -->
-    <template v-slot:item='data'>
+    <template v-slot:item="data">
       <v-list-item-content>
         <span :class="parseTagColor(data.item.name) + '--text'">
           {{ data.item.name }}
-          <v-icon color='red' class='tag-icon' small>
+          <v-icon
+            color="red"
+            class="tag-icon"
+            small
+          >
             mdi-fire
           </v-icon>
-          <span class='tag-count red--text'>
+          <span class="tag-count red--text">
             {{ data.item.temperature }}
           </span>
         </span>
@@ -45,7 +53,7 @@
   </v-combobox>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, ModelSync, Prop, Watch } from 'vue-property-decorator'
 import TagChip from '@/components/chip/TagChip.vue'
@@ -53,16 +61,13 @@ import { ITag } from '@/models/tag'
 import UserStore from '@/store/modules/UserStore'
 import { parseTagColor } from '@/utils/utils'
 
-const defaultTagRules = [
-  (v: ITag[]) => v.length <= 5 || '标签不能多于5个',
-  (v: ITag[]) => v.length >= 1 || '请至少选择1个标签'
-]
+const defaultTagRules = [(v: ITag[]) => v.length <= 5 || '标签不能多于5个', (v: ITag[]) => v.length >= 1 || '请至少选择1个标签']
 
 @Component({
   components: { TagChip }
 })
 export default class TagInput extends BaseComponentOrView {
-  @Prop({ type: Array, default: () => defaultTagRules }) tagRules: ((v: ITag[]) => (true | string))[]
+  @Prop({ type: Array, default: () => defaultTagRules }) tagRules: ((v: ITag[]) => true | string)[]
   @Prop({ default: null }) counter: number | null
 
   errorMsg = ''
@@ -70,18 +75,18 @@ export default class TagInput extends BaseComponentOrView {
   parseTagColor = parseTagColor
   @ModelSync('selectedTagsProp', 'change', { default: () => [] }) selectedTags: ITag[]
 
-  get tags () {
+  get tags() {
     return UserStore.tags
   }
 
-  get coloredTags (): Array<any> {
-    return this.tags.map(v => {
+  get coloredTags(): Array<any> {
+    return this.tags.map((v) => {
       return { ...v, color: parseTagColor(v.name) }
     })
   }
 
   @Watch('selectedTags')
-  selectedTagsChanged () {
+  selectedTagsChanged() {
     for (let i = 0; i < this.selectedTags.length; i++) {
       if (typeof this.selectedTags[i] === 'string') {
         const tagStr = (this.selectedTags[i] as unknown as string).trim()
@@ -90,11 +95,7 @@ export default class TagInput extends BaseComponentOrView {
           this.errorMsg = '标签不能超过8个字符'
           this.selectedTags.pop()
           break
-        } else if (
-          this.tags.find(
-            (tag) => tag.name.toLowerCase() === tagStr.toLowerCase()
-          )
-        ) {
+        } else if (this.tags.find((tag) => tag.name.toLowerCase() === tagStr.toLowerCase())) {
           this.errorMsg = '标签不能重复'
           this.selectedTags.pop()
           break

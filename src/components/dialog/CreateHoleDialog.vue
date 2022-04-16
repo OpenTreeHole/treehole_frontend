@@ -1,38 +1,47 @@
 <template>
-  <v-dialog content-class='my-n4 mx-3' v-model='dialog' persistent :max-width='dialogWidth'>
-    <template #activator='{ on, attrs }'>
+  <v-dialog
+    content-class="my-n4 mx-3"
+    v-model="dialog"
+    persistent
+    :max-width="dialogWidth"
+  >
+    <template #activator="{ on, attrs }">
       <slot
-        name='activator'
-        v-bind='{on,attrs}'
+        name="activator"
+        v-bind="{ on, attrs }"
       />
     </template>
 
     <v-card>
       <v-card-title>
-        <span class='headline'>发表树洞</span>
+        <span class="headline">发表树洞</span>
       </v-card-title>
 
       <v-card-text>
         <!-- 发帖表单 -->
-        <v-form ref='form' v-model='valid' lazy-validation>
+        <v-form
+          ref="form"
+          v-model="valid"
+          lazy-validation
+        >
           <v-combobox
-            v-model='selectedDivision'
-            :items='divisions'
-            :rules='[v=>v!=null]'
-            item-text='name'
-            label='分区'
+            v-model="selectedDivision"
+            :items="divisions"
+            :rules="[(v) => v != null]"
+            item-text="name"
+            label="分区"
             hide-selected
           />
 
           <tag-input
-            v-model='selectedTags'
-            :counter='5'
+            v-model="selectedTags"
+            :counter="5"
           />
 
           <!-- 富文本输入框 -->
           <app-editor
-            ref='editor'
-            :contentName='contentName'
+            ref="editor"
+            :contentName="contentName"
           />
         </v-form>
       </v-card-text>
@@ -40,11 +49,17 @@
       <!-- 关闭对话框 -->
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn color='primary' text @click='closeDialog'> 关闭</v-btn>
         <v-btn
-          color='primary'
+          color="primary"
           text
-          @click='submit'
+          @click="closeDialog"
+        >
+          关闭</v-btn
+        >
+        <v-btn
+          color="primary"
+          text
+          @click="submit"
         >
           发送
         </v-btn>
@@ -53,7 +68,7 @@
   </v-dialog>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UserStore from '@/store/modules/UserStore'
 import { Component, ModelSync, Prop, Ref, Watch } from 'vue-property-decorator'
@@ -86,26 +101,26 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   @Ref() readonly editor!: AppEditor
   @Ref() readonly form!: HTMLFormElement
 
-  get contentName (): string {
+  get contentName(): string {
     return `division-${this.divisionId}-content`
   }
 
-  get divisions () {
+  get divisions() {
     return UserStore.divisions
   }
 
-  get dialogWidth () {
+  get dialogWidth() {
     return dialogWidth()
   }
 
   @Watch('dialog')
-  dialogChanged (newVal: boolean) {
+  dialogChanged(newVal: boolean) {
     if (newVal) {
-      this.selectedDivision = UserStore.divisions.find(v => v.divisionId === this.divisionId) ?? null
+      this.selectedDivision = UserStore.divisions.find((v) => v.divisionId === this.divisionId) ?? null
     }
   }
 
-  closeDialog () {
+  closeDialog() {
     this.dialog = false
     this.valid = true
   }
@@ -113,7 +128,7 @@ export default class CreateHoleDialog extends BaseComponentOrView {
   /**
    * Send request to add a new hole.
    */
-  async submit () {
+  async submit() {
     if (this.form.validate() && this.editor.validate()) {
       this.closeDialog()
       const { message } = await addHole(this.selectedDivision!.divisionId, this.editor.getContent(), this.selectedTags)

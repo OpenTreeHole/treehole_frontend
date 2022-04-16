@@ -28,7 +28,7 @@ const colorList = [
 ]
 
 export const sleep = async (ms: number) => {
-  return new Promise(resolve => setTimeout(resolve, ms))
+  return new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export const max = (...nums: number[]) => {
@@ -68,7 +68,7 @@ export const timeDifference = (date: Date): string => {
 
 export const camelizeKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
-    return obj.map(v => camelizeKeys(v))
+    return obj.map((v) => camelizeKeys(v))
   } else if (obj != null && obj.constructor === Object) {
     return Object.keys(obj).reduce(
       (result, key) => ({
@@ -83,7 +83,7 @@ export const camelizeKeys = (obj: any): any => {
 
 export const snakifyKeys = (obj: any): any => {
   if (Array.isArray(obj)) {
-    return obj.map(v => snakifyKeys(v))
+    return obj.map((v) => snakifyKeys(v))
   } else if (obj != null && obj.constructor === Object) {
     return Object.keys(obj).reduce(
       (result, key) => ({
@@ -102,16 +102,18 @@ export const reduceKeys = (reduced: any, before: any): any => {
 }
 
 export const convertKatex = (str: string) => {
-  return str.replace(/\$\$([^$]+)\$\$/g, (ignore, k) => {
-    return katex.renderToString(k, {
-      displayMode: true,
-      macros
+  return str
+    .replace(/\$\$([^$]+)\$\$/g, (ignore, k) => {
+      return katex.renderToString(k, {
+        displayMode: true,
+        macros
+      })
     })
-  }).replace(/\$([^$]+)\$/g, (ignore, k) => {
-    return katex.renderToString(k, {
-      displayMode: false
+    .replace(/\$([^$]+)\$/g, (ignore, k) => {
+      return katex.renderToString(k, {
+        displayMode: false
+      })
     })
-  })
 }
 
 /**
@@ -132,7 +134,7 @@ export const parseTagColor = (tagName: string): string => {
 
 export const delay = async (ms: number) => {
   // return await for better async stack trace support in case of errors.
-  return await new Promise(resolve => setTimeout(resolve, ms))
+  return await new Promise((resolve) => setTimeout(resolve, ms))
 }
 
 export const checkType = (object: any, keysOfType: string[]): boolean => {
@@ -142,9 +144,9 @@ export const checkType = (object: any, keysOfType: string[]): boolean => {
   return true
 }
 
-export function stopOverscroll (element?: any) {
-  element = gsap.utils.toArray(element)[0] || window;
-  (element === document.body || element === document.documentElement) && (element = window)
+export function stopOverscroll(element?: any) {
+  element = gsap.utils.toArray(element)[0] || window
+  ;(element === document.body || element === document.documentElement) && (element = window)
   let lastScroll = 0
   let lastTouch: any
   let forcing: any
@@ -160,8 +162,8 @@ export function stopOverscroll (element?: any) {
   }
   const kill = () => {
     forcing = true
-    scroller.style.overflowY = 'hidden';
-    (!forward && scroller.scrollTop < 1) ? (scroller.scrollTop = 1) : (scroller.scrollTop = getMax() - 1)
+    scroller.style.overflowY = 'hidden'
+    !forward && scroller.scrollTop < 1 ? (scroller.scrollTop = 1) : (scroller.scrollTop = getMax() - 1)
     setTimeout(revert, 1)
   }
   const handleTouch = (e: any) => {

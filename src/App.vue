@@ -1,20 +1,17 @@
 <template>
   <v-app>
-    <message-snackbar ref='message'/>
-    <navigation-bar/>
+    <message-snackbar ref="message" />
+    <navigation-bar />
 
     <v-main>
-      <keep-alive include='DivisionPage'>
-        <router-view
-          :key="$route.fullPath + ($route.params.id || '') + $route.query"
-        ></router-view>
+      <keep-alive include="DivisionPage">
+        <router-view :key="$route.fullPath + ($route.params.id || '') + $route.query"></router-view>
       </keep-alive>
     </v-main>
-
   </v-app>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import NavigationBar from '@/components/bar/NavigationBar.vue'
 import MessageSnackbar from '@/components/bar/MessageSnackbar.vue'
 
@@ -50,7 +47,7 @@ export default class App extends Vue {
   @Provide() preloadSubject = new BehaviorSubject(false)
 
   @Ref() message: MessageSnackbar
-  async created () {
+  async created() {
     UtilStore.checkDevice()
     window.addEventListener('resize', UtilStore.checkDevice)
     document.addEventListener('onlined', (event: any) => {
@@ -61,11 +58,11 @@ export default class App extends Vue {
     })
   }
 
-  destroyed () {
+  destroyed() {
     window.removeEventListener('resize', UtilStore.checkDevice)
   }
 
-  errorCaptured (err: Error, vm: Vue, info: string) {
+  errorCaptured(err: Error, vm: Vue, info: string) {
     MessageStore.messageError(err.message)
     throw err
   }

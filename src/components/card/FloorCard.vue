@@ -1,27 +1,30 @@
 <template>
-  <v-card class='rounded' :id='index' elevation='1'>
-
-    <dynamic-expansion-panel :on='floor.fold.length>0'>
+  <v-card
+    class="rounded"
+    :id="index"
+    elevation="1"
+  >
+    <dynamic-expansion-panel :on="floor.fold.length > 0">
       <template #header>
         {{ floor.fold[0] }}
       </template>
       <template #content>
-        <v-card-text class='d-flex pb-4 pt-2 text-body-2'>
-          <span class='flex-left'>
+        <v-card-text class="d-flex pb-4 pt-2 text-body-2">
+          <span class="flex-left">
             {{ floor.anonyname }}
           </span>
-          <span class='flex-center'>
+          <span class="flex-center">
             {{ floor.timeCreated | timeDifference }}
           </span>
-          <span class='flex-right'>
-            <template v-if='!noAction'>
+          <span class="flex-right">
+            <template v-if="!noAction">
               <v-btn
-                v-if='operations.length === 1'
+                v-if="operations.length === 1"
                 small
                 text
-                @click='report'
-                class='grey--text'
-                style='padding-bottom: -10px'
+                @click="report"
+                class="grey--text"
+                style="padding-bottom: -10px"
               >
                 <v-icon>mdi-alert-outline</v-icon>
                 <br />
@@ -31,14 +34,14 @@
                 v-else
                 offset-y
               >
-                <template #activator='{on, attrs}'>
+                <template #activator="{ on, attrs }">
                   <v-btn
                     small
                     text
-                    class='grey--text'
-                    style='padding-bottom: -10px'
-                    v-bind='attrs'
-                    v-on='on'
+                    class="grey--text"
+                    style="padding-bottom: -10px"
+                    v-bind="attrs"
+                    v-on="on"
                   >
                     <v-icon>mdi-dots-horizontal</v-icon>
                     <br />
@@ -47,18 +50,22 @@
                 </template>
                 <v-list>
                   <v-list-item
-                    v-for='op in operations'
-                    :key='"operation-" + op.text'
+                    v-for="op in operations"
+                    :key="'operation-' + op.text"
                   >
                     <v-btn
                       small
                       text
-                      class='grey--text'
-                      style='padding-bottom: -10px'
-                      @click='op.operation'
+                      class="grey--text"
+                      style="padding-bottom: -10px"
+                      @click="op.operation"
                     >
-                      <span class='flex-left' style='min-width: 30px'><v-icon v-if='op.icon'>{{ op.icon }}</v-icon></span>
-                      <span class='flex-right'>{{ op.text }}</span>
+                      <span
+                        class="flex-left"
+                        style="min-width: 30px"
+                        ><v-icon v-if="op.icon">{{ op.icon }}</v-icon></span
+                      >
+                      <span class="flex-right">{{ op.text }}</span>
                     </v-btn>
                   </v-list-item>
                 </v-list>
@@ -67,28 +74,36 @@
           </span>
         </v-card-text>
 
-        <v-card-text class='py-0'>
+        <v-card-text class="py-0">
           <!-- 正文部分 -->
           <div
-            :id='id'
-            class='floor-body rich-text text--primary ma-0 text-body-1'
-            v-html='floor.html'
+            :id="id"
+            class="floor-body rich-text text--primary ma-0 text-body-1"
+            v-html="floor.html"
           ></div>
         </v-card-text>
 
         <!-- 脚标 -->
-        <v-card-text class='d-flex text-body-2 pb-2'>
-          <span class='flex-left' v-html='idInfo'></span>
-          <span class='flex-center'>
-            <create-floor-dialog v-if='!noAction' :reply-floor='floor' :hole-id='floor.holeId' @continue-load='continueLoad'>
-              <template #activator='{on,attrs}'>
+        <v-card-text class="d-flex text-body-2 pb-2">
+          <span
+            class="flex-left"
+            v-html="idInfo"
+          ></span>
+          <span class="flex-center">
+            <create-floor-dialog
+              v-if="!noAction"
+              :reply-floor="floor"
+              :hole-id="floor.holeId"
+              @continue-load="continueLoad"
+            >
+              <template #activator="{ on, attrs }">
                 <v-btn
                   small
                   text
-                  class='grey--text'
-                  style='padding-bottom: -10px'
-                  v-bind='attrs'
-                  v-on='on'
+                  class="grey--text"
+                  style="padding-bottom: -10px"
+                  v-bind="attrs"
+                  v-on="on"
                 >
                   <v-icon>mdi-reply-outline</v-icon>
                   <br />
@@ -96,17 +111,16 @@
                 </v-btn>
               </template>
             </create-floor-dialog>
-
           </span>
-          <span class='flex-right'>
+          <span class="flex-right">
             <v-btn
               small
               text
-              @click='like'
-              class='grey--text'
-              style='padding-bottom: -10px'
+              @click="like"
+              class="grey--text"
+              style="padding-bottom: -10px"
             >
-              <v-icon v-if='floor.liked'>mdi-thumb-up</v-icon>
+              <v-icon v-if="floor.liked">mdi-thumb-up</v-icon>
               <v-icon v-else>mdi-thumb-up-outline</v-icon>
               <br />
               <span>{{ floor.like }}</span>
@@ -115,11 +129,17 @@
         </v-card-text>
       </template>
     </dynamic-expansion-panel>
-    <create-floor-dialog v-model='dialog' :reply-floor='replyFloor' operation='edit' :floor-id='floor.floorId' @update-floor='updateFloor'/>
+    <create-floor-dialog
+      v-model="dialog"
+      :reply-floor="replyFloor"
+      operation="edit"
+      :floor-id="floor.floorId"
+      @update-floor="updateFloor"
+    />
   </v-card>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Emit, Prop, Watch } from 'vue-property-decorator'
 import UserStore from '@/store/modules/UserStore'
@@ -132,7 +152,7 @@ import { addPenalty, addReport, addSpecialTag, deleteFloor, likeFloor } from '@/
 interface Operation {
   icon: string | null
   text: string
-  operation: Function
+  operation: () => unknown
 }
 
 @Component({
@@ -147,17 +167,17 @@ export default class FloorCard extends BaseComponentOrView {
 
   dialog = false
 
-  display: boolean = false
+  display = false
 
-  get idInfo () {
+  get idInfo() {
     return this.index === -1 ? `<b>##${this.floor.floorId}</b>` : `<b>${this.index}L</b>(##${this.floor.floorId})`
   }
 
-  get id () {
+  get id() {
     return `${this.idPrefix}-${this.floor.floorId}`
   }
 
-  get replyFloor () {
+  get replyFloor() {
     if (this.floor instanceof DetailedFloor && this.floor.mention[0]) {
       return this.floor.mention[0]
     }
@@ -165,12 +185,12 @@ export default class FloorCard extends BaseComponentOrView {
   }
 
   @Emit('continue-load')
-  continueLoad () {}
+  continueLoad() {}
 
   @Emit('update-floor')
-  updateFloor () {}
+  updateFloor() {}
 
-  toMention (mentionFloor: Floor) {
+  toMention(mentionFloor: Floor) {
     if (this.floor.holeId === mentionFloor.holeId) {
       this.$emit('scroll-to-floor', mentionFloor.floorId)
     } else {
@@ -178,13 +198,13 @@ export default class FloorCard extends BaseComponentOrView {
     }
   }
 
-  renderMentions () {
+  renderMentions() {
     if (this.floor instanceof DetailedFloor) {
       renderFloor(this, this.floor, this.toMention)
     }
   }
 
-  rerenderSpecificMention (mentionFloor: Floor) {
+  rerenderSpecificMention(mentionFloor: Floor) {
     if (this.floor instanceof DetailedFloor && this.floor.mention.length !== 0) {
       let flag = false
       for (let i = 0; i < this.floor.mention.length; i++) {
@@ -200,23 +220,23 @@ export default class FloorCard extends BaseComponentOrView {
     }
   }
 
-  async mounted () {
+  async mounted() {
     this.renderMentions()
   }
 
-  async created () {
+  async created() {
     this.display = this.floor.fold.length === 0
   }
 
   @Watch('floor', { deep: true })
-  floorUpdated () {
+  floorUpdated() {
     this.renderMentions()
   }
 
   /**
    * Any other operation except reply.
    */
-  get operations (): Operation[] {
+  get operations(): Operation[] {
     const opReport = {
       icon: 'mdi-alert-outline',
       text: '举报',
@@ -258,14 +278,14 @@ export default class FloorCard extends BaseComponentOrView {
     }
   }
 
-  async addSpecialTag () {
+  async addSpecialTag() {
     const msg = prompt('输入特殊标签')
     if (msg == null) return
     await addSpecialTag(this.floor.floorId, msg)
     this.messageSuccess(`添加特殊标签"${msg}"成功！`)
   }
 
-  async penalty () {
+  async penalty() {
     const msg = prompt('输入惩罚等级')
     if (msg == null) return
     const level = parseInt(msg)
@@ -274,10 +294,10 @@ export default class FloorCard extends BaseComponentOrView {
     this.messageSuccess(`处罚成功！等级为：${level}`)
   }
 
-  async like () {
+  async like() {
     if (!(this.floor instanceof DetailedFloor)) return
 
-    this.floor.like = this.floor.liked ? (this.floor.like - 1) : (this.floor.like + 1)
+    this.floor.like = this.floor.liked ? this.floor.like - 1 : this.floor.like + 1
     this.floor.liked = !this.floor.liked
     const { liked } = await likeFloor(this.floor.floorId, this.floor.liked)
 
@@ -285,7 +305,7 @@ export default class FloorCard extends BaseComponentOrView {
     else this.messageSuccess('取消点赞成功')
   }
 
-  async removeFloor (needReason?: boolean) {
+  async removeFloor(needReason?: boolean) {
     let msg: string | null = ''
     if (needReason) {
       msg = prompt('输入删除理由')
@@ -300,7 +320,7 @@ export default class FloorCard extends BaseComponentOrView {
   /**
    * Send a report.
    */
-  async report () {
+  async report() {
     const msg = prompt('输入举报理由')
     if (!msg) {
       this.messageError('举报理由不能为空！')
@@ -312,6 +332,4 @@ export default class FloorCard extends BaseComponentOrView {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

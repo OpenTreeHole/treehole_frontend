@@ -1,12 +1,18 @@
 <template>
-  <v-container class='pa-0 max-height max-width'>
-    <report-panel v-if='!isMobile' ref='reportComp' />
-    <report-list-mobile v-else ref='reportComp' />
-    <float-btn-group :float-btns='floatBtns' />
+  <v-container class="pa-0 max-height max-width">
+    <report-panel
+      v-if="!isMobile"
+      ref="reportComp"
+    />
+    <report-list-mobile
+      v-else
+      ref="reportComp"
+    />
+    <float-btn-group :float-btns="floatBtns" />
   </v-container>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { Component, Ref } from 'vue-property-decorator'
 import BaseView from '@/mixins/BaseView.vue'
 import ReportPanel from '@/components/panel/ReportPanel.vue'
@@ -26,17 +32,17 @@ export default class ReportPage extends BaseView {
     }
   ]
 
-  get floatBtnClass () {
+  get floatBtnClass() {
     return this.isMobile ? 'float-btn' : 'float-btn-mobile'
   }
 
-  reload () {
+  reload() {
     this.reportComp.refresh()
   }
 }
 </script>
 
-<style lang='scss'>
+<style lang="scss">
 .float-btn {
   position: fixed;
   right: 8px;

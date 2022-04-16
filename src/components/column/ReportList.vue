@@ -1,19 +1,26 @@
 <template>
-  <v-container id='reportList' class='pa-0'>
+  <v-container
+    id="reportList"
+    class="pa-0"
+  >
     <v-row
-      class='ma-0'
-      v-for='(report, index) in reports'
-      :key='`${index}`'
-      justify='center'
+      class="ma-0"
+      v-for="(report, index) in reports"
+      :key="`${index}`"
+      justify="center"
     >
-      <v-col :class='colClass'>
-        <report-card :report='report' @open-report='openReport' @refresh='refresh'/>
+      <v-col :class="colClass">
+        <report-card
+          :report="report"
+          @open-report="openReport"
+          @refresh="refresh"
+        />
       </v-col>
     </v-row>
   </v-container>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { Component, Emit } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import ReportCard from '@/components/card/ReportCard.vue'
@@ -27,29 +34,26 @@ export default class ReportList extends BaseComponentOrView {
   reports: Report[] = []
 
   @Emit()
-  openReport (_report: Report) {
-  }
+  openReport(_report: Report) {}
 
-  get colClass () {
+  get colClass() {
     if (this.isMobile) return 'px-1 py-1'
     else return 'px-1 py-2'
   }
 
-  async refresh () {
+  async refresh() {
     this.reports = []
     await this.getReports()
   }
 
-  async getReports () {
+  async getReports() {
     this.reports = await listReports()
   }
 
-  async mounted () {
+  async mounted() {
     await this.getReports()
   }
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

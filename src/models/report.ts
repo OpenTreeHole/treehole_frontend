@@ -21,7 +21,7 @@ export class Report implements IReport {
   timeCreated: Date
   timeUpdated: Date
 
-  constructor (report: IReport) {
+  constructor(report: IReport) {
     this.reportId = report.reportId
     this.holeId = report.holeId
     this.reason = report.reason
@@ -34,8 +34,8 @@ export class Report implements IReport {
 }
 
 export interface IReportDeal {
-  fold?: string[],
+  fold?: string[]
   delete?: string
-  silent?: number,
+  silent?: number
   notDeal?: boolean
 }

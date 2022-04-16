@@ -1,30 +1,33 @@
 <template>
-  <double-column-panel ref='doubleColumnPanel' @show-second-col-changed='showFloorListChanged'>
+  <double-column-panel
+    ref="doubleColumnPanel"
+    @show-second-col-changed="showFloorListChanged"
+  >
     <template #first>
       <HoleList
-        :display-hole-id='displayHoleId'
-        :fix-card-height='true'
-        ref='holeList'
-        @refresh='refresh'
-        @open-hole='openHole'
+        :display-hole-id="displayHoleId"
+        :fix-card-height="true"
+        ref="holeList"
+        @refresh="refresh"
+        @open-hole="openHole"
       />
     </template>
     <template #second>
       <FloorList
-        v-if='displayHoleId && showFloorList'
-        :key='displayHoleId'
-        :display-floor-id='displayFloorId'
-        :wrapped-hole-or-id='displayHole'
-        @refresh='refresh'
-        @modify-hole='modifyHole'
-        ref='floorList'
-        class='pa-0'
+        v-if="displayHoleId && showFloorList"
+        :key="displayHoleId"
+        :display-floor-id="displayFloorId"
+        :wrapped-hole-or-id="displayHole"
+        @refresh="refresh"
+        @modify-hole="modifyHole"
+        ref="floorList"
+        class="pa-0"
       />
     </template>
   </double-column-panel>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import HoleList from '@/components/column/HoleList.vue'
 import FloorList from '@/components/column/FloorList.vue'
 
@@ -52,12 +55,12 @@ export default class HolePanel extends BaseComponentOrView {
   @Ref() readonly floorList: FloorList
   @Ref() readonly doubleColumnPanel: DoubleColumnPanel
 
-  refresh () {
+  refresh() {
     this.deactivate()
     this.holeList.refresh()
   }
 
-  openHole (hole: Hole, displayFloorId: number | null = null, preventClose: boolean = false) {
+  openHole(hole: Hole, displayFloorId: number | null = null, preventClose = false) {
     this.displayHole = hole
     if (displayFloorId) {
       this.displayFloorId = displayFloorId
@@ -72,14 +75,14 @@ export default class HolePanel extends BaseComponentOrView {
     }
   }
 
-  modifyHole (hole: Hole) {
+  modifyHole(hole: Hole) {
     this.holeList.modifyHole(hole)
     if (hole.holeId === this.displayHole?.holeId) {
       this.openHole(hole, null, true)
     }
   }
 
-  activate (id: number) {
+  activate(id: number) {
     if (id === this.displayHoleId) {
       this.doubleColumnPanel.deactivate()
       this.displayHoleId = null
@@ -90,13 +93,13 @@ export default class HolePanel extends BaseComponentOrView {
     }
   }
 
-  deactivate (): void {
+  deactivate(): void {
     this.displayHoleId = null
     this.doubleColumnPanel.deactivate()
   }
 
   @Emit()
-  showFloorListChanged (show: boolean) {
+  showFloorListChanged(show: boolean) {
     this.showFloorList = show
   }
 }

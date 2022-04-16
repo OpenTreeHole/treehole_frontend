@@ -1,9 +1,13 @@
 <template>
-  <v-dialog content-class='my-n4 mx-3' v-model='dialog' :max-width='dialogWidth'>
-    <template #activator='props'>
+  <v-dialog
+    content-class="my-n4 mx-3"
+    v-model="dialog"
+    :max-width="dialogWidth"
+  >
+    <template #activator="props">
       <slot
-        name='activator'
-        v-bind='{ ...props }'
+        name="activator"
+        v-bind="{ ...props }"
       />
     </template>
     <v-card>
@@ -11,43 +15,62 @@
         <span>处理举报</span>
       </v-card-title>
       <v-card-text>
-        <v-form ref='form'>
-          <v-radio-group v-model='dealType' row>
+        <v-form ref="form">
+          <v-radio-group
+            v-model="dealType"
+            row
+          >
             <v-radio
-              label='无'
-              :value='null'
+              label="无"
+              :value="null"
             />
             <v-radio
-              label='折叠'
-              value='fold'
+              label="折叠"
+              value="fold"
             />
             <v-radio
-              label='删除'
-              value='delete'
+              label="删除"
+              value="delete"
             />
           </v-radio-group>
           <v-textarea
-            v-if='dealType'
+            v-if="dealType"
             solo
-            :label='reasonDefault[dealType]'
-            v-model='reason[dealType]'
+            :label="reasonDefault[dealType]"
+            v-model="reason[dealType]"
           ></v-textarea>
-          <v-radio-group v-model='silent' row>
+          <v-radio-group
+            v-model="silent"
+            row
+          >
             <template v-slot:label>
               <div>禁言等级：</div>
             </template>
-            <v-radio label='不禁言' :value='0' />
-            <v-radio label='1' :value='1' />
-            <v-radio label='2' :value='2' />
+            <v-radio
+              label="不禁言"
+              :value="0"
+            />
+            <v-radio
+              label="1"
+              :value="1"
+            />
+            <v-radio
+              label="2"
+              :value="2"
+            />
           </v-radio-group>
-          <v-btn color='success' @click='submit'>执行</v-btn>
+          <v-btn
+            color="success"
+            @click="submit"
+            >执行</v-btn
+          >
         </v-form>
       </v-card-text>
     </v-card>
   </v-dialog>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, ModelSync, Prop, Ref } from 'vue-property-decorator'
 import { IReportDeal, Report } from '@/models/report'
@@ -64,20 +87,20 @@ export default class ReportDealDialog extends BaseComponentOrView {
   reasonDefault = { fold: '该内容已被折叠', delete: '该内容因违反社区规范被删除' }
   silent = 0
 
-  get dialogWidth () {
+  get dialogWidth() {
     return this.isMobile ? '98vw' : '70vw'
   }
 
   @Ref() readonly form!: HTMLFormElement
 
-  get reasonSubmit () {
+  get reasonSubmit() {
     return {
       fold: this.reason.fold || this.reasonDefault.fold,
       delete: this.reason.delete || this.reasonDefault.delete
     }
   }
 
-  async submit () {
+  async submit() {
     if (this.form.validate()) {
       this.dialog = false
       const data: IReportDeal = {}

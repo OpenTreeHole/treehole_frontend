@@ -8,36 +8,36 @@ class LocalStorageStore extends VuexModule {
   newcomer = localStorage.getItem('newcomer') || ''
   refreshToken = localStorage.getItem('refresh') || ''
 
-  get tokenNoPrefix () {
+  get tokenNoPrefix() {
     return this.token?.substring(6)
   }
 
   @Mutation
-  setRefreshToken (newRefreshToken: string) {
+  setRefreshToken(newRefreshToken: string) {
     this.refreshToken = newRefreshToken
     localStorage.setItem('refresh', newRefreshToken)
   }
 
   @Mutation
-  setToken (newToken: string) {
+  setToken(newToken: string) {
     this.token = newToken
     localStorage.setItem('token', newToken)
   }
 
   @Mutation
-  setEmail (newEmail: string) {
+  setEmail(newEmail: string) {
     this.email = newEmail
     localStorage.setItem('email', newEmail)
   }
 
   @Mutation
-  setNewcomer (newNewcomer: string) {
+  setNewcomer(newNewcomer: string) {
     this.newcomer = newNewcomer
     localStorage.setItem('newcomer', newNewcomer)
   }
 
   @Mutation
-  clear () {
+  clear() {
     localStorage.clear()
     this.token = ''
     this.refreshToken = ''

@@ -9,21 +9,21 @@ export class WsClient {
   unhandledMessages: string[] = []
   api: string
 
-  constructor (api: string) {
+  constructor(api: string) {
     this.api = api
   }
 
-  isConnecting (): boolean {
+  isConnecting(): boolean {
     if (!this.ws) return false
     return this.ws.readyState === WebSocket.CONNECTING
   }
 
-  isConnected (): boolean {
+  isConnected(): boolean {
     if (!this.ws) return false
     return this.ws.readyState === WebSocket.OPEN
   }
 
-  connect () {
+  connect() {
     const token = LocalStorageStore.tokenNoPrefix
     if (!token) {
       throw new Error('No Token!')
@@ -36,35 +36,34 @@ export class WsClient {
     this.ws.onclose = () => this.onClose()
   }
 
-  send (msg: string) {
+  send(msg: string) {
     if (!this.ws) this.unhandledMessages.push(msg)
     else {
       this.ws.send(msg)
     }
   }
 
-  sendAction (action: any) {
+  sendAction(action: any) {
     this.send(JSON.stringify(action))
   }
 
-  onOpen () {
+  onOpen() {
     if (this.unhandledMessages.length > 0) {
-      this.unhandledMessages.forEach(m => {
+      this.unhandledMessages.forEach((m) => {
         this.ws!.send(m)
       })
       this.unhandledMessages = []
     }
   }
 
-  onError () {
-  }
+  onError() {}
 
-  onClose () {
+  onClose() {
     this.ws = null
   }
 
-  onMessage (e: MessageEvent) {
-    const raw = (typeof e.data) === 'string' ? JSON.parse(e.data) : e.data
+  onMessage(e: MessageEvent) {
+    const raw = typeof e.data === 'string' ? JSON.parse(e.data) : e.data
     const msg: WsMessage | null = parseMessage(camelizeKeys(raw))
     if (msg) {
       EventBus.$emit('receive-ws-message', msg)

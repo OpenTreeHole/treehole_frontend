@@ -12,11 +12,10 @@
   </v-sheet>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import Vue from 'vue'
 import Component from 'vue-class-component'
 
 @Component
-export default class AppSheet extends Vue {
-}
+export default class AppSheet extends Vue {}
 </script>

@@ -1,20 +1,31 @@
 <template>
-  <v-sheet style='height: 100%'>
-    <v-container class='pa-0 double-column-panel'>
-      <v-row class='ma-0 max-height' justify='center'>
-
-        <v-col class='col-first'>
-          <div id='divColFirst' style='display: block; height: 100%; width: 100%;'>
-            <div style='padding: 0 20px'>
-              <slot name='first' />
+  <v-sheet style="height: 100%">
+    <v-container class="pa-0 double-column-panel">
+      <v-row
+        class="ma-0 max-height"
+        justify="center"
+      >
+        <v-col class="col-first">
+          <div
+            id="divColFirst"
+            style="display: block; height: 100%; width: 100%"
+          >
+            <div style="padding: 0 20px">
+              <slot name="first" />
             </div>
           </div>
         </v-col>
 
-        <v-col class='col-second' cols='6'>
-          <div id='divColSecond' style='display: block; height: 100%; width: 100%;'>
-            <div style='padding: 0 20px'>
-              <slot name='second' />
+        <v-col
+          class="col-second"
+          cols="6"
+        >
+          <div
+            id="divColSecond"
+            style="display: block; height: 100%; width: 100%"
+          >
+            <div style="padding: 0 20px">
+              <slot name="second" />
             </div>
           </div>
         </v-col>
@@ -24,7 +35,7 @@
   </v-sheet>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { Component, Emit, Watch } from 'vue-property-decorator'
 import Vue from 'vue'
 import { EventBus } from '@/event-bus'
@@ -89,36 +100,34 @@ export default class DoubleColumnPanel extends Vue {
 
   showSecondCol = false
 
-  deactivate (): void {
-    gsap.to('.col-first',
-      {
-        x: '50%',
-        flex: '50%',
-        maxWidth: '50%',
-        duration: 0.5,
-        ease: Power3.easeOut,
-        onStart: () => {
-          this.showSecondCol = false
-        }
-      })
+  deactivate(): void {
+    gsap.to('.col-first', {
+      x: '50%',
+      flex: '50%',
+      maxWidth: '50%',
+      duration: 0.5,
+      ease: Power3.easeOut,
+      onStart: () => {
+        this.showSecondCol = false
+      }
+    })
   }
 
-  activate (): void {
-    gsap.to('.col-first',
-      {
-        x: 0,
-        flex: '37%',
-        maxWidth: '37%',
-        duration: 0.5,
-        ease: Power3.easeOut,
-        onComplete: () => {
-          this.showSecondCol = true
-          document.body.scrollTop = document.documentElement.scrollTop = 0
-        }
-      })
+  activate(): void {
+    gsap.to('.col-first', {
+      x: 0,
+      flex: '37%',
+      maxWidth: '37%',
+      duration: 0.5,
+      ease: Power3.easeOut,
+      onComplete: () => {
+        this.showSecondCol = true
+        document.body.scrollTop = document.documentElement.scrollTop = 0
+      }
+    })
   }
 
-  scrollToHole (holeId: number) {
+  scrollToHole(holeId: number) {
     const el = document.getElementById(`#${holeId}`)
     if (!el) {
       console.error(`Not Found Element with Id: #${holeId}!`)
@@ -131,7 +140,7 @@ export default class DoubleColumnPanel extends Vue {
     this.osColFirst.scroll(el, 1000)
   }
 
-  scrollToFloor (toIndex: number) {
+  scrollToFloor(toIndex: number) {
     const el = document.getElementById(toIndex.toString())
     if (!el) {
       console.error(`Not Found Element with Id: ${toIndex}!`)
@@ -144,7 +153,7 @@ export default class DoubleColumnPanel extends Vue {
     this.osColSecond.scroll(el, 1300)
   }
 
-  async mounted () {
+  async mounted() {
     this.viewport = window.innerHeight
     window.addEventListener('resize', () => {
       this.viewport = window.innerHeight
@@ -159,22 +168,21 @@ export default class DoubleColumnPanel extends Vue {
     EventBus.$on('scroll-to-hole', this.scrollToHole)
   }
 
-  destroyed () {
+  destroyed() {
     EventBus.$off('scroll-to-floor', this.scrollToFloor)
     EventBus.$off('scroll-to-hole', this.scrollToHole)
   }
 
   @Watch('showSecondCol')
   @Emit()
-  async showSecondColChanged (_val: boolean) {
-  }
+  async showSecondColChanged(_val: boolean) {}
 }
 </script>
 
 <style scoped>
 .double-column-panel {
   overflow: hidden;
-  height: 100%
+  height: 100%;
 }
 
 .col-first {
