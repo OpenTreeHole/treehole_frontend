@@ -23,13 +23,13 @@ class LocalStorageStore extends VuexModule {
   @Mutation
   setRefreshToken(newRefreshToken: string) {
     this.refresh = newRefreshToken
-    localStorage.setItem('refresh', newRefreshToken)
+    Cookies.set('refresh', newRefreshToken)
   }
 
   @Mutation
   setToken(newToken: string) {
     this.access = newToken
-    localStorage.setItem('token', newToken)
+    Cookies.set('access', newToken)
   }
 
   @Mutation
