@@ -10,7 +10,7 @@ const config = {
   teamMail: 'danxi_dev@protonmail.com',
   latestReleasePkgJSON: 'https://cdn.jsdelivr.net/gh/OpenTreeHole/vue@master/package.json', // the latest version number of front end.
   feVersion: pksjson.version,
-  backEndUrl: '/api/',
+  backEndUrl: 'https://www.fduhole.com/api/',
   authUrl: 'https://auth.fduhole.com/api/',
   authBaseUrl: 'https://auth.fduhole.com/',
   backEndWebsocketNotificationApi: 'wss://www.fduhole.com/api/ws/notification',
@@ -55,5 +55,10 @@ const envConfig = pickBy({
   authUrl: process.env.VUE_APP_AUTH_URL,
   authBaseUrl: process.env.VUE_APP_AUTH_BASE_URL
 })
+
+config.backEndUrl = 'https://hole.hath.top/api/'
+config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/api/ws/notification'
+config.authUrl = 'https://testAuth.fduhole.com/api/'
+config.authBaseUrl = 'https://testAuth.fduhole.com/'
 
 export default { ...config, ...envConfig }
