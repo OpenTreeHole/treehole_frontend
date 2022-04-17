@@ -2,7 +2,7 @@ name: dev build
 
 on:
   push:
-    branches: [ dev ]
+    branches: [dev]
 
 env:
   APP_NAME: open_tree_hole_frontend
@@ -28,5 +28,6 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
+          file: Dockerfile-test
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.APP_NAME }}:dev
