@@ -47,7 +47,7 @@ const routes: RouteConfig[] = [
     },
     name: 'login',
     beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'login?url=https://' + location.origin
+      location.href = opentreeholeFeConfig.authBaseUrl + 'login?url=' + location.origin
     }
   },
   {
@@ -130,7 +130,7 @@ const routes: RouteConfig[] = [
     },
     name: 'register',
     beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'register?url=https://' + location.origin
+      location.href = opentreeholeFeConfig.authBaseUrl + 'register?url=' + location.origin
     }
   },
   {
@@ -142,7 +142,7 @@ const routes: RouteConfig[] = [
     },
     name: 'changepassword',
     beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'register?type=forget_password&url=https://' + location.origin
+      location.href = opentreeholeFeConfig.authBaseUrl + 'register?type=forget_password&url=' + location.origin
     }
   },
   {
@@ -153,7 +153,7 @@ const routes: RouteConfig[] = [
     },
     name: 'forgetpassword',
     beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'register?type=forget_password&url=https://' + location.origin
+      location.href = opentreeholeFeConfig.authBaseUrl + 'register?type=forget_password&url=' + location.origin
     }
   },
   {
