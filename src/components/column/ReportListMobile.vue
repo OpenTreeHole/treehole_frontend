@@ -1,10 +1,14 @@
 <template>
-  <v-container class='pa-0'>
-    <report-list @open-report='openReport' ref='reportList' @refresh='refresh'/>
+  <v-container class="pa-0">
+    <report-list
+      @open-report="openReport"
+      ref="reportList"
+      @refresh="refresh"
+    />
   </v-container>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Ref } from 'vue-property-decorator'
 import ReportList from '@/components/column/ReportList.vue'
@@ -15,18 +19,19 @@ import { gotoHole } from '@/utils/floor'
   components: { ReportList }
 })
 export default class ReportListMobile extends BaseComponentOrView {
-  openReport (report: Report) {
+  openReport(report: Report) {
     gotoHole(report.holeId, report.floor.floorId)
   }
 
   @Ref() readonly reportList!: ReportList
 
-  refresh () {
+  refresh() {
     this.reportList.refresh()
   }
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style
+  lang="scss"
+  scoped
+></style>

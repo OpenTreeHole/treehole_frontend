@@ -38,16 +38,16 @@ export class Hole implements IHole {
   reply: number
   tags: Tag[]
 
-  get isFolded () {
-    return !this.tags.every(tag => tag.name && tag.name[0] !== '*')
+  get isFolded() {
+    return !this.tags.every((tag) => tag.name && tag.name[0] !== '*')
   }
 
-  get holeIdStr () {
+  get holeIdStr() {
     return this.holeId.toString()
   }
 
-  constructor (hole: IHole) {
-    this.cFloors = hole.floors.prefetch.map(v => new Floor(v))
+  constructor(hole: IHole) {
+    this.cFloors = hole.floors.prefetch.map((v) => new Floor(v))
     this.divisionId = hole.divisionId
     this.floors = hole.floors
     this.firstFloor = new Floor(hole.floors.firstFloor)
@@ -56,7 +56,7 @@ export class Hole implements IHole {
     this.timeCreated = new Date(hole.timeCreated)
     this.timeUpdated = new Date(hole.timeUpdated)
     this.reply = hole.reply
-    this.tags = hole.tags.map(v => new Tag(v))
+    this.tags = hole.tags.map((v) => new Tag(v))
 
     this.styleData = {
       fold: true,

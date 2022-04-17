@@ -1,5 +1,3 @@
-function plugins (Vue: any) {
-
-}
+function plugins(Vue: any) {}
 
 export default plugins

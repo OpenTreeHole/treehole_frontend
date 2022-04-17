@@ -1,11 +1,10 @@
 // noinspection NpmUsedModulesInstalled
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const webpack = require('webpack')
 
 module.exports = {
-  publicPath: process.env.NODE_ENV === 'production'
-    ? '/'
-    : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? '/' : '/',
   pwa: {
     name: 'FDU Hole',
     themeColor: '#3175D0',
@@ -17,11 +16,7 @@ module.exports = {
       // swSrc is required in InjectManifest mode.
       swSrc: 'src/service-worker.js',
       // ...other Workbox options...
-      exclude: [
-        /\.map$/,
-        /manifest\.json$/,
-        /online\.json/
-      ]
+      exclude: [/\.map$/, /manifest\.json$/, /online\.json/]
     },
     manifestOptions: {
       short_name: 'FDUHole',
@@ -52,13 +47,13 @@ module.exports = {
     // }
   },
   lintOnSave: false,
-  chainWebpack: config => {
-    config.plugin('provide').use(webpack.ProvidePlugin, [{
-      'window.Quill': 'quill/dist/quill.js',
-      Quill: 'quill/dist/quill.js'
-    }])
+  chainWebpack: (config) => {
+    config.plugin('provide').use(webpack.ProvidePlugin, [
+      {
+        'window.Quill': 'quill/dist/quill.js',
+        Quill: 'quill/dist/quill.js'
+      }
+    ])
   },
-  transpileDependencies: [
-    'vuetify'
-  ]
+  transpileDependencies: ['vuetify']
 }

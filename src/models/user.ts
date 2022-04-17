@@ -18,7 +18,7 @@ export class UserAuth implements IUserAuth {
   offenseCount: number
   silent: any
 
-  constructor (user: IUserAuth) {
+  constructor(user: IUserAuth) {
     this.id = user.id
     this.isAdmin = user.isAdmin
     this.joinedTime = new Date(user.joinedTime)
@@ -29,7 +29,7 @@ export class UserAuth implements IUserAuth {
 }
 
 export interface IPunishment {
-  id: number,
+  id: number
   user: {
     id: number
   }
@@ -51,7 +51,7 @@ export class Punishment implements IPunishment {
   startTime: Date
   user: { id: number }
 
-  constructor (punishment: IPunishment) {
+  constructor(punishment: IPunishment) {
     this.id = punishment.id
     this.endTime = new Date(punishment.endTime)
     this.madeBy = punishment.madeBy
@@ -72,7 +72,7 @@ export interface IUser {
     offenseCount: number
   }
   config: {
-    notify: string[],
+    notify: string[]
     showFolded: boolean
   }
   joinedTime: Date | string
@@ -88,7 +88,7 @@ export class User implements IUser {
   permission: { admin: Date; silent: { [p: string]: Date }; offenseCount: number }
   userId: number
 
-  constructor (user: IUser) {
+  constructor(user: IUser) {
     this.userId = user.userId
     this.nickname = user.nickname
     this.favorites = user.favorites

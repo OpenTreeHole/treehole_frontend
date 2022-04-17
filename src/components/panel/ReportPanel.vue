@@ -1,26 +1,29 @@
 <template>
-  <double-column-panel ref='doubleColumnPanel' @show-second-col-changed='showFloorListChanged'>
+  <double-column-panel
+    ref="doubleColumnPanel"
+    @show-second-col-changed="showFloorListChanged"
+  >
     <template #first>
       <report-list
-        ref='reportList'
-        @open-report='openReport'
-        @refresh='refresh'
+        ref="reportList"
+        @open-report="openReport"
+        @refresh="refresh"
       />
     </template>
     <template #second>
       <floor-list
-        v-if='displayReport && showFloorList'
-        :key='displayReport.reportId'
-        :display-floor-id='displayReport.floor.floorId'
-        :wrapped-hole-or-id='displayReport.holeId'
-        ref='floorList'
-        class='pa-0'
+        v-if="displayReport && showFloorList"
+        :key="displayReport.reportId"
+        :display-floor-id="displayReport.floor.floorId"
+        :wrapped-hole-or-id="displayReport.holeId"
+        ref="floorList"
+        class="pa-0"
       />
     </template>
   </double-column-panel>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Ref } from 'vue-property-decorator'
 import DoubleColumnPanel from '@/components/animation/DoubleColumnPanel.vue'
@@ -41,12 +44,12 @@ export default class ReportPanel extends BaseComponentOrView {
   @Ref() readonly floorList: FloorList
   @Ref() readonly doubleColumnPanel: DoubleColumnPanel
 
-  refresh (): void {
+  refresh(): void {
     this.deactivate()
     this.reportList.refresh()
   }
 
-  openReport (report: Report): void {
+  openReport(report: Report): void {
     if (this.displayReport && report.reportId === this.displayReport.reportId) {
       this.doubleColumnPanel.deactivate()
       this.displayReport = null
@@ -57,12 +60,12 @@ export default class ReportPanel extends BaseComponentOrView {
     }
   }
 
-  deactivate (): void {
+  deactivate(): void {
     this.displayReport = null
     this.doubleColumnPanel.deactivate()
   }
 
-  showFloorListChanged (show: boolean) {
+  showFloorListChanged(show: boolean) {
     this.showFloorList = show
   }
 }

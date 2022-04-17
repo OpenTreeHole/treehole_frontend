@@ -1,19 +1,16 @@
 import Vue from 'vue'
 import VueRouter, { Route } from 'vue-router'
-import LoginPage from '@/views/LoginPage.vue'
-import RegisterPage from '@/views/RegisterPage.vue'
 import HolePage from '@/views/HolePage.vue'
 import DivisionPage from '@/views/DivisionPage.vue'
 import AboutPage from '@/views/AboutPage.vue'
 import SearchPage from '@/views/SearchPage.vue'
 import LicensePage from '@/views/LicensePage.vue'
 import MePage from '@/views/MePage.vue'
-import ChangePasswordPage from '@/views/ChangePasswordPage.vue'
-import ForgetPasswordPage from '@/views/ForgetPasswordPage.vue'
 import CollectionPage from '@/views/CollectionPage.vue'
 import LocalStorageStore from './store/modules/LocalStorageStore'
 import ReportPage from '@/views/ReportPage.vue'
 import { RouteConfig } from 'vue-router/types/router'
+import opentreeholeFeConfig from '@/opentreehole-fe.config'
 
 Vue.use(VueRouter)
 
@@ -48,8 +45,10 @@ const routes: RouteConfig[] = [
       title: '登录',
       hide: true
     },
-    component: LoginPage,
-    name: 'login'
+    name: 'login',
+    beforeEnter() {
+      location.href = opentreeholeFeConfig.authBaseUrl + 'login?url=' + location.origin
+    }
   },
   {
     path: '/division/:id',
@@ -129,8 +128,10 @@ const routes: RouteConfig[] = [
       title: '注册',
       hide: true
     },
-    component: RegisterPage,
-    name: 'register'
+    name: 'register',
+    beforeEnter() {
+      location.href = opentreeholeFeConfig.authBaseUrl + 'register?url=' + location.origin
+    }
   },
   {
     path: '/changepassword',
@@ -139,8 +140,10 @@ const routes: RouteConfig[] = [
       requireAuth: true,
       hide: true
     },
-    component: ChangePasswordPage,
-    name: 'changepassword'
+    name: 'changepassword',
+    beforeEnter() {
+      location.href = opentreeholeFeConfig.authBaseUrl + 'register?type=forget_password&url=' + location.origin
+    }
   },
   {
     path: '/forgetpassword',
@@ -148,8 +151,10 @@ const routes: RouteConfig[] = [
       title: '忘记密码',
       hide: true
     },
-    component: ForgetPasswordPage,
-    name: 'forgetpassword'
+    name: 'forgetpassword',
+    beforeEnter() {
+      location.href = opentreeholeFeConfig.authBaseUrl + 'register?type=forget_password&url=' + location.origin
+    }
   },
   {
     path: '/hole/:id',
@@ -172,7 +177,7 @@ router.beforeEach((to, from, next) => {
   if (to.meta?.title) {
     document.title = to.meta.title
   }
-  if (to.meta?.requireAuth && !LocalStorageStore.token) return next('/login')
+  if (to.meta?.requireAuth && !LocalStorageStore.access) return next('/login')
   next()
 })
 

@@ -12,7 +12,7 @@ export class Tag implements ITag {
   temperature: number
   color: string
 
-  constructor (tag: ITag) {
+  constructor(tag: ITag) {
     this.name = tag.name
     this.tagId = tag.tagId
     this.temperature = tag.temperature

@@ -17,7 +17,7 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
-import ws, { wsImage } from '@/apis/ws'
+import ws from '@/apis/ws'
 import { stopOverscroll, timeDifference } from '@/utils/utils'
 
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
@@ -29,7 +29,6 @@ Vue.component('overlay-scrollbars', OverlayScrollbarsComponent)
 
 Vue.prototype.$feConfig = FDUHoleFEConfig
 Vue.prototype.$ws = ws
-Vue.prototype.$wsImage = wsImage
 
 Vue.config.productionTip = false
 
@@ -38,7 +37,8 @@ Vue.use(plugins)
 Vue.use(Viewer)
 
 Vue.filter('plainText', function (html: string) {
-  return html.replace(/<img.*?>/g, '[图片]')
+  return html
+    .replace(/<img.*?>/g, '[图片]')
     .replace(/<.*?>/g, ' ')
     .replace(/\$+[\s\S]*?\$+/g, '[数学公式]')
     .replace(/##?\d+/g, (v) => '[回复' + v + ']')
@@ -55,5 +55,5 @@ export const Main = new Vue({
   router,
   vuetify,
   store,
-  render: h => h(App)
+  render: (h) => h(App)
 }).$mount('#app')

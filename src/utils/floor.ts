@@ -8,10 +8,10 @@ import UtilStore from '@/store/modules/UtilStore'
 import { Main } from '@/main'
 import { DetailedFloor, Floor, IFloor } from '@/models/floor'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
-import { getHole } from '@/apis/api'
+import { getHole } from '@/apis'
 
-export async function renderFloor (parent: BaseComponentOrView, curFloor: DetailedFloor, toMention: (mentionFloor: Floor) => void, idPrefix: string = 'fl'): Promise<void> {
-  if (('mention' in curFloor) && curFloor.mention.length !== 0) {
+export async function renderFloor(parent: BaseComponentOrView, curFloor: DetailedFloor, toMention: (mentionFloor: Floor) => void, idPrefix = 'fl'): Promise<void> {
+  if ('mention' in curFloor && curFloor.mention.length !== 0) {
     await Vue.nextTick()
     renderMention(parent, curFloor, toMention, idPrefix)
   }
@@ -21,16 +21,18 @@ export const scrollToFloor = (toIndex: number): void => {
   EventBus.$emit('scroll-to-floor', toIndex)
 }
 
-function mapMention (mentionAttrs: string[], mention: IFloor[]): Map<string, Floor> {
+function mapMention(mentionAttrs: string[], mention: IFloor[]): Map<string, Floor> {
   const map = new Map<string, Floor>()
-  const sortedMentionAttrs = mentionAttrs.sort(a => (a[1] === '#' ? 1 : 0))
+  const sortedMentionAttrs = mentionAttrs.sort((a) => (a[1] === '#' ? 1 : 0))
   const mentionC = Array.from(mention)
   for (const mentionAttr of sortedMentionAttrs) {
     let mentionFloor: IFloor | undefined
-    if (mentionAttr[1] === '#') { // Means it's a floor mention. e.g. ##88258
-      mentionFloor = mentionC.find(v => v.floorId === parseInt(mentionAttr.substring(2)))
-    } else { // It's a hole mention. e.g. #10000
-      mentionFloor = mentionC.find(v => v.holeId === parseInt(mentionAttr.substring(1)))
+    if (mentionAttr[1] === '#') {
+      // Means it's a floor mention. e.g. ##88258
+      mentionFloor = mentionC.find((v) => v.floorId === parseInt(mentionAttr.substring(2)))
+    } else {
+      // It's a hole mention. e.g. #10000
+      mentionFloor = mentionC.find((v) => v.holeId === parseInt(mentionAttr.substring(1)))
     }
     if (!mentionFloor) continue
     const index = mentionC.indexOf(mentionFloor)
@@ -49,11 +51,11 @@ function mapMention (mentionAttrs: string[], mention: IFloor[]): Map<string, Flo
  * @param toMention
  * @param idPrefix
  */
-export function renderMention (parent: BaseComponentOrView, curFloor: DetailedFloor, toMention: (mentionFloor: Floor) => void, idPrefix: string): void {
+export function renderMention(parent: BaseComponentOrView, curFloor: DetailedFloor, toMention: (mentionFloor: Floor) => void, idPrefix: string): void {
   const elements = document.querySelectorAll(`div#${idPrefix}-${curFloor.floorId} > div.replyDiv`)
 
   const mentionAttrs: string[] = []
-  elements.forEach(el => {
+  elements.forEach((el) => {
     if (el.innerHTML) return
     const mentionAttr = el.getAttribute('mention')
     if (!mentionAttr) return
@@ -89,13 +91,13 @@ export function renderMention (parent: BaseComponentOrView, curFloor: DetailedFl
   }
 }
 
-export function gotoMentionFloor (curFloor: DetailedFloor, mentionFloor: Floor) {
+export function gotoMentionFloor(curFloor: DetailedFloor, mentionFloor: Floor) {
   if (!UtilStore.isMobile) EventBus.$emit('goto-mention-floor', curFloor, mentionFloor)
   else gotoHole(mentionFloor.holeId, mentionFloor.floorId)
 }
 
-export function gotoHole (holeIdOrHole: number | Hole, floorId?: number, toIndex?: number) {
-  const holeId = (typeof holeIdOrHole === 'number') ? holeIdOrHole : holeIdOrHole.holeId
+export function gotoHole(holeIdOrHole: number | Hole, floorId?: number, toIndex?: number) {
+  const holeId = typeof holeIdOrHole === 'number' ? holeIdOrHole : holeIdOrHole.holeId
   if (UtilStore.isMobile) {
     if (floorId !== undefined) {
       Main.$router.push({
@@ -112,7 +114,7 @@ export function gotoHole (holeIdOrHole: number | Hole, floorId?: number, toIndex
   }
 }
 
-export async function openDivisionAndGotoHole (holeId: number, floorId?: number, toIndex?: number) {
+export async function openDivisionAndGotoHole(holeId: number, floorId?: number, toIndex?: number) {
   if (UtilStore.isMobile) gotoHole(holeId, floorId, toIndex)
   else {
     const hole = await getHole(holeId)

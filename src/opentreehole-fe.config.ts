@@ -1,4 +1,6 @@
-const pksjson = require('../package.json')
+import * as pksjson from '../package.json'
+import { pickBy } from 'lodash-es'
+
 const baseUrl = process.env.BASE_URL
 
 const config = {
@@ -10,8 +12,8 @@ const config = {
   feVersion: pksjson.version,
   backEndUrl: 'https://www.fduhole.com/api/',
   authUrl: 'https://auth.fduhole.com/api/',
+  authBaseUrl: 'https://auth.fduhole.com/',
   backEndWebsocketNotificationApi: 'wss://www.fduhole.com/api/ws/notification',
-  backEndWebsocketImageApi: 'wss://www.fduhole.com/api/ws/images',
 
   // licenses
   licenses: [
@@ -44,11 +46,19 @@ const config = {
     }
   ]
 }
-if (process.env.NODE_ENV !== 'production') { // development
-  config.backEndUrl = 'https://hole.hath.top/api/'
-  config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/api/ws/notification'
-  config.backEndWebsocketImageApi = 'wss://hole.hath.top/api/ws/images'
-  config.authUrl = 'https://testAuth.fduhole.com/api/'
-}
 
-export default config
+// env
+
+const envConfig = pickBy({
+  backEndUrl: process.env.VUE_APP_BACKEND_URL,
+  backEndWebsocketNotificationApi: process.env.VUE_APP_BACKEND_WEBSOCKET_NOTIFICATION_API,
+  authUrl: process.env.VUE_APP_AUTH_URL,
+  authBaseUrl: process.env.VUE_APP_AUTH_BASE_URL
+})
+
+config.backEndUrl = 'https://hole.hath.top/api/'
+config.backEndWebsocketNotificationApi = 'wss://hole.hath.top/api/ws/notification'
+config.authUrl = 'https://testAuth.fduhole.com/api/'
+config.authBaseUrl = 'https://testAuth.fduhole.com/'
+
+export default { ...config, ...envConfig }

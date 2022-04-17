@@ -1,10 +1,10 @@
 <template>
-  <div :style='style'>
-    <slot/>
+  <div :style="style">
+    <slot />
   </div>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import { Component, Prop } from 'vue-property-decorator'
 import { debounce } from 'lodash-es'
@@ -15,16 +15,16 @@ export default class FixHeightDiv extends BaseComponentOrView {
   fixedHeight = '4.5rem'
   resizeObserver: ResizeObserver
 
-  get style () {
+  get style() {
     return this.fix ? `max-height: ${this.fixedHeight};` : ''
   }
 
-  computeFixHeight () {
+  computeFixHeight() {
     const element = this.$el as HTMLElement
     this.fixedHeight = window.getComputedStyle(element).height
   }
 
-  async mounted () {
+  async mounted() {
     this.computeFixHeight()
     this.resizeObserver = new ResizeObserver(debounce(this.computeFixHeight, 100))
     this.resizeObserver.observe(this.$el)
@@ -32,6 +32,7 @@ export default class FixHeightDiv extends BaseComponentOrView {
 }
 </script>
 
-<style lang='scss' scoped>
-
-</style>
+<style
+  lang="scss"
+  scoped
+></style>

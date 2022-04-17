@@ -1,14 +1,14 @@
 <template>
-  <v-container class='pa-0'>
+  <v-container class="pa-0">
     <hole-list
-      ref='holeList'
-      @refresh='refresh'
-      @open-hole='openHole'
+      ref="holeList"
+      @refresh="refresh"
+      @open-hole="openHole"
     />
   </v-container>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import TheLoader from '@/components/TheLoader.vue'
 import HoleCard from '@/components/card/HoleCard.vue'
 import { Component, Ref } from 'vue-property-decorator'
@@ -27,7 +27,7 @@ import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 export default class HoleListMobile extends BaseComponentOrView {
   @Ref() readonly holeList!: HoleList
 
-  refresh () {
+  refresh() {
     this.holeList.refresh()
   }
 
@@ -37,7 +37,7 @@ export default class HoleListMobile extends BaseComponentOrView {
    * @param hole - the hole.
    * @param displayFloorId - if this argument is set, the floor list will be scrolled to the specific floor after being loaded.
    */
-  openHole (hole: Hole, displayFloorId?: number): void {
+  openHole(hole: Hole, displayFloorId?: number): void {
     gotoHole(hole, displayFloorId)
   }
 }

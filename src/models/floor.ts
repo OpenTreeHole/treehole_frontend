@@ -35,7 +35,7 @@ export class Floor implements IFloor {
   html: string
   specialTag: string
 
-  constructor (floor: IFloor) {
+  constructor(floor: IFloor) {
     this.anonyname = floor.anonyname
     this.content = floor.content
     this.deleted = floor.deleted
@@ -50,7 +50,7 @@ export class Floor implements IFloor {
     this.convertHtml()
   }
 
-  convertHtml () {
+  convertHtml() {
     this.html = marked(convertKatex(this.content))
   }
 }
@@ -66,14 +66,14 @@ export class DetailedFloor extends Floor implements IDetailedFloor {
   liked: boolean
   mention: Floor[]
 
-  constructor (floor: IDetailedFloor) {
+  constructor(floor: IDetailedFloor) {
     super(floor)
     this.liked = floor.liked
     this.isMe = floor.isMe
-    this.mention = floor.mention.map(v => new Floor(v))
+    this.mention = floor.mention.map((v) => new Floor(v))
   }
 
-  convertHtml () {
+  convertHtml() {
     this.html = this.signMention(convertKatex(this.content))
   }
 
@@ -82,8 +82,8 @@ export class DetailedFloor extends Floor implements IDetailedFloor {
    *
    * @param str - the original string
    */
-  signMention (str: string): string {
-    str = str.replace(/##?\d+/g, v => '\n\n<p mention="' + v + '"></p>\n\n')
+  signMention(str: string): string {
+    str = str.replace(/##?\d+/g, (v) => '\n\n<p mention="' + v + '"></p>\n\n')
     str = marked(convertKatex(str))
     str = str.replace(/<p mention="##?\d+"><\/p>/g, (str) => {
       return str.replace('<p', '<div class="replyDiv"').replace('/p>', '/div>')

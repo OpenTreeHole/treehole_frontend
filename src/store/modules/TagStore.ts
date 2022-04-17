@@ -13,18 +13,18 @@ class TagStore extends VuexModule {
   blockedTags: ITag[] = JSON.parse(localStorage.getItem('blockedTags') ?? '[]')
 
   @Mutation
-  addTag (payload: { route: string, tag: ITag }): void {
+  addTag(payload: { route: string; tag: ITag }): void {
     Vue.set(this.tagMap, payload.route, payload.tag)
   }
 
   @Mutation
-  setBlockedTags (blockedTags: ITag[]) {
+  setBlockedTags(blockedTags: ITag[]) {
     this.blockedTags = blockedTags
     localStorage.setItem('blockedTags', JSON.stringify(blockedTags))
   }
 
   @Mutation
-  clearTag (route?: string): void {
+  clearTag(route?: string): void {
     if (route) {
       Vue.delete(this.tagMap, route)
     } else {

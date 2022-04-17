@@ -1,5 +1,5 @@
 <!--suppress ES6MissingAwait -->
-<script lang='ts'>
+<script lang="ts">
 import { Component } from 'vue-property-decorator'
 import BaseComponentOrView from '@/mixins/BaseComponentOrView.vue'
 import UserStore from '@/store/modules/UserStore'
@@ -10,20 +10,16 @@ export default class BaseView extends BaseComponentOrView {
   /**
    * Conduct Preloading.
    */
-  async preload (): Promise<void> {
+  async preload(): Promise<void> {
     this.preloadSubject.next(false)
-    if (!LocalStorageStore.token) return
+    if (!LocalStorageStore.access) return
 
     if (!this.$ws.isConnecting() && !this.$ws.isConnected()) {
       this.$ws.connect()
     }
 
-    if (!this.$wsImage.isConnecting() && !this.$wsImage.isConnected()) {
-      this.$wsImage.connect()
-    }
-
     await Promise.all([UserStore.requestDivisions(), UserStore.requestUser(), UserStore.requestTags()])
-    this.$router.options.routes!.find(v => v.name === 'division')!.meta!.children = UserStore.divisions.map(v => ({
+    this.$router.options.routes!.find((v) => v.name === 'division')!.meta!.children = UserStore.divisions.map((v) => ({
       path: `/${v.divisionId}`,
       meta: {
         title: v.name,
@@ -38,7 +34,7 @@ export default class BaseView extends BaseComponentOrView {
     this.preloadSubject.next(true)
   }
 
-  async created () {
+  async created() {
     await this.preload()
   }
 }

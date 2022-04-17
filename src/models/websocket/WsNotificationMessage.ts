@@ -18,7 +18,7 @@ export interface IWsNotificationMessage extends IWsMessage {
   timeCreated: Date | string
 }
 
-export function checkIWsNotificationMessage (message: any): boolean {
+export function checkIWsNotificationMessage(message: any): boolean {
   const keys = ['message', 'messageId', 'code', 'data', 'hasRead', 'timeCreated']
   return checkType(message, keys)
 }
@@ -30,7 +30,7 @@ export default class WsNotificationMessage extends WsMessage implements IWsNotif
   messageId: number
   timeCreated: Date
 
-  constructor (msg: IWsNotificationMessage) {
+  constructor(msg: IWsNotificationMessage) {
     super(msg)
     this.messageId = msg.messageId
     this.code = msg.code

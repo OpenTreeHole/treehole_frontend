@@ -1,10 +1,13 @@
 <template>
-  <v-container class='pa-0'>
-    <floor-list :display-floor-id='mentionFloorId' :wrapped-hole-or-id='computedDiscussionId' />
+  <v-container class="pa-0">
+    <floor-list
+      :display-floor-id="mentionFloorId"
+      :wrapped-hole-or-id="computedDiscussionId"
+    />
   </v-container>
 </template>
 
-<script lang='ts'>
+<script lang="ts">
 import { Component } from 'vue-property-decorator'
 import FloorList from '@/components/column/FloorList.vue'
 import BaseView from '@/mixins/BaseView.vue'
@@ -15,17 +18,20 @@ import BaseView from '@/mixins/BaseView.vue'
   }
 })
 export default class HolePage extends BaseView {
-  get computedDiscussionId () {
+  get computedDiscussionId() {
     return parseInt(this.$route.params.id)
   }
 
-  get mentionFloorId () {
-    return (this.$route.query.mention && typeof this.$route.query.mention === 'string') ? parseInt(this.$route.query.mention) : null
+  get mentionFloorId() {
+    return this.$route.query.mention && typeof this.$route.query.mention === 'string' ? parseInt(this.$route.query.mention) : null
   }
 }
 </script>
 
-<style lang='scss' scoped>
+<style
+  lang="scss"
+  scoped
+>
 /* 回复模块 */
 .reply {
   margin: 0 1rem 1rem;

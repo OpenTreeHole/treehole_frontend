@@ -1,5 +1,4 @@
-<script lang='ts'>
-
+<script lang="ts">
 import Vue from 'vue'
 
 import { Component, Inject, Watch } from 'vue-property-decorator'
@@ -28,34 +27,32 @@ export default class BaseComponentOrView extends Vue {
   addTag = (route: string, tag: ITag) => TagStore.addTag({ route: route, tag: tag })
   clearTag = TagStore.clearTag
 
-  get filteredTagMap () {
+  get filteredTagMap() {
     return TagStore.tagMap
   }
 
-  get themeClasses (): any {
+  get themeClasses(): any {
     return {
       'theme--light': !this.$vuetify.theme.dark,
       'theme--dark': this.$vuetify.theme.dark
     }
   }
 
-  get isMobile () {
+  get isMobile() {
     return UtilStore.isMobile
   }
 
-  onPreloaded () {
-  }
+  onPreloaded() {}
 
-  onWsMessage (msg: WsMessage) {
-  }
+  onWsMessage(msg: WsMessage) {}
 
-  async mounted () {
+  async mounted() {
     await this.$nextTick()
     this.subscribePreloading()
   }
 
   @Watch('themeClasses', { immediate: true })
-  async themeClassesChanged () {
+  async themeClassesChanged() {
     await this.$nextTick()
     const keys = Object.keys(this.themeClasses)
     if (!this.$el.classList) return
@@ -67,7 +64,7 @@ export default class BaseComponentOrView extends Vue {
     }
   }
 
-  activated () {
+  activated() {
     EventBus.$off('receive-ws-message', this.onWsMessage)
     EventBus.$on('receive-ws-message', this.onWsMessage)
     if (this.preloadSubscription && this.preloadSubscription.closed) {
@@ -75,26 +72,26 @@ export default class BaseComponentOrView extends Vue {
     }
   }
 
-  deactivated () {
+  deactivated() {
     EventBus.$off('receive-ws-message', this.onWsMessage)
     if (this.preloadSubscription) {
       this.preloadSubscription.unsubscribe()
     }
   }
 
-  destroyed () {
+  destroyed() {
     EventBus.$off('receive-ws-message', this.onWsMessage)
     if (this.preloadSubscription) {
       this.preloadSubscription.unsubscribe()
     }
   }
 
-  private _preload () {
+  private _preload() {
     this.preloaded = true
     this.onPreloaded()
   }
 
-  private subscribePreloading () {
+  private subscribePreloading() {
     this.preloadSubscription = this.preloadSubject.subscribe({
       next: (preloaded: boolean) => {
         if (preloaded && !this.preloaded) {

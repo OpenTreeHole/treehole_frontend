@@ -3,12 +3,14 @@ import store from '@/store'
 import { User } from '@/models/user'
 import { Division } from '@/models/division'
 import Vue from 'vue'
-import { getUserProfile, listDivisions, listTags } from '@/apis/api'
+import { getUserProfile, listDivisions, listTags } from '@/apis'
 import { Hole } from '@/models/hole'
 import { Tag } from '@/models/tag'
 
 export enum ShowNSFWStatus {
-  hidden, fold, show
+  hidden,
+  fold,
+  show
 }
 
 @Module({ store: store, dynamic: true, name: 'UserStore', namespaced: true })
@@ -20,63 +22,61 @@ class UserStore extends VuexModule {
   showNSFW: ShowNSFWStatus = parseInt(localStorage.getItem('showNSFW') ?? '1')
 
   @Mutation
-  clear () {
+  clear() {
     this.collection = []
     this.divisions = []
     this.tags = []
   }
 
   @Mutation
-  setShowNSFW (showNSFW: ShowNSFWStatus) {
+  setShowNSFW(showNSFW: ShowNSFWStatus) {
     this.showNSFW = showNSFW
-    localStorage.setItem('showNSFW', showNSFW.toString(
-
-    ))
+    localStorage.setItem('showNSFW', showNSFW.toString())
   }
 
   @Mutation
-  setDivisions (divisions: Division[]) {
+  setDivisions(divisions: Division[]) {
     this.divisions = divisions
   }
 
   @Mutation
-  collectionAdd (hole: Hole) {
+  collectionAdd(hole: Hole) {
     this.collection.push(hole)
   }
 
   @Mutation
-  collectionRemove (holeId: number) {
-    this.collection = this.collection.filter(v => v.holeId !== holeId)
+  collectionRemove(holeId: number) {
+    this.collection = this.collection.filter((v) => v.holeId !== holeId)
   }
 
   @Mutation
-  setDivision (payload: {divisionId: number, division: Division}) {
-    const index = this.divisions.findIndex(v => v.divisionId === payload.divisionId)
+  setDivision(payload: { divisionId: number; division: Division }) {
+    const index = this.divisions.findIndex((v) => v.divisionId === payload.divisionId)
     Vue.set(this.divisions, index, payload.division)
   }
 
   @Mutation
-  setUser (userProfile: User) {
+  setUser(userProfile: User) {
     this.user = userProfile
   }
 
   @Mutation
-  setTags (tags: Tag[]) {
+  setTags(tags: Tag[]) {
     this.tags = tags
   }
 
   @Action({ rawError: true })
-  async requestDivisions () {
+  async requestDivisions() {
     this.setDivisions(await listDivisions())
   }
 
   @Action({ rawError: true })
-  async requestUser () {
+  async requestUser() {
     this.setUser(await getUserProfile())
   }
 
   @Action({ rawError: true })
-  async requestTags () {
+  async requestTags() {
     this.setTags(await listTags())
   }
 }

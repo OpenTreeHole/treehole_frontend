@@ -1,46 +1,54 @@
 import { getModule, Module, Mutation, VuexModule } from 'vuex-module-decorators'
 import store from '@/store'
+import Cookies from 'js-cookie'
+
+const access = !Cookies.get('access') && localStorage.getItem('token')
+const refresh = !Cookies.get('refresh') && localStorage.getItem('refresh')
+if (access) {
+  Cookies.set('access', access)
+  localStorage.removeItem('token')
+}
+if (refresh) {
+  Cookies.set('refresh', refresh)
+  localStorage.removeItem('refresh')
+}
 
 @Module({ store: store, dynamic: true, name: 'LocalStorageStore', namespaced: true })
 class LocalStorageStore extends VuexModule {
-  token = localStorage.getItem('token') || ''
+  access = Cookies.get('access') || ''
+  refresh = Cookies.get('refresh') || ''
   email = localStorage.getItem('email') || ''
   newcomer = localStorage.getItem('newcomer') || ''
-  refreshToken = localStorage.getItem('refresh') || ''
 
-  get tokenNoPrefix () {
-    return this.token?.substring(6)
+  @Mutation
+  setRefreshToken(newRefreshToken: string) {
+    this.refresh = newRefreshToken
+    Cookies.set('refresh', newRefreshToken)
   }
 
   @Mutation
-  setRefreshToken (newRefreshToken: string) {
-    this.refreshToken = newRefreshToken
-    localStorage.setItem('refresh', newRefreshToken)
+  setToken(newToken: string) {
+    this.access = newToken
+    Cookies.set('access', newToken)
   }
 
   @Mutation
-  setToken (newToken: string) {
-    this.token = newToken
-    localStorage.setItem('token', newToken)
-  }
-
-  @Mutation
-  setEmail (newEmail: string) {
+  setEmail(newEmail: string) {
     this.email = newEmail
     localStorage.setItem('email', newEmail)
   }
 
   @Mutation
-  setNewcomer (newNewcomer: string) {
+  setNewcomer(newNewcomer: string) {
     this.newcomer = newNewcomer
     localStorage.setItem('newcomer', newNewcomer)
   }
 
   @Mutation
-  clear () {
+  clear() {
     localStorage.clear()
-    this.token = ''
-    this.refreshToken = ''
+    this.access = ''
+    this.refresh = ''
     this.email = ''
     this.newcomer = ''
   }
