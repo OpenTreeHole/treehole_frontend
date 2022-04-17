@@ -72,4 +72,3 @@ export class WsClient {
 }
 
 export default new WsClient(FDUHoleFEConfig.backEndWebsocketNotificationApi)
-export const wsImage = new WsClient(FDUHoleFEConfig.backEndWebsocketImageApi)

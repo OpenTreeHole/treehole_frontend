@@ -18,10 +18,6 @@ export default class BaseView extends BaseComponentOrView {
       this.$ws.connect()
     }
 
-    if (!this.$wsImage.isConnecting() && !this.$wsImage.isConnected()) {
-      this.$wsImage.connect()
-    }
-
     await Promise.all([UserStore.requestDivisions(), UserStore.requestUser(), UserStore.requestTags()])
     this.$router.options.routes!.find((v) => v.name === 'division')!.meta!.children = UserStore.divisions.map((v) => ({
       path: `/${v.divisionId}`,

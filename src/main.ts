@@ -17,7 +17,7 @@ import 'quill/dist/quill.core.css'
 import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import store from './store'
-import ws, { wsImage } from '@/apis/ws'
+import ws from '@/apis/ws'
 import { stopOverscroll, timeDifference } from '@/utils/utils'
 
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-vue'
@@ -29,7 +29,6 @@ Vue.component('overlay-scrollbars', OverlayScrollbarsComponent)
 
 Vue.prototype.$feConfig = FDUHoleFEConfig
 Vue.prototype.$ws = ws
-Vue.prototype.$wsImage = wsImage
 
 Vue.config.productionTip = false
 
