@@ -6,11 +6,11 @@ import config from '@/config'
 const access = !Cookies.get('access') && localStorage.getItem('token')
 const refresh = !Cookies.get('refresh') && localStorage.getItem('refresh')
 if (access) {
-  Cookies.set('access', access, { domain: config.cookieDomain })
+  Cookies.set('access', access, { domain: config.cookieDomain, expires: 10 })
   localStorage.removeItem('token')
 }
 if (refresh) {
-  Cookies.set('refresh', refresh, { domain: config.cookieDomain })
+  Cookies.set('refresh', refresh, { domain: config.cookieDomain, expires: 10 })
   localStorage.removeItem('refresh')
 }
 
@@ -24,13 +24,13 @@ class LocalStorageStore extends VuexModule {
   @Mutation
   setRefreshToken(newRefreshToken: string) {
     this.refresh = newRefreshToken
-    Cookies.set('refresh', newRefreshToken, { domain: config.cookieDomain })
+    Cookies.set('refresh', newRefreshToken, { domain: config.cookieDomain, expires: 10 })
   }
 
   @Mutation
   setToken(newToken: string) {
     this.access = newToken
-    Cookies.set('access', newToken, { domain: config.cookieDomain })
+    Cookies.set('access', newToken, { domain: config.cookieDomain, expires: 10 })
   }
 
   @Mutation
