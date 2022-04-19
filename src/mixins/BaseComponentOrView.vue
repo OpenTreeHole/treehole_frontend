@@ -44,7 +44,7 @@ export default class BaseComponentOrView extends Vue {
 
   onPreloaded() {}
 
-  onWsMessage(msg: WsMessage) {}
+  onWsMessage(_msg: WsMessage) {}
 
   async mounted() {
     await this.$nextTick()

@@ -62,7 +62,7 @@ export default class App extends Vue {
     window.removeEventListener('resize', UtilStore.checkDevice)
   }
 
-  errorCaptured(err: Error, vm: Vue, info: string) {
+  errorCaptured(err: Error, _vm: Vue, _info: string) {
     MessageStore.messageError(err.message)
     throw err
   }

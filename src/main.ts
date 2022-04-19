@@ -5,7 +5,6 @@ import router from './router'
 import VueCookies from 'vue-cookies'
 import vuetify from './plugins/vuetify'
 
-import plugins from './components/plugins'
 import 'viewerjs/dist/viewer.css'
 import Viewer from 'v-viewer'
 
@@ -33,7 +32,6 @@ Vue.prototype.$ws = ws
 Vue.config.productionTip = false
 
 Vue.use(VueCookies)
-Vue.use(plugins)
 Vue.use(Viewer)
 
 Vue.filter('plainText', function (html: string) {
