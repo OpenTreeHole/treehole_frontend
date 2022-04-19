@@ -1,7 +1,7 @@
 import { camelizeKeys } from '@/utils/utils'
 import { EventBus } from '@/event-bus'
 import WsMessage, { parseMessage } from '@/models/websocket/WsMessage'
-import FDUHoleFEConfig from '@/opentreehole-fe.config'
+import config from '@/config'
 import Cookies from 'js-cookie'
 
 export class WsClient {
@@ -71,4 +71,4 @@ export class WsClient {
   }
 }
 
-export default new WsClient(FDUHoleFEConfig.backEndWebsocketNotificationApi)
+export default new WsClient(config.backEndWebsocketNotificationApi)

@@ -10,7 +10,7 @@ import CollectionPage from '@/views/CollectionPage.vue'
 import LocalStorageStore from './store/modules/LocalStorageStore'
 import ReportPage from '@/views/ReportPage.vue'
 import { RouteConfig } from 'vue-router/types/router'
-import opentreeholeFeConfig from '@/opentreehole-fe.config'
+import config from '@/config'
 
 Vue.use(VueRouter)
 
@@ -47,7 +47,7 @@ const routes: RouteConfig[] = [
     },
     name: 'login',
     beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'login?url=' + location.origin
+      location.href = config.authBaseUrl + 'login?url=' + location.origin
     }
   },
   {
@@ -130,7 +130,7 @@ const routes: RouteConfig[] = [
     },
     name: 'register',
     beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'register?url=' + location.origin
+      location.href = config.authBaseUrl + 'register?url=' + location.origin
     }
   },
   {
@@ -142,7 +142,7 @@ const routes: RouteConfig[] = [
     },
     name: 'changepassword',
     beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'register?type=forget_password&url=' + location.origin
+      location.href = config.authBaseUrl + 'register?type=forget_password&url=' + location.origin
     }
   },
   {
@@ -153,7 +153,7 @@ const routes: RouteConfig[] = [
     },
     name: 'forgetpassword',
     beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'register?type=forget_password&url=' + location.origin
+      location.href = config.authBaseUrl + 'register?type=forget_password&url=' + location.origin
     }
   },
   {
