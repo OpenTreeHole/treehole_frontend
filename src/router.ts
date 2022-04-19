@@ -11,6 +11,7 @@ import LocalStorageStore from './store/modules/LocalStorageStore'
 import ReportPage from '@/views/ReportPage.vue'
 import { RouteConfig } from 'vue-router/types/router'
 import opentreeholeFeConfig from '@/opentreehole-fe.config'
+import LoginPage from '@/views/LoginPage.vue'
 
 Vue.use(VueRouter)
 
@@ -46,9 +47,7 @@ const routes: RouteConfig[] = [
       hide: true
     },
     name: 'login',
-    beforeEnter() {
-      location.href = opentreeholeFeConfig.authBaseUrl + 'login?url=' + location.origin
-    }
+    component: LoginPage
   },
   {
     path: '/division/:id',
