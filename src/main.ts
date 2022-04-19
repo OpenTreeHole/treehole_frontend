@@ -9,7 +9,7 @@ import 'viewerjs/dist/viewer.css'
 import Viewer from 'v-viewer'
 
 // 引入项目配置文件
-import FDUHoleFEConfig from './opentreehole-fe.config'
+import config from './config'
 
 // require styles
 import 'quill/dist/quill.core.css'
@@ -26,7 +26,7 @@ stopOverscroll()
 // global registration
 Vue.component('overlay-scrollbars', OverlayScrollbarsComponent)
 
-Vue.prototype.$feConfig = FDUHoleFEConfig
+Vue.prototype.$feConfig = config
 Vue.prototype.$ws = ws
 
 Vue.config.productionTip = false

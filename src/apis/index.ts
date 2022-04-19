@@ -1,7 +1,7 @@
 // noinspection DuplicatedCode
 
 import axios, { AxiosError, AxiosRequestConfig } from 'axios'
-import FDUHoleFEConfig from '@/opentreehole-fe.config'
+import config from '@/config'
 import router from '@/router'
 import { camelizeKeys, snakifyKeys } from '@/utils/utils'
 import LocalStorageStore from '@/store/modules/LocalStorageStore'
@@ -101,13 +101,13 @@ const errorInterceptor = async (error: AxiosError) => {
   }
 }
 
-axios.defaults.baseURL = FDUHoleFEConfig.backEndUrl
+axios.defaults.baseURL = config.backEndUrl
 axios.interceptors.request.use(requestInterceptor)
 axios.interceptors.response.use((response) => response, errorInterceptor)
-authAxios.defaults.baseURL = FDUHoleFEConfig.authUrl
+authAxios.defaults.baseURL = config.authUrl
 authAxios.interceptors.request.use(requestInterceptor)
 authAxios.interceptors.response.use((response) => response, errorInterceptor)
-refreshAxios.defaults.baseURL = FDUHoleFEConfig.authUrl
+refreshAxios.defaults.baseURL = config.authUrl
 refreshAxios.interceptors.request.use(refreshRequestInterceptor)
 refreshAxios.interceptors.response.use((response) => response, errorInterceptor)
 
