@@ -22,8 +22,6 @@ docker run -d -p 80:80 shi2002/open_tree_hole_frontend
 
 ## Badge
 
-[![dev build](https://github.com/OpenTreeHole/treehole_frontend/actions/workflows/dev.yml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/dev.yml)
-
 [![docker](https://github.com/OpenTreeHole/treehole_frontend/actions/workflows/docker-master.yaml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/docker-master.yaml)
 
 [![dev docker](https://github.com/OpenTreeHole/treehole_frontend/actions/workflows/docker-dev.yaml/badge.svg)](https://github.com/OpenTreeHole/vue/actions/workflows/docker-dev.yml)
