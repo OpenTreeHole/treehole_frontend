@@ -14,21 +14,25 @@ cd vue
 yarn
 ```
 
-经过以上几步，即可基本部署完成开发环境。此时如果运行```yarn serve```就应已经可以在localhost:8080（具体端口号会在终端显示）看到部署完成的测试服务器了。不过为开发的效率与规范起见，您还应了解以下几点：
+经过以上几步，即可基本部署完成开发环境。此时如果运行```yarn serve```就应已经可以在localhost:8080（具体端口号会在终端显示）看到部署完成的测试服务器了。
+
+（更新：目前由于部署了统一登录接口 auth_frontend ，若仅运行该项目会导致无法登录。可以在 src/router.ts 中将 beforeEnter 的重定向全部移除，并添加对应的 component。即login: LoginPage, changepassword: ChangePasswordPage, register: RegisterPage, forgetpassword: ForgetPasswordPage）
+
+不过为开发的效率与规范起见，您还应了解以下几点：
 
 1. 在每次commit代码之前均应运行```eslint --fix```或```yarn lint```（由于 package.json 中的配置，两者应是完全等价的）。此条命令能自动规范化你的代码样式，如删除多余空行/空格，将双引号替换为单引号等。如使用WebStorm进行开发，推荐在 **设置-工具-保存时的操作** 中勾选 **运行 eslint --fix** ，这会让你不必每次手动运行```eslint --fix```。另外，有时 自动格式化代码（WebStorm中默认为 Ctrl+Alt+L）会与 eslint 产生冲突（如 自动格式化代码 会将函数名与括号间的空格删去而 eslint 会添上这一空格），请以 eslint 为准。
 2. 可以安装一个 Chrome 的插件：Vue DevTools。这会让你调试时能直接监控到 data、props、以及 Vuex 中的数据的变化（可能有点延迟）。Vue DevTools 只能监控 development 模式（即 ```yarn serve```），无法监控 production 模式（即 ```yarn build```）。
-3. 在提交代码时，应提交到新的分支或 dev 分支，切勿提交到 master 分支（事实上，由于 master 分支已经设置了保护，你也无法做到这一点）。dev 分支的代码会直接部署到测试服务器（目前即为该项目的 Github Page，即 https://opentreehole.github.io/ ），而 master 分支的代码会直接部署到运行环境中。所以，master分支的改动均应通过 Pull Request 提交，并经过至少一名项目管理者 Review 后才可完成。提交到 master 分支的代码应更改 package.json 中的版本号，以免由于用户浏览器缓存而无法获取新版。
+3. 在提交代码时，应提交到新的分支或 dev 分支，切勿提交到 master 分支（事实上，由于 master 分支已经设置了保护，你也无法做到这一点）。dev 分支的代码会直接部署到测试服务器（目前为 https://test.fduhole.com/ ），而 master 分支的代码会直接部署到运行环境中。所以，master分支的改动均应通过 Pull Request 提交，并经过至少一名项目管理者 Review 后才可完成。提交到 master 分支的代码应更改 package.json 中的版本号，以免由于用户浏览器缓存而无法获取新版。
 
 ## 关于重要的库
 
-本项目主要使用 Vue2 + Vuetify + Typescript 进行开发。计划在 Vuetify 完成向 Vue3 的迁移之后也迁移到 Vue3。
+本项目主要使用 Vue 2 + Vuetify + Typescript 进行开发。计划在 Vuetify 完成向 Vue 3 的迁移之后也迁移到 Vue 3。
 
-### Vue2
+### Vue 2
 
 无论如何，整个项目都是用 Vue 写的，对于 Vue 你必须拥有基本的认识。详情参见文档，在此不再赘述。
 
-Vue2 官方中文文档： https://cn.vuejs.org/v2/guide/
+Vue 2 官方中文文档： https://cn.vuejs.org/v2/guide/
 
 ### Vuetify
 
@@ -55,7 +59,7 @@ Typescript 官方文档：https://www.typescriptlang.org/docs/
 
 ### Vue Class-Style Component
 
-Vue Class-Style Component 可以将 Vue 的一个单文件组件改为 class 的形式。除了让代码变得稍微好看一点（符合 Java 习惯）以及产生一堆奇怪的bug之外没什么用。只是开发者的个人癖好。
+Vue Class-Style Component 可以将 Vue 的一个单文件组件改为 class 的形式。能有效提高代码的可读性。预计在迁移到 Vue 3 的 Composition API 后移除此依赖。
 
 需要注意的是，Vue Class-Style Component 重载父类方法有点问题，不能访问 super 方法（而且 vue-class-component 的开发者似乎不认为这是个问题），所以尽量不要使用。
 
