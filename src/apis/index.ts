@@ -59,15 +59,23 @@ export class ApiError extends Error {
 // createAuthRefreshInterceptor(axios, refreshAuthLogic)
 // createAuthRefreshInterceptor(authAxios, refreshAuthLogic)
 const jwt = new JWTManager(async () => (await refresh()).access)
+jwt.needRefresh = (originalError) =>
+  originalError.response?.status === 401 &&
+  (originalError.response.data.exp || (originalError.response.data.message && (originalError.response.data.message as string).includes('Bearer')))
 jwt.refreshErrorCallback = async (refreshError) => {
-  LocalStorageStore.setToken('')
-  LocalStorageStore.setRefreshToken('')
-  if (router.currentRoute.name !== 'login') {
-    await router.replace({
-      name: 'login'
-    })
-    if (refreshError.response?.data.message) return Promise.reject(new ApiError(refreshError, `${refreshError.response.status}: ${refreshError.response.data.message}`))
-    else return Promise.reject(new ApiError(refreshError, '会话已过期，请重新登录'))
+  if (
+    refreshError.response?.status === 401 &&
+    (refreshError.response.data.exp || (refreshError.response.data.message && (refreshError.response.data.message as string).includes('Bearer')))
+  ) {
+    LocalStorageStore.setToken('')
+    LocalStorageStore.setRefreshToken('')
+    if (router.currentRoute.name !== 'login') {
+      await router.replace({
+        name: 'login'
+      })
+      if (refreshError.response?.data.message) return Promise.reject(new ApiError(refreshError, `${refreshError.response.status}: ${refreshError.response.data.message}`))
+      else return Promise.reject(new ApiError(refreshError, '会话已过期，请重新登录'))
+    }
   }
 }
 axios.interceptors.response.use((response) => response, jwt.responseErrorInterceptor)
