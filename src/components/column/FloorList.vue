@@ -296,7 +296,7 @@ export default class FloorList extends BaseComponentOrView {
   /**
    * Get floors from backend.
    */
-  async getFloors(): Promise<boolean> {
+  async getFloors() {
     if (!this.floors) return Promise.reject(new ReferenceError('Hole is undefined!'))
     const loadedLength = this.loadedLength
     const currentLoadedFloors = await listFloors(this.holeId, 10, this.loadedLength)
@@ -305,6 +305,12 @@ export default class FloorList extends BaseComponentOrView {
     this.loadedLength = max(currentLoadedFloors.length + loadedLength, this.loadedLength)
 
     return currentLoadedFloors.length > 0
+  }
+
+  async getAllFloors() {
+    if (!this.hole) return Promise.reject(new ReferenceError('Hole is undefined!'))
+    this.hole.cFloors = await listFloors(this.holeId, 0, 0)
+    this.loadedLength = this.floors!.length
   }
 
   updateFloor(index: number) {
@@ -319,13 +325,8 @@ export default class FloorList extends BaseComponentOrView {
   }
 
   async getFloorsUntil(waitingFloorId: number): Promise<Floor | null> {
-    if (!this.floors) return Promise.reject(new ReferenceError('Hole is undefined!'))
-    while (this.loading.hasNext) {
-      await this.loading.load()
-      const result = this.floors.find((v) => v.floorId === waitingFloorId)
-      if (result) return result
-    }
-    return null
+    await this.loading.loadCustomRequestOnce(this.getAllFloors)
+    return this.floors!.find((v) => v.floorId === waitingFloorId) ?? null
   }
 
   async getAndScrollToFloor(floorId: number | null) {
