@@ -4,7 +4,6 @@
     persistent
     :max-width="dialogWidth"
   >
-    <!-- 浮动按钮 -->
     <template #activator="{ on, attrs }">
       <slot
         name="activator"
