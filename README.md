@@ -28,7 +28,7 @@ docker run -d -p 80:80 shi2002/open_tree_hole_frontend
 
 ## Contributing
 
-Feel free to dive in! [Open an issue](https://github.com/OpenTreeHole/vue/issues/new) or submit PRs.
+Feel free to dive in! [Open an issue](https://github.com/OpenTreeHole/treehole_frontend/issues/new) or submit PRs.
 
 ### Development
 
