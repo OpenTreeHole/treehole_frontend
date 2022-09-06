@@ -29,35 +29,6 @@ export class ApiError extends Error {
   }
 }
 
-// const refreshAuthLogic = async (failedRequest: AxiosError) => {
-//   try {
-//     const response = await refresh()
-//     if (response.refresh && response.access) {
-//       LocalStorageStore.setRefreshToken(response.refresh)
-//       LocalStorageStore.setToken(response.access)
-//       if (failedRequest.response?.config.headers) {
-//         failedRequest.response.config.headers.Authorization = 'Bearer ' + response.access
-//       }
-//       return
-//     }
-//   } catch (e: any) {
-//     LocalStorageStore.setToken('')
-//     LocalStorageStore.setRefreshToken('')
-//     localStorage.removeItem('token')
-//     localStorage.removeItem('refresh')
-//     if (router.currentRoute.name !== 'login') {
-//       await router.replace({
-//         name: 'login'
-//       })
-//       if (e.response.data.message) return Promise.reject(new ApiError(e, `${e.response.status}: ${e.response.data.message}`))
-//       else return Promise.reject(new ApiError(e, '会话已过期，请重新登录'))
-//     }
-//   }
-//   return Promise.reject(failedRequest)
-// }
-
-// createAuthRefreshInterceptor(axios, refreshAuthLogic)
-// createAuthRefreshInterceptor(authAxios, refreshAuthLogic)
 const jwt = new JWTManager(async () => (await refresh()).access)
 jwt.refreshErrorCallback = async (refreshError) => {
   if (refreshError.response?.status === 401) {
