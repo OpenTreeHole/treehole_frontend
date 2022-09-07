@@ -31,3 +31,5 @@ jobs:
           file: Dockerfile-test
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/${{ env.APP_NAME }}:dev
+      - name: Deploy
+        run: curl -X POST ${{ secrets.DEPLOY_WEBHOOK_DEV }}
